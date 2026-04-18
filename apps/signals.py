@@ -1,14 +1,7 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from apps.models import Plan, WorkoutExercise
+from apps.models import WorkoutExercise
 from apps.services.programs import ProgramGenerationService
-
-
-@receiver(post_save, sender=Plan)
-def auto_create_plan_weeks(sender, instance, created, **kwargs):
-	"""Plan yaratilganda 6 hafta avtomatik yaratiladi."""
-	if created:
-		ProgramGenerationService.ensure_plan_weeks(instance)
 
 
 @receiver(post_save, sender=WorkoutExercise)
@@ -27,4 +20,3 @@ def auto_generate_workout_exercise_weeks(sender, instance, created, **kwargs):
 		return
 	
 	ProgramGenerationService.generate_progression_from_week_one(instance)
-

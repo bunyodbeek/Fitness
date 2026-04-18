@@ -21,7 +21,7 @@ ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
 	'jazzmin',
-	# 'nested_admin',
+	'nested_admin',
 	
 	'django.contrib.admin',
 	
