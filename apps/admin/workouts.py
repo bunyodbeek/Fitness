@@ -52,6 +52,22 @@ class WeekAdminForm(forms.ModelForm):
         model = Week
         fields = "__all__"
 
+    def clean(self):
+        cleaned_data = super().clean()
+        plan = cleaned_data.get("plan")
+        week_number = cleaned_data.get("week_number")
+
+        if plan and week_number is not None:
+            qs = Week.objects.filter(plan=plan, week_number=week_number)
+            if self.instance.pk:
+                qs = qs.exclude(pk=self.instance.pk)
+            if qs.exists():
+                raise forms.ValidationError(
+                    "Bu plan uchun ushbu week allaqachon mavjud. Mavjud weekni edit qiling."
+                )
+
+        return cleaned_data
+
 
 class WorkoutExerciseInline(admin.TabularInline):
     model = WorkoutExercise

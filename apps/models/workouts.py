@@ -135,6 +135,10 @@ class Week(Model):
 		unique_together = ("plan", "week_number")
 	
 	def clean(self):
+		# Admin/form validatsiya paytida week_number bo'sh bo'lishi mumkin.
+		# Bunday holatda TypeError chiqmasligi uchun erta qaytamiz.
+		if self.week_number is None:
+			return
 		if self.week_number < 1 or self.week_number > 6:
 			raise ValidationError("Week number must be between 1 and 6.")
 	
