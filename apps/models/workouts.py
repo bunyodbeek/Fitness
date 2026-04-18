@@ -248,7 +248,25 @@ class WorkoutExercise(Model):
 	
 	class Meta:
 		ordering = ["order", "id"]
-	
+
+	def save(self, *args, **kwargs):
+		"""
+		Minutes/recommended_weight berilmasa, Exercise kartasidan olish.
+		Bu admin nested inline va boshqa yaratish oqimlarida ham bir xil ishlaydi.
+		"""
+		if self.exercise_id:
+			exercise_obj = getattr(self, "exercise", None)
+			if exercise_obj is None:
+				exercise_obj = Exercise.objects.filter(pk=self.exercise_id).only("duration", "recommended_weight").first()
+
+			if exercise_obj:
+				if self.minutes in (None, 0):
+					self.minutes = exercise_obj.duration or 0
+				if self.recommended_weight in (None, 0):
+					self.recommended_weight = exercise_obj.recommended_weight or 0
+
+		super().save(*args, **kwargs)
+
 	def __str__(self):
 		return f"{self.workout} - {self.exercise}"
 	
@@ -290,4 +308,3 @@ class UserWorkoutProgress(Model):
 	
 	def __str__(self):
 		return f"{self.user} - {self.workout} home progress"
-
