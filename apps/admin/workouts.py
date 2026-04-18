@@ -6,7 +6,7 @@ from django.contrib import messages
 import nested_admin
 
 from apps.models import (
-    Plan, Program, Workout, WorkoutExercise, Week, Exercise,
+    Plan, Program, WorkoutExercise, Week, Exercise,
 )
 from apps.models.workouts import HomeWorkout, GymWorkout, ProgressionSetting
 
@@ -56,11 +56,17 @@ class HomeWorkoutInline(admin.StackedInline):
     verbose_name_plural = "Home kunlari"
 
 
-class WorkoutExerciseNestedInline(nested_admin.NestedTabularInline):
+class WorkoutExerciseNestedInline(nested_admin.NestedStackedInline):
     model = WorkoutExercise
     extra = 1
-    fields = ("exercise", "sets", "reps", "minutes", "recommended_weight", "order")
+    fields = (
+        "exercise",
+        ("sets", "reps"),
+        ("minutes", "recommended_weight"),
+        "order",
+    )
     autocomplete_fields = ["exercise"]
+    sortable_field_name = "order"
     verbose_name = "Mashq"
     verbose_name_plural = "Mashqlar"
 
@@ -136,8 +142,19 @@ class WeekAdmin(nested_admin.NestedModelAdmin):
             wtype = obj.plan.program.workout_type
             if wtype == "gym":
                 return [GymWorkoutNestedInline]
-            elif wtype == "home":
+            if wtype == "home":
                 return [HomeWorkoutNestedInline]
+
+        # Add form holatida plan query param bor bo'lsa, workout turini shundan aniqlaymiz.
+        # Bu home plan tanlanganda ham to'g'ri inline ko'rsatishga yordam beradi.
+        plan_id = request.GET.get("plan")
+        if plan_id:
+            try:
+                wtype = Plan.objects.select_related("program").get(pk=plan_id).program.workout_type
+                if wtype == "home":
+                    return [HomeWorkoutNestedInline]
+            except Plan.DoesNotExist:
+                pass
         return [GymWorkoutNestedInline]
 
     def plan_link(self, obj):
