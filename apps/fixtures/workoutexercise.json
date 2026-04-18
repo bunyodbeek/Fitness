@@ -1,0 +1,110 @@
+[
+  {
+    "model": "apps.WorkoutExercise",
+    "pk": 1,
+    "fields": {
+      "workout": 1,
+      "exercise": 1,
+      "sets": 12,
+      "reps": 3,
+      "weight": 0.0,
+      "order": 1
+    }
+  },
+  {
+    "model": "apps.WorkoutExercise",
+    "pk": 2,
+    "fields": {
+      "workout": 2,
+      "exercise": 8,
+      "sets": 12,
+      "reps": 3,
+      "weight": 0.0,
+      "order": 1
+    }
+  },
+  {
+    "model": "apps.WorkoutExercise",
+    "pk": 3,
+    "fields": {
+      "workout": 3,
+      "exercise": 5,
+      "sets": 3,
+      "reps": 12,
+      "weight": 0.0,
+      "order": 1
+    }
+  },
+  {
+    "model": "apps.WorkoutExercise",
+    "pk": 4,
+    "fields": {
+      "workout": 4,
+      "exercise": 3,
+      "sets": 4,
+      "reps": 10,
+      "weight": 0.0,
+      "order": 1
+    }
+  },
+  {
+    "model": "apps.WorkoutExercise",
+    "pk": 5,
+    "fields": {
+      "workout": 5,
+      "exercise": 10,
+      "sets": 2,
+      "reps": 12,
+      "weight": 0.0,
+      "order": 1
+    }
+  },
+  {
+    "model": "apps.WorkoutExercise",
+    "pk": 6,
+    "fields": {
+      "workout": 6,
+      "exercise": 2,
+      "sets": 3,
+      "reps": 5,
+      "weight": 0.0,
+      "order": 1
+    }
+  },
+  {
+    "model": "apps.WorkoutExercise",
+    "pk": 7,
+    "fields": {
+      "workout": 7,
+      "exercise": 8,
+      "sets": 3,
+      "reps": 12,
+      "weight": 0.0,
+      "order": 1
+    }
+  },
+  {
+    "model": "apps.WorkoutExercise",
+    "pk": 8,
+    "fields": {
+      "workout": 8,
+      "exercise": 4,
+      "sets": 3,
+      "reps": 12,
+      "weight": 0.0,
+      "order": 1
+    }
+  },
+  {
+    "model": "apps.WorkoutExercise",
+    "pk": 9,
+    "fields": {
+      "workout": 9,
+      "exercise": 1,
+      "sets": 2,
+      "reps": 12,
+      "weight": 0.0,
+      "order": 1
+    }
+  }
+]

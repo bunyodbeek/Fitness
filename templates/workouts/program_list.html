@@ -1,0 +1,512 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}All Workouts{% endblock %}
+{% load i18n %}
+
+{% block extra_css %}
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(255, 215, 0, 0.05) 0%, transparent 50%),
+            radial-gradient(circle at 80% 80%, rgba(255, 107, 107, 0.05) 0%, transparent 50%),
+            radial-gradient(circle at 40% 90%, rgba(78, 205, 196, 0.05) 0%, transparent 50%);
+            animation: particleFloat 15s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes particleFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -30px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+
+        /* ===== HEADER ===== */
+        .page-header {
+            background: linear-gradient(135deg, rgba(15, 52, 96, 0.95) 0%, rgba(22, 33, 62, 0.95) 100%);
+            backdrop-filter: blur(10px);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+        }
+
+        .page-title {
+            color: white;
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            text-align: center;
+            background: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* ===== MODE SWITCH - griddan TASHQARIDA ===== */
+        .mode-switch-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 14px 12px 0;
+            position: relative;
+            z-index: 12;
+        }
+
+        .mode-switch {
+            display: flex;
+            gap: 10px;
+        }
+
+        .mode-pill {
+            flex: 1;
+            text-align: center;
+            padding: 10px 12px;
+            border-radius: 999px;
+            text-decoration: none;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 1px;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 215, 0, 0.25);
+            background: rgba(255, 255, 255, 0.04);
+            transition: all 0.3s ease;
+        }
+
+        .mode-pill.active {
+            color: #111;
+            background: linear-gradient(135deg, #ffd700 0%, #ffb800 100%);
+            border-color: #ffd700;
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.3);
+        }
+
+        /* ===== CONTAINER - faqat cardlar uchun ===== */
+        .container {
+            padding: 14px 12px 90px;
+            position: relative;
+            z-index: 12;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .mode-switch {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .mode-pill {
+            flex: 1;
+            text-align: center;
+            padding: 10px 12px;
+            border-radius: 999px;
+            text-decoration: none;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 1px;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 215, 0, 0.25);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .mode-pill.active {
+            color: #111;
+            background: linear-gradient(135deg, #ffd700 0%, #ffb800 100%);
+            border-color: #ffd700;
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.3);
+        }
+
+        /* ===== COMPACT PROGRAM CARD ===== */
+        .program-card {
+            background: linear-gradient(135deg,
+            rgba(255, 255, 255, 0.08) 0%,
+            rgba(255, 255, 255, 0.03) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 215, 0, 0.15);
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 14px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            position: relative;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            animation: slideInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+            animation-fill-mode: forwards;
+        }
+
+        .program-card::before {
+            content: '';
+            position: absolute;
+            top: -100%;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                    45deg,
+                    transparent 0%,
+                    rgba(255, 255, 255, 0.08) 50%,
+                    transparent 100%
+            );
+            transition: all 0.5s ease;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .program-card:hover::before {
+            top: 100%;
+            left: 100%;
+        }
+
+        .program-card:active {
+            transform: scale(0.98);
+        }
+
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .program-card:nth-child(1) { animation-delay: 0.05s; }
+        .program-card:nth-child(2) { animation-delay: 0.1s; }
+        .program-card:nth-child(3) { animation-delay: 0.15s; }
+        .program-card:nth-child(4) { animation-delay: 0.2s; }
+        .program-card:nth-child(5) { animation-delay: 0.25s; }
+        .program-card:nth-child(6) { animation-delay: 0.3s; }
+
+        /* ===== PROGRAM HEADER (rasm) ===== */
+        .program-header {
+            position: relative;
+            height: 120px;
+            overflow: hidden;
+        }
+
+        .program-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            filter: brightness(0.8);
+        }
+
+        .program-card:hover .program-image {
+            transform: scale(1.1);
+            filter: brightness(0.9);
+        }
+
+        /* ===== TITLE OVERLAY ===== */
+        .program-title-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top,
+            rgba(0, 0, 0, 0.9) 0%,
+            rgba(0, 0, 0, 0.5) 60%,
+            transparent 100%);
+            padding: 30px 14px 12px;
+            color: white;
+            z-index: 2;
+        }
+
+        .program-title-overlay h2 {
+            font-size: 16px;
+            font-weight: 800;
+            margin-bottom: 4px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+            letter-spacing: 0.5px;
+        }
+
+        .program-title-overlay p {
+            font-size: 11px;
+            color: #ffd700;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* ===== PROGRAM INFO ===== */
+        .program-info {
+            padding: 12px 14px 14px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .program-description {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 12px;
+            line-height: 1.6;
+            margin-bottom: 12px;
+            font-weight: 400;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* ===== META ITEMS ===== */
+        .program-meta {
+            display: flex;
+            gap: 6px;
+            font-size: 10px;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: rgba(255, 255, 255, 0.9);
+            background: linear-gradient(135deg,
+            rgba(255, 215, 0, 0.15) 0%,
+            rgba(255, 215, 0, 0.08) 100%);
+            padding: 6px 10px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            font-weight: 600;
+            font-size: 10px;
+        }
+
+        .meta-item span {
+            font-size: 11px;
+        }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: white;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .empty-state-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            filter: grayscale(100%);
+            opacity: 0.5;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .empty-state h3 {
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* ===== RESPONSIVE - TABLET (500px+) ===== */
+        @media (min-width: 500px) {
+            .page-header { padding: 14px 20px; }
+            .page-title { font-size: 18px; }
+            .mode-switch-wrapper { padding: 16px 16px 0; }
+            .container { padding: 14px 16px 90px; }
+            .program-header { height: 140px; }
+            .program-title-overlay h2 { font-size: 18px; }
+            .program-description { font-size: 13px; }
+            .meta-item { font-size: 11px; padding: 7px 12px; }
+        }
+
+        /* ===== RESPONSIVE - DESKTOP (768px+) ===== */
+        @media (min-width: 768px) {
+            .page-header { padding: 16px 24px; }
+            .page-title { font-size: 20px; letter-spacing: 4px; }
+
+            /* mode-switch desktop - to'liq kenglkda, gridga tegmaydi */
+            .mode-switch-wrapper {
+                padding: 20px 20px 0;
+            }
+
+            /* container - 2 ustunli grid, faqat cardlar */
+            .container {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+                padding: 16px 20px 90px;
+            }
+
+            .program-card { margin-bottom: 0; }
+            .program-header { height: 160px; }
+            .program-title-overlay h2 { font-size: 20px; }
+            .program-info { padding: 16px 18px 18px; }
+            .program-description { font-size: 14px; }
+            .meta-item { font-size: 12px; padding: 8px 14px; }
+            .empty-state { grid-column: 1 / -1; }
+        }
+
+        /* ===== RESPONSIVE - LARGE DESKTOP (1024px+) ===== */
+        @media (min-width: 1024px) {
+            .mode-switch-wrapper { padding: 24px 24px 0; }
+
+            .container {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 24px;
+                padding: 16px 24px 90px;
+            }
+
+            .program-header { height: 180px; }
+            .program-title-overlay h2 { font-size: 22px; }
+        }
+
+        /* ===== VERY SMALL PHONES (360px-) ===== */
+        @media (max-width: 360px) {
+            .page-header { padding: 10px 12px; }
+            .page-title { font-size: 14px; letter-spacing: 2px; }
+            .mode-switch-wrapper { padding: 10px 10px 0; }
+            .container { padding: 10px 10px 90px; }
+            .program-header { height: 100px; }
+            .program-title-overlay { padding: 25px 12px 10px; }
+            .program-title-overlay h2 { font-size: 14px; }
+            .program-title-overlay p { font-size: 10px; }
+            .program-info { padding: 10px 12px 12px; }
+            .program-description { font-size: 11px; margin-bottom: 10px; }
+            .meta-item { font-size: 9px; padding: 5px 8px; gap: 3px; }
+            .meta-item span { font-size: 10px; }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <!-- Header -->
+    <div class="page-header">
+        <h1 class="page-title">{% trans 'WORKOUTS' %}</h1>
+    </div>
+
+    <!-- MODE SWITCH - containerdan TASHQARIDA, har doim to'liq kenglikda -->
+    <div class="mode-switch-wrapper">
+        <div class="mode-switch">
+            <a href="{% url 'program_list' %}?type=gym"
+               class="mode-pill {% if active_workout_type == 'gym' %}active{% endif %}">Gym</a>
+            <a href="{% url 'program_list' %}?type=home"
+               class="mode-pill {% if active_workout_type == 'home' %}active{% endif %}">Home</a>
+        </div>
+    </div>
+
+    <!-- CARDS CONTAINER - desktop da grid -->
+    <div class="container">
+        {% if programs %}
+            {% for program in programs %}
+                <a href="{% if is_home_mode %}{% url 'home_program_detail' program.id %}{% else %}{% url 'gym_program_detail' program.id %}{% endif %}" class="program-card">
+                    <div class="program-header">
+                        {% if program.image %}
+                            <img src="{{ program.image.url }}" alt="{{ program.title }}" class="program-image">
+                        {% else %}
+                            <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&q=80" alt="{{ program.title }}" class="program-image">
+                        {% endif %}
+
+                        {% if program.has_premium %}
+                            <div class="premium-badge">👑 {% trans 'Premium' %}</div>
+                        {% endif %}
+                        <div class="program-title-overlay">
+                            <h2>{{ program.title }}</h2>
+                            <p>
+                                🎯
+                                {% if is_home_mode %}
+                                    {% blocktrans count plan_count=program.plans.count %}{{ plan_count }} Round{% plural %}{{ plan_count }} Rounds{% endblocktrans %}
+                                {% else %}
+                                    {% blocktrans count plan_count=program.plans.count %}{{ plan_count }} Edition{% plural %}{{ plan_count }} Plans{% endblocktrans %}
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="program-info">
+                        <p class="program-description">{{ program.description|truncatewords:18|default:"Transform your body with this scientifically designed training program." }}</p>
+                        <div class="program-meta">
+                            <span class="meta-item">
+                                <span>📅</span>
+                                {{ program.editions.first.duration_weeks|default:"2" }}{% trans "w" %}
+                            </span>
+                            <span class="meta-item">
+                                <span>🏋️</span>
+                                {{ program.editions.first.days_per_week|default:"1" }}{% trans "d/week" %}
+                            </span>
+                            {% if is_home_mode %}
+                            <span class="meta-item">
+                                <span>💪</span>
+                                {{ program.editions.first.workouts.first.rounds|default:"1" }}
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </a>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">🏋️</div>
+                <h3>{% trans 'No programs yet' %}</h3>
+                <p>{% trans 'New programs will be added soon' %}</p>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        // Keep only one mode switch (last one) if duplicated by cached/legacy markup
+        const modeSwitches = document.querySelectorAll('.mode-switch');
+        if (modeSwitches.length > 1) {
+            modeSwitches.forEach((el, index) => {
+                if (index < modeSwitches.length - 1) {
+                    el.remove();
+                }
+            });
+        }
+
+        // Smooth scroll behavior
+        document.querySelectorAll('.program-card').forEach(card => {
+            card.addEventListener('touchstart', function() {
+                this.style.transform = 'scale(0.98)';
+            });
+            card.addEventListener('touchend', function() {
+                this.style.transform = '';
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,26 @@
+description kop tillik
+ADMIN pagega log in ozgartirish
+
+
+https://api.telegram.org/bot8105495454:AAEo0XWt9l-umJsKSpbbmrJPgeBDnGX6jBc/getWebhookInfo
+https://api.telegram.org/bot8105495454:AAEo0XWt9l-umJsKSpbbmrJPgeBDnGX6jBc/setWebhook?url=https://unglib-mountainously-corene.ngrok-free.dev/en/bot/webhook/
+
+
+task (bunyodbek) :
+1. http://localhost:8000/en/exercises/ da chest, shoulders lar to'gri chiqsin (bir birini ustiga chiqib qomasin o'ngda chapda chiqsin)
+2 http://localhost:8000/en/exercises/cardio/ o'tganda like bosish yoki o'chirish real time da ishlasin +
+3. http://localhost:8000/en/edition/1/ dizayn responsive bo'lsin va complete ham dizaynni o'zgartirish +
+4. http://localhost:8000/en/workout/1/start/ shu joyidagi pauza qilishi to'gri ishlasin +
+5. http://localhost:8000/en/my-trainer/history/ dizaynni to'grilash
+6. bir martalik premium uchun page qiling
+7. http://localhost:8000/en/users/settings/ shundagi bo'shlar uchun html yozish
+8. http://localhost:8000/en/workout/1/complete/ caloriani to'gri hisoblasin
+
+
+
+
+
+program.is-prem + user.is-prem = not premium page
+program + user.is-prem = not premium page
+program.is-prem + user = one time premium page
+program + user = premium page

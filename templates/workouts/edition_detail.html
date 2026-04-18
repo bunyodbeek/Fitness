@@ -1,0 +1,586 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ edition.name }}{% endblock %}
+{% load i18n %}
+
+{% block extra_css %}
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: white;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated background particles */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(255, 215, 0, 0.05) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(255, 107, 107, 0.05) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 90%, rgba(78, 205, 196, 0.05) 0%, transparent 50%);
+            animation: particleFloat 15s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes particleFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -30px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+
+        /* ===== COMPACT HEADER ===== */
+        .edition-header {
+            background: linear-gradient(135deg, rgba(15, 52, 96, 0.95) 0%, rgba(22, 33, 62, 0.95) 100%);
+            backdrop-filter: blur(10px);
+            text-align: center;
+            padding: 14px 16px;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .back-btn {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1.5px solid rgba(255, 215, 0, 0.3);
+            color: #ffd700;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            border-radius: 10px;
+            flex-shrink: 0;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: #ffd700;
+        }
+
+        .header-content {
+            flex: 1;
+            text-align: center;
+            margin-right: 32px;
+        }
+
+        .edition-header h1 {
+            font-size: 14px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 2px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .edition-header p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .edition-header p span {
+            color: #ffd700;
+            font-weight: 700;
+        }
+
+        /* ===== COMPACT EXERCISES CONTAINER ===== */
+        .exercises-container {
+            padding: 14px 12px 100px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ===== COMPACT EXERCISE CARD ===== */
+        .exercise-card {
+            background: linear-gradient(135deg,
+                rgba(255, 215, 0, 0.12) 0%,
+                rgba(255, 215, 0, 0.06) 100%);
+            backdrop-filter: blur(10px);
+            margin-bottom: 10px;
+            padding: 12px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1.5px solid rgba(255, 215, 0, 0.25);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            color: white;
+            animation: fadeInUp 0.5s ease backwards;
+        }
+
+        .exercise-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg,
+                transparent,
+                rgba(255, 255, 255, 0.08),
+                transparent);
+            transition: left 0.4s ease;
+        }
+
+        .exercise-card:hover::before {
+            left: 100%;
+        }
+
+        .exercise-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(255, 215, 0, 0.5);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.2);
+        }
+
+        .exercise-card:active {
+            transform: translateY(-1px) scale(0.99);
+        }
+
+        /* Staggered animation */
+        .exercise-card:nth-child(1) { animation-delay: 0.05s; }
+        .exercise-card:nth-child(2) { animation-delay: 0.08s; }
+        .exercise-card:nth-child(3) { animation-delay: 0.11s; }
+        .exercise-card:nth-child(4) { animation-delay: 0.14s; }
+        .exercise-card:nth-child(5) { animation-delay: 0.17s; }
+        .exercise-card:nth-child(6) { animation-delay: 0.2s; }
+        .exercise-card:nth-child(7) { animation-delay: 0.23s; }
+        .exercise-card:nth-child(8) { animation-delay: 0.26s; }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== COMPACT EXERCISE IMAGE ===== */
+        .exercise-img {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            object-fit: cover;
+            border: 1.5px solid rgba(255, 215, 0, 0.35);
+            box-shadow: 0 0 12px rgba(255, 215, 0, 0.2);
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .exercise-card:hover .exercise-img {
+            transform: scale(1.05);
+            border-color: rgba(255, 215, 0, 0.6);
+        }
+
+        /* ===== COMPACT EXERCISE INFO ===== */
+        .exercise-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .exercise-info h3 {
+            font-size: 13px;
+            font-weight: 700;
+            margin: 0 0 4px 0;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            transition: color 0.3s ease;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .exercise-card:hover .exercise-info h3 {
+            color: #ffd700;
+        }
+
+        .exercise-info p {
+            margin: 0;
+            color: rgba(255, 255, 255, 0.65);
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .exercise-info p strong {
+            color: #ffd700;
+            font-weight: 700;
+        }
+
+        /* Exercise arrow */
+        .exercise-arrow {
+            color: rgba(255, 215, 0, 0.5);
+            font-size: 18px;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .exercise-card:hover .exercise-arrow {
+            color: #ffd700;
+            transform: translateX(3px);
+        }
+
+        /* ===== NO EXERCISES ===== */
+        .no-exercises {
+            text-align: center;
+            padding: 50px 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .no-exercises-card {
+            background: linear-gradient(135deg,
+                rgba(255, 215, 0, 0.12) 0%,
+                rgba(255, 215, 0, 0.06) 100%);
+            backdrop-filter: blur(10px);
+            border: 1.5px solid rgba(255, 215, 0, 0.25);
+            border-radius: 18px;
+            padding: 30px 16px;
+            max-width: 320px;
+            margin: 0 auto;
+        }
+
+        .no-exercises-icon {
+            font-size: 40px;
+            margin-bottom: 14px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
+
+        .no-exercises-text {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        /* ===== COMPACT START WORKOUT BUTTON ===== */
+        .start-workout-container {
+            position: fixed;
+            bottom: 22px;
+            left: 0;
+            right: 0;
+            padding: 12px;
+            background: linear-gradient(to top, rgba(10, 14, 39, 0.92) 0%, transparent 100%);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+        }
+
+        .start-workout-btn {
+            width: 100%;
+            padding: 14px 24px;
+            background: linear-gradient(135deg, #ffd700 0%, #f39c12 100%);
+            border: none;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #1a1a2e;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 25px rgba(255, 215, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .start-workout-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg,
+                transparent,
+                rgba(255, 255, 255, 0.25),
+                transparent);
+            transition: left 0.4s ease;
+        }
+
+        .start-workout-btn:hover::before {
+            left: 100%;
+        }
+
+        .start-workout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 35px rgba(255, 215, 0, 0.5);
+        }
+
+        .start-workout-btn:active {
+            transform: translateY(-10px) scale(0.99);
+        }
+        /* ===== RESPONSIVE - TABLET ===== */
+        @media (min-width: 500px) {
+            .edition-header {
+                padding: 16px 20px;
+            }
+
+            .edition-header h1 {
+                font-size: 16px;
+            }
+
+            .edition-header p {
+                font-size: 12px;
+            }
+
+            .exercises-container {
+                padding: 18px 16px 110px;
+            }
+
+            .exercise-card {
+                padding: 14px 16px;
+                margin-bottom: 12px;
+            }
+
+            .exercise-img {
+                width: 65px;
+                height: 65px;
+            }
+
+            .exercise-info h3 {
+                font-size: 14px;
+            }
+
+            .exercise-info p {
+                font-size: 12px;
+            }
+
+            .start-workout-btn {
+                padding: 16px 28px;
+                font-size: 15px;
+            }
+        }
+
+        /* ===== RESPONSIVE - DESKTOP ===== */
+        @media (min-width: 768px) {
+            .edition-header {
+                padding: 18px 24px;
+            }
+
+            .edition-header h1 {
+                font-size: 18px;
+                letter-spacing: 3px;
+            }
+
+            .edition-header p {
+                font-size: 13px;
+            }
+
+            .back-btn {
+                width: 36px;
+                height: 36px;
+                font-size: 22px;
+            }
+
+            .header-content {
+                margin-right: 36px;
+            }
+
+            .exercises-container {
+                padding: 24px 20px 120px;
+                max-width: 800px;
+                margin: 0 auto;
+            }
+
+            .exercise-card {
+                padding: 18px 20px;
+                margin-bottom: 14px;
+                border-radius: 16px;
+            }
+
+            .exercise-img {
+                width: 75px;
+                height: 75px;
+                border-radius: 14px;
+            }
+
+            .exercise-info h3 {
+                font-size: 16px;
+                margin-bottom: 6px;
+            }
+
+            .exercise-info p {
+                font-size: 13px;
+            }
+
+            .start-workout-container {
+                padding: 16px 20px;
+            }
+
+            .start-workout-btn {
+                max-width: 400px;
+                {#margin-bottom:12px;#}
+                margin: 0 auto;
+                display: block;
+                padding: 18px 32px;
+                font-size: 16px;
+                border-radius: 16px;
+            }
+        }
+
+        /* ===== VERY SMALL PHONES ===== */
+        @media (max-width: 360px) {
+            .edition-header {
+                padding: 10px 12px;
+                gap: 10px;
+            }
+
+            .back-btn {
+                width: 28px;
+                height: 28px;
+                font-size: 18px;
+            }
+
+            .header-content {
+                margin-right: 28px;
+            }
+
+            .edition-header h1 {
+                font-size: 12px;
+                letter-spacing: 1.5px;
+            }
+
+            .edition-header p {
+                font-size: 10px;
+            }
+
+            .exercises-container {
+                padding: 10px 10px 90px;
+            }
+
+            .exercise-card {
+                padding: 10px;
+                margin-bottom: 8px;
+                gap: 10px;
+                border-radius: 12px;
+            }
+
+            .exercise-img {
+                width: 48px;
+                height: 48px;
+                border-radius: 10px;
+            }
+
+            .exercise-info h3 {
+                font-size: 12px;
+                margin-bottom: 3px;
+            }
+
+            .exercise-info p {
+                font-size: 10px;
+            }
+
+            .exercise-arrow {
+                font-size: 16px;
+            }
+
+            .start-workout-container {
+                padding: 10px;
+            }
+
+            .start-workout-btn {
+                padding: 12px 20px;
+                font-size: 12px;
+                border-radius: 12px;
+                letter-spacing: 1px;
+            }
+        }
+    </style>
+{% endblock %}
+
+
+{% block content %}
+    <!-- Compact Header with Back Button -->
+    <div class="edition-header">
+        <button class="back-btn" onclick="window.history.back()">‹</button>
+        <div class="header-content">
+            <h1>{{ edition.name }}</h1>
+            <p>{% trans 'all exercises:' %} <span>{{ total_exercises }}</span></p>
+        </div>
+    </div>
+
+    {% if workouts %}
+        <div class="exercises-container">
+            {% for item in workouts %}
+                <a href="{% url 'exercise_detail' item.exercise.id %}" class="exercise-card">
+                    <img src="{{ item.exercise.thumbnail.url }}" class="exercise-img" alt="{{ item.exercise.name }}">
+                    <div class="exercise-info">
+                        <h3>{{ item.exercise.name }}</h3>
+                        <p><strong>{{ item.sets }}×{{ item.reps }}</strong> • {{ item.exercise.primary_body_part|title }}</p>
+                    </div>
+                    <span class="exercise-arrow">›</span>
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="no-exercises">
+            <div class="no-exercises-card">
+                <div class="no-exercises-icon">🏋️</div>
+                <div class="no-exercises-text">{% trans 'No exercises are included for this program.' %}</div>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Compact Start Workout Button -->
+    {% if workouts %}
+        <div class="start-workout-container">
+            <button class="start-workout-btn" onclick="startWorkout()">
+                {% trans '▶ Start Workout' %}
+            </button>
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        function startWorkout() {
+             window.location.href = "{% url 'workout_start' edition.id %}";
+        }
+
+        // Touch feedback
+        document.querySelectorAll('.exercise-card').forEach(card => {
+            card.addEventListener('touchstart', function() {
+                this.style.transform = 'scale(0.98)';
+            });
+            card.addEventListener('touchend', function() {
+                this.style.transform = '';
+            });
+        });
+    </script>
+{% endblock %}

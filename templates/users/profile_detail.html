@@ -1,0 +1,696 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% load static %}
+
+{% block title %}Profil{% endblock %}
+
+{% block extra_css %}
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated particles background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(255, 215, 0, 0.05) 0%, transparent 50%),
+            radial-gradient(circle at 80% 80%, rgba(255, 107, 107, 0.05) 0%, transparent 50%),
+            radial-gradient(circle at 40% 90%, rgba(78, 205, 196, 0.05) 0%, transparent 50%);
+            animation: particleFloat 15s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes particleFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -30px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+
+        /* ===== COMPACT HEADER - Program List Style ===== */
+        .page-header {
+            background: linear-gradient(135deg, rgba(15, 52, 96, 0.95) 0%, rgba(22, 33, 62, 0.95) 100%);
+            backdrop-filter: blur(10px);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+        }
+
+        .page-title {
+            color: white;
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            text-align: center;
+            background: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* ===== CONTAINER ===== */
+        .container {
+            padding: 16px 12px;
+            padding-bottom: 90px;
+            position: relative;
+            z-index: 12;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* ===== COMPACT AVATAR SECTION ===== */
+        .avatar-section {
+            text-align: center;
+            padding: 20px 0 16px;
+            animation: fadeIn 0.6s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .avatar-circle {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            border: 3px solid rgba(255, 215, 0, 0.5);
+            overflow: hidden;
+            margin: 0 auto 12px;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: transparent;
+        }
+
+        .avatar-circle:hover {
+            transform: scale(1.05);
+            border-color: rgba(255, 215, 0, 0.8);
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.5);
+        }
+
+        .avatar-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-name {
+            font-size: 20px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .user-subtitle {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            font-weight: 500;
+        }
+
+        /* ===== COMPACT STATS ===== */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg,
+            rgba(255, 215, 0, 0.12) 0%,
+            rgba(255, 215, 0, 0.06) 100%);
+            backdrop-filter: blur(10px);
+            border-radius: 14px;
+            padding: 14px 8px;
+            text-align: center;
+            border: 1.5px solid rgba(255, 215, 0, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            animation: slideInDown 0.5s ease backwards;
+        }
+
+        .stat-card:nth-child(1) { animation-delay: 0.1s; }
+        .stat-card:nth-child(2) { animation-delay: 0.15s; }
+        .stat-card:nth-child(3) { animation-delay: 0.2s; }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg,
+            transparent,
+            rgba(255, 255, 255, 0.08),
+            transparent);
+            transition: left 0.5s ease;
+        }
+
+        .stat-card:hover::before {
+            left: 100%;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(255, 215, 0, 0.5);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.2);
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 2px;
+        }
+
+        .stat-label {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.7);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        /* ===== COMPACT MENU SECTION ===== */
+        .menu-section {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .menu-card {
+            background: linear-gradient(135deg,
+            rgba(255, 255, 255, 0.06) 0%,
+            rgba(255, 255, 255, 0.02) 100%);
+            backdrop-filter: blur(10px);
+            border-radius: 14px;
+            padding: 12px 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border: 1.5px solid rgba(255, 215, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+            animation: slideInUp 0.5s ease backwards;
+        }
+
+        .menu-card:nth-child(1) { animation-delay: 0.1s; }
+        .menu-card:nth-child(2) { animation-delay: 0.15s; }
+        .menu-card:nth-child(3) { animation-delay: 0.2s; }
+        .menu-card:nth-child(4) { animation-delay: 0.25s; }
+        .menu-card:nth-child(5) { animation-delay: 0.3s; }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .menu-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg,
+            transparent,
+            rgba(255, 255, 255, 0.06),
+            transparent);
+            transition: left 0.5s ease;
+        }
+
+        .menu-card:hover::before {
+            left: 100%;
+        }
+
+        .menu-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(255, 215, 0, 0.4);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.15);
+        }
+
+        .menu-card:active {
+            transform: translateY(-1px) scale(0.99);
+        }
+
+        .menu-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .menu-icon-wrapper {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #ffd700 0%, #f39c12 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .menu-card:hover .menu-icon-wrapper {
+            transform: scale(1.08);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+        }
+
+        .menu-icon {
+            font-size: 18px;
+        }
+
+        .menu-text-wrapper {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .menu-text {
+            font-size: 14px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 2px;
+            letter-spacing: 0.5px;
+        }
+
+        .menu-subtitle {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.5);
+            letter-spacing: 0.3px;
+        }
+
+        .menu-arrow {
+            font-size: 20px;
+            color: rgba(255, 215, 0, 0.5);
+            transition: all 0.3s ease;
+            font-weight: 700;
+        }
+
+        .menu-card:hover .menu-arrow {
+            color: #ffd700;
+            transform: translateX(4px);
+        }
+
+        /* ===== RESPONSIVE - TABLET ===== */
+        @media (min-width: 500px) {
+            .page-header {
+                padding: 14px 20px;
+            }
+
+            .page-title {
+                font-size: 18px;
+            }
+
+            .container {
+                padding: 20px 16px;
+            }
+
+            .avatar-circle {
+                width: 100px;
+                height: 100px;
+            }
+
+            .user-name {
+                font-size: 22px;
+            }
+
+            .stat-card {
+                padding: 16px 10px;
+            }
+
+            .stat-number {
+                font-size: 26px;
+            }
+
+            .stat-label {
+                font-size: 11px;
+            }
+
+            .menu-card {
+                padding: 14px 16px;
+            }
+
+            .menu-icon-wrapper {
+                width: 40px;
+                height: 40px;
+            }
+
+            .menu-icon {
+                font-size: 20px;
+            }
+
+            .menu-text {
+                font-size: 15px;
+            }
+
+            .menu-subtitle {
+                font-size: 12px;
+            }
+        }
+
+        /* ===== RESPONSIVE - DESKTOP ===== */
+        @media (min-width: 768px) {
+            .page-header {
+                padding: 16px 24px;
+            }
+
+            .page-title {
+                font-size: 20px;
+                letter-spacing: 4px;
+            }
+
+            .container {
+                padding: 24px 20px;
+            }
+
+            .avatar-section {
+                padding: 24px 0 20px;
+            }
+
+            .avatar-circle {
+                width: 110px;
+                height: 110px;
+                border-width: 4px;
+            }
+
+            .user-name {
+                font-size: 24px;
+            }
+
+            .user-subtitle {
+                font-size: 13px;
+            }
+
+            .stats-container {
+                gap: 14px;
+                margin-bottom: 24px;
+            }
+
+            .stat-card {
+                padding: 18px 12px;
+                border-radius: 16px;
+            }
+
+            .stat-number {
+                font-size: 28px;
+            }
+
+            .stat-label {
+                font-size: 12px;
+            }
+
+            .menu-section {
+                gap: 12px;
+            }
+
+            .menu-card {
+                padding: 16px 18px;
+                border-radius: 16px;
+            }
+
+            .menu-icon-wrapper {
+                width: 44px;
+                height: 44px;
+                border-radius: 12px;
+            }
+
+            .menu-icon {
+                font-size: 22px;
+            }
+
+            .menu-text {
+                font-size: 16px;
+            }
+
+            .menu-subtitle {
+                font-size: 12px;
+            }
+
+            .menu-arrow {
+                font-size: 22px;
+            }
+        }
+
+        /* ===== VERY SMALL PHONES ===== */
+        @media (max-width: 360px) {
+            .page-header {
+                padding: 10px 12px;
+            }
+
+            .page-title {
+                font-size: 14px;
+                letter-spacing: 2px;
+            }
+
+            .container {
+                padding: 12px 10px;
+            }
+
+            .avatar-section {
+                padding: 16px 0 12px;
+            }
+
+            .avatar-circle {
+                width: 75px;
+                height: 75px;
+                border-width: 2.5px;
+                margin-bottom: 10px;
+            }
+
+            .user-name {
+                font-size: 18px;
+            }
+
+            .user-subtitle {
+                font-size: 11px;
+            }
+
+            .stats-container {
+                gap: 8px;
+                margin-bottom: 16px;
+            }
+
+            .stat-card {
+                padding: 12px 6px;
+                border-radius: 12px;
+            }
+
+            .stat-number {
+                font-size: 20px;
+            }
+
+            .stat-label {
+                font-size: 9px;
+            }
+
+            .menu-section {
+                gap: 8px;
+            }
+
+            .menu-card {
+                padding: 10px 12px;
+                border-radius: 12px;
+            }
+
+            .menu-content {
+                gap: 10px;
+            }
+
+            .menu-icon-wrapper {
+                width: 32px;
+                height: 32px;
+                border-radius: 8px;
+            }
+
+            .menu-icon {
+                font-size: 16px;
+            }
+
+            .menu-text {
+                font-size: 13px;
+            }
+
+            .menu-subtitle {
+                font-size: 10px;
+            }
+
+            .menu-arrow {
+                font-size: 18px;
+            }
+        }
+
+        /* GPU Acceleration */
+        .stat-card,
+        .menu-card,
+        .avatar-circle,
+        .menu-icon-wrapper {
+            will-change: transform;
+        }
+
+        /* Reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <!-- Compact Header -->
+    <div class="page-header">
+        <h1 class="page-title">👤 PROFILE</h1>
+    </div>
+
+    <div class="container">
+        <!-- Compact Avatar Section -->
+        <div class="avatar-section">
+            <div class="avatar-circle" onclick="window.location.href='{% url 'profile_update' %}'">
+                {% if user.profile.avatar %}
+                    <img src="{{ user.profile.avatar.url }}" alt="{{ user.first_name }}" class="avatar-image">
+                {% else %}
+                    <img src="/media/user/avatar.jpg" alt="Avatar" class="avatar-image">
+                {% endif %}
+            </div>
+            <h2 class="user-name">{{ user.first_name|default:"User" }}</h2>
+            <p class="user-subtitle">{% trans 'Fitness Journey' %}</p>
+        </div>
+
+{#        <!-- Compact Stats -->#}
+{#        <div class="stats-container">#}
+{#            <div class="stat-card">#}
+{#                <div class="stat-number">24</div>#}
+{#                <div class="stat-label">Kunlar</div>#}
+{#            </div>#}
+{#            <div class="stat-card">#}
+{#                <div class="stat-number">156</div>#}
+{#                <div class="stat-label">Mashqlar</div>#}
+{#            </div>#}
+{#            <div class="stat-card">#}
+{#                <div class="stat-number">12</div>#}
+{#                <div class="stat-label">Kg</div>#}
+{#            </div>#}
+{#        </div>#}
+
+        <!-- Compact Menu Section -->
+        <div class="menu-section">
+            <div class="menu-card" onclick="window.location.href='{% url 'profile_update' %}'">
+                <div class="menu-content">
+                    <div class="menu-icon-wrapper">
+                        <div class="menu-icon">👤</div>
+                    </div>
+                    <div class="menu-text-wrapper">
+                        <div class="menu-text">{% trans 'Profile' %}</div>
+                        <div class="menu-subtitle">{% trans 'Edit information' %}</div>
+                    </div>
+                    <div class="menu-arrow">›</div>
+                </div>
+            </div>
+
+            <div class="menu-card" onclick="window.location.href='{% url 'user_progress' %}'">
+                <div class="menu-content">
+                    <div class="menu-icon-wrapper">
+                        <div class="menu-icon">📈</div>
+                    </div>
+                    <div class="menu-text-wrapper">
+                        <div class="menu-text">Statistics</div>
+                        <div class="menu-subtitle">your results</div>
+                    </div>
+                    <div class="menu-arrow">›</div>
+                </div>
+            </div>
+
+            <div class="menu-card" onclick="window.location.href='{% url 'favorite_list_page' %}'">
+                <div class="menu-content">
+                    <div class="menu-icon-wrapper">
+                        <div class="menu-icon">⭐</div>
+                    </div>
+                    <div class="menu-text-wrapper">
+                        <div class="menu-text">{% trans 'Favorites' %}</div>
+                        <div class="menu-subtitle">{% trans 'Saved exercises' %}</div>
+                    </div>
+                    <div class="menu-arrow">›</div>
+                </div>
+            </div>
+
+            <div class="menu-card" onclick="window.location.href='{% url 'settings' %}'">
+                <div class="menu-content">
+                    <div class="menu-icon-wrapper">
+                        <div class="menu-icon">⚙️</div>
+                    </div>
+                    <div class="menu-text-wrapper">
+                        <div class="menu-text">{% trans 'Settings' %}</div>
+                        <div class="menu-subtitle">{% trans 'All settings' %}</div>
+                    </div>
+                    <div class="menu-arrow">›</div>
+                </div>
+            </div>
+
+            <div class="menu-card" onclick="">
+                <div class="menu-content">
+                    <div class="menu-icon-wrapper">
+                        <div class="menu-icon">💬</div>
+                    </div>
+                    <div class="menu-text-wrapper">
+                        <div class="menu-text">Yordam</div>
+                        <div class="menu-subtitle">Qo'llab-quvvatlash</div>
+                    </div>
+                    <div class="menu-arrow">›</div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

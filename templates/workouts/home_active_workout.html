@@ -1,0 +1,66 @@
+{% load i18n static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% trans "Home Workout" %} - {{ workout.title|default:'Session' }}</title>
+    <link rel="stylesheet" href="{% static 'apps/css/home_active_workout.css' %}">
+</head>
+<body>
+<div
+    id="homeWorkoutApp"
+    class="phone"
+    data-initial-exercise-index="{{ initial_exercise_index|default:0 }}"
+    data-initial-completed="{{ initial_completed|default:0 }}"
+>
+    <div class="header">
+        <div>
+            <div class="meta">{{ workout.edition.program.title|upper }} // WEEK {{ workout.edition.order }} // DAY {{ workout.day_number }}</div>
+            <div class="header-title">{% trans "Home mode" %}</div>
+        </div>
+        <form id="homeExitForm" method="post" action="{% url 'workout_start' workout.pk %}">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="exit">
+            <input type="hidden" name="save_progress" value="true">
+            <input type="hidden" name="total_duration" id="exit_duration" value="0">
+            <input type="hidden" name="total_calories" id="exit_calories" value="0">
+            <input type="hidden" name="exercises_completed" id="exit_completed" value="0">
+            <input type="hidden" name="current_exercise_index" id="exit_index" value="{{ initial_exercise_index|default:0 }}">
+            <input type="hidden" name="current_set" value="1">
+            <button type="submit" class="btn-secondary" style="padding:8px 10px;">{% trans "Exit" %}</button>
+        </form>
+    </div>
+
+    <div class="content">
+        <div class="title">{{ workout.title|default:'Burn Session'|upper }}</div>
+        <div class="round" id="roundInfo">{% trans "Round" %} <span id="roundNum">1</span> / <span id="roundTotal">{{ total_exercises }}</span></div>
+
+        <div class="exercise-list" id="exerciseList"></div>
+
+        <div class="timer-wrap" id="timerWrap">
+            <div class="timer" id="timerText">00:40</div>
+        </div>
+
+        <p class="current-ex" id="currentExercise">-</p>
+
+        <div class="actions">
+            <button id="startBtn" class="btn-primary" type="button">{% trans "Start" %}</button>
+            <button id="nextBtn" class="btn-secondary" type="button">{% trans "Next" %}</button>
+            <button id="finishBtn" class="btn-danger hidden" style="grid-column:1/-1" type="button">{% trans "Finish Workout" %}</button>
+        </div>
+    </div>
+</div>
+
+<form id="completeForm" method="post" action="{% url 'workout_start' workout.pk %}" class="hidden">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="complete">
+    <input type="hidden" name="total_duration" id="complete_duration" value="0">
+    <input type="hidden" name="total_calories" id="complete_calories" value="0">
+    <input type="hidden" name="exercises_completed" id="complete_completed" value="0">
+</form>
+
+{{ exercises|json_script:"homeExercises" }}
+<script src="{% static 'apps/js/home_active_workout.js' %}"></script>
+</body>
+</html>

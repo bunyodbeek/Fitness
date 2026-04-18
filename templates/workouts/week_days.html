@@ -1,0 +1,594 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Week" %} {{ week.week_number }} - {% trans "Days" %}{% endblock %}
+
+{% block bottom_nav %}{% endblock %}
+
+{% block extra_css %}
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        min-height: 100vh;
+        position: relative;
+        overflow-x: hidden;
+    }
+
+    body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background:
+            radial-gradient(circle at 15% 40%, rgba(255, 215, 0, 0.06) 0%, transparent 50%),
+            radial-gradient(circle at 85% 70%, rgba(255, 107, 107, 0.05) 0%, transparent 50%),
+            radial-gradient(circle at 50% 95%, rgba(78, 205, 196, 0.04) 0%, transparent 50%);
+        animation: bgFloat 18s ease-in-out infinite;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    @keyframes bgFloat {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        33%  { transform: translate(20px, -20px) scale(1.05); }
+        66%  { transform: translate(-15px, 15px) scale(0.95); }
+    }
+
+    /* ── Header ── */
+    .page-header {
+        background: linear-gradient(135deg, rgba(15, 52, 96, 0.95) 0%, rgba(22, 33, 62, 0.95) 100%);
+        backdrop-filter: blur(10px);
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+    }
+
+    .back-btn {
+        background: none;
+        border: none;
+        color: #ffd700;
+        font-size: 22px;
+        cursor: pointer;
+        padding: 0;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.2s ease;
+        font-weight: 700;
+    }
+
+    .back-btn:hover { transform: scale(1.2); }
+
+    .page-title {
+        font-size: 16px;
+        font-weight: 800;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        flex: 1;
+        text-align: center;
+        background: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .header-spacer { width: 32px; }
+
+    /* ── Container ── */
+    .container {
+        position: relative;
+        z-index: 1;
+        max-width: 640px;
+        margin: 0 auto;
+        padding-bottom: 90px;
+    }
+
+    /* ── Week Hero Banner ── */
+    .week-hero {
+        margin: 14px 12px 0;
+        border-radius: 18px;
+        overflow: hidden;
+        position: relative;
+        background: linear-gradient(135deg, #0f3460 0%, #16213e 100%);
+        border: 1.5px solid rgba(255, 215, 0, 0.2);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .week-hero-inner {
+        padding: 20px 18px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Large week number badge */
+    .week-badge {
+        width: 64px;
+        height: 64px;
+        border-radius: 18px;
+        background: linear-gradient(135deg, #ffd700 0%, #ff9500 100%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        box-shadow: 0 4px 16px rgba(255, 215, 0, 0.4);
+    }
+
+    .week-badge-label {
+        font-size: 8px;
+        font-weight: 700;
+        color: rgba(0,0,0,0.6);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        line-height: 1;
+        margin-bottom: 2px;
+    }
+
+    .week-badge-num {
+        font-size: 28px;
+        font-weight: 900;
+        color: #000;
+        line-height: 1;
+    }
+
+    .week-hero-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .week-hero-title {
+        font-size: 17px;
+        font-weight: 900;
+        color: white;
+        margin-bottom: 5px;
+        line-height: 1.2;
+    }
+
+    .week-hero-plan {
+        font-size: 11px;
+        color: rgba(255, 215, 0, 0.7);
+        font-weight: 600;
+        margin-bottom: 8px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .week-hero-stats {
+        display: flex;
+        gap: 10px;
+    }
+
+    .hero-stat {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 10px;
+        color: rgba(255,255,255,0.6);
+        font-weight: 600;
+    }
+
+    .hero-stat-icon {
+        font-size: 12px;
+    }
+
+    /* Progress bar */
+    .progress-section {
+        margin: 12px 12px 0;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,215,0,0.1);
+        border-radius: 14px;
+        padding: 12px 14px;
+    }
+
+    .progress-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+
+    .progress-label {
+        font-size: 10px;
+        font-weight: 700;
+        color: rgba(255,255,255,0.5);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .progress-value {
+        font-size: 11px;
+        font-weight: 800;
+        color: #ffd700;
+    }
+
+    .progress-bar-track {
+        height: 6px;
+        background: rgba(255,255,255,0.08);
+        border-radius: 999px;
+        overflow: hidden;
+    }
+
+    .progress-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #ffd700, #10b981);
+        border-radius: 999px;
+        transition: width 0.8s ease;
+    }
+
+    /* ── Section title ── */
+    .section-title {
+        font-size: 11px;
+        font-weight: 800;
+        color: rgba(255,255,255,0.4);
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        padding: 16px 12px 8px;
+    }
+
+    /* ── Day Cards ── */
+    .days-list {
+        padding: 0 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .day-card {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-decoration: none;
+        color: inherit;
+        padding: 12px 14px;
+        border-radius: 14px;
+        border: 1.5px solid rgba(255, 215, 0, 0.12);
+        background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+        backdrop-filter: blur(8px);
+        box-shadow: 0 3px 12px rgba(0,0,0,0.2);
+        transition: all 0.25s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .day-card::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: linear-gradient(180deg, #ffd700, #ff9500);
+        border-radius: 0 2px 2px 0;
+        opacity: 0;
+        transition: opacity 0.25s ease;
+    }
+
+    .day-card:hover {
+        border-color: rgba(255, 215, 0, 0.35);
+        transform: translateX(5px);
+        box-shadow: 0 6px 22px rgba(255, 215, 0, 0.15);
+    }
+
+    .day-card:hover::before {
+        opacity: 1;
+    }
+
+    /* Completed state */
+    .day-card.completed {
+        border-color: rgba(16, 185, 129, 0.35);
+        background: linear-gradient(135deg, rgba(16,185,129,0.08) 0%, rgba(5,150,105,0.03) 100%);
+    }
+
+    .day-card.completed::before {
+        background: linear-gradient(180deg, #10b981, #059669);
+        opacity: 1;
+    }
+
+    /* Day number circle */
+    .day-circle {
+        width: 46px;
+        height: 46px;
+        border-radius: 14px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        background: linear-gradient(135deg, rgba(255,215,0,0.15) 0%, rgba(255,149,0,0.1) 100%);
+        border: 1.5px solid rgba(255,215,0,0.25);
+    }
+
+    .day-card.completed .day-circle {
+        background: linear-gradient(135deg, rgba(16,185,129,0.2) 0%, rgba(5,150,105,0.1) 100%);
+        border-color: rgba(16,185,129,0.4);
+    }
+
+    .day-circle-label {
+        font-size: 7px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        color: rgba(255,215,0,0.6);
+        line-height: 1;
+        margin-bottom: 1px;
+    }
+
+    .day-card.completed .day-circle-label {
+        color: rgba(16,185,129,0.8);
+    }
+
+    .day-circle-num {
+        font-size: 20px;
+        font-weight: 900;
+        color: #ffd700;
+        line-height: 1;
+    }
+
+    .day-card.completed .day-circle-num {
+        color: #10b981;
+    }
+
+    /* Day content */
+    .day-content {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .day-name {
+        font-size: 13px;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 4px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .day-meta {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .day-tag {
+        font-size: 9px;
+        font-weight: 700;
+        padding: 2px 7px;
+        border-radius: 999px;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        background: rgba(255,215,0,0.1);
+        color: rgba(255,215,0,0.7);
+        border: 1px solid rgba(255,215,0,0.2);
+    }
+
+    .day-tag.exercises {
+        background: rgba(99,102,241,0.12);
+        color: rgba(165,180,252,0.8);
+        border-color: rgba(99,102,241,0.25);
+    }
+
+    /* Right side */
+    .day-right {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 6px;
+        flex-shrink: 0;
+    }
+
+    .completed-badge {
+        font-size: 9px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        padding: 3px 9px;
+        border-radius: 999px;
+        background: rgba(16,185,129,0.15);
+        color: #10b981;
+        border: 1px solid rgba(16,185,129,0.35);
+    }
+
+    .day-arrow {
+        font-size: 18px;
+        color: rgba(255, 215, 0, 0.4);
+        font-weight: 700;
+    }
+
+    .day-card.completed .day-arrow {
+        color: rgba(16,185,129,0.5);
+    }
+
+    /* Empty state */
+    .empty-state {
+        text-align: center;
+        padding: 50px 20px;
+        color: white;
+    }
+
+    .empty-icon {
+        font-size: 48px;
+        margin-bottom: 12px;
+        opacity: 0.5;
+    }
+
+    .empty-state h3 {
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 6px;
+    }
+
+    .empty-state p {
+        font-size: 13px;
+        color: rgba(255,255,255,0.4);
+    }
+
+    /* Card fade-in animation */
+    .day-card {
+        animation: fadeSlideIn 0.35s ease both;
+    }
+
+    @keyframes fadeSlideIn {
+        from {
+            opacity: 0;
+            transform: translateY(12px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    {% for i in "123456789" %}
+    .day-card:nth-child({{ forloop.counter }}) {
+        animation-delay: {{ forloop.counter0 }}0ms;  {# 0ms, 10ms, 20ms... very subtle stagger #}
+    }
+    {% endfor %}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Page Header -->
+<div class="page-header">
+    <button class="back-btn" onclick="window.history.back()">&#8592;</button>
+    <h1 class="page-title">{% trans "DAYS" %}</h1>
+    <div class="header-spacer"></div>
+</div>
+
+<div class="container">
+
+    <!-- Week Hero -->
+    <div class="week-hero">
+        <div class="week-hero-inner">
+            <div class="week-badge">
+                <span class="week-badge-label">{% trans "Week" %}</span>
+                <span class="week-badge-num">{{ week.week_number }}</span>
+            </div>
+            <div class="week-hero-info">
+                <div class="week-hero-title">
+                    {% if week.title %}
+                        {{ week.title }}
+                    {% else %}
+                        {% blocktrans with num=week.week_number %}Week {{ num }}{% endblocktrans %}
+                    {% endif %}
+                </div>
+                <div class="week-hero-plan">{{ week.plan.title }} &bull; {{ week.plan.program.title }}</div>
+                <div class="week-hero-stats">
+                    <div class="hero-stat">
+                        <span class="hero-stat-icon">📅</span>
+                        <span>{{ workouts|length }} {% trans "Days" %}</span>
+                    </div>
+                    <div class="hero-stat">
+                        <span class="hero-stat-icon">✅</span>
+                        <span>{{ completed_workout_ids|length }} {% trans "Done" %}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Progress -->
+    {% if workouts %}
+    <div class="progress-section">
+        <div class="progress-header">
+            <span class="progress-label">{% trans "Weekly Progress" %}</span>
+            <span class="progress-value">{{ completed_workout_ids|length }} / {{ workouts|length }}</span>
+        </div>
+        <div class="progress-bar-track">
+            {# JS bilan to'g'ri hisoblash uchun data-attr ishlatamiz #}
+            <div class="progress-bar-fill"
+                 id="progressFill"
+                 data-completed="{{ completed_workout_ids|length }}"
+                 data-total="{{ workouts|length }}"
+                 style="width: 0%">
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Days Section -->
+    <div class="section-title">{% trans "Training Days" %}</div>
+
+    <div class="days-list">
+        {% for workout in workouts %}
+            <a href="{% url 'workout_detail' workout.id %}"
+               class="day-card {% if workout.id in completed_workout_ids %}completed{% endif %}">
+
+                <!-- Day circle -->
+                <div class="day-circle">
+                    <span class="day-circle-label">{% trans "Day" %}</span>
+                    <span class="day-circle-num">{{ workout.day_number }}</span>
+                </div>
+
+                <!-- Content -->
+                <div class="day-content">
+                    <div class="day-name">
+                        {% if workout.title %}
+                            {{ workout.title }}
+                        {% else %}
+                            {% blocktrans with num=workout.day_number %}Day {{ num }}{% endblocktrans %}
+                        {% endif %}
+                    </div>
+                    <div class="day-meta">
+                        <span class="day-tag exercises">
+                            {{ workout.exercise_count }} {% trans "exercises" %}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Right side -->
+                <div class="day-right">
+                    {% if workout.id in completed_workout_ids %}
+                        <span class="completed-badge">✓ {% trans "Done" %}</span>
+                    {% else %}
+                        <span class="day-arrow">&#8250;</span>
+                    {% endif %}
+                </div>
+
+            </a>
+        {% empty %}
+            <div class="empty-state">
+                <div class="empty-icon">🏋️</div>
+                <h3>{% trans "No workouts yet" %}</h3>
+                <p>{% trans "This week has no training days configured" %}</p>
+            </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+<script>
+    // Progress bar animatsiyasi
+    document.addEventListener('DOMContentLoaded', function () {
+        const fill = document.getElementById('progressFill');
+        if (fill) {
+            const completed = parseInt(fill.dataset.completed) || 0;
+            const total = parseInt(fill.dataset.total) || 1;
+            const pct = Math.round((completed / total) * 100);
+            setTimeout(() => {
+                fill.style.width = pct + '%';
+            }, 300);
+        }
+    });
+</script>
+
+{% endblock %}

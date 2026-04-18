@@ -1,0 +1,567 @@
+<!-- templates/handbooks/items_list.html -->
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{{ subcategory.title }} - {% trans "Handbook" %}{% endblock %}
+
+{% block extra_css %}
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated particles background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(255, 215, 0, 0.05) 0%, transparent 50%),
+            radial-gradient(circle at 80% 80%, rgba(255, 107, 107, 0.05) 0%, transparent 50%),
+            radial-gradient(circle at 40% 90%, rgba(78, 205, 196, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Header */
+        .page-header {
+            background: linear-gradient(135deg, rgba(15, 52, 96, 0.95) 0%, rgba(22, 33, 62, 0.95) 100%);
+            backdrop-filter: blur(10px);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+        }
+
+        .back-btn {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1.5px solid rgba(255, 215, 0, 0.3);
+            color: #ffd700;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 10px;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: #ffd700;
+            transform: scale(1.05);
+        }
+
+        .back-btn:active {
+            background: rgba(255, 215, 0, 0.3);
+            transform: scale(0.95);
+        }
+
+        .page-title {
+            color: white;
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            max-width: calc(100% - 120px);
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .header-icon {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1.5px solid rgba(255, 215, 0, 0.3);
+            color: #ffd700;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 10px;
+        }
+
+        .header-icon:hover {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: #ffd700;
+            transform: scale(1.05);
+        }
+
+        .header-icon:active {
+            background: rgba(255, 215, 0, 0.3);
+            transform: scale(0.95);
+        }
+
+            .search-container {
+            padding: 16px;
+            background: transparent;
+            position: sticky;
+            top: 56px;
+            z-index: 99;
+        }
+
+        .search-wrapper {
+            position: relative;
+            max-width: 460px;
+            margin: 0 auto;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 16px 12px 44px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 215, 0, 0.5);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+        }
+
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 215, 0, 0.6);
+            font-size: 16px;
+            pointer-events: none;
+        }
+
+        .items-container {
+            position: relative;
+            max-width: 460px;
+            margin: 0 auto 100px auto;
+            width: 90%;
+            z-index: 1;
+            padding: 10px 0;
+        }
+
+
+            .item-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 14px;
+
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .item-card:hover {
+            transform: translateX(5px);
+        }
+
+        .item-card:active {
+            transform: translateX(3px) scale(0.98);
+        }
+
+        .item-image-wrapper {
+            width: 52px;
+            height: 52px;
+            flex-shrink: 0;
+            border-radius: 10px;
+            overflow: hidden;
+            {#background: rgba(255, 215, 0, 0.1);#}
+            {#border: 1px solid rgba(255, 215, 0, 0.2);#}
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .item-image {
+            width: 90%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .item-fallback {
+            font-size: 24px;
+            opacity: 0.6;
+        }
+
+        /* Item Info */
+        .item-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .item-title {
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        .item-subtitle {
+            color: rgba(255, 215, 0, 0.7);
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        /* Arrow Icon */
+        .item-arrow {
+            color: rgba(255, 215, 0, 0.5);
+            font-size: 20px;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+            filter: grayscale(100%);
+        }
+
+        .empty-state h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 600;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* No results state */
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .no-results-icon {
+            font-size: 40px;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
+        .no-results h3 {
+            font-size: 16px;
+            margin-bottom: 6px;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 500;
+        }
+
+        .no-results p {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* ===== RESPONSIVE - TABLET ===== */
+        @media (min-width: 500px) {
+            .page-title {
+                font-size: 18px;
+            }
+
+            .items-container {
+                max-width: 450px;
+            }
+
+            .item-card {
+                padding: 14px 16px;
+                margin-bottom: 12px;
+            }
+
+            .item-image-wrapper {
+                width: 56px;
+                height: 56px;
+            }
+
+            .item-title {
+                font-size: 16px;
+            }
+        }
+
+        /* ===== RESPONSIVE - DESKTOP ===== */
+        @media (min-width: 768px) {
+            .page-header {
+                padding: 14px 20px;
+            }
+
+            .page-title {
+                font-size: 19px;
+                letter-spacing: 2px;
+            }
+
+            .back-btn {
+                width: 36px;
+                height: 36px;
+                font-size: 22px;
+            }
+
+            .items-container {
+                max-width: 480px;
+            }
+
+            .item-card {
+                padding: 16px 18px;
+                margin-bottom: 14px;
+            }
+
+            .item-image-wrapper {
+                width: 60px;
+                height: 60px;
+            }
+
+            .item-title {
+                font-size: 17px;
+            }
+
+            .item-arrow {
+                font-size: 22px;
+            }
+        }
+
+        /* ===== VERY SMALL PHONES ===== */
+        @media (max-width: 360px) {
+            .page-title {
+                font-size: 14px;
+                letter-spacing: 0.5px;
+            }
+
+            .back-btn {
+                width: 28px;
+                height: 28px;
+                font-size: 18px;
+            }
+
+            .items-container {
+                max-width: 320px;
+                width: 92%;
+            }
+
+            .item-card {
+                padding: 10px 12px;
+                margin-bottom: 8px;
+                gap: 12px;
+            }
+
+            .item-image-wrapper {
+                width: 48px;
+                height: 48px;
+            }
+
+            .item-title {
+                font-size: 14px;
+            }
+
+            .item-arrow {
+                font-size: 18px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <!-- Header -->
+    <div class="page-header">
+        <button class="back-btn" onclick="goBack()">←</button>
+        <h1 class="page-title">
+            {% if subcategory.title_uz %}
+                {{ subcategory.title_uz }}
+            {% else %}
+                {{ subcategory.title }}
+            {% endif %}
+        </h1>
+        <div class="header-actions">
+            <button class="header-icon" onclick="toggleFilter()">🔍</button>
+        </div>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="search-container">
+        <div class="search-wrapper">
+            <span class="search-icon">🔍</span>
+            <input type="text"
+                   class="search-input"
+                   id="searchInput"
+                   placeholder="{% trans 'Search' %}..."
+                   autocomplete="off">
+        </div>
+    </div>
+
+    <!-- Items List -->
+    <div class="items-container" id="itemsContainer">
+        {% if items %}
+            {% for item in items %}
+                <a href="{% url 'handbook_item_detail' category.slug subcategory.slug item.slug %}"
+                   class="item-card"
+                   data-title="{{ item.title|lower }} {% if item.title_uz %}{{ item.title_uz|lower }}{% endif %}">
+                    <div class="item-image-wrapper">
+                        {% if item.image %}
+                            <img src="{{ item.image.url }}"
+                                 alt="{{ item.title }}"
+                                 class="item-image"
+                                 loading="lazy">
+                        {% else %}
+                            <div class="item-fallback">📄</div>
+                        {% endif %}
+                    </div>
+                    <div class="item-info">
+                        <div class="item-title">
+                            {% if item.title_uz %}
+                                {{ item.title_uz }}
+                            {% else %}
+                                {{ item.title }}
+                            {% endif %}
+                        </div>
+                        {% if item.subtitle %}
+                            <div class="item-subtitle">{{ item.subtitle }}</div>
+                        {% endif %}
+<<<<<<< codex/check-modified-code-for-issues-q9a89j
+
+                        <div class="item-meta">
+                            <span class="item-views">👁 {{ item.view_count }}</span>
+                        </div>
+=======
+>>>>>>> main
+                    </div>
+                    <div class="item-arrow">›</div>
+                </a>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">📚</div>
+                <h3>{% trans "Hozircha ma'lumot yo'q" %}</h3>
+                <p>{% trans "Tez orada qo'shiladi" %}</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- No Results Template (hidden by default) -->
+    <div class="no-results" id="noResults" style="display: none;">
+        <div class="no-results-icon">🔍</div>
+        <h3>{% trans "Hech narsa topilmadi" %}</h3>
+        <p>{% trans "Boshqa kalit so'z bilan qidiring" %}</p>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        // Telegram WebApp initialization
+        if (window.Telegram && window.Telegram.WebApp) {
+            const tg = window.Telegram.WebApp;
+            tg.ready();
+            tg.expand();
+
+            tg.BackButton.show();
+            tg.BackButton.onClick(() => {
+                window.history.back();
+            });
+        }
+
+        // Back button handler
+        function goBack() {
+            window.history.back();
+        }
+
+        // Filter toggle
+        function toggleFilter() {
+            const searchInput = document.getElementById('searchInput');
+            searchInput.focus();
+        }
+
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        const itemsContainer = document.getElementById('itemsContainer');
+        const noResults = document.getElementById('noResults');
+        const allItems = document.querySelectorAll('.item-card');
+
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase().trim();
+            let visibleCount = 0;
+
+            allItems.forEach(item => {
+                const title = item.getAttribute('data-title');
+
+                if (title.includes(searchTerm)) {
+                    item.style.display = 'flex';
+                    visibleCount++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            // Show/hide no results message
+            if (visibleCount === 0 && searchTerm !== '') {
+                itemsContainer.style.display = 'none';
+                noResults.style.display = 'block';
+            } else {
+                itemsContainer.style.display = 'block';
+                noResults.style.display = 'none';
+            }
+        });
+
+        // Touch feedback
+        document.querySelectorAll('.item-card').forEach(item => {
+            item.addEventListener('touchstart', function() {
+                this.style.transform = 'translateX(3px) scale(0.98)';
+            });
+            item.addEventListener('touchend', function() {
+                this.style.transform = '';
+            });
+        });
+    </script>
+{% endblock %}

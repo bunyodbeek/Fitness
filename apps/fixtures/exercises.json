@@ -1,0 +1,142 @@
+[
+  {
+    "model": "apps.exercise",
+    "pk": 1,
+    "fields": {
+      "created_at": "2025-11-16T12:57:08.082Z",
+      "updated_at": "2025-11-16T12:57:49.385Z",
+      "name": "Shuoulders with smthing",
+      "name_uz": "Shulouderlar bilan",
+      "primary_body_part": "shoulders",
+      "description": "zo'r va g;aroyib",
+      "thumbnail": "exercises/thumbnails/Market_AXRr1KS.jpg",
+      "video": "exercises/videos/zorvideo_jyGNwPD.MP4"
+    }
+  },
+  {
+    "model": "apps.exercise",
+    "pk": 2,
+    "fields": {
+      "created_at": "2025-11-17T11:05:43.486Z",
+      "updated_at": "2025-11-17T11:05:43.486Z",
+      "name": "Barbell Bench Press",
+      "name_uz": "Barbell dastgoh pressi",
+      "primary_body_part": "chest",
+      "description": "Each workout in the \"TRANSFORMATION\" program is adapted for all levels of physical fitness, helping to fully unlock your body's potential. We combine training types scientifically.",
+      "thumbnail": "exercises/thumbnails/arms.jpg",
+      "video": "exercises/videos/video.MOV"
+    }
+  },
+  {
+    "model": "apps.exercise",
+    "pk": 3,
+    "fields": {
+      "created_at": "2025-11-17T11:07:29.481Z",
+      "updated_at": "2025-11-17T11:07:29.481Z",
+      "name": "Dumbbell fly",
+      "name_uz": "Dumbbell fly",
+      "primary_body_part": "shoulders",
+      "description": "Each workout in the \"TRANSFORMATION\" program is adapted for all levels of physical fitness, helping to fully unlock your body's potential. We combine training types scientifically.",
+      "thumbnail": "exercises/thumbnails/fullbody.jpg",
+      "video": "exercises/videos/video-2.MOV"
+    }
+  },
+  {
+    "model": "apps.exercise",
+    "pk": 4,
+    "fields": {
+      "created_at": "2025-11-17T11:08:11.442Z",
+      "updated_at": "2025-11-17T11:08:11.442Z",
+      "name": "Push Up",
+      "name_uz": "Push Up",
+      "primary_body_part": "shoulders",
+      "description": "Each workout in the \"TRANSFORMATION\" program is adapted for all levels of physical fitness, helping to fully unlock your body's potential. We combine training types scientifically.",
+      "thumbnail": "exercises/thumbnails/abs.jpg",
+      "video": "exercises/videos/video_y951w5y.MOV"
+    }
+  },
+  {
+    "model": "apps.exercise",
+    "pk": 5,
+    "fields": {
+      "created_at": "2025-11-17T11:08:47.861Z",
+      "updated_at": "2025-11-17T11:08:47.861Z",
+      "name": "Dips",
+      "name_uz": "Dips",
+      "primary_body_part": "forearm",
+      "description": "Each workout in the \"TRANSFORMATION\" program is adapted for all levels of physical fitness, helping to fully unlock your body's potential. We combine training types scientifically.",
+      "thumbnail": "exercises/thumbnails/chest.jpeg",
+      "video": "exercises/videos/video_RPjV4lo.MOV"
+    }
+  },
+  {
+    "model": "apps.exercise",
+    "pk": 6,
+    "fields": {
+      "created_at": "2025-11-17T11:09:36.278Z",
+      "updated_at": "2025-11-17T11:09:36.278Z",
+      "name": "Tbar Row",
+      "name_uz": "Tbar Row",
+      "primary_body_part": "forearm",
+      "description": "Each workout in the \"TRANSFORMATION\" program is adapted for all levels of physical fitness, helping to fully unlock your body's potential. We combine training types scientifically.",
+      "thumbnail": "exercises/thumbnails/fullbody_5PDc7nz.jpg",
+      "video": "exercises/videos/video-2_2cli2bY.MOV"
+    }
+  },
+  {
+    "model": "apps.exercise",
+    "pk": 7,
+    "fields": {
+      "created_at": "2025-11-17T11:10:31.089Z",
+      "updated_at": "2025-11-17T11:10:31.089Z",
+      "name": "Pike Push Up",
+      "name_uz": "Pike Push Up",
+      "primary_body_part": "triceps",
+      "description": "Each workout in the \"TRANSFORMATION\" program is adapted for all levels of physical fitness, helping to fully unlock your body's potential. We combine training types scientifically.",
+      "thumbnail": "exercises/thumbnails/strong_man.jpeg",
+      "video": "exercises/videos/video-2_wA8P2j0.MOV"
+    }
+  },
+  {
+    "model": "apps.exercise",
+    "pk": 8,
+    "fields": {
+      "created_at": "2025-11-17T11:11:19.838Z",
+      "updated_at": "2025-11-17T11:11:19.838Z",
+      "name": "Arm Circles",
+      "name_uz": "Arm Circles",
+      "primary_body_part": "cardio",
+      "description": "Each workout in the \"TRANSFORMATION\" program is adapted for all levels of physical fitness, helping to fully unlock your body's potential. We combine training types scientifically.",
+      "thumbnail": "exercises/thumbnails/abs_pzrySrD.jpg",
+      "video": "exercises/videos/video_hVodMSF.MOV"
+    }
+  },
+  {
+    "model": "apps.exercise",
+    "pk": 9,
+    "fields": {
+      "created_at": "2025-11-17T11:12:06.156Z",
+      "updated_at": "2025-11-17T11:12:06.156Z",
+      "name": "Crunches",
+      "name_uz": "Crunches",
+      "primary_body_part": "calves",
+      "description": "Each workout in the \"TRANSFORMATION\" program is adapted for all levels of physical fitness, helping to fully unlock your body's potential. We combine training types scientifically.",
+      "thumbnail": "exercises/thumbnails/abs-2.jpeg",
+      "video": "exercises/videos/video-2_u3RiTg5.MOV"
+    }
+  },
+  {
+    "model": "apps.exercise",
+    "pk": 10,
+    "fields": {
+      "created_at": "2025-11-17T11:12:47.645Z",
+      "updated_at": "2025-11-17T11:12:47.645Z",
+      "name": "V Ups",
+      "name_uz": "V Ups",
+      "primary_body_part": "abs",
+      "description": "Each workout in the \"TRANSFORMATION\" program is adapted for all levels of physical fitness, helping to fully unlock your body's potential. We combine training types scientifically.",
+      "thumbnail": "exercises/thumbnails/chest_IxyvhXZ.jpeg",
+      "video": "exercises/videos/video-2_XIQvPcy.MOV"
+    }
+  }
+]

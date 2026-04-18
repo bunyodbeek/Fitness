@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Karta bilan to‘lov</title>
+
+    <style>
+        body {
+            margin: 0;
+            background: #f5f4ff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            padding: 30px 15px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 420px;
+            background: white;
+            padding: 25px;
+            border-radius: 18px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #2c2c2c;
+        }
+
+        .label {
+            font-size: 14px;
+            margin-bottom: 6px;
+            color: #555;
+        }
+
+        .input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            margin-bottom: 15px;
+            transition: 0.25s;
+        }
+
+        .input:focus {
+            border-color: #6e00ff;
+            outline: none;
+            background: #faf6ff;
+        }
+
+        .row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            width: 100%;
+            background: #6e00ff;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 17px;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 5px;
+        }
+
+        .btn:hover {
+            background: #5800ce;
+        }
+
+        .back {
+            text-align: center;
+            margin-top: 15px;
+            cursor: pointer;
+            color: #444;
+            font-size: 15px;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 480px) {
+            .container {
+                padding: 18px;
+            }
+            h2 {
+                font-size: 20px;
+            }
+            .btn {
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <h2>To‘lov / Karta Qo‘shish</h2>
+
+    <div>
+        <div class="label">Karta raqami</div>
+        <input type="text" id="cardNumber" maxlength="16" class="input"
+               placeholder="0000 0000 0000 0000" oninput="formatCard(this)">
+    </div>
+
+    <div class="row">
+        <div style="flex:1">
+            <div class="label">Amal qilish muddati</div>
+            <input type="text" id="expire" maxlength="5" class="input"
+                   placeholder="MM/YY" oninput="formatExpire(this)">
+        </div>
+
+        <div style="flex:1">
+            <div class="label">CVC</div>
+            <input type="text" id="cvc" maxlength="3" class="input"
+                   placeholder="123" oninput="onlyDigits(this)">
+        </div>
+    </div>
+
+    <button class="btn" onclick="purchase()">
+        To‘lovni amalga oshirish
+    </button>
+
+    <div class="back" onclick="history.back()">
+        ← Ortga qaytish
+    </div>
+
+</div>
+
+
+<script>
+    function onlyDigits(input) {
+        input.value = input.value.replace(/\D/g, "");
+    }
+
+    function formatCard(input) {
+        input.value = input.value
+            .replace(/\D/g, "")
+            .replace(/(.{4})/g, "$1 ")
+            .trim();
+    }
+
+    function formatExpire(input) {
+        input.value = input.value
+            .replace(/\D/g, "")
+            .replace(/(\d{2})(\d{0,2})/, "$1/$2");
+    }
+
+    function purchase() {
+        const card = document.getElementById("cardNumber").value.replace(/\s/g, "");
+        const exp = document.getElementById("expire").value;
+        const cvc = document.getElementById("cvc").value;
+
+        if (card.length !== 16) return alert("Karta raqami noto‘g‘ri!");
+        if (exp.length !== 5) return alert("Amal qilish muddati xato!");
+        if (cvc.length !== 3) return alert("CVC noto‘g‘ri!");
+
+        alert("To‘lov serverga yuborildi!");
+        // fetch("/api/payment", {method:"POST", body: JSON.stringify(...)})
+    }
+</script>
+
+</body>
+</html>

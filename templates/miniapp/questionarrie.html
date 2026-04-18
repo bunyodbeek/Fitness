@@ -1,0 +1,510 @@
+{% load i18n %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Fitness Questionnaire — Telegram WebApp</title>
+
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { height: 100%; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #2c3e50;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            width: 100%;
+            max-width: 640px;
+            background: linear-gradient(180deg, #213744 0%, #253744 100%);
+            border-radius: 12px;
+            padding: 22px;
+            box-shadow: 0 6px 30px rgba(0, 0, 0, 0.5);
+        }
+        .progress-bar {
+            height: 8px;
+            background: #34495e;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 22px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #f1c40f, #f39c12);
+            width: 0%;
+            transition: width .28s ease;
+        }
+        h1 { font-size: 22px; margin-bottom: 12px; text-align: center; }
+        .subtitle { color: #f1c40f; text-align: center; margin-bottom: 18px; font-size: 13px; }
+        .question { display: none; }
+        .question.active { display: block; }
+        .options { display: flex; flex-direction: column; gap: 12px; }
+        .option-btn {
+            background: #f1c40f;
+            color: #2c3e50;
+            border: none;
+            padding: 14px 16px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform .12s ease, background .12s ease;
+            text-align: center;
+        }
+        .option-btn:hover { transform: translateY(-3px); }
+        .option-btn.selected { background: #2ecc71; color: #fff; transform: none; }
+        .option-btn.outline {
+            background: transparent;
+            border: 2px solid #f1c40f;
+            color: #f1c40f;
+            font-weight: 600;
+        }
+        .option-btn.outline.selected { background: #f1c40f; color: #2c3e50; }
+        .weight-input {
+            background: #34495e;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            color: white;
+            font-size: 40px;
+            text-align: center;
+            margin: 18px 0;
+            width: 100%;
+        }
+        .unit { text-align: center; color: #95a5a6; margin-bottom: 14px; }
+        .final-screen { text-align: center; padding: 18px; }
+        .badge {
+            width: 180px;
+            height: 180px;
+            margin: 18px auto;
+            border: 4px solid #f1c40f;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            background: rgba(0, 0, 0, 0.08);
+        }
+        .badge h2 {
+            font-size: 20px;
+            color: #f1c40f;
+            text-transform: uppercase;
+            text-align: center;
+            line-height: 1.05;
+        }
+        .stats { font-size: 30px; font-weight: 700; color: #f1c40f; margin-top: 12px; }
+        .continue-btn {
+            background: #f1c40f;
+            color: #2c3e50;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 14px;
+        }
+        @media (min-width: 720px) {
+            h1 { font-size: 26px; }
+            .option-btn { font-size: 16px; padding: 16px; }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container" role="main">
+    <div class="progress-bar" aria-hidden="true">
+        <div id="progress" class="progress-fill"></div>
+    </div>
+
+    <!-- Step 1 -->
+    <div class="question active" data-step="1">
+        <h1>{% trans "Choose your language" %}</h1>
+        <div class="options" id="languageOptions">
+            <button class="option-btn" data-value="uz">{% trans "O‘zbekcha" %}</button>
+            <button class="option-btn" data-value="ru">{% trans "Русский" %}</button>
+            <button class="option-btn" data-value="en">{% trans "English" %}</button>
+        </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="question" data-step="2">
+        <h1>{% trans "Where will you train?" %}</h1>
+        <div class="options" id="workoutTypeOptions">
+            <button class="option-btn" data-value="gym">{% trans "Gym" %}</button>
+            <button class="option-btn" data-value="home">{% trans "Home" %}</button>
+        </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="question" data-step="3">
+        <h1>{% trans "Let's start with the basics" %}</h1>
+        <div class="options" id="genderOptions">
+            <button class="option-btn" data-value="male">{% trans "Male" %}</button>
+            <button class="option-btn" data-value="female">{% trans "Female" %}</button>
+        </div>
+    </div>
+
+    <!-- Step 4 -->
+    <div class="question" data-step="4">
+        <h1>{% trans "How would you describe your gym experience?" %}</h1>
+        <div class="options" id="expOptions">
+            <button class="option-btn" data-value="beginner">
+                {% trans "Beginner" %}<br><small style="font-weight:400; color:#1e272e">{% trans "Training for less than 6 mos" %}</small>
+            </button>
+            <button class="option-btn" data-value="intermediate">
+                {% trans "Intermediate" %}<br><small style="font-weight:400; color:#1e272e">{% trans "Training for 6 mos - 2 yrs" %}</small>
+            </button>
+            <button class="option-btn" data-value="advanced">
+                {% trans "Advanced" %}<br><small style="font-weight:400; color:#1e272e">{% trans "Training for more than 2 yrs" %}</small>
+            </button>
+        </div>
+    </div>
+
+    <!-- Step 5 -->
+    <div class="question" data-step="5">
+        <h1>{% trans "What's your current fitness objective?" %}</h1>
+        <div class="options" id="goalOptions">
+            <button class="option-btn" data-value="build_body">{% trans "Build a great body" %}</button>
+            <button class="option-btn" data-value="lose_weight">{% trans "Lose weight" %}</button>
+            <button class="option-btn" data-value="gain_muscle">{% trans "Gain muscle" %}</button>
+            <button class="option-btn" data-value="get_shape">{% trans "Get in shape" %}</button>
+        </div>
+    </div>
+
+    <!-- Step 6 -->
+    <div class="question" data-step="6">
+        <h1>{% trans "What drives you most to work out?" %}</h1>
+        <p class="subtitle">{% trans "You can choose more than one" %}</p>
+        <div class="options" id="motivationOptions">
+            <button class="option-btn outline" data-value="healthy_lifestyle">{% trans "I want a healthy lifestyle" %}</button>
+            <button class="option-btn outline" data-value="improve_physique">{% trans "Improve my physique" %}</button>
+            <button class="option-btn outline" data-value="get_stronger">{% trans "Get stronger every day" %}</button>
+            <button class="option-btn outline" data-value="good_challenge">{% trans "I like a good challenge" %}</button>
+        </div>
+        <div style="text-align:center; margin-top:12px;">
+            <button class="option-btn" id="motivationContinue">{% trans "Continue" %}</button>
+        </div>
+    </div>
+
+    <!-- Step 7 -->
+    <div class="question" data-step="7">
+        <h1>{% trans "How many days per week would you like to work out?" %}</h1>
+        <div class="options" id="daysOptions">
+            <button class="option-btn" data-value="2">{% trans "2 days" %}</button>
+            <button class="option-btn" data-value="3">{% trans "3 days" %}</button>
+            <button class="option-btn" data-value="4">{% trans "4 days" %}</button>
+        </div>
+    </div>
+
+    <!-- Step 8 -->
+    <div class="question" data-step="8">
+        <h1>{% trans "What's your weight?" %}</h1>
+        <input id="weightInput" type="number" class="weight-input" placeholder="63" value="63" min="30" max="250"/>
+        <div class="unit">{% trans "Kilograms" %}</div>
+        <div style="text-align:center;">
+            <button class="option-btn" id="weightNext">{% trans "Next" %}</button>
+        </div>
+    </div>
+
+    <!-- Step 9 -->
+    <div class="question" data-step="9">
+        <div class="final-screen">
+            <h1>{% trans "Ready to crush your goal?" %}</h1>
+            <div class="badge">
+                <h2 id="finalGoal">BUILD A<br>GREAT BODY</h2>
+            </div>
+            <div class="stats" id="finalStats">15,227,894</div>
+            <p style="color:#dfe6e9; margin-top:8px">{% trans "Users just like you match your profile, and reach their goal!" %}</p>
+            <button class="continue-btn" id="submitBtn">{% trans "Build My Plan" %}</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ---------------- CSRF helper (Django) ----------------
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return null;
+    }
+    const csrfToken = getCookie('csrftoken');
+
+    // ---------------- Telegram init ----------------
+    const tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
+    if (tg) { try { tg.expand(); } catch(e){} }
+
+    const telegramUser = tg?.initDataUnsafe?.user || null;
+
+    // ---------------- Form data ----------------
+    const formData = {
+        telegram_id: telegramUser?.id || null,
+        first_name: telegramUser?.first_name || '',
+        last_name: telegramUser?.last_name || '',
+        username: telegramUser?.username || '',
+        photo_url: telegramUser?.photo_url || '',
+        gender: '',
+        experience: '',
+        goal: '',
+        motivation: [],
+        days: '',
+        weight: Number(document.getElementById('weightInput')?.value || 63),
+        workout_type: ''
+    };
+
+    // -------------- Auto telegram auth (fix url) --------------
+    document.addEventListener("DOMContentLoaded", async () => {
+        const telegramId = tg?.initDataUnsafe?.user?.id;
+        if (!telegramId) return;
+
+        try {
+            const res = await fetch('{% url "telegram_auth" %}', {
+                method: "POST",
+                headers: {"Content-Type": "application/json", ...(csrfToken ? {"X-CSRFToken": csrfToken} : {})},
+                credentials: "include",
+                body: JSON.stringify({ telegram_id: telegramId })
+            });
+
+            const data = await res.json();
+
+            if (data.onboarding_completed) {
+                window.location.href = data.redirect;
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    });
+
+    // ---------------- Steps ----------------
+    const totalSteps = 9;
+    let currentStep = 1;
+
+    function updateProgress() {
+        const pct = Math.round((currentStep / totalSteps) * 100);
+        const fill = document.getElementById('progress');
+        if (fill) fill.style.width = pct + '%';
+    }
+
+    function showStep(step) {
+        const prev = document.querySelector('.question.active');
+        if (prev) prev.classList.remove('active');
+
+        const next = document.querySelector(`.question[data-step="${step}"]`);
+        if (next) next.classList.add('active');
+
+        currentStep = step;
+        updateProgress();
+    }
+
+    function nextStep() {
+        if (currentStep >= totalSteps) return;
+        showStep(currentStep + 1);
+    }
+
+    function singleSelect(groupRoot, value) {
+        const buttons = groupRoot.querySelectorAll('.option-btn');
+        buttons.forEach(btn => {
+            if (btn.dataset.value === value) btn.classList.add('selected');
+            else btn.classList.remove('selected');
+        });
+    }
+
+    function wireSingleGroup(containerId, fieldName, autoNext = true) {
+        const root = document.getElementById(containerId);
+        if (!root) return;
+
+        root.addEventListener('click', async (e) => {
+            const btn = e.target.closest('.option-btn');
+            if (!btn) return;
+
+            const value = btn.dataset.value;
+            if (!value) return;
+
+            formData[fieldName] = value;
+            singleSelect(root, value);
+
+            // save mode to session ASAP
+            if (fieldName === 'workout_type') {
+                try {
+                    await fetch('{% url "workout_type_select" %}', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json', ...(csrfToken ? {"X-CSRFToken": csrfToken} : {})},
+                        credentials: "include",
+                        body: JSON.stringify({workout_type: value})
+                    });
+                } catch (err) {
+                    console.error('Workout type save error:', err);
+                }
+            }
+
+            if (fieldName === 'goal') {
+                document.getElementById('finalGoal').innerHTML = value.replace(/_/g, ' ').toUpperCase();
+            }
+
+            if (autoNext) setTimeout(nextStep, 180);
+        });
+    }
+
+    async function selectLanguageAndRefresh(languageCode) {
+        try {
+            await fetch('{% url "language_select" %}', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json', ...(csrfToken ? {"X-CSRFToken": csrfToken} : {})},
+                credentials: 'include',
+                body: JSON.stringify({ language: languageCode })
+            });
+        } catch (err) {
+            console.error('Language save error:', err);
+        }
+
+        const cleanPath = window.location.pathname.replace(/^\/(uz|ru|en)(\/|$)/, '/');
+        window.location.href = `/${languageCode}${cleanPath}?lang_selected=1`;
+    }
+
+    (function wireLanguageGroup() {
+        const root = document.getElementById('languageOptions');
+        if (!root) return;
+
+        root.addEventListener('click', async (e) => {
+            const btn = e.target.closest('.option-btn');
+            if (!btn) return;
+
+            const languageCode = btn.dataset.value;
+            if (!languageCode) return;
+
+            await selectLanguageAndRefresh(languageCode);
+        });
+    })();
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('lang_selected') === '1') {
+        showStep(2);
+        params.delete('lang_selected');
+        const query = params.toString();
+        const newUrl = `${window.location.pathname}${query ? `?${query}` : ''}`;
+        window.history.replaceState({}, '', newUrl);
+    }
+
+    wireSingleGroup('workoutTypeOptions', 'workout_type', true);
+    wireSingleGroup('genderOptions', 'gender', true);
+    wireSingleGroup('expOptions', 'experience', true);
+    wireSingleGroup('goalOptions', 'goal', true);
+    wireSingleGroup('daysOptions', 'days', true);
+
+    // -------- Multi-select motivation --------
+    (function wireMultiMotivation() {
+        const root = document.getElementById('motivationOptions');
+        if (!root) return;
+
+        root.addEventListener('click', (e) => {
+            const btn = e.target.closest('.option-btn');
+            if (!btn) return;
+
+            const value = btn.dataset.value;
+            if (!value) return;
+
+            const idx = formData.motivation.indexOf(value);
+            if (idx === -1) {
+                formData.motivation.push(value);
+                btn.classList.add('selected');
+            } else {
+                formData.motivation.splice(idx, 1);
+                btn.classList.remove('selected');
+            }
+        });
+
+        document.getElementById('motivationContinue').addEventListener('click', () => {
+            if (!formData.motivation.length) {
+                if (tg && tg.showAlert) tg.showAlert('{% trans "Please select at least one option" %}');
+                else alert('{% trans "Please select at least one option" %}');
+                return;
+            }
+            nextStep();
+        });
+    })();
+
+    // -------- Weight --------
+    const weightInput = document.getElementById('weightInput');
+    if (weightInput) {
+        weightInput.addEventListener('input', (e) => {
+            const v = Number(e.target.value || 0);
+            if (!isNaN(v)) formData.weight = v;
+        });
+
+        document.getElementById('weightNext').addEventListener('click', () => {
+            const w = Number(weightInput.value || 0);
+            if (!w || w < 30 || w > 300) {
+                if (tg && tg.showAlert) tg.showAlert('{% trans "Please enter a valid weight (30 - 300 kg)." %}');
+                else alert('{% trans "Please enter a valid weight (30 - 300 kg)." %}');
+                return;
+            }
+            formData.weight = w;
+            nextStep();
+        });
+    }
+
+    // -------- Submit --------
+    async function submitQuestionnaire() {
+        if (!formData.telegram_id) {
+            if (tg && tg.showAlert) tg.showAlert('{% trans "Error: Telegram ID not found. Please restart the bot." %}');
+            else alert('{% trans "Error: Telegram ID not found. Please restart the bot." %}');
+            return;
+        }
+
+        try {
+            if (tg && tg.MainButton) {
+                tg.MainButton.setText('{% trans "Submitting..." %}');
+                try { tg.MainButton.showProgress(); } catch (e) {}
+                try { tg.MainButton.show(); } catch (e) {}
+            }
+        } catch (e) {}
+
+        try {
+            const res = await fetch('{% url "questionnaire_submit" %}', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json', ...(csrfToken ? {"X-CSRFToken": csrfToken} : {})},
+                credentials: "include",
+                body: JSON.stringify(formData)
+            });
+
+            const data = await res.json().catch(() => ({}));
+
+            try { if (tg && tg.MainButton && tg.MainButton.hideProgress) tg.MainButton.hideProgress(); } catch(e){}
+
+            // accept success formats: {success:true} or {ok:true}
+            const isOk = (data && (data.success === true || data.ok === true));
+
+            if (isOk) {
+                // backend should return redirect_url based on session workout_type
+                const redirectUrl = data.redirect_url || (formData.workout_type === 'home' ? "{% url 'home_program_list' %}" : "{% url 'program_list' %}");
+                window.location.href = redirectUrl;
+                return;
+            }
+
+            const errMsg = data && (data.error || data.detail) ? (data.error || data.detail) : '{% trans "Unknown error from server" %}';
+            if (tg && tg.showAlert) tg.showAlert('{% trans "Error:" %} ' + errMsg);
+            else alert('{% trans "Error:" %} ' + errMsg);
+
+        } catch (err) {
+            try { if (tg && tg.MainButton && tg.MainButton.hideProgress) tg.MainButton.hideProgress(); } catch(e){}
+            if (tg && tg.showAlert) tg.showAlert('{% trans "Network error. Please try again." %}');
+            else alert('{% trans "Network error. Please try again." %}');
+            console.error('Network error submitting questionnaire:', err);
+        }
+    }
+
+    document.getElementById('submitBtn').addEventListener('click', submitQuestionnaire);
+
+    updateProgress();
+</script>
+</body>
+</html>

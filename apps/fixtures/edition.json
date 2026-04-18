@@ -1,0 +1,101 @@
+[
+{
+  "model": "apps.edition",
+  "pk": 1,
+  "fields": {
+    "program": 1,
+    "title": "Machine Focus",
+    "order": "1",
+    "duration_weeks": "2",
+    "days_per_week": "3"
+  }
+},
+{
+  "model": "apps.edition",
+  "pk": 2,
+  "fields": {
+    "program": 1,
+    "title": "Adding dumbbels to your mix",
+    "order": "2",
+    "duration_weeks": "3",
+    "days_per_week": "3"
+  }
+},
+{
+  "model": "apps.edition",
+  "pk": 3,
+  "fields": {
+    "program": 2,
+    "title": "Own your body",
+    "order": "1",
+    "duration_weeks": "2",
+    "days_per_week": "3"
+  }
+},
+{
+  "model": "apps.edition",
+  "pk": 4,
+  "fields": {
+    "program": 3,
+    "title": "Complex Exercises",
+    "order": "2",
+    "duration_weeks": "3",
+    "days_per_week": "3"
+  }
+},
+{
+  "model": "apps.edition",
+  "pk": 5,
+  "fields": {
+    "program": 4,
+    "title": "Superset all around",
+    "order": "1",
+    "duration_weeks": "2",
+    "days_per_week": "3"
+  }
+},
+{
+  "model": "apps.edition",
+  "pk": 6,
+  "fields": {
+    "program": 5,
+    "title": "full body burn",
+    "order": "1",
+    "duration_weeks": "2",
+    "days_per_week": "3"
+  }
+},
+{
+  "model": "apps.edition",
+  "pk": 7,
+  "fields": {
+    "program": 6,
+    "title": "Get big with supersets",
+    "order": "1",
+    "duration_weeks": "2",
+    "days_per_week": "3"
+  }
+},
+{
+  "model": "apps.edition",
+  "pk": 8,
+  "fields": {
+    "program": 7,
+    "title": "High sets, low reps",
+    "order": "1",
+    "duration_weeks": "2",
+    "days_per_week": "3"
+  }
+},
+{
+  "model": "apps.edition",
+  "pk": 9,
+  "fields": {
+    "program": 8,
+    "title": "Barbells & cables",
+    "order": "1",
+    "duration_weeks": "3",
+    "days_per_week": "3"
+  }
+}
+]

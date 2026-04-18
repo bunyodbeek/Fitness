@@ -1,0 +1,30 @@
+# 1. Python kesh fayllari (Hech qachon kerak emas)
+__pycache__/
+*.py[cod]
+*$py.class
+
+# 2. Virtual Muhit (Juda og'ir, har bir kompyuterda alohida bo'ladi)
+venv/
+.venv/
+env/
+ENV/
+
+# 3. Maxfiy ma'lumotlar (Buni aslo Git'ga chiqarmang!)
+.env
+db.sqlite3
+secrets.json
+
+# 4. Media va Static (Rasmlar va yig'ilgan static fayllar)
+# Serverda foydalanuvchilar yuklagan rasmlar Git'da bo'lmasligi shart
+media/
+static/
+staticfiles/
+
+# 5. IDE va Tizim fayllari
+.vscode/
+.idea/
+.DS_Store
+*.swp
+
+# 6. Loglar
+*.log

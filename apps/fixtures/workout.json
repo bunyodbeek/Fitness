@@ -1,0 +1,101 @@
+[
+  {
+    "model": "apps.Workout",
+    "pk": 1,
+    "fields": {
+      "created_at": "2025-11-16T12:58:34.435Z",
+      "updated_at": "2025-11-16T12:58:34.435Z",
+      "edition": 1,
+      "day_number": 1,
+      "title": "Day 1"
+    }
+  },
+  {
+    "model": "apps.Workout",
+    "pk": 2,
+    "fields": {
+      "created_at": "2025-11-17T11:13:21.977Z",
+      "updated_at": "2025-11-17T11:13:21.977Z",
+      "edition": 2,
+      "day_number": 1,
+      "title": "Day 1"
+    }
+  },
+  {
+    "model": "apps.Workout",
+    "pk": 3,
+    "fields": {
+      "created_at": "2025-11-17T11:13:35.520Z",
+      "updated_at": "2025-11-17T11:13:35.520Z",
+      "edition": 3,
+      "day_number": 1,
+      "title": "Day 1"
+    }
+  },
+  {
+    "model": "apps.Workout",
+    "pk": 4,
+    "fields": {
+      "created_at": "2025-11-17T11:13:47.721Z",
+      "updated_at": "2025-11-17T11:13:47.721Z",
+      "edition": 4,
+      "day_number": 1,
+      "title": "Day 1"
+    }
+  },
+  {
+    "model": "apps.Workout",
+    "pk": 5,
+    "fields": {
+      "created_at": "2025-11-17T11:13:59.021Z",
+      "updated_at": "2025-11-17T11:13:59.021Z",
+      "edition": 5,
+      "day_number": 1,
+      "title": "Day 1"
+    }
+  },
+  {
+    "model": "apps.Workout",
+    "pk": 6,
+    "fields": {
+      "created_at": "2025-11-17T11:14:11.557Z",
+      "updated_at": "2025-11-17T11:14:11.557Z",
+      "edition": 6,
+      "day_number": 1,
+      "title": "Day 1"
+    }
+  },
+  {
+    "model": "apps.Workout",
+    "pk": 7,
+    "fields": {
+      "created_at": "2025-11-17T11:14:22.393Z",
+      "updated_at": "2025-11-17T11:14:22.393Z",
+      "edition": 7,
+      "day_number": 1,
+      "title": "Day 1"
+    }
+  },
+  {
+    "model": "apps.Workout",
+    "pk": 8,
+    "fields": {
+      "created_at": "2025-11-17T11:14:35.055Z",
+      "updated_at": "2025-11-17T11:14:35.055Z",
+      "edition": 8,
+      "day_number": 1,
+      "title": "Day 1"
+    }
+  },
+  {
+    "model": "apps.Workout",
+    "pk": 9,
+    "fields": {
+      "created_at": "2025-11-17T11:14:50.901Z",
+      "updated_at": "2025-11-17T11:14:50.901Z",
+      "edition": 9,
+      "day_number": 1,
+      "title": "Day 1"
+    }
+  }
+]

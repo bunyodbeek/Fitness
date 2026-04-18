@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ma'lumotlarni O'zgartirish</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated background particles */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(255, 215, 0, 0.05) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(255, 107, 107, 0.05) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 90%, rgba(78, 205, 196, 0.05) 0%, transparent 50%);
+            animation: particleFloat 15s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes particleFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -30px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+
+        /* Header */
+        .page-header {
+            background: linear-gradient(135deg, rgba(15, 52, 96, 0.95) 0%, rgba(22, 33, 62, 0.95) 100%);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: #ffd700;
+            font-size: 32px;
+            cursor: pointer;
+            padding: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-weight: 900;
+        }
+
+        .back-btn:hover {
+            transform: translateX(-5px) scale(1.2);
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+        }
+
+        .page-title {
+            color: white;
+            font-size: 24px;
+            font-weight: 900;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            flex: 1;
+            text-align: center;
+            margin-right: 40px;
+            background: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+        }
+
+        /* Content */
+        .settings-content {
+            padding: 20px;
+            padding-bottom: 120px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Settings Group */
+        .settings-group {
+            background: linear-gradient(135deg,
+                rgba(255, 215, 0, 0.15) 0%,
+                rgba(255, 215, 0, 0.08) 100%);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 215, 0, 0.2);
+            border-radius: 25px;
+            padding: 15px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            animation: slideInLeft 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                inset 0 2px 8px rgba(255, 255, 255, 0.1);
+        }
+
+        /* Setting Item */
+        .setting-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 18px 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 18px;
+            position: relative;
+            overflow: hidden;
+            background: transparent;
+        }
+
+        .setting-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg,
+                transparent,
+                rgba(255, 215, 0, 0.1),
+                transparent);
+            transition: left 0.5s ease;
+        }
+
+        .setting-item:hover::before {
+            left: 100%;
+        }
+
+        .setting-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateX(8px);
+            padding-left: 18px;
+        }
+
+        .setting-item:active {
+            transform: translateX(4px) scale(0.98);
+        }
+
+        .setting-icon-wrapper {
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #ffd700 0%, #f39c12 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+            box-shadow:
+                0 0 20px rgba(255, 215, 0, 0.4),
+                inset 0 2px 8px rgba(255, 255, 255, 0.3);
+        }
+
+        .setting-item:hover .setting-icon-wrapper {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow:
+                0 0 30px rgba(255, 215, 0, 0.6),
+                inset 0 2px 12px rgba(255, 255, 255, 0.4);
+        }
+
+        .setting-icon {
+            font-size: 24px;
+            transition: transform 0.3s ease;
+        }
+
+        .setting-item:hover .setting-icon {
+            transform: scale(1.1);
+        }
+
+        .setting-text {
+            flex: 1;
+            font-size: 16px;
+            font-weight: 700;
+            color: white;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .setting-item:hover .setting-text {
+            color: #ffd700;
+        }
+
+        .setting-arrow {
+            font-size: 28px;
+            color: rgba(255, 215, 0, 0.6);
+            transition: all 0.3s ease;
+            font-weight: 900;
+        }
+
+        .setting-item:hover .setting-arrow {
+            color: #ffd700;
+            transform: translateX(8px) scale(1.2);
+        }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Modal Content */
+        .modal-content {
+            background: linear-gradient(135deg, #0f3460 0%, #16213e 100%);
+            width: 100%;
+            max-width: 600px;
+            border-radius: 30px 30px 0 0;
+            padding: 0;
+            position: relative;
+            box-shadow: 0 -10px 60px rgba(255, 215, 0, 0.3);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-bottom: none;
+            animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Modal Header */
+        .modal-header {
+            padding: 25px 20px;
+            border-bottom: 2px solid rgba(255, 215, 0, 0.2);
+            position: sticky;
+            top: 0;
+            background: linear-gradient(135deg, rgba(15, 52, 96, 0.98) 0%, rgba(22, 33, 62, 0.98) 100%);
+            backdrop-filter: blur(10px);
+            z-index: 10;
+            border-radius: 30px 30px 0 0;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 900;
+            text-align: center;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: #ffd700;
+            font-size: 32px;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-weight: 900;
+        }
+
+        .close-btn:hover {
+            transform: rotate(90deg) scale(1.2);
+            color: #ff6b6b;
+        }
+
+        /* Modal Body */
+        .modal-body {
+            padding: 30px 20px;
+        }
+
+        .modal-section {
+            background: linear-gradient(135deg,
+                rgba(255, 215, 0, 0.15) 0%,
+                rgba(255, 215, 0, 0.08) 100%);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 20px;
+            padding: 25px 20px;
+            margin-bottom: 20px;
+            box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                inset 0 2px 8px rgba(255, 255, 255, 0.1);
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 900;
+            color: white;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-align: center;
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .current-card-info {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .current-card-label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .current-card-number {
+            font-size: 18px;
+            font-weight: 900;
+            color: #ffd700;
+            letter-spacing: 2px;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 16px 20px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 15px;
+            font-size: 16px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 2px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #ffd700;
+            background: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+            letter-spacing: 1px;
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        /* Submit Button */
+        .submit-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #ffd700 0%, #f39c12 100%);
+            border: none;
+            border-radius: 15px;
+            font-size: 16px;
+            font-weight: 900;
+            color: #0a0e27;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow:
+                0 8px 20px rgba(255, 215, 0, 0.4),
+                inset 0 2px 8px rgba(255, 255, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .submit-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow:
+                0 12px 30px rgba(255, 215, 0, 0.6),
+                inset 0 2px 12px rgba(255, 255, 255, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(-1px);
+        }
+
+        /* Info Box */
+        .info-box {
+            background: rgba(78, 205, 196, 0.1);
+            border: 2px solid rgba(78, 205, 196, 0.3);
+            border-radius: 15px;
+            padding: 15px;
+            margin-top: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .info-icon {
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .info-text {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+        }
+
+        /* Error Message */
+        .error-message {
+            background: rgba(255, 107, 107, 0.2);
+            border: 2px solid rgba(255, 107, 107, 0.5);
+            border-radius: 12px;
+            padding: 12px 15px;
+            margin-top: 15px;
+            color: #ff6b6b;
+            font-size: 13px;
+            font-weight: 700;
+            text-align: center;
+            display: none;
+            animation: shake 0.5s ease;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 20px;
+                letter-spacing: 3px;
+            }
+
+            .modal-content {
+                border-radius: 25px 25px 0 0;
+            }
+
+            .modal-header {
+                border-radius: 25px 25px 0 0;
+            }
+
+            .modal-title {
+                font-size: 18px;
+            }
+
+            .input-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-header">
+        <button class="back-btn" onclick="window.history.back()">‹</button>
+        <h1 class="page-title">MA'LUMOTLAR</h1>
+    </div>
+
+    <div class="settings-content">
+        <div class="settings-group">
+            <div class="setting-item" onclick="openModal()">
+                <div class="setting-icon-wrapper"><div class="setting-icon">💳</div></div>
+                <div class="setting-text">Karta raqamini o'zgartirish</div>
+                <div class="setting-arrow">›</div>
+            </div>
+            <div class="setting-item" onclick="alert('Akkaunt sozlamalari')">
+                <div class="setting-icon-wrapper"><div class="setting-icon">👤</div></div>
+                <div class="setting-text">Akkaunt sozlamalari</div>
+                <div class="setting-arrow">›</div>
+            </div>
+            <div class="setting-item" onclick="alert('Parol o\'zgartirish')">
+                <div class="setting-icon-wrapper"><div class="setting-icon">🔒</div></div>
+                <div class="setting-text">Parol o'zgartirish</div>
+                <div class="setting-arrow">›</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="cardModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Karta ma'lumotlarini o'zgartirish</h2>
+                <button class="close-btn" onclick="closeModal()">×</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="modal-section">
+                    <h3 class="section-title">Sizning hozirgi kartangiz</h3>
+                    <div class="current-card-info">
+                        <div class="current-card-label">Aktiv obuna toplimadi</div>
+                        <div class="current-card-number" id="currentCard">**** **** **** ****</div>
+                    </div>
+
+                    <form id="cardUpdateForm">
+                        <div class="form-group">
+                            <label class="form-label">To'lov usulini yangilash</label>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Karta raqami</label>
+                            <input
+                                type="text"
+                                class="form-input"
+                                id="cardNumber"
+                                placeholder="0000 0000 0000 0000"
+                                maxlength="19"
+                                required
+                            >
+                        </div>
+
+                        <div class="input-row">
+                            <div class="form-group">
+                                <label class="form-label">Amal qilish muddati</label>
+                                <input
+                                    type="text"
+                                    class="form-input"
+                                    id="expiryDate"
+                                    placeholder="MM/YY"
+                                    maxlength="5"
+                                    required
+                                >
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">CVV</label>
+                                <input
+                                    type="password"
+                                    class="form-input"
+                                    id="cvv"
+                                    placeholder="***"
+                                    maxlength="3"
+                                    required
+                                >
+                            </div>
+                        </div>
+
+                        <div class="error-message" id="errorMessage">
+                            Неизвестный тип карты
+                        </div>
+
+                        <button type="submit" class="submit-btn">
+                            <span style="position: relative; z-index: 1;">Tasdiqlash va kodini olish</span>
+                        </button>
+
+                        <div class="info-box">
+                            <div class="info-icon">ℹ️</div>
+                            <div class="info-text">
+                                Xavfsizlik maqsadida sizning bank kartangiz ma'lumotlari Click xizmatining serverlarida saqlanadi. Sizning shaxsingizga oid hech qanday ma'lumot saqlanmaydi. Click ofertasi
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const modal = document.getElementById('cardModal');
+        const cardNumberInput = document.getElementById('cardNumber');
+        const expiryDateInput = document.getElementById('expiryDate');
+        const cvvInput = document.getElementById('cvv');
+        const errorMessage = document.getElementById('errorMessage');
+        const cardUpdateForm = document.getElementById('cardUpdateForm');
+
+        function openModal() {
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+            errorMessage.classList.remove('show');
+        }
+
+        // Close modal when clicking outside
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+
+        // Card number formatting
+        cardNumberInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\s/g, '');
+            let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+            e.target.value = formattedValue;
+        });
+
+        // Expiry date formatting
+        expiryDateInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.slice(0, 2) + '/' + value.slice(2, 4);
+            }
+            e.target.value = value;
+        });
+
+        // CVV - only numbers
+        cvvInput.addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/\D/g, '');
+        });
+
+        // Form submission
+        cardUpdateForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const cardNumber = cardNumberInput.value.replace(/\s/g, '');
+            const expiryDate = expiryDateInput.value;
+            const cvv = cvvInput.value;
+
+            // Basic validation
+            if (cardNumber.length !== 16) {
+                showError('Karta raqami 16 ta raqamdan iborat bo\'lishi kerak');
+                return;
+            }
+
+            if (expiryDate.length !== 5 || !expiryDate.includes('/')) {
+                showError('Amal qilish muddati noto\'g\'ri formatda');
+                return;
+            }
+
+            if (cvv.length !== 3) {
+                showError('CVV 3 ta raqamdan iborat bo\'lishi kerak');
+                return;
+            }
+
+            // Simulate card validation
+            if (cardNumber.startsWith('6782')) {
+                showError('Неизвестный тип карты');
+            } else {
+                // Success
+                document.getElementById('currentCard').textContent =
+                    '**** **** **** ' + cardNumber.slice(-4);
+
+                setTimeout(() => {
+                    alert('Karta muvaffaqiyatli yangilandi! ✅');
+                    closeModal();
+                    cardUpdateForm.reset();
+                }, 500);
+            }
+        });
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.add('show');
+
+            setTimeout(() => {
+                errorMessage.classList.remove('show');
+            }, 4000);
+        }
+    </script>
+</body>
+</html>

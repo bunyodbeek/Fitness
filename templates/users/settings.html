@@ -1,0 +1,641 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}Settings{% endblock %}
+
+{% block extra_css %}
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated particles background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(255, 215, 0, 0.05) 0%, transparent 50%),
+            radial-gradient(circle at 80% 80%, rgba(255, 107, 107, 0.05) 0%, transparent 50%),
+            radial-gradient(circle at 40% 90%, rgba(78, 205, 196, 0.05) 0%, transparent 50%);
+            animation: particleFloat 15s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes particleFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -30px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+
+        /* ===== COMPACT HEADER ===== */
+        .page-header {
+            background: linear-gradient(135deg, rgba(15, 52, 96, 0.95) 0%, rgba(22, 33, 62, 0.95) 100%);
+            backdrop-filter: blur(10px);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: #ffd700;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-weight: 700;
+        }
+
+        .back-btn:hover {
+            transform: translateX(-3px) scale(1.1);
+        }
+
+        .page-title {
+            color: white;
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            flex: 1;
+            text-align: center;
+            background: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-spacer {
+            width: 32px;
+        }
+
+        /* ===== CONTAINER ===== */
+        .container {
+            padding: 16px 12px;
+            padding-bottom: 90px;
+            position: relative;
+            z-index: 1;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* ===== SUBSCRIPTION CARD ===== */
+        .subscription-card {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.12) 0%, rgba(255, 215, 0, 0.06) 100%);
+            backdrop-filter: blur(10px);
+            border-radius: 14px;
+            padding: 20px 16px;
+            margin-bottom: 20px;
+            text-align: center;
+            border: 1.5px solid rgba(255, 215, 0, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            animation: fadeIn 0.6s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .subscription-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255, 215, 0, 0.4);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.15);
+        }
+
+        .subscription-label {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .subscription-days {
+            font-size: 32px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ffd700 0%, #f39c12 100%);
+            border-radius: 10px;
+            transition: width 0.8s ease;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+        }
+
+        /* ===== MENU SECTION ===== */
+        .menu-section {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .section-title {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 16px 0 8px 4px;
+        }
+
+        .menu-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
+            backdrop-filter: blur(10px);
+            border-radius: 14px;
+            padding: 12px 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border: 1.5px solid rgba(255, 215, 0, 0.15);
+            animation: slideInUp 0.5s ease backwards;
+        }
+
+        .menu-card:nth-child(1) { animation-delay: 0.05s; }
+        .menu-card:nth-child(2) { animation-delay: 0.1s; }
+        .menu-card:nth-child(3) { animation-delay: 0.15s; }
+        .menu-card:nth-child(4) { animation-delay: 0.2s; }
+        .menu-card:nth-child(5) { animation-delay: 0.25s; }
+        .menu-card:nth-child(6) { animation-delay: 0.3s; }
+        .menu-card:nth-child(7) { animation-delay: 0.35s; }
+        .menu-card:nth-child(8) { animation-delay: 0.4s; }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .menu-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(255, 215, 0, 0.4);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.15);
+        }
+
+        .menu-card:active {
+            transform: translateY(-1px) scale(0.99);
+        }
+
+        .menu-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .menu-icon-wrapper {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #ffd700 0%, #f39c12 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .menu-card:hover .menu-icon-wrapper {
+            transform: scale(1.08);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+        }
+
+        .menu-icon {
+            font-size: 18px;
+        }
+
+        .menu-text-wrapper {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .menu-text {
+            font-size: 14px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 2px;
+            letter-spacing: 0.5px;
+        }
+
+        .menu-subtitle {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.5);
+            letter-spacing: 0.3px;
+        }
+
+        .menu-arrow {
+            font-size: 20px;
+            color: rgba(255, 215, 0, 0.5);
+            transition: all 0.3s ease;
+            font-weight: 700;
+        }
+
+        .menu-card:hover .menu-arrow {
+            color: #ffd700;
+            transform: translateX(4px);
+        }
+
+        /* Logout Card Special */
+        .menu-card.logout .menu-icon-wrapper {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff4757 100%);
+            box-shadow: 0 0 15px rgba(255, 107, 107, 0.4);
+        }
+
+        .menu-card.logout:hover .menu-icon-wrapper {
+            box-shadow: 0 0 20px rgba(255, 107, 107, 0.6);
+        }
+
+        .menu-card.logout .menu-text {
+            color: #ff6b6b;
+        }
+
+        .menu-card.logout:hover {
+            border-color: rgba(255, 107, 107, 0.4);
+        }
+
+        /* ===== RESPONSIVE - TABLET ===== */
+        @media (min-width: 500px) {
+            .page-header {
+                padding: 14px 20px;
+            }
+
+            .page-title {
+                font-size: 18px;
+            }
+
+            .back-btn {
+                font-size: 26px;
+                width: 36px;
+                height: 36px;
+            }
+
+            .container {
+                padding: 20px 16px;
+            }
+
+            .subscription-card {
+                padding: 24px 20px;
+            }
+
+            .subscription-days {
+                font-size: 36px;
+            }
+
+            .menu-card {
+                padding: 14px 16px;
+            }
+
+            .menu-icon-wrapper {
+                width: 40px;
+                height: 40px;
+            }
+
+            .menu-icon {
+                font-size: 20px;
+            }
+
+            .menu-text {
+                font-size: 15px;
+            }
+
+            .menu-subtitle {
+                font-size: 12px;
+            }
+        }
+
+        /* ===== RESPONSIVE - DESKTOP ===== */
+        @media (min-width: 768px) {
+            .page-header {
+                padding: 16px 24px;
+            }
+
+            .page-title {
+                font-size: 20px;
+                letter-spacing: 4px;
+            }
+
+            .container {
+                padding: 24px 20px;
+            }
+
+            .subscription-card {
+                padding: 28px 24px;
+                border-radius: 16px;
+            }
+
+            .subscription-days {
+                font-size: 40px;
+            }
+
+            .menu-section {
+                gap: 12px;
+            }
+
+            .menu-card {
+                padding: 16px 18px;
+                border-radius: 16px;
+            }
+
+            .menu-icon-wrapper {
+                width: 44px;
+                height: 44px;
+                border-radius: 12px;
+            }
+
+            .menu-icon {
+                font-size: 22px;
+            }
+
+            .menu-text {
+                font-size: 16px;
+            }
+
+            .menu-subtitle {
+                font-size: 12px;
+            }
+
+            .menu-arrow {
+                font-size: 22px;
+            }
+        }
+
+        /* ===== VERY SMALL PHONES ===== */
+        @media (max-width: 360px) {
+            .page-header {
+                padding: 10px 12px;
+            }
+
+            .page-title {
+                font-size: 14px;
+                letter-spacing: 2px;
+            }
+
+            .back-btn {
+                font-size: 20px;
+                width: 28px;
+                height: 28px;
+            }
+
+            .container {
+                padding: 12px 10px;
+            }
+
+            .subscription-card {
+                padding: 16px 12px;
+                border-radius: 12px;
+            }
+
+            .subscription-days {
+                font-size: 28px;
+            }
+
+            .menu-section {
+                gap: 8px;
+            }
+
+            .menu-card {
+                padding: 10px 12px;
+                border-radius: 12px;
+            }
+
+            .menu-content {
+                gap: 10px;
+            }
+
+            .menu-icon-wrapper {
+                width: 32px;
+                height: 32px;
+                border-radius: 8px;
+            }
+
+            .menu-icon {
+                font-size: 16px;
+            }
+
+            .menu-text {
+                font-size: 13px;
+            }
+
+            .menu-subtitle {
+                font-size: 10px;
+            }
+
+            .menu-arrow {
+                font-size: 18px;
+            }
+        }
+
+        /* GPU Acceleration */
+        .menu-card,
+        .subscription-card,
+        .menu-icon-wrapper {
+            will-change: transform;
+        }
+
+        /* Reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <!-- Compact Header -->
+    <div class="page-header">
+        <button class="back-btn" onclick="window.location.href='{% url 'user_profile' %}'">‹</button>
+        <h1 class="page-title">⚙️ SETTINGS</h1>
+        <div class="header-spacer"></div>
+    </div>
+
+    <div class="container">
+        <!-- Subscription Card -->
+        <div class="subscription-card">
+            <div class="subscription-label">{% trans 'Until the end of the subscription' %}</div>
+            <div class="subscription-days">{{ days_remaining }} {% trans 'day' %}</div>
+            <div class="progress-container">
+                <div class="progress-bar" style="width: {{ subscription_progress }}%;"></div>
+            </div>
+        </div>
+
+        <!-- Account Settings -->
+        <div class="section-title">{% trans 'ACCOUNT' %}</div>
+        <div class="menu-section">
+            <div class="menu-card" onclick="window.location.href='{% url 'profile_update' %}'">
+                <div class="menu-content">
+                    <div class="menu-icon-wrapper">
+                        <div class="menu-icon">✏️</div>
+                    </div>
+                    <div class="menu-text-wrapper">
+                        <div class="menu-text">{% trans "Edit information" %}</div>
+                        <div class="menu-subtitle">{% trans "Personal data" %}</div>
+                    </div>
+                    <div class="menu-arrow">›</div>
+                </div>
+            </div>
+
+            <div class="menu-card" onclick="window.location.href='{% url 'manage_subscription' %}'">
+                <div class="menu-content">
+                    <div class="menu-icon-wrapper">
+                        <div class="menu-icon">👑</div>
+                    </div>
+                    <div class="menu-text-wrapper">
+                        <div class="menu-text">{% trans 'Manage subscription' %}</div>
+                        <div class="menu-subtitle">{% trans "Plans & pricing" %}</div>
+                    </div>
+                    <div class="menu-arrow">›</div>
+                </div>
+            </div>
+
+            <div class="menu-card" onclick="window.location.href='{% url 'payment_history' %}'">
+                <div class="menu-content">
+                    <div class="menu-icon-wrapper">
+                        <div class="menu-icon">💳</div>
+                    </div>
+                    <div class="menu-text-wrapper">
+                        <div class="menu-text">{% trans "Payment history" %}</div>
+                        <div class="menu-subtitle">{% trans "Transactions" %}</div>
+                    </div>
+                    <div class="menu-arrow">›</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Help & Info -->
+        <div class="section-title">{% trans 'HELP & INFO' %}</div>
+        <div class="menu-section">
+            <div class="menu-card" onclick="">
+                <div class="menu-content">
+                    <div class="menu-icon-wrapper">
+                        <div class="menu-icon">📄</div>
+                    </div>
+                    <div class="menu-text-wrapper">
+                        <div class="menu-text">{% trans 'Contract' %}</div>
+                        <div class="menu-subtitle">{% trans "Terms of use" %}</div>
+                    </div>
+                    <div class="menu-arrow">›</div>
+                </div>
+            </div>
+
+            <div class="menu-card" onclick="">
+                <div class="menu-content">
+                    <div class="menu-icon-wrapper">
+                        <div class="menu-icon">❓</div>
+                    </div>
+                    <div class="menu-text-wrapper">
+                        <div class="menu-text">FAQ</div>
+                        <div class="menu-subtitle">{% trans "Common questions" %}</div>
+                    </div>
+                    <div class="menu-arrow">›</div>
+                </div>
+            </div>
+
+            <div class="menu-card" onclick="">
+                <div class="menu-content">
+                    <div class="menu-icon-wrapper">
+                        <div class="menu-icon">💬</div>
+                    </div>
+                    <div class="menu-text-wrapper">
+                        <div class="menu-text">{% trans 'Call' %}</div>
+                        <div class="menu-subtitle">{% trans "Support team" %}</div>
+                    </div>
+                    <div class="menu-arrow">›</div>
+                </div>
+            </div>
+
+            <div class="menu-card" onclick="window.location.href='{% url 'change_language' %}'">
+                <div class="menu-content">
+                    <div class="menu-icon-wrapper">
+                        <div class="menu-icon">🌐</div>
+                    </div>
+                    <div class="menu-text-wrapper">
+                        <div class="menu-text">{% trans 'Language settings' %}</div>
+                        <div class="menu-subtitle">{% trans "Change language" %}</div>
+                    </div>
+                    <div class="menu-arrow">›</div>
+                </div>
+            </div>
+
+            <div class="menu-card" onclick="">
+                <div class="menu-content">
+                    <div class="menu-icon-wrapper">
+                        <div class="menu-icon">ℹ️</div>
+                    </div>
+                    <div class="menu-text-wrapper">
+                        <div class="menu-text">{% trans 'About app' %}</div>
+                        <div class="menu-subtitle">{% trans "Version & info" %}</div>
+                    </div>
+                    <div class="menu-arrow">›</div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        // Progress bar animation
+        document.addEventListener('DOMContentLoaded', function () {
+            const progressBar = document.querySelector('.progress-bar');
+            if (progressBar) {
+                const targetWidth = progressBar.style.width;
+                progressBar.style.width = '0%';
+                setTimeout(() => {
+                    progressBar.style.width = targetWidth;
+                }, 100);
+            }
+        });
+    </script>
+{% endblock %}

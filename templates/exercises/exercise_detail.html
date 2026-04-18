@@ -1,0 +1,431 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{{ exercise_name|default:exercise.name|default:_("Exercise details") }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+        color: #EAEAEA;
+        margin: 0;
+        padding: 0;
+        line-height: 1.6;
+        min-height: 100vh;
+        position: relative;
+        overflow-x: hidden;
+    }
+
+    /* Animated particles background */
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(circle at 20% 50%, rgba(255, 215, 0, 0.05) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 80%, rgba(255, 107, 107, 0.05) 0%, transparent 50%),
+                    radial-gradient(circle at 40% 90%, rgba(78, 205, 196, 0.05) 0%, transparent 50%);
+        animation: particleFloat 15s ease-in-out infinite;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    @keyframes particleFloat {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        33% { transform: translate(30px, -30px) scale(1.1); }
+        66% { transform: translate(-20px, 20px) scale(0.9); }
+    }
+
+    /* ===== COMPACT HEADER ===== */
+    .page-header {
+        background: linear-gradient(135deg, rgba(15, 52, 96, 0.95) 0%, rgba(22, 33, 62, 0.95) 100%);
+        backdrop-filter: blur(10px);
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+    }
+
+    .back-btn {
+        background: none;
+        border: none;
+        color: #ffd700;
+        font-size: 24px;
+        cursor: pointer;
+        padding: 0;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        font-weight: 700;
+    }
+
+    .back-btn:hover {
+        transform: translateX(-3px) scale(1.1);
+    }
+
+    .page-title {
+        color: white;
+        font-size: 15px;
+        font-weight: 800;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        flex: 1;
+        text-align: center;
+        background: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        line-height: 1.3;
+        padding: 0 10px;
+    }
+
+    .header-spacer {
+        width: 32px;
+    }
+
+    /* ===== CONTAINER ===== */
+    .container {
+        position: relative;
+        z-index: 1;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 12px 12px 100px;
+    }
+
+    .favorite-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 10px;
+        border: 1.5px solid rgba(255, 215, 0, 0.3);
+        background: rgba(255, 215, 0, 0.12);
+        color: #ffd700;
+        font-size: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .favorite-btn.favorited {
+        background: linear-gradient(135deg, #ffd700 0%, #f39c12 100%);
+        color: #1a1a2e;
+        border-color: #ffd700;
+        box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+    }
+
+    /* ===== MEDIA CONTAINER ===== */
+    .media-container {
+        margin-bottom: 14px;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        border: 1.5px solid rgba(255, 215, 0, 0.2);
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+        backdrop-filter: blur(10px);
+        position: relative;
+        animation: fadeIn 0.6s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    /* ===== EXERCISE IMAGE/VIDEO ===== */
+    .exercise-image {
+        width: 100%;
+        display: block;
+        object-fit: cover;
+        height: auto;
+        min-height: 240px;
+        max-height: 400px;
+        transition: transform 0.4s ease;
+    }
+
+    .media-container:hover .exercise-image {
+        transform: scale(1.02);
+    }
+
+    .placeholder-image {
+        height: 240px;
+        background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 215, 0, 0.08));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ffd700;
+        font-size: 48px;
+    }
+
+    .description-card {
+        margin-top: 14px;
+        {#padding: 16px;#}
+        {#background: linear-gradient(135deg, rgba(26, 31, 58, 0.95), rgba(15, 12, 41, 0.95));#}
+        {#border: 1.5px solid rgba(255, 215, 0, 0.2);#}
+        {#border-radius: 16px;#}
+        {#box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);#}
+    }
+
+    .description-title {
+        font-size: 13px;
+        font-weight: 800;
+        margin-bottom: 10px;
+        background: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .description-text {
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.78);
+        line-height: 1.7;
+    }
+
+    /* Hide bottom nav */
+    .exercise-detail-page .bottom-nav {
+        display: none !important;
+    }
+
+    /* ===== RESPONSIVE - TABLET ===== */
+    @media (min-width: 500px) {
+        .page-header {
+            padding: 14px 20px;
+        }
+
+        .page-title {
+            font-size: 16px;
+            letter-spacing: 2.5px;
+        }
+
+        .container {
+            padding: 14px 16px 110px;
+        }
+
+        .media-container {
+            margin-bottom: 16px;
+            border-radius: 18px;
+        }
+
+        .exercise-image,
+        .placeholder-image {
+            min-height: 280px;
+        }
+
+        .placeholder-image {
+            font-size: 56px;
+        }
+
+        .description-card {
+            padding: 18px;
+        }
+
+        .description-title {
+            font-size: 15px;
+        }
+
+        .description-text {
+            font-size: 13px;
+        }
+    }
+
+    /* ===== RESPONSIVE - DESKTOP ===== */
+    @media (min-width: 768px) {
+        .page-header {
+            padding: 16px 24px;
+        }
+
+        .page-title {
+            font-size: 18px;
+            letter-spacing: 3px;
+        }
+
+        .back-btn {
+            width: 36px;
+            height: 36px;
+            font-size: 26px;
+        }
+
+        .container {
+            padding: 16px 20px 120px;
+        }
+
+        .media-container {
+            margin-bottom: 18px;
+            border-radius: 20px;
+        }
+
+        .exercise-image,
+        .placeholder-image {
+            min-height: 320px;
+        }
+
+        .placeholder-image {
+            font-size: 64px;
+        }
+
+        .description-card {
+            padding: 20px;
+        }
+
+        .description-title {
+            font-size: 16px;
+        }
+
+        .description-text {
+            font-size: 14px;
+        }
+    }
+
+    /* ===== VERY SMALL PHONES ===== */
+    @media (max-width: 360px) {
+        .page-header {
+            padding: 10px 12px;
+        }
+
+        .back-btn {
+            width: 28px;
+            height: 28px;
+            font-size: 20px;
+        }
+
+        .page-title {
+            font-size: 12px;
+            letter-spacing: 1.5px;
+        }
+
+        .container {
+            padding: 10px 10px 90px;
+        }
+
+        .media-container {
+            margin-bottom: 12px;
+            border-radius: 14px;
+        }
+
+        .exercise-image,
+        .placeholder-image {
+            min-height: 200px;
+        }
+
+        .placeholder-image {
+            font-size: 40px;
+        }
+
+        .description-card {
+            padding: 14px;
+        }
+
+        .description-title {
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+
+        .description-text {
+            font-size: 11px;
+        }
+    }
+
+    /* GPU Acceleration */
+    .exercise-image {
+        will-change: transform;
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+    }
+
+</style>
+{% endblock %}
+
+{% block content %}
+    <!-- Compact Header -->
+    <div class="page-header">
+        <button class="back-btn" onclick="history.back()">‹</button>
+        <h1 class="page-title">{{ exercise_name|default:exercise.name|default:_("Exercise") }}</h1>
+        <button class="favorite-btn {% if is_favorited %}favorited{% endif %}" id="favoriteBtn">
+            <span id="favoriteIcon">{% if is_favorited %}★{% else %}☆{% endif %}</span>
+        </button>
+    </div>
+
+    <div class="container">
+        <div class="media-container">
+            {% if exercise.video %}
+                <video
+                       class="exercise-image"
+                       id="exerciseVideo"
+                       src="{{ exercise.video.url }}"
+                       poster="{{ exercise.thumbnail.url|default:'' }}"
+                       autoplay muted loop playsinline>
+                    {% trans "Your browser doesn't support video tag" %}
+                </video>
+            {% elif exercise.thumbnail %}
+                <img src="{{ exercise.thumbnail.url }}"
+                     alt="{{ exercise_name|default:exercise.name }}"
+                     class="exercise-image">
+            {% else %}
+                <div class="placeholder-image">💪</div>
+            {% endif %}
+        </div>
+
+        <div class="description-card">
+            <div class="description-title">{% trans "Description" %}</div>
+            <div class="description-text">
+                {{ exercise_description|default:_("No description available.") }}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.getElementById('favoriteBtn').addEventListener('click', function () {
+        const icon = document.getElementById('favoriteIcon');
+        const btn = document.getElementById('favoriteBtn');
+
+        fetch("{% url 'toggle_favorite' exercise.pk %}", {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({})
+        }).then(r => r.json()).then(data => {
+            if (data.status === 'added') {
+                icon.textContent = '★';
+                btn.classList.add('favorited');
+            } else if (data.status === 'removed') {
+                icon.textContent = '☆';
+                btn.classList.remove('favorited');
+            } else if (data.message === 'Login required') {
+                alert("{% trans 'Please login first' %}");
+            }
+        }).catch(err => console.error("Favorite error:", err));
+    });
+</script>
+{% endblock %}

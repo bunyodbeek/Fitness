@@ -1,0 +1,98 @@
+[
+{
+  "model": "apps.program",
+  "pk": 1,
+  "fields": {
+    "created_at": "2025-11-16T12:56:12.648Z",
+    "updated_at": "2025-11-17T10:52:30.025Z",
+    "title": "Get in Shape",
+    "description": "THese workout for smth",
+    "image": "programs/abs.jpg",
+    "is_active": true
+  }
+},
+{
+  "model": "apps.program",
+  "pk": 2,
+  "fields": {
+    "created_at": "2025-11-17T10:49:43.426Z",
+    "updated_at": "2025-11-17T10:49:43.426Z",
+    "title": "Get in Shape fast",
+    "description": "This is more than just a workout schedule. It is a complete, scientifically grounded transformation plan designed to radically change your lifestyle, energy levels, and self-confidence. We approach the concept of \"Get in Shape\" not just from the perspective of external appearance, but through the lens of inner strength and holistic health.",
+    "image": "programs/strong_man.jpeg",
+    "is_active": true
+  }
+},
+{
+  "model": "apps.program",
+  "pk": 3,
+  "fields": {
+    "created_at": "2025-11-17T10:50:14.673Z",
+    "updated_at": "2025-11-17T10:50:14.673Z",
+    "title": "skinniy muscular",
+    "description": "This is more than just a workout schedule. It is a complete, scientifically grounded transformation plan designed to radically change your lifestyle, energy levels, and self-confidence. We approach the concept of \"Get in Shape\" not just from the perspective of external appearance, but through the lens of inner strength and holistic health.",
+    "image": "programs/body.jpg",
+    "is_active": true
+  }
+},
+{
+  "model": "apps.program",
+  "pk": 4,
+  "fields": {
+    "created_at": "2025-11-17T10:50:50.198Z",
+    "updated_at": "2025-11-17T10:50:50.198Z",
+    "title": "fat of muscle on",
+    "description": "This is more than just a workout schedule. It is a complete, scientifically grounded transformation plan designed to radically change your lifestyle, energy levels, and self-confidence. We approach the concept of \"Get in Shape\" not just from the perspective of external appearance, but through the lens of inner strength and holistic health.",
+    "image": "programs/fullbody.jpg",
+    "is_active": true
+  }
+},
+{
+  "model": "apps.program",
+  "pk": 5,
+  "fields": {
+    "created_at": "2025-11-17T10:51:12.797Z",
+    "updated_at": "2025-11-17T10:51:12.797Z",
+    "title": "superset madness",
+    "description": "This is more than just a workout schedule. It is a complete, scientifically grounded transformation plan designed to radically change your lifestyle, energy levels, and self-confidence. We approach the concept of \"Get in Shape\" not just from the perspective of external appearance, but through the lens of inner strength and holistic health.",
+    "image": "programs/chest.jpeg",
+    "is_active": true
+  }
+},
+{
+  "model": "apps.program",
+  "pk": 6,
+  "fields": {
+    "created_at": "2025-11-17T10:51:36.473Z",
+    "updated_at": "2025-11-17T10:51:36.473Z",
+    "title": "extreme arms",
+    "description": "This is more than just a workout schedule. It is a complete, scientifically grounded transformation plan designed to radically change your lifestyle, energy levels, and self-confidence. We approach the concept of \"Get in Shape\" not just from the perspective of external appearance, but through the lens of inner strength and holistic health.",
+    "image": "programs/arms.jpg",
+    "is_active": true
+  }
+},
+{
+  "model": "apps.program",
+  "pk": 7,
+  "fields": {
+    "created_at": "2025-11-17T10:51:55.162Z",
+    "updated_at": "2025-11-17T10:51:55.162Z",
+    "title": "awesome abs",
+    "description": "This is more than just a workout schedule. It is a complete, scientifically grounded transformation plan designed to radically change your lifestyle, energy levels, and self-confidence. We approach the concept of \"Get in Shape\" not just from the perspective of external appearance, but through the lens of inner strength and holistic health.",
+    "image": "programs/abs-2.jpeg",
+    "is_active": true
+  }
+},
+{
+  "model": "apps.program",
+  "pk": 8,
+  "fields": {
+    "created_at": "2025-11-17T10:53:15.186Z",
+    "updated_at": "2025-11-17T10:53:15.186Z",
+    "title": "Toned Legs",
+    "description": "This is more than just a workout schedule. It is a complete, scientifically grounded transformation plan designed to radically change your lifestyle, energy levels, and self-confidence. We approach the concept of \"Get in Shape\" not just from the perspective of external appearance, but through the lens of inner strength and holistic health.",
+    "image": "programs/toned-legs.webp",
+    "is_active": true
+  }
+}
+]

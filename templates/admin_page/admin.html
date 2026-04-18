@@ -1,0 +1,197 @@
+    {% load static %}
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Analitika - Library</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static "apps/css/admin_page_style.css" %}">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Header -->
+        <div class="admin-header">
+            <div>
+                <h1>📊 Admin Analitika</h1>
+                <p style="color: rgba(255, 255, 255, 0.6); margin-top: 8px;">Keng qamrovli foydalanuvchi statistikasi va tizim monitoringi</p>
+            </div>
+            <div class="header-actions">
+                <a href="#" class="btn btn-secondary">
+                    📥 Export
+                </a>
+                <button class="btn btn-primary" onclick="location.reload()">
+                    🔄 Yangilash
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <!-- Total Users -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-change positive">
+                        {% if user_growth > 0 %}+{% endif %}{{ user_growth }}%
+                    </div>
+                </div>
+                <div class="stat-title">Jami Foydalanuvchilar</div>
+                <div class="stat-value">{{ total_users }}</div>
+                <div class="stat-description">Botga start bosgan barcha userlar</div>
+            </div>
+
+            <!-- Active Free Users -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon">🆓</div>
+                    <div class="stat-change positive">+8.3%</div>
+                </div>
+                <div class="stat-title">Faol Free Userlar</div>
+                <div class="stat-value">{{ free_users }}</div>
+                <div class="stat-description">Appni ishlatayotgan, premium yo'q</div>
+            </div>
+
+            <!-- Premium Users -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon">⭐</div>
+                    <div class="stat-change positive">+15.7%</div>
+                </div>
+                <div class="stat-title">Premium Userlar</div>
+                <div class="stat-value">{{ premium_users }}</div>
+                <div class="stat-description">Premium obuna sotib olganlar</div>
+            </div>
+
+            <!-- Conversion Rate -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-change positive">+3.2%</div>
+                </div>
+                <div class="stat-title">Konversiya Darajasi</div>
+                <div class="stat-value">{{ conversion_rate }}%</div>
+                <div class="stat-description">Free → Premium konversiya</div>
+            </div>
+
+            <!-- Today's Registrations -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon">🎯</div>
+                    <div class="stat-change positive">+{{ today_registrations }}</div>
+                </div>
+                <div class="stat-title">Bugungi Ro'yxatlar</div>
+                <div class="stat-value">{{ today_registrations }}</div>
+                <div class="stat-description">So'nggi 24 soatda qo'shilganlar</div>
+            </div>
+
+            <!-- Monthly Revenue -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon">💎</div>
+                    <div class="stat-change positive">+22.1%</div>
+                </div>
+                <div class="stat-title">Oylik Daromad</div>
+                <div class="stat-value">{{ monthly_revenue }}</div>
+                <div class="stat-description">Joriy oy uchun jami daromad (so'm)</div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="charts-grid">
+            <!-- User Growth Chart -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">📈 Foydalanuvchilar O'sishi</div>
+                    <div class="chart-filters">
+                        <button class="filter-btn active">12 Oy</button>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="userGrowthChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Revenue Chart -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">💰 Daromad Statistikasi</div>
+                    <div class="chart-filters">
+                        <button class="filter-btn active">12 Oy</button>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Distribution and Activity -->
+        <div class="charts-grid">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">🎯 Foydalanuvchi Taqsimoti</div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="userDistributionChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">📊 Haftalik Aktivlik</div>
+                    <div class="chart-filters">
+                        <button class="filter-btn active">7 Kun</button>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="dailyActivityChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="activity-section">
+            <div class="section-header">
+                <div class="section-title">⚡ So'nggi Faollik</div>
+            </div>
+            <div class="activity-list">
+                {% for activity in recent_activities %}
+                <div class="activity-item">
+                    <div class="activity-avatar">{{ activity.user_initials }}</div>
+                    <div class="activity-content">
+                        <div class="activity-user">{{ activity.username }}</div>
+                        <div class="activity-action">{{ activity.action }}</div>
+                    </div>
+                    <div class="activity-time">{{ activity.time }}</div>
+                </div>
+                {% empty %}
+                <div class="activity-item">
+                    <div class="activity-avatar">🔔</div>
+                    <div class="activity-content">
+                        <div class="activity-user">Faollik topilmadi</div>
+                        <div class="activity-action">Hozircha hech qanday faollik yo'q</div>
+                    </div>
+                    <div class="activity-time">-</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <script>
+        window.dashboardData = {
+            monthly: {{ monthly_data|safe }},
+            revenue: {{ revenue_data|safe }},
+            weekly: {{ weekly_activity|safe }},
+            counts: {
+                premium: {{ premium_count }},
+                free: {{ free_count }},
+                inactive: {{ inactive_count }}
+            }
+        };
+    </script>
+
+    <script src="{% static 'apps/js/admin_page.js' %}"></script>
+
+</body>
+</html>

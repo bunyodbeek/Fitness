@@ -1,0 +1,56 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% trans "Home Workout" %}</title>
+    <style>
+        body { font-family: Arial, sans-serif; background:#0d101b; color:#fff; margin:0; }
+        .wrap { max-width:520px; margin:0 auto; padding:16px; }
+        .top { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+        .btn-link { color:#ffd166; text-decoration:none; font-weight:700; }
+        .box { background:#1a2238; border:1px solid rgba(255,255,255,.1); border-radius:12px; padding:14px; }
+        .row { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid rgba(255,255,255,.08); }
+        .row:last-child { border-bottom:none; }
+        .active { color:#ffd166; font-weight:700; }
+        .done-btn { width:100%; border:none; margin-top:14px; padding:12px; border-radius:999px; background:#ff7b00; color:#fff; font-weight:700; cursor:pointer; letter-spacing:.5px; }
+        .finished { color:#8cffb2; font-weight:700; margin-top:12px; }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <div class="top">
+        <a class="btn-link" href="{% url 'home_plan_weeks' workout.edition.id %}">← {% trans "Back" %}</a>
+        <a class="btn-link" href="{% url 'workout_mode_switch' 'gym' %}">{% trans "Switch to Gym" %}</a>
+    </div>
+
+    <h1>{% if workout.title %}{{ workout.title }}{% else %}{% trans "Home Session" %}{% endif %}</h1>
+    <p>{% trans "Round" %} {{ progress.current_round }} / {{ workout.rounds }}</p>
+
+    <div class="box">
+        {% for item in workout_exercises %}
+            <div class="row {% if forloop.counter == progress.current_order and not progress.is_finished %}active{% endif %}">
+                <span>{{ forloop.counter }}. {{ item.exercise.name }}</span>
+                {% if forloop.counter == progress.current_order and not progress.is_finished %}
+                    <span>{% trans "Current" %}</span>
+                {% endif %}
+            </div>
+        {% empty %}
+            <p>{% trans "No exercises in this workout." %}</p>
+        {% endfor %}
+    </div>
+
+    {% if progress.is_finished %}
+        <p class="finished">{% trans "Workout finished." %}</p>
+    {% elif current_exercise %}
+        <form method="post" action="{% url 'home_workout_done' workout.id %}">
+            {% csrf_token %}
+            <button class="done-btn" type="submit">
+                {% blocktrans with name=current_exercise.exercise.name %}Done: {{ name }}{% endblocktrans %}
+            </button>
+        </form>
+    {% endif %}
+</div>
+</body>
+</html>

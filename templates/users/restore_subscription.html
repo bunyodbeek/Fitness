@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}Obunani tiklash{% endblock %}
+{% block content %}
+<div class="container mt-5" style="max-width: 480px;">
+    <div class="card shadow-sm p-4">
+        <h4 class="text-center text-primary mb-3">Obunani tiklash</h4>
+        <p class="text-center">
+            Siz obunani qayta tiklamoqchisiz. Ushbu amal obunani faollashtiradi.
+        </p>
+        <form method="post">
+            {% csrf_token %}
+            <div class="d-flex justify-content-between">
+                <a href="{% url 'subscription_manage' %}" class="btn btn-secondary">Bekor qilish</a>
+                <button type="submit" class="btn btn-primary">Tiklash</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

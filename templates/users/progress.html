@@ -1,0 +1,977 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}Progress{% endblock %}
+
+{% block extra_css %}
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        background: #0b0303;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        min-height: 100vh;
+        position: relative;
+        overflow-x: hidden;
+    }
+
+    /* ===== COMPACT HEADER ===== */
+    .page-header {
+        background: #0b0303;
+        backdrop-filter: blur(10px);
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+    }
+
+    .back-btn {
+        background: none;
+        border: none;
+        color: #ffd700;
+        font-size: 24px;
+        cursor: pointer;
+        padding: 0;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        font-weight: 700;
+    }
+
+    .back-btn:hover {
+        transform: translateX(-3px) scale(1.1);
+    }
+
+    .page-title {
+        color: white;
+        font-size: 16px;
+        font-weight: 800;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        flex: 1;
+        text-align: center;
+        background: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .header-spacer {
+        width: 32px;
+    }
+
+    /* ===== CONTAINER ===== */
+    .container {
+        padding: 16px 12px;
+        padding-bottom: 90px;
+        position: relative;
+        z-index: 1;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    /* ===== PERIOD SELECTOR ===== */
+    .period-selector {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 16px;
+        overflow-x: auto;
+        padding: 2px 0;
+        animation: slideInUp 0.5s ease;
+    }
+
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .period-selector::-webkit-scrollbar {
+        height: 3px;
+    }
+
+    .period-selector::-webkit-scrollbar-thumb {
+        background: rgba(255, 215, 0, 0.3);
+        border-radius: 10px;
+    }
+
+    .period-btn {
+        padding: 8px 16px;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.08));
+        border: 1px solid rgba(255, 215, 0, 0.15);
+        border-radius: 16px;
+        color: rgba(255, 255, 255, 0.7);
+        font-weight: 600;
+        font-size: 11px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .period-btn:hover {
+        background: linear-gradient(135deg, rgba(255, 215, 0, 0.12), rgba(243, 156, 18, 0.12));
+        border-color: rgba(255, 215, 0, 0.3);
+        color: #ffd700;
+    }
+
+    .period-btn.active {
+        background: linear-gradient(135deg, #ffd700 0%, #f39c12 100%);
+        border-color: #ffd700;
+        color: #1a1a2e;
+        box-shadow: 0 3px 12px rgba(255, 215, 0, 0.3);
+        transform: translateY(-1px);
+    }
+
+    /* ===== STATS GRID ===== */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .stat-card {
+        background: linear-gradient(135deg, rgba(255, 215, 0, 0.12) 0%, rgba(255, 215, 0, 0.06) 100%);
+        backdrop-filter: blur(10px);
+        border-radius: 14px;
+        padding: 16px;
+        text-align: center;
+        border: 1.5px solid rgba(255, 215, 0, 0.2);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+        animation: slideInUp 0.5s ease backwards;
+    }
+
+    .stat-card:nth-child(1) { animation-delay: 0.05s; }
+    .stat-card:nth-child(2) { animation-delay: 0.1s; }
+    .stat-card:nth-child(3) { animation-delay: 0.15s; }
+    .stat-card:nth-child(4) { animation-delay: 0.2s; }
+
+    .stat-card:hover {
+        transform: translateY(-3px);
+        border-color: rgba(255, 215, 0, 0.4);
+        box-shadow: 0 8px 25px rgba(255, 215, 0, 0.15);
+    }
+
+    .stat-icon {
+        font-size: 28px;
+        margin-bottom: 8px;
+    }
+
+    .stat-value {
+        font-size: 24px;
+        font-weight: 900;
+        background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 4px;
+    }
+
+    .stat-label {
+        font-size: 10px;
+        color: rgba(255, 255, 255, 0.7);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+    }
+
+    /* ===== CHART SECTION ===== */
+    .chart-section {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
+        backdrop-filter: blur(10px);
+        border-radius: 14px;
+        padding: 16px;
+        margin-bottom: 20px;
+        border: 1.5px solid rgba(255, 215, 0, 0.15);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        animation: slideInUp 0.5s ease backwards;
+        animation-delay: 0.25s;
+    }
+
+    .chart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+    }
+
+    .chart-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: white;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .chart-filter {
+        background: rgba(255, 215, 0, 0.15);
+        border: 1px solid rgba(255, 215, 0, 0.3);
+        color: #ffd700;
+        padding: 6px 12px;
+        border-radius: 12px;
+        font-size: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .chart-filter:hover {
+        background: rgba(255, 215, 0, 0.25);
+        border-color: #ffd700;
+    }
+
+    .chart-container {
+        height: 150px;
+        position: relative;
+    }
+
+    .chart-placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-around;
+        gap: 6px;
+        padding: 16px 8px 0;
+    }
+
+    .chart-bar {
+        flex: 1;
+        background: linear-gradient(to top, #ffd700, #ffed4e);
+        border-radius: 6px 6px 0 0;
+        position: relative;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        min-height: 15px;
+    }
+
+    .chart-bar:hover {
+        background: linear-gradient(to top, #ffed4e, #fff176);
+        transform: translateY(-3px);
+    }
+
+    .chart-bar::after {
+        content: attr(data-value);
+        position: absolute;
+        top: -20px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: white;
+        font-size: 11px;
+        font-weight: 700;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .chart-bar:hover::after {
+        opacity: 1;
+    }
+
+    .chart-labels {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 8px;
+    }
+
+    .chart-label {
+        font-size: 10px;
+        color: rgba(255, 255, 255, 0.5);
+        text-transform: uppercase;
+        font-weight: 600;
+    }
+
+    /* ===== MEASUREMENTS SECTION ===== */
+    .measurements-section {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
+        backdrop-filter: blur(10px);
+        border-radius: 14px;
+        padding: 16px;
+        margin-bottom: 20px;
+        border: 1.5px solid rgba(255, 215, 0, 0.15);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        animation: slideInUp 0.5s ease backwards;
+        animation-delay: 0.3s;
+    }
+
+    .section-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .section-icon {
+        font-size: 18px;
+    }
+
+    .measurement-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .measurement-item:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .measurement-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex: 1;
+    }
+
+    .measurement-icon {
+        width: 36px;
+        height: 36px;
+        background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.1));
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        flex-shrink: 0;
+    }
+
+    .measurement-details {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .measurement-name {
+        font-size: 13px;
+        color: white;
+        font-weight: 600;
+        margin-bottom: 2px;
+    }
+
+    .measurement-date {
+        font-size: 10px;
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    .measurement-value-wrapper {
+        text-align: right;
+    }
+
+    .measurement-value {
+        font-size: 15px;
+        font-weight: 700;
+        color: #ffd700;
+        display: block;
+        margin-bottom: 2px;
+    }
+
+    .measurement-change {
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    .measurement-change.positive {
+        color: #2ecc71;
+    }
+
+    .measurement-change.negative {
+        color: #e74c3c;
+    }
+
+    /* ===== ACHIEVEMENTS SECTION ===== */
+    .achievements-section {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
+        backdrop-filter: blur(10px);
+        border-radius: 14px;
+        padding: 16px;
+        margin-bottom: 20px;
+        border: 1.5px solid rgba(255, 215, 0, 0.15);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        animation: slideInUp 0.5s ease backwards;
+        animation-delay: 0.35s;
+    }
+
+    .achievements-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+    }
+
+    .achievement-badge {
+        aspect-ratio: 1;
+        background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 215, 0, 0.05));
+        border-radius: 12px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 1.5px solid rgba(255, 215, 0, 0.25);
+    }
+
+    .achievement-badge:hover {
+        transform: translateY(-3px);
+        background: linear-gradient(135deg, rgba(255, 215, 0, 0.25), rgba(255, 215, 0, 0.1));
+        border-color: #ffd700;
+        box-shadow: 0 6px 20px rgba(255, 215, 0, 0.2);
+    }
+
+    .achievement-badge.locked {
+        opacity: 0.3;
+        cursor: default;
+    }
+
+    .achievement-badge.locked:hover {
+        transform: none;
+        box-shadow: none;
+    }
+
+    .achievement-icon {
+        font-size: 28px;
+    }
+
+    .achievement-name {
+        font-size: 10px;
+        color: white;
+        font-weight: 600;
+        text-align: center;
+        line-height: 1.3;
+    }
+
+    /* ===== WORKOUT HISTORY ===== */
+    .history-section {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
+        backdrop-filter: blur(10px);
+        border-radius: 14px;
+        padding: 16px;
+        border: 1.5px solid rgba(255, 215, 0, 0.15);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        animation: slideInUp 0.5s ease backwards;
+        animation-delay: 0.4s;
+    }
+
+    .history-item {
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 12px;
+        padding: 12px;
+        margin-bottom: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 1px solid transparent;
+    }
+
+    .history-item:hover {
+        background: rgba(0, 0, 0, 0.3);
+        border-color: rgba(255, 215, 0, 0.3);
+        transform: translateX(3px);
+    }
+
+    .history-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .history-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+
+    .history-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: white;
+    }
+
+    .history-date {
+        font-size: 10px;
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    .history-stats {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+
+    .history-stat {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 11px;
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    .history-stat-icon {
+        font-size: 14px;
+    }
+
+    .history-stat-value {
+        color: #ffd700;
+        font-weight: 700;
+    }
+
+    /* ===== RESPONSIVE - TABLET ===== */
+    @media (min-width: 500px) {
+        .page-header {
+            padding: 14px 20px;
+        }
+
+        .page-title {
+            font-size: 18px;
+        }
+
+        .container {
+            padding: 20px 16px;
+        }
+
+        .stats-grid {
+            gap: 12px;
+        }
+
+        .stat-card {
+            padding: 18px;
+        }
+
+        .stat-icon {
+            font-size: 32px;
+        }
+
+        .stat-value {
+            font-size: 26px;
+        }
+
+        .chart-section,
+        .measurements-section,
+        .achievements-section,
+        .history-section {
+            padding: 18px;
+        }
+    }
+
+    /* ===== RESPONSIVE - DESKTOP ===== */
+    @media (min-width: 768px) {
+        .page-header {
+            padding: 16px 24px;
+        }
+
+        .page-title {
+            font-size: 20px;
+            letter-spacing: 4px;
+        }
+
+        .container {
+            padding: 24px 20px;
+        }
+
+        .period-selector {
+            gap: 10px;
+        }
+
+        .period-btn {
+            padding: 10px 20px;
+            font-size: 12px;
+        }
+
+        .stats-grid {
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            padding: 20px;
+            border-radius: 16px;
+        }
+
+        .stat-icon {
+            font-size: 36px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+        }
+
+        .chart-section,
+        .measurements-section,
+        .achievements-section,
+        .history-section {
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+        }
+
+        .achievements-grid {
+            gap: 12px;
+        }
+    }
+
+    /* ===== VERY SMALL PHONES ===== */
+    @media (max-width: 360px) {
+        .page-header {
+            padding: 10px 12px;
+        }
+
+        .page-title {
+            font-size: 14px;
+            letter-spacing: 2px;
+        }
+
+        .container {
+            padding: 12px 10px;
+        }
+
+        .period-selector {
+            gap: 6px;
+        }
+
+        .period-btn {
+            padding: 6px 12px;
+            font-size: 10px;
+        }
+
+        .stats-grid {
+            gap: 8px;
+        }
+
+        .stat-card {
+            padding: 14px;
+            border-radius: 12px;
+        }
+
+        .stat-icon {
+            font-size: 24px;
+        }
+
+        .stat-value {
+            font-size: 20px;
+        }
+
+        .stat-label {
+            font-size: 9px;
+        }
+
+        .chart-section,
+        .measurements-section,
+        .achievements-section,
+        .history-section {
+            padding: 14px;
+            border-radius: 12px;
+        }
+
+        .achievements-grid {
+            gap: 8px;
+        }
+
+        .achievement-icon {
+            font-size: 24px;
+        }
+
+        .achievement-name {
+            font-size: 9px;
+        }
+    }
+
+    /* GPU Acceleration */
+    .stat-card,
+    .chart-section,
+    .achievement-badge,
+    .history-item {
+        will-change: transform;
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Compact Header -->
+<div class="page-header">
+    <button class="back-btn" onclick="window.history.back()">‹</button>
+    <h1 class="page-title">📊 STATISTICS</h1>
+    <div class="header-spacer"></div>
+</div>
+
+<div class="container">
+    <!-- Period Selector -->
+    <div class="period-selector">
+        <button class="period-btn" data-period="today">{% trans "Today" %}</button>
+        <button class="period-btn active" data-period="week">{% trans "Week" %}</button>
+        <button class="period-btn" data-period="month">{% trans "Month" %}</button>
+        <button class="period-btn" data-period="year">{% trans "Year" %}</button>
+        <button class="period-btn" data-period="all">{% trans "All" %}</button>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">🏋️</div>
+            <div class="stat-value">{{ total_workouts|default:"0" }}</div>
+            <div class="stat-label">{% trans "Workouts" %}</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">⏱️</div>
+            <div class="stat-value">{{ total_hours|default:"0" }}{% trans "h" %}</div>
+            <div class="stat-label">{% trans "Hours" %}</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">🔥</div>
+            <div class="stat-value">{{ total_calories|default:"0" }}</div>
+            <div class="stat-label">{% trans "Calories" %}</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">💪</div>
+            <div class="stat-value">{{ total_exercises|default:"0" }}</div>
+            <div class="stat-label">{% trans "Exercises" %}</div>
+        </div>
+    </div>
+
+    <!-- Chart Section -->
+    <div class="chart-section">
+        <div class="chart-header">
+            <h3 class="chart-title">{% trans "Weekly Activity" %}</h3>
+            <button class="chart-filter">{% trans "Workouts" %}</button>
+        </div>
+        <div class="chart-container">
+            <div class="chart-placeholder">
+                {% for day in week_data %}
+                <div class="chart-bar" style="height: {{ day.percentage }}%;" data-value="{{ day.value }}"></div>
+                {% empty %}
+                <div class="chart-bar" style="height: 45%;" data-value="3"></div>
+                <div class="chart-bar" style="height: 70%;" data-value="5"></div>
+                <div class="chart-bar" style="height: 30%;" data-value="2"></div>
+                <div class="chart-bar" style="height: 85%;" data-value="6"></div>
+                <div class="chart-bar" style="height: 55%;" data-value="4"></div>
+                <div class="chart-bar" style="height: 90%;" data-value="7"></div>
+                <div class="chart-bar" style="height: 40%;" data-value="3"></div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="chart-labels">
+            <span class="chart-label">{% trans "Mon" %}</span>
+            <span class="chart-label">{% trans "Tue" %}</span>
+            <span class="chart-label">{% trans "Wed" %}</span>
+            <span class="chart-label">{% trans "Thu" %}</span>
+            <span class="chart-label">{% trans "Fri" %}</span>
+            <span class="chart-label">{% trans "Sat" %}</span>
+            <span class="chart-label">{% trans "Sun" %}</span>
+        </div>
+    </div>
+
+    <!-- Body Measurements -->
+    <div class="measurements-section">
+        <h3 class="section-title">
+            <span class="section-icon">📏</span>
+            {% trans "Body Measurements" %}
+        </h3>
+
+        {% for measurement in body_measurements %}
+        <div class="measurement-item">
+            <div class="measurement-info">
+                <div class="measurement-icon">{{ measurement.icon }}</div>
+                <div class="measurement-details">
+                    <div class="measurement-name">{{ measurement.name }}</div>
+                    <div class="measurement-date">{{ measurement.date }}</div>
+                </div>
+            </div>
+            <div class="measurement-value-wrapper">
+                <span class="measurement-value">{{ measurement.value }}</span>
+                <span class="measurement-change {{ measurement.change_type }}">{{ measurement.change }}</span>
+            </div>
+        </div>
+        {% empty %}
+        <div class="measurement-item">
+            <div class="measurement-info">
+                <div class="measurement-icon">⚖️</div>
+                <div class="measurement-details">
+                    <div class="measurement-name">{% trans "Weight" %}</div>
+                    <div class="measurement-date">{% trans "Not recorded" %}</div>
+                </div>
+            </div>
+            <div class="measurement-value-wrapper">
+                <span class="measurement-value">- kg</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+{#    <!-- Achievements -->#}
+{#    <div class="achievements-section">#}
+{#        <h3 class="section-title">#}
+{#            <span class="section-icon">🏆</span>#}
+{#            {% trans "Achievements" %}#}
+{#        </h3>#}
+{##}
+{#        <div class="achievements-grid">#}
+{#            {% for achievement in achievements %}#}
+{#            <div class="achievement-badge {% if not achievement.unlocked %}locked{% endif %}">#}
+{#                <div class="achievement-icon">{{ achievement.icon }}</div>#}
+{#                <div class="achievement-name">{{ achievement.name }}</div>#}
+{#            </div>#}
+{#            {% empty %}#}
+{#            <div class="achievement-badge">#}
+{#                <div class="achievement-icon">🔥</div>#}
+{#                <div class="achievement-name">{% trans "First Workout" %}</div>#}
+{#            </div>#}
+{#            <div class="achievement-badge locked">#}
+{#                <div class="achievement-icon">💯</div>#}
+{#                <div class="achievement-name">{% trans "100 Workouts" %}</div>#}
+{#            </div>#}
+{#            <div class="achievement-badge locked">#}
+{#                <div class="achievement-icon">⚡</div>#}
+{#                <div class="achievement-name">{% trans "Speed Master" %}</div>#}
+{#            </div>#}
+{#            <div class="achievement-badge locked">#}
+{#                <div class="achievement-icon">💪</div>#}
+{#                <div class="achievement-name">{% trans "Strong" %}</div>#}
+{#            </div>#}
+{#            <div class="achievement-badge locked">#}
+{#                <div class="achievement-icon">🎯</div>#}
+{#                <div class="achievement-name">{% trans "Goal Crusher" %}</div>#}
+{#            </div>#}
+{#            <div class="achievement-badge locked">#}
+{#                <div class="achievement-icon">👑</div>#}
+{#                <div class="achievement-name">{% trans "Champion" %}</div>#}
+{#            </div>#}
+{#            {% endfor %}#}
+{#        </div>#}
+{#    </div>#}
+
+    <!-- Workout History -->
+    <div class="history-section">
+        <h3 class="section-title">
+            <span class="section-icon">📋</span>
+            {% trans "Recent Workouts" %}
+        </h3>
+
+        {% for workout in recent_workouts %}
+        <div class="history-item">
+            <div class="history-header">
+                <div class="history-title">{{ workout.name }}</div>
+                <div class="history-date">{{ workout.date }}</div>
+            </div>
+            <div class="history-stats">
+                <div class="history-stat">
+                    <span class="history-stat-icon">💪</span>
+                    <span class="history-stat-value">{{ workout.exercises }}</span> {% trans "ex" %}
+                </div>
+                <div class="history-stat">
+                    <span class="history-stat-icon">⏱️</span>
+                    <span class="history-stat-value">{{ workout.duration }}</span> {% trans "min" %}
+                </div>
+                <div class="history-stat">
+                    <span class="history-stat-icon">🔥</span>
+                    <span class="history-stat-value">{{ workout.calories }}</span> {% trans "cal" %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div style="text-align: center; color: rgba(255, 255, 255, 0.5); padding: 20px; font-size: 12px;">
+            {% trans "No workout history yet" %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Period selector
+    document.querySelectorAll('.period-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+
+            const period = this.dataset.period;
+            // Backend ga request yuborish uchun
+            console.log('Selected period:', period);
+            // Fetch data for selected period
+            // fetchProgressData(period);
+        });
+    });
+
+    // Chart filter toggle
+    const chartFilter = document.querySelector('.chart-filter');
+    if (chartFilter) {
+        const metrics = ['{% trans "Workouts" %}', '{% trans "Calories" %}', '{% trans "Hours" %}'];
+        let currentIndex = 0;
+
+        chartFilter.addEventListener('click', function() {
+            currentIndex = (currentIndex + 1) % metrics.length;
+            this.textContent = metrics[currentIndex];
+            // Update chart data based on metric
+            console.log('Changed metric to:', metrics[currentIndex]);
+        });
+    }
+
+    // Achievement badges
+    document.querySelectorAll('.achievement-badge:not(.locked)').forEach(badge => {
+        badge.addEventListener('click', function() {
+            const name = this.querySelector('.achievement-name').textContent;
+            alert(`🏆 ${name}\n\n{% trans "Congratulations!" %}`);
+        });
+    });
+
+    // History items
+    document.querySelectorAll('.history-item').forEach(item => {
+        item.addEventListener('click', function() {
+            const title = this.querySelector('.history-title').textContent;
+            console.log('View workout:', title);
+            // Navigate to workout detail
+            // window.location.href = `/workouts/${workoutId}/`;
+        });
+    });
+
+    // Touch feedback
+    document.querySelectorAll('.stat-card, .history-item, .achievement-badge').forEach(card => {
+        card.addEventListener('touchstart', function() {
+            if (!this.classList.contains('locked')) {
+                this.style.transform = 'scale(0.98)';
+            }
+        });
+        card.addEventListener('touchend', function() {
+            this.style.transform = '';
+        });
+    });
+</script>
+{% endblock %}

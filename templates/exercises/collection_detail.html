@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+
+{% block title %}{{ collection.name }}{% endblock %}
+{% block page_title %}{{ collection.name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Exercise list kabi style (exercise_body_parts_list.html dan) */
+    /* ... copy exercise list CSS ... */
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="top-nav">
+    <button class="back-btn" onclick="history.back()">‹</button>
+    <h1>{{ collection.name }}</h1>
+    <button class="action-btn" onclick="addExercises()">+</button>
+</div>
+
+<div class="container">
+    {% if collection.exercises.all %}
+        <div class="exercises-grid">
+            {% for exercise in collection.exercises.all %}
+            <a href="{% url 'exercise_detail' exercise.id %}" class="exercise-card">
+                <div class="favorite-icon"
+                     onclick="event.preventDefault(); removeFromCollection({{ exercise.id }}, this)">
+                    <span>🗑️</span>
+                </div>
+
+                {% if exercise.thumbnail %}
+                    <img src="{{ exercise.thumbnail.url }}" class="exercise-image">
+                {% else %}
+                    <div class="exercise-placeholder">💪</div>
+                {% endif %}
+
+                <div class="exercise-info">
+                    <h3 class="exercise-name">
+                        {{ exercise.name }}
+                        <span class="exercise-details">
+                            • {{ exercise.calory }} kcal • {{ exercise.duration }} min
+                        </span>
+                    </h3>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <div class="icon">📁</div>
+            <h3>Bo'sh to'plam</h3>
+            <p>Mashqlar qo'shing</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function addExercises() {
+        window.location.href = '{% url "muscle_groups" %}?collection_id={{ collection.id }}&mode=add';
+    }
+
+    function removeFromCollection(exerciseId, button) {
+        if (confirm('Bu mashqni to\'plamdan o\'chirmoqchimisiz?')) {
+            fetch(`/favorites/collection/{{ collection.id }}/remove/${exerciseId}/`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    button.closest('.exercise-card').remove();
+                }
+            });
+        }
+    }
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
+{% endblock %}

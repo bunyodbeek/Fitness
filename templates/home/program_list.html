@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+{% load i18n %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% trans "Home Programs" %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg:        #0d0f18;
+            --card-bg:   #141720;
+            --border:    rgba(255,255,255,.07);
+            --gold:      #f5a623;
+            --gold-dim:  #c47d10;
+            --red:       #e03a2f;
+            --green:     #4caf50;
+            --text:      #ffffff;
+            --muted:     #6b7490;
+            --accent-1:  #e03a2f;   /* METABOLIC — red/fire  */
+            --accent-2:  #4caf50;   /* POWER ON  — green     */
+            --accent-3:  #f5a623;   /* WAR MODE  — gold      */
+            --accent-4:  #607d8b;   /* SURVIVAL  — steel     */
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Barlow', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            /* subtle noise texture */
+            background-image:
+                radial-gradient(ellipse 80% 60% at 50% -10%, rgba(245,166,35,.08) 0%, transparent 70%),
+                url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");
+        }
+
+        /* ── HEADER ── */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 20px 0;
+            max-width: 520px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 900;
+            font-size: 22px;
+            letter-spacing: 3px;
+            color: var(--text);
+            text-transform: uppercase;
+        }
+
+        .logo span { color: var(--gold); }
+
+        .btn-switch {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 12px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--bg);
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dim) 100%);
+            border: none;
+            border-radius: 6px;
+            padding: 8px 14px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: opacity .2s;
+        }
+        .btn-switch:hover { opacity: .85; }
+
+        /* ── SECTION TITLE ── */
+        .wrap {
+            max-width: 520px;
+            margin: 0 auto;
+            padding: 24px 20px 32px;
+        }
+
+        .section-label {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 3px;
+            color: var(--muted);
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .section-title {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 900;
+            font-size: 28px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 24px;
+        }
+
+        /* ── PROGRAM CARD ── */
+        .card {
+            position: relative;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            margin-bottom: 12px;
+            overflow: hidden;
+            transition: transform .18s, border-color .18s;
+        }
+        .card:hover { transform: translateY(-2px); border-color: rgba(255,255,255,.15); }
+        .card:active { transform: scale(.98); }
+
+        /* left accent bar */
+        .card::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 4px;
+            background: var(--accent);
+            border-radius: 14px 0 0 14px;
+        }
+
+        .card a {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 18px 18px 18px 22px;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* icon bubble */
+        .icon-wrap {
+            width: 52px; height: 52px;
+            border-radius: 12px;
+            background: rgba(255,255,255,.05);
+            border: 1px solid rgba(255,255,255,.08);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 26px;
+            flex-shrink: 0;
+        }
+
+        /* text block */
+        .card-body { flex: 1; min-width: 0; }
+
+        .card-title {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 800;
+            font-size: 20px;
+            letter-spacing: .5px;
+            text-transform: uppercase;
+            color: var(--text);
+            line-height: 1.1;
+        }
+
+        .card-tag {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-top: 3px;
+        }
+
+        .card-sub {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        /* chevron */
+        .chevron {
+            color: var(--muted);
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        /* ── BOTTOM CTA ── */
+        .cta-btn {
+            display: block;
+            width: 100%;
+            margin-top: 8px;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--gold) 0%, #d4821a 100%);
+            border: none;
+            border-radius: 12px;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 800;
+            font-size: 16px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #0d0f18;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            transition: opacity .2s, transform .15s;
+        }
+        .cta-btn:hover { opacity: .9; transform: translateY(-1px); }
+
+        /* ── EMPTY STATE ── */
+        .empty {
+            text-align: center;
+            padding: 48px 0;
+            color: var(--muted);
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 18px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* ── DIVIDER LINE ── */
+        .divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 16px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="logo">SHREDZ<span>.</span></div>
+    <a class="btn-switch" href="{% url 'workout_mode_switch' 'gym' %}">⚡ {% trans "Switch to Gym" %}</a>
+</div>
+
+<div class="wrap">
+    <div class="section-label">{% trans "Training" %}</div>
+    <div class="section-title">{% trans "Choose a Program" %}</div>
+
+    {% for program in programs %}
+        {% with forloop.counter as i %}
+        <div class="card" style="
+            --accent: {% if i == 1 %}#4caf50{% elif i == 2 %}#e03a2f{% elif i == 3 %}#f5a623{% else %}#607d8b{% endif %};
+        ">
+            <a href="{% url 'home_program_detail' program.id %}">
+                <div class="icon-wrap" style="
+                    background: {% if i == 1 %}rgba(76,175,80,.12){% elif i == 2 %}rgba(224,58,47,.12){% elif i == 3 %}rgba(245,166,35,.12){% else %}rgba(96,125,139,.12){% endif %};
+                    border-color: {% if i == 1 %}rgba(76,175,80,.25){% elif i == 2 %}rgba(224,58,47,.25){% elif i == 3 %}rgba(245,166,35,.25){% else %}rgba(96,125,139,.25){% endif %};
+                ">
+                    {% if i == 1 %}⚡{% elif i == 2 %}🔥{% elif i == 3 %}💀{% else %}🛡{% endif %}
+                </div>
+                <div class="card-body">
+                    <div class="card-title">{{ program.title }}</div>
+                    <div class="card-tag">{% trans "Tap to open plans" %}</div>
+                    {% if program.description %}
+                        <div class="card-sub">{{ program.description }}</div>
+                    {% endif %}
+                </div>
+                <div class="chevron">›</div>
+            </a>
+        </div>
+        {% endwith %}
+    {% empty %}
+        <div class="empty">{% trans "No home programs available." %}</div>
+    {% endfor %}
+
+    {% if programs %}
+        <hr class="divider">
+        <a class="cta-btn" href="#">{% trans "Choose Program" %}</a>
+    {% endif %}
+</div>
+
+</body>
+</html>

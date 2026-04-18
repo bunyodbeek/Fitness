@@ -1,0 +1,525 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Fitness App{% endblock %}</title>
+    <!-- Telegram WebApp SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0b0303 !important;
+            color: #EAEAEA;
+            min-height: 100vh;
+            padding-bottom: 80px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: none !important;
+            display: none !important;
+            background: none !important;
+            animation: none !important;
+        }
+
+        /* Premium Top Navigation */
+        .top-nav {
+            background: #0b0303;
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+        }
+
+        .top-nav h1 {
+            font-size: 24px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            background: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            flex: 1;
+            text-align: center;
+        }
+
+        .top-nav .back-btn {
+            background: rgba(255, 215, 0, 0.1);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            color: #ffd700;
+            font-size: 28px;
+            cursor: pointer;
+            padding: 0;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .top-nav .back-btn:hover {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: #ffd700;
+            transform: scale(1.1) translateX(-5px);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .top-nav .action-btn {
+            background: rgba(255, 215, 0, 0.1);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            color: #ffd700;
+            font-size: 24px;
+            cursor: pointer;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .page-header {
+            background: #0b0303 !important;
+        }
+
+        .top-nav .action-btn:hover {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: #ffd700;
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+
+        /* Premium Search Bar */
+        .search-bar {
+            padding: 20px;
+            background: transparent;
+            position: sticky;
+            top: 85px;
+            z-index: 99;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 16px 24px;
+            border: 2px solid rgba(255, 215, 0, 0.2);
+            border-radius: 30px;
+            font-size: 16px;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 215, 0, 0.05) 100%);
+            backdrop-filter: blur(10px);
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .search-bar input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: #ffd700;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 215, 0, 0.1) 100%);
+            box-shadow: 0 8px 32px rgba(255, 215, 0, 0.3);
+        }
+
+        /* Content Container */
+        .container {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ===== TELEGRAM-STYLE BOTTOM NAVIGATION ===== */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 20px;
+            right: 20px;
+            background: linear-gradient(to top, rgba(15, 30, 48, 0.98) 0%, rgba(7, 9, 12, 0.98) 100%);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 6px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+            z-index: 100;
+            border-radius: 20px 20px 20px 20px; /* Yuqori tomoni yulduz shaklida */
+            margin: 0 16px 16px 16px; /* Pastki va tomonlardan cheklangan */
+        }
+
+        .bottom-nav .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 8px 12px;
+            border-radius: 12px;
+            position: relative;
+            letter-spacing: 0.7px;
+            width: 20%; /* Har bir tugma 20% ni egallaydi */
+        }
+
+        /* Aktiv holatda - qora fon bilan ajratish */
+        .bottom-nav .nav-item.active {
+            color: #ffd700;
+            background: rgba(0, 0, 0, 0.4); /* Rasmda ko'rinib turibdi */
+            border-radius: 12px;
+        }
+
+        /* Hover holati (agar kerak bo'lsa) */
+        .bottom-nav .nav-item:hover {
+            color: #ffd700;
+            background: rgba(255, 215, 0, 0.1);
+        }
+
+        /* Icon stillari */
+        .bottom-nav .nav-item .icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+            transition: all 0.3s ease;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
+
+        /* Icon hover va active holatlari */
+        .bottom-nav .nav-item:hover .icon,
+        .bottom-nav .nav-item.active .icon {
+            transform: scale(1.15);
+            filter: drop-shadow(0 4px 8px rgba(255, 215, 0, 0.5));
+        }
+
+        /* Matnlar kichik harflarda */
+        .bottom-nav .nav-item span:last-child { /* Faqat matnlar uchun */
+            text-transform: lowercase;
+            font-size: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        /* Placeholder for images */
+        .placeholder-image {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.3) 0%, rgba(255, 215, 0, 0.15) 100%);
+            color: rgba(255, 215, 0, 0.7);
+            font-size: 48px;
+            font-weight: 900;
+            border-radius: 12px;
+        }
+
+        /* Premium Loading Spinner */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 60px;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 215, 0, 0.1);
+            border-top: 4px solid #ffd700;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 0.8s linear infinite;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Premium Messages */
+        .error-message {
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.9) 0%, rgba(192, 57, 43, 0.9) 100%);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 18px 20px;
+            border-radius: 16px;
+            margin: 20px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(231, 76, 60, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            font-weight: 600;
+        }
+
+        .success-message {
+            background: linear-gradient(135deg, rgba(46, 204, 113, 0.9) 0%, rgba(39, 174, 96, 0.9) 100%);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 18px 20px;
+            border-radius: 16px;
+            margin: 20px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(46, 204, 113, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            font-weight: 600;
+        }
+
+        /* Premium Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: white;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .empty-state .icon {
+            font-size: 100px;
+            margin-bottom: 30px;
+            filter: grayscale(100%);
+            opacity: 0.5;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        .empty-state h3 {
+            font-size: 28px;
+            font-weight: 900;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .empty-state p {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .top-nav h1 {
+                font-size: 20px;
+                letter-spacing: 3px;
+            }
+
+            .top-nav .back-btn, .top-nav .action-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 24px;
+            }
+
+            .search-bar {
+                top: 80px;
+                padding: 15px;
+            }
+
+            .search-bar input {
+                padding: 14px 20px;
+                font-size: 15px;
+            }
+
+            .bottom-nav {
+                padding: 10px 0 6px 0;
+            }
+
+            .bottom-nav .nav-item {
+                font-size: 10px;
+                padding: 6px 8px;
+            }
+
+            .bottom-nav .nav-item .icon {
+                font-size: 22px;
+            }
+
+            body {
+                padding-bottom: 70px;
+            }
+        }
+
+        /* Smooth Scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #ffd700, #f39c12);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #ffed4e, #ffd700);
+        }
+
+        /* ===== TOAST MESSAGES (TOP-RIGHT CORNER) ===== */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 99999;
+            max-width: 320px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        }
+
+        .toast {
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+            color: white;
+            padding: 14px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transform: translateX(120%);
+            animation: toastIn 0.4s forwards, toastOut 0.4s forwards 2.5s;
+            pointer-events: auto;
+            word-break: break-word;
+        }
+
+        .toast.error {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+
+        @keyframes toastIn {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes toastOut {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(120%);
+            }
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+{% block content %}{% endblock %}
+{% block bottom_nav %}
+    <div class="bottom-nav">
+        <a href="{% url 'gym_program_list' %}" class="nav-item {% if 'program' in request.path %}active{% endif %}">
+            <span class="icon">✅</span>
+            <span>{% trans "Workouts" %}</span>
+        </a>
+        <a href="{% url 'muscle_groups' %}"
+           class="nav-item {% if 'exercises' in request.path or 'muscle' in request.path %}active{% endif %}">
+            <span class="icon">💪</span>
+            <span>{% trans "Exercises" %}</span>
+        </a>
+        <a href="{% url 'handbook_home' %}" class="nav-item {% if 'handbook' in request.path %}active{% endif %}">
+            <span class="icon">📚</span>
+            <span>{% trans "Handbook" %}</span>
+        </a>
+        <a href="{% url 'favorite_list_page' %}" class="nav-item {% if 'favorites' in request.path %}active{% endif %}">
+            <span class="icon">⭐</span>
+            <span>{% trans "Favourites" %}</span>
+        </a>
+        <a href="{% url 'user_profile' %}" class="nav-item {% if 'profile' in request.path %}active{% endif %}">
+            <span class="icon">👨</span>
+            <span>{% trans "Profile" %}</span>
+        </a>
+    </div>
+{% endblock %}
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+    // Telegram WebApp initialization
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+    const telegramId = tg.initDataUnsafe?.user?.id;
+    if (telegramId) {
+        localStorage.setItem('telegram_id', telegramId);
+    }
+
+    function getTelegramId() {
+        return localStorage.getItem('telegram_id') || telegramId;
+    }
+
+    function goBack() {
+        window.history.back();
+    }
+
+    // ===== TOAST NOTIFICATION FUNCTION =====
+    function showToast(message, type = 'success') {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        container.appendChild(toast);
+
+        setTimeout(() => {
+            toast.remove();
+        }, 3500);
+    }
+
+    window.showToast = showToast;
+
+    function showSuccessMessage(text) {
+        showToast(text, 'success');
+    }
+</script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>
