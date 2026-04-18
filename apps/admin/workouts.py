@@ -3,6 +3,7 @@ from django.utils.html import format_html
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.contrib import messages
+import nested_admin
 
 from apps.models import (
     Plan, Program, Workout, WorkoutExercise, Week, Exercise,
@@ -55,6 +56,37 @@ class HomeWorkoutInline(admin.StackedInline):
     verbose_name_plural = "Home kunlari"
 
 
+class WorkoutExerciseNestedInline(nested_admin.NestedTabularInline):
+    model = WorkoutExercise
+    extra = 1
+    fields = ("exercise", "sets", "reps", "minutes", "recommended_weight", "order")
+    autocomplete_fields = ["exercise"]
+    verbose_name = "Mashq"
+    verbose_name_plural = "Mashqlar"
+
+
+class GymWorkoutNestedInline(nested_admin.NestedStackedInline):
+    model = GymWorkout
+    extra = 0
+    show_change_link = True
+    exclude = ("rounds", "description", "description_uz", "description_ru")
+    fields = (("day_number", "apply_to_all_weeks"), "title")
+    verbose_name = "Gym kuni"
+    verbose_name_plural = "Gym kunlari"
+    inlines = [WorkoutExerciseNestedInline]
+
+
+class HomeWorkoutNestedInline(nested_admin.NestedStackedInline):
+    model = HomeWorkout
+    extra = 0
+    show_change_link = True
+    exclude = ("description", "description_uz", "description_ru")
+    fields = (("day_number", "apply_to_all_weeks"), "rounds", "title")
+    verbose_name = "Home kuni"
+    verbose_name_plural = "Home kunlari"
+    inlines = [WorkoutExerciseNestedInline]
+
+
 # ─────────────────────────────────────────────
 # 3. Week Inline (Plan sahifasi uchun)
 # ─────────────────────────────────────────────
@@ -93,7 +125,7 @@ class WeekInline(admin.TabularInline):
 # 4. Week Admin
 # ─────────────────────────────────────────────
 @admin.register(Week)
-class WeekAdmin(admin.ModelAdmin):
+class WeekAdmin(nested_admin.NestedModelAdmin):
     list_display = ("__str__", "plan_link", "week_number", "workout_summary", "exercise_total")
     list_filter = ("plan__program__workout_type", "plan__program", "plan")
     search_fields = ("plan__name", "plan__program__name")
@@ -103,10 +135,10 @@ class WeekAdmin(admin.ModelAdmin):
         if obj:
             wtype = obj.plan.program.workout_type
             if wtype == "gym":
-                return [GymWorkoutInline]
+                return [GymWorkoutNestedInline]
             elif wtype == "home":
-                return [HomeWorkoutInline]
-        return [GymWorkoutInline]
+                return [HomeWorkoutNestedInline]
+        return [GymWorkoutNestedInline]
 
     def plan_link(self, obj):
         url = reverse('admin:apps_plan_change', args=[obj.plan.id])
@@ -131,18 +163,25 @@ class WeekAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
 
-    def save_formset(self, request, form, formset, change):
-        instances = formset.save(commit=False)
-        for instance in instances:
-            instance.save()
-            # apply_to_all_weeks haqida xabar
-            if hasattr(instance, 'apply_to_all_weeks') and instance.apply_to_all_weeks:
-                messages.info(
-                    request,
-                    f"✓ '{instance.title or f'Kun {instance.day_number}'}' — "
-                    f"1-haftaga saqlandi. Mashqlar qo'shilganda 2-6 haftalarga avtomatik ko'chiriladi."
-                )
-        formset.save_m2m()
+    def save_related(self, request, form, formsets, change):
+        """
+        Nested inline saqlashda Django/NestedAdmin default oqimini saqlaymiz.
+        Shunda WorkoutExercise post_save signallari progression generatsiyasini
+        odatdagidek ishga tushiradi.
+        """
+        super().save_related(request, form, formsets, change)
+
+        week = form.instance
+        if week.week_number != 1:
+            return
+
+        workouts = week.workouts.filter(apply_to_all_weeks=True)
+        for workout in workouts:
+            messages.info(
+                request,
+                f"✓ '{workout.title or f'Kun {workout.day_number}'}' saqlandi. "
+                f"1-haftadagi mashqlar saqlanganda 2-6 haftalar progression bo'yicha yangilanadi."
+            )
 
 
 # ─────────────────────────────────────────────
