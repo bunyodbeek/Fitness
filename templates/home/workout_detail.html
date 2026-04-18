@@ -21,7 +21,7 @@
 <body>
 <div class="wrap">
     <div class="top">
-        <a class="btn-link" href="{% url 'home_plan_weeks' workout.edition.id %}">← {% trans "Back" %}</a>
+        <a class="btn-link" href="{% url 'home_plan_weeks' workout.week.plan.id %}">← {% trans "Back" %}</a>
         <a class="btn-link" href="{% url 'workout_mode_switch' 'gym' %}">{% trans "Switch to Gym" %}</a>
     </div>
 

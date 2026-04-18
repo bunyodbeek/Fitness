@@ -44,9 +44,6 @@ WEEK_FIELD_MAP = {
 }
 
 
-# ─────────────────────────────────────────────
-# ProgramGenerationService
-# ─────────────────────────────────────────────
 
 class ProgramGenerationService:
 
@@ -58,14 +55,14 @@ class ProgramGenerationService:
 
     @staticmethod
     def generate_progression_from_week_one(instance: WorkoutExercise):
-        """
-        1-haftadagi WorkoutExercise dan 2-6 haftalarni Sheets formula
-        bo'yicha hisoblaydi va yaratadi / yangilaydi.
-        """
+        print(f"DEBUG generate called: exercise_id={instance.id}, week={instance.workout.week.week_number}")
+        
         plan = instance.workout.week.plan
         config: ProgressionSetting = plan.progression_config
-
+        print(f"DEBUG config={config}, plan={plan}")
+        
         if not config:
+            print("DEBUG: config None, returning!")
             return
 
         base_sets   = int(instance.sets or 0)
@@ -221,3 +218,4 @@ class UserProgramService:
                             order=source_exercise.order,
                         )
         return cloned
+    

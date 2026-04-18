@@ -42,7 +42,7 @@ from apps.views.home_workouts import (
 	HomeProgramListView,
 	HomeWorkoutDetailView,
 	HomeWorkoutDoneView,
-	WorkoutModeSwitchView,
+	WorkoutModeSwitchView, HomeWeekDetailView,
 )
 
 from apps.views.handbook import (
@@ -113,6 +113,7 @@ urlpatterns = [
 	path('home/workouts/<int:pk>/', HomeWorkoutDetailView.as_view(), name='home_workout_detail_legacy'),
 	path('home/workout/<int:pk>/done/', HomeWorkoutDoneView.as_view(), name='home_workout_done'),
 	path('home/workouts/<int:pk>/done/', HomeWorkoutDoneView.as_view(), name='home_workout_done_legacy'),
+	path('home/week/<int:pk>/', HomeWeekDetailView.as_view(), name='home_week_detail'),
 	
 	# HANDBOOK - yangi qo'shildi (My Trainer o'rniga)
 	path('handbook/', HandbookCategoryListView.as_view(), name='handbook_home'),

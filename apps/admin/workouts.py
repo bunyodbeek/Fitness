@@ -7,7 +7,7 @@ from django.contrib import messages
 import nested_admin
 
 from apps.models import (
-    Plan, Program, WorkoutExercise, Week, Exercise,
+    Plan, Program, WorkoutExercise, Week, Exercise, Workout,
 )
 from apps.models.workouts import HomeWorkout, GymWorkout, ProgressionSetting
 
@@ -198,7 +198,7 @@ class WeekAdmin(nested_admin.NestedModelAdmin):
         Week'lar Plan yaratilganda avtomatik (1..6) yaratiladi.
         Qo'lda add qilish duplicate (plan, week_number) xatolariga olib keladi.
         """
-        return False
+        return True
 
     def get_inlines(self, request, obj):
         if obj:
