@@ -9,7 +9,7 @@ from apps.bot.bot_view import TelegramWebhookView# Webhook view funksiyangizni i
 # 1. Tildan mustaqil (prefiksiz) URL'lar
 urlpatterns = [
     path('bot/webhook/', csrf_exempt(TelegramWebhookView.as_view()), name='bot_webhook'),
-    # path('_nested_admin/', include('nested_admin.urls')),
+    path('_nested_admin/', include('nested_admin.urls')),
 ]
 
 # 2. Tilda farqlanuvchi URL'lar
