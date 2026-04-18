@@ -41,6 +41,18 @@ class WorkoutExerciseInlineForm(forms.ModelForm):
         return cleaned_data
 
 
+class WeekAdminForm(forms.ModelForm):
+    generate_remaining_weeks = forms.BooleanField(
+        required=False,
+        label="Generate remaining weeks (up to week 6)",
+        help_text="Belgilansa, joriy weekdan keyingi yetishmayotgan haftalar avtomatik yaratiladi.",
+    )
+
+    class Meta:
+        model = Week
+        fields = "__all__"
+
+
 class WorkoutExerciseInline(admin.TabularInline):
     model = WorkoutExercise
     form = WorkoutExerciseInlineForm
@@ -159,6 +171,7 @@ class WeekInline(admin.TabularInline):
 # ─────────────────────────────────────────────
 @admin.register(Week)
 class WeekAdmin(nested_admin.NestedModelAdmin):
+    form = WeekAdminForm
     list_display = ("__str__", "plan_link", "week_number", "workout_summary", "exercise_total")
     list_filter = ("plan__program__workout_type", "plan__program", "plan")
     search_fields = ("plan__name", "plan__program__name")
@@ -213,6 +226,17 @@ class WeekAdmin(nested_admin.NestedModelAdmin):
 
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
+        if form.cleaned_data.get("generate_remaining_weeks"):
+            created_count = 0
+            for week_number in range(obj.week_number + 1, 7):
+                _, created = Week.objects.get_or_create(plan=obj.plan, week_number=week_number)
+                if created:
+                    created_count += 1
+            if created_count:
+                messages.success(
+                    request,
+                    f"✓ {created_count} ta qolgan hafta avtomatik yaratildi."
+                )
 
     def save_related(self, request, form, formsets, change):
         """
