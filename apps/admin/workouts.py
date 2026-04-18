@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django import forms
 from django.utils.html import format_html
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -14,8 +15,35 @@ from apps.models.workouts import HomeWorkout, GymWorkout, ProgressionSetting
 # ─────────────────────────────────────────────
 # 1. WorkoutExercise Inline
 # ─────────────────────────────────────────────
+class WorkoutExerciseInlineForm(forms.ModelForm):
+    class Meta:
+        model = WorkoutExercise
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["minutes"].required = False
+        self.fields["recommended_weight"].required = False
+
+    def clean(self):
+        cleaned_data = super().clean()
+        exercise = cleaned_data.get("exercise")
+        minutes = cleaned_data.get("minutes")
+        recommended_weight = cleaned_data.get("recommended_weight")
+
+        if exercise:
+            # Admin UX: vaqt/og'irlik kiritilmasa Exercise dan avtomatik to'ldiriladi.
+            if minutes in (None, 0, 0.0, ""):
+                cleaned_data["minutes"] = exercise.duration or 0
+            if recommended_weight in (None, 0, 0.0, ""):
+                cleaned_data["recommended_weight"] = exercise.recommended_weight or 0
+
+        return cleaned_data
+
+
 class WorkoutExerciseInline(admin.TabularInline):
     model = WorkoutExercise
+    form = WorkoutExerciseInlineForm
     extra = 1
     fields = ("exercise", "sets", "reps", "minutes", "recommended_weight", "order")
     autocomplete_fields = ["exercise"]
@@ -58,6 +86,7 @@ class HomeWorkoutInline(admin.StackedInline):
 
 class WorkoutExerciseNestedInline(nested_admin.NestedStackedInline):
     model = WorkoutExercise
+    form = WorkoutExerciseInlineForm
     extra = 1
     fields = (
         "exercise",
