@@ -46,7 +46,6 @@ class WorkoutExerciseInline(admin.TabularInline):
     form = WorkoutExerciseInlineForm
     extra = 1
     fields = ("exercise", "sets", "reps", "minutes", "recommended_weight", "order")
-    autocomplete_fields = ["exercise"]
     verbose_name = "Mashq"
     verbose_name_plural = "Mashqlar"
 
@@ -94,7 +93,6 @@ class WorkoutExerciseNestedInline(nested_admin.NestedStackedInline):
         ("minutes", "recommended_weight"),
         "order",
     )
-    autocomplete_fields = ["exercise"]
     sortable_field_name = "order"
     verbose_name = "Mashq"
     verbose_name_plural = "Mashqlar"
@@ -165,6 +163,13 @@ class WeekAdmin(nested_admin.NestedModelAdmin):
     list_filter = ("plan__program__workout_type", "plan__program", "plan")
     search_fields = ("plan__name", "plan__program__name")
     ordering = ("plan__program", "plan", "week_number")
+
+    def has_add_permission(self, request):
+        """
+        Week'lar Plan yaratilganda avtomatik (1..6) yaratiladi.
+        Qo'lda add qilish duplicate (plan, week_number) xatolariga olib keladi.
+        """
+        return False
 
     def get_inlines(self, request, obj):
         if obj:
