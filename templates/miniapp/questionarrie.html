@@ -69,7 +69,7 @@
         }
         .option-btn.outline.selected { background: #f1c40f; color: #2c3e50; }
         .weight-input {
-            background: #34495e;
+            background: #0b0303;
             border: none;
             padding: 12px;
             border-radius: 10px;
@@ -196,6 +196,8 @@
             </div>
             <p style="color:#dfe6e9; margin-top:8px">{% trans "Users just like you match your profile, and reach their goal!" %}</p>
             <button class="continue-btn" id="submitBtn">{% trans "Build My Plan" %}</button>
+            <span id="buildLabel" data-text="{% trans 'Build' %}" hidden></span>
+            <span id="planLabel" data-text="{% trans 'plan' %}" hidden></span>
         </div>
     </div>
 </div>
@@ -328,7 +330,6 @@
     wireSingleGroup('workoutTypeOptions', 'workout_type', true);
     wireSingleGroup('genderOptions', 'gender', true);
     wireSingleGroup('expOptions', 'experience', true);
-    wireSingleGroup('goalOptions', 'goal', true);
     wireSingleGroup('daysOptions', 'days', true);
 
     // -------- Weight --------
