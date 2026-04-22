@@ -1344,7 +1344,8 @@
                                 </div>
                                 <button type="button" class="collection-remove-btn"
                                         data-url="{% url 'exercise_remove' collection.id favorite.exercise.id %}"
-                                        data-collection-id="{{ collection.id }}">✕
+                                        data-collection-id="{{ collection.id }}"
+                                        data-exercise-id="{{ favorite.exercise.id }}">✕
                                 </button>
                             </a>
                         {% empty %}

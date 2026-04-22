@@ -66,7 +66,17 @@ class ToggleFavoriteView(APIView):
             favorite.delete()
             return Response({'success': True, 'status': 'removed'})
 
-        return Response({'success': True, 'status': 'added'})
+        thumbnail = exercise.thumbnail.url if getattr(exercise, "thumbnail", None) else None
+        return Response({
+            'success': True,
+            'status': 'added',
+            'favorite_id': favorite.id,
+            'exercise_id': exercise.id,
+            'exercise_name': exercise.name,
+            'thumbnail': thumbnail,
+            'body_part': exercise.body_part,
+            'difficulty': exercise.difficulty,
+        })
 
 
 class FavoriteToggleAPIView(GenericAPIView):
@@ -230,6 +240,8 @@ class ExerciseRemoveFromCollection(View):
             exercise_id=favorited_id,
             collection=collection
         )
+        exercise = favorite.exercise
+        thumbnail = exercise.thumbnail.url if getattr(exercise, "thumbnail", None) else None
 
         favorite.collection = None
         favorite.save(update_fields=["collection"])
@@ -237,7 +249,13 @@ class ExerciseRemoveFromCollection(View):
         return JsonResponse(
             {
                 "success": True,
-                "message": "Exercise collectiondan olib tashlandi"
+                "message": "Exercise collectiondan olib tashlandi",
+                "favorite_id": favorite.id,
+                "exercise_id": exercise.id,
+                "exercise_name": exercise.name,
+                "thumbnail": thumbnail,
+                "body_part": exercise.body_part,
+                "difficulty": exercise.difficulty,
             },
             status=status.HTTP_200_OK
         )
