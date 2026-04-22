@@ -150,9 +150,6 @@
             <button class="option-btn" data-value="beginner">
                 {% trans "Beginner" %}<br><small style="font-weight:400; color:#1e272e">{% trans "Training for less than 6 mos" %}</small>
             </button>
-            <button class="option-btn" data-value="intermediate">
-                {% trans "Intermediate" %}<br><small style="font-weight:400; color:#1e272e">{% trans "Training for 6 mos - 2 yrs" %}</small>
-            </button>
             <button class="option-btn" data-value="advanced">
                 {% trans "Advanced" %}<br><small style="font-weight:400; color:#1e272e">{% trans "Training for more than 2 yrs" %}</small>
             </button>
@@ -161,32 +158,6 @@
 
     <!-- Step 4 -->
     <div class="question" data-step="4">
-        <h1>{% trans "What's your current fitness objective?" %}</h1>
-        <div class="options" id="goalOptions">
-            <button class="option-btn" data-value="build_body">{% trans "Build a great body" %}</button>
-            <button class="option-btn" data-value="lose_weight">{% trans "Lose weight" %}</button>
-            <button class="option-btn" data-value="gain_muscle">{% trans "Gain muscle" %}</button>
-            <button class="option-btn" data-value="get_shape">{% trans "Get in shape" %}</button>
-        </div>
-    </div>
-
-    <!-- Step 5 -->
-    <div class="question" data-step="5">
-        <h1>{% trans "What drives you most to work out?" %}</h1>
-        <p class="subtitle">{% trans "You can choose more than one" %}</p>
-        <div class="options" id="motivationOptions">
-            <button class="option-btn outline" data-value="healthy_lifestyle">{% trans "I want a healthy lifestyle" %}</button>
-            <button class="option-btn outline" data-value="improve_physique">{% trans "Improve my physique" %}</button>
-            <button class="option-btn outline" data-value="get_stronger">{% trans "Get stronger every day" %}</button>
-            <button class="option-btn outline" data-value="good_challenge">{% trans "I like a good challenge" %}</button>
-        </div>
-        <div style="text-align:center; margin-top:12px;">
-            <button class="option-btn" id="motivationContinue">{% trans "Continue" %}</button>
-        </div>
-    </div>
-
-    <!-- Step 6 -->
-    <div class="question" data-step="6">
         <h1>{% trans "How many days per week would you like to work out?" %}</h1>
         <div class="options" id="daysOptions">
             <button class="option-btn" data-value="2">{% trans "2 days" %}</button>
@@ -195,8 +166,8 @@
         </div>
     </div>
 
-    <!-- Step 7 -->
-    <div class="question" data-step="7">
+    <!-- Step 5 -->
+    <div class="question" data-step="5">
         <h1>{% trans "What's your weight?" %}</h1>
         <input id="weightInput" type="number" class="weight-input" placeholder="63" value="63" min="30" max="250"/>
         <div class="unit">{% trans "Kilograms" %}</div>
@@ -205,14 +176,13 @@
         </div>
     </div>
 
-    <!-- Step 8 -->
-    <div class="question" data-step="8">
+    <!-- Step 6 -->
+    <div class="question" data-step="6">
         <div class="final-screen">
             <h1>{% trans "Ready to crush your goal?" %}</h1>
             <div class="badge">
-                <h2 id="finalGoal">BUILD A<br>GREAT BODY</h2>
+                <h2 id="finalGoal">{% trans "START NOW" %}</h2>
             </div>
-            <div class="stats" id="finalStats">15,227,894</div>
             <p style="color:#dfe6e9; margin-top:8px">{% trans "Users just like you match your profile, and reach their goal!" %}</p>
             <button class="continue-btn" id="submitBtn">{% trans "Build My Plan" %}</button>
             <span id="buildLabel" data-text="{% trans 'Build' %}" hidden></span>
@@ -246,8 +216,6 @@
         photo_url: telegramUser?.photo_url || '',
         gender: '',
         experience: '',
-        goal: '',
-        motivation: [],
         days: '',
         weight: Number(document.getElementById('weightInput')?.value || 63),
         workout_type: ''
@@ -277,7 +245,7 @@
     });
 
     // ---------------- Steps ----------------
-    const totalSteps = 8;
+    const totalSteps = 6;
     let currentStep = 1;
 
     function updateProgress() {
@@ -338,16 +306,6 @@
                 }
             }
 
-            if (fieldName === 'goal') {
-                const selectedBtn = root.querySelector(`.option-btn[data-value="${value}"]`);
-                const goalLabel = (selectedBtn?.textContent || value.replace(/_/g, ' ')).trim();
-                document.getElementById('finalGoal').textContent = goalLabel.toUpperCase();
-
-                const buildLabel = document.getElementById('buildLabel')?.dataset?.text || 'Build';
-                const planLabel = document.getElementById('planLabel')?.dataset?.text || 'plan';
-                document.getElementById('submitBtn').textContent = `${buildLabel} ${goalLabel} ${planLabel}`;
-            }
-
             if (autoNext) setTimeout(nextStep, 180);
         });
     }
@@ -355,40 +313,7 @@
     wireSingleGroup('workoutTypeOptions', 'workout_type', true);
     wireSingleGroup('genderOptions', 'gender', true);
     wireSingleGroup('expOptions', 'experience', true);
-    wireSingleGroup('goalOptions', 'goal', true);
     wireSingleGroup('daysOptions', 'days', true);
-
-    // -------- Multi-select motivation --------
-    (function wireMultiMotivation() {
-        const root = document.getElementById('motivationOptions');
-        if (!root) return;
-
-        root.addEventListener('click', (e) => {
-            const btn = e.target.closest('.option-btn');
-            if (!btn) return;
-
-            const value = btn.dataset.value;
-            if (!value) return;
-
-            const idx = formData.motivation.indexOf(value);
-            if (idx === -1) {
-                formData.motivation.push(value);
-                btn.classList.add('selected');
-            } else {
-                formData.motivation.splice(idx, 1);
-                btn.classList.remove('selected');
-            }
-        });
-
-        document.getElementById('motivationContinue').addEventListener('click', () => {
-            if (!formData.motivation.length) {
-                if (tg && tg.showAlert) tg.showAlert('{% trans "Please select at least one option" %}');
-                else alert('{% trans "Please select at least one option" %}');
-                return;
-            }
-            nextStep();
-        });
-    })();
 
     // -------- Weight --------
     const weightInput = document.getElementById('weightInput');
