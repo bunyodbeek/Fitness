@@ -178,9 +178,15 @@ class WorkoutStartView(LoginRequiredMixin, View):
 		
 		template = 'workouts/home_active_workout.html' if wtype == WorkoutType.HOME else 'workouts/active_workout.html'
 		
+		# ✅ Avval o'zgaruvchiga saqla
+		exercises_data = self._prepare_exercises_data(
+			workout_exercises,
+			getattr(request, "LANGUAGE_CODE", "en")
+		)
 		return render(request, template, {
 			"workout": workout,
 			"exercises": self._prepare_exercises_data(workout_exercises, getattr(request, "LANGUAGE_CODE", "en")),
+			"total_exercises": len(exercises_data),
 			"initial_exercise_index": progress.current_exercise_index if progress else 0,
 		})
 	
@@ -188,15 +194,25 @@ class WorkoutStartView(LoginRequiredMixin, View):
 		data = []
 		for wex in workout_exercises:
 			ex = wex.exercise
+			
+			name = None
+			for field in [f"name_{lang_code}", "name_en", "name"]:
+				name = getattr(ex, field, None)
+				if name:
+					break
+			
 			data.append({
 				"exercise_id": ex.id,
-				"name": getattr(ex, f"name_{lang_code}", ex.name) or ex.name,
+				"name": name or "Exercise",
 				"sets": max(wex.sets, 1),
 				"reps": max(wex.reps, 1),
-				"duration_minutes": wex.minutes,
-				"type": "cardio" if wex.minutes > 0 else "strength",
+				"duration_minutes": float(wex.minutes or 0),
+				"rest_seconds": int(getattr(wex, 'rest_seconds', 60)),
+				"calories_per_minute": float(getattr(wex, 'calories_per_minute', 5.0)),
+				"type": "cardio" if (wex.minutes or 0) > 0 else "strength",
 				"image": ex.thumbnail.url if ex.thumbnail else None,
 				"video": ex.video.url if ex.video else None,
+				"description": getattr(ex, f"description_{lang_code}", None) or getattr(ex, "description", None) or "",
 			})
 		return data
 
