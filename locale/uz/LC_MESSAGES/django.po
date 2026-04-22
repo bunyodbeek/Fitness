@@ -1444,3 +1444,97 @@ msgstr ""
 
 #~ msgid "Sevimli"
 #~ msgstr "sevimli"
+
+# Miniapp questionnaire translations
+msgid "Where will you train?"
+msgstr "Qayerda mashq qilasiz?"
+
+msgid "Let's start with the basics"
+msgstr "Keling, asosiy ma'lumotlardan boshlaymiz"
+
+msgid "How would you describe your gym experience?"
+msgstr "Sport zalidagi tajribangizni qanday baholaysiz?"
+
+msgid "Training for less than 6 mos"
+msgstr "6 oydan kam mashq qilganman"
+
+msgid "Training for more than 2 yrs"
+msgstr "2 yildan ko‘proq mashq qilganman"
+
+msgid "What's your current fitness objective?"
+msgstr "Hozirgi fitness maqsadingiz nima?"
+
+msgid "Build a great body"
+msgstr "Chiroyli qomat qurish"
+
+msgid "Lose weight"
+msgstr "Vazn tashlash"
+
+msgid "Gain muscle"
+msgstr "Mushak oshirish"
+
+msgid "Get in shape"
+msgstr "Formaga kirish"
+
+msgid "How many days per week would you like to work out?"
+msgstr "Haftasiga necha kun mashq qilmoqchisiz?"
+
+msgid "2 days"
+msgstr "2 kun"
+
+msgid "3 days"
+msgstr "3 kun"
+
+msgid "4 days"
+msgstr "4 kun"
+
+msgid "What's your weight?"
+msgstr "Vazningiz qancha?"
+
+msgid "Kilograms"
+msgstr "Kilogramm"
+
+msgid "Next"
+msgstr "Keyingi"
+
+msgid "Ready to crush your goal?"
+msgstr "Maqsadingizga erishishga tayyormisiz?"
+
+msgid "START NOW"
+msgstr "HOZIROQ BOSHLANG"
+
+msgid "Users just like you match your profile, and reach their goal!"
+msgstr "Sizga o‘xshagan foydalanuvchilar profilingizga mos kelib, maqsadiga erishmoqda!"
+
+msgid "Build My Plan"
+msgstr "Rejamni tuzish"
+
+msgid "Gym"
+msgstr "Sport zal"
+
+msgid "Home"
+msgstr "Uy"
+
+msgid "Male"
+msgstr "Erkak"
+
+msgid "Female"
+msgstr "Ayol"
+
+msgid "Please enter a valid weight (30 - 300 kg)."
+msgstr "Iltimos, to‘g‘ri vazn kiriting (30 - 300 kg)."
+
+msgid "Error: Telegram ID not found. Please restart the bot."
+msgstr "Xato: Telegram ID topilmadi. Botni qayta ishga tushiring."
+
+msgid "Submitting..."
+msgstr "Yuborilmoqda..."
+
+msgid "Unknown error from server"
+msgstr "Serverdan noma'lum xatolik"
+
+msgid "Error:"
+msgstr "Xato:"
+
+msgid "Network error. Please try again."
+msgstr "Tarmoq xatosi. Iltimos, qayta urinib ko‘ring."

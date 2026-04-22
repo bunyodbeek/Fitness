@@ -158,6 +158,17 @@
 
     <!-- Step 4 -->
     <div class="question" data-step="4">
+        <h1>{% trans "What's your current fitness objective?" %}</h1>
+        <div class="options" id="goalOptions">
+            <button class="option-btn" data-value="build_body">{% trans "Build a great body" %}</button>
+            <button class="option-btn" data-value="lose_weight">{% trans "Lose weight" %}</button>
+            <button class="option-btn" data-value="gain_muscle">{% trans "Gain muscle" %}</button>
+            <button class="option-btn" data-value="get_shape">{% trans "Get in shape" %}</button>
+        </div>
+    </div>
+
+    <!-- Step 5 -->
+    <div class="question" data-step="5">
         <h1>{% trans "How many days per week would you like to work out?" %}</h1>
         <div class="options" id="daysOptions">
             <button class="option-btn" data-value="2">{% trans "2 days" %}</button>
@@ -166,8 +177,8 @@
         </div>
     </div>
 
-    <!-- Step 5 -->
-    <div class="question" data-step="5">
+    <!-- Step 6 -->
+    <div class="question" data-step="6">
         <h1>{% trans "What's your weight?" %}</h1>
         <input id="weightInput" type="number" class="weight-input" placeholder="63" value="63" min="30" max="250"/>
         <div class="unit">{% trans "Kilograms" %}</div>
@@ -176,8 +187,8 @@
         </div>
     </div>
 
-    <!-- Step 6 -->
-    <div class="question" data-step="6">
+    <!-- Step 7 -->
+    <div class="question" data-step="7">
         <div class="final-screen">
             <h1>{% trans "Ready to crush your goal?" %}</h1>
             <div class="badge">
@@ -216,6 +227,7 @@
         photo_url: telegramUser?.photo_url || '',
         gender: '',
         experience: '',
+        goal: '',
         days: '',
         weight: Number(document.getElementById('weightInput')?.value || 63),
         workout_type: ''
@@ -245,7 +257,7 @@
     });
 
     // ---------------- Steps ----------------
-    const totalSteps = 6;
+    const totalSteps = 7;
     let currentStep = 1;
 
     function updateProgress() {
@@ -304,6 +316,11 @@
                 } catch (err) {
                     console.error('Workout type save error:', err);
                 }
+            }
+            if (fieldName === 'goal') {
+                const selectedBtn = root.querySelector(`.option-btn[data-value="${value}"]`);
+                const goalLabel = (selectedBtn?.textContent || value.replace(/_/g, ' ')).trim();
+                document.getElementById('finalGoal').textContent = goalLabel.toUpperCase();
             }
 
             if (autoNext) setTimeout(nextStep, 180);
