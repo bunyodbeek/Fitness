@@ -20,7 +20,40 @@ task (bunyodbek) :
 
 
 
-program.is-prem + user.is-prem = not premium page
-program + user.is-prem = not premium page
-program.is-prem + user = one time premium page
-program + user = premium page
+
+
+
+
+
+
+
+
+
+
+
+
+Favoritesdan muammo star ishlamayaoti
+workout detail ham
+workoutsda start workout ishlamayapti
+favoriteda start workout qlish
+
+exercise listda real time ishlashi kere
+edition soni orniga program qoshyotganda workout system name
+hafta soni ishlamayapti
+
+home workoutlar 4haftalik
+allni orniga programs boladi uni ichida ikkita dropdown menu
+1 goal (mg ft rc)
+2 collection boyicha user ozi saqlab qoygan exerciselar
+start workout page alonida yoziladi
+
+
+va huddi shu programlar admin tomonidan qoshilishi kere
+home logikasi tashlab beriladii
+sets rounds repsni orniga time asosiy urgu timega beriladi
+progressiya round+time
+home ichini frontini back endga qarab togrilash kere
+
+
+
+
