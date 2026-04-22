@@ -1475,3 +1475,85 @@ msgstr "В данную программу не включены никакие 
 
 #~ msgid "set done"
 #~ msgstr "готово"
+
+# Miniapp questionnaire translations
+msgid "Where will you train?"
+msgstr "Где вы будете тренироваться?"
+
+msgid "Let's start with the basics"
+msgstr "Начнём с основ"
+
+msgid "How would you describe your gym experience?"
+msgstr "Как бы вы описали свой опыт тренировок?"
+
+msgid "Training for less than 6 mos"
+msgstr "Тренируюсь меньше 6 месяцев"
+
+msgid "Training for more than 2 yrs"
+msgstr "Тренируюсь более 2 лет"
+
+msgid "What's your current fitness objective?"
+msgstr "Какая у вас текущая фитнес-цель?"
+
+msgid "Build a great body"
+msgstr "Построить отличное тело"
+
+msgid "Lose weight"
+msgstr "Похудеть"
+
+msgid "Gain muscle"
+msgstr "Набрать мышечную массу"
+
+msgid "Get in shape"
+msgstr "Прийти в форму"
+
+msgid "How many days per week would you like to work out?"
+msgstr "Сколько дней в неделю вы хотите тренироваться?"
+
+msgid "2 days"
+msgstr "2 дня"
+
+msgid "3 days"
+msgstr "3 дня"
+
+msgid "4 days"
+msgstr "4 дня"
+
+msgid "What's your weight?"
+msgstr "Какой у вас вес?"
+
+msgid "Kilograms"
+msgstr "Килограммы"
+
+msgid "Next"
+msgstr "Далее"
+
+msgid "Ready to crush your goal?"
+msgstr "Готовы достичь своей цели?"
+
+msgid "START NOW"
+msgstr "НАЧНИТЕ СЕЙЧАС"
+
+msgid "Users just like you match your profile, and reach their goal!"
+msgstr "Пользователи, похожие на вас, достигают своих целей!"
+
+msgid "Build My Plan"
+msgstr "Создать мой план"
+
+msgid "Please enter a valid weight (30 - 300 kg)."
+msgstr "Пожалуйста, введите корректный вес (30 - 300 кг)."
+
+msgid "Error: Telegram ID not found. Please restart the bot."
+msgstr "Ошибка: Telegram ID не найден. Пожалуйста, перезапустите бота."
+
+msgid "Submitting..."
+msgstr "Отправка..."
+
+msgid "Unknown error from server"
+msgstr "Неизвестная ошибка от сервера"
+
+msgid "Error:"
+msgstr "Ошибка:"
+
+msgid "Network error. Please try again."
+msgstr "Ошибка сети. Пожалуйста, попробуйте снова."

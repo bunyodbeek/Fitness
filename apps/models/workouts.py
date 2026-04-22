@@ -39,7 +39,6 @@ class Program(CreatedBaseModel):
 	
 	class Level(TextChoices):
 		BEGINNER = "beginner", "Beginner"
-		INTERMEDIATE = "intermediate", "Intermediate"
 		ADVANCED = "advanced", "Advanced"
 	
 	class Goal(TextChoices):

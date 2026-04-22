@@ -41,7 +41,6 @@ class UserProfile(CreatedBaseModel):
 
     class ExperienceLevel(TextChoices):
         BEGINNER = 'beginner', 'Beginner'
-        INTERMEDIATE = 'intermediate', 'Intermediate'
         ADVANCED = 'advanced', 'Advanced'
 
     class FitnessGoal(TextChoices):
