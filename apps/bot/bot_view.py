@@ -134,10 +134,17 @@ def help_cmd(message):
     )
 
 
+import json
+
 class TelegramWebhookView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
-        update = Update.de_json(request.data)
-        bot.process_new_updates([update])
+        try:
+            # request.data o'rniga request.body ishlatamiz
+            data = json.loads(request.body.decode('utf-8'))
+            update = Update.de_json(data)
+            bot.process_new_updates([update])
+        except Exception as e:
+            logger.error(f"Webhook error: {e}")
         return Response({"status": "ok"})
