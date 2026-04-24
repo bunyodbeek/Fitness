@@ -123,6 +123,22 @@ class FavoriteToggleAPIView(GenericAPIView):
         })
 
 
+class UserCollectionsAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        collections = FavoriteCollection.objects.filter(user=request.user.profile)
+        data = [
+            {
+                "id": c.id,
+                "name": c.name,
+                "exercise_count": c.exercise_count,
+            }
+            for c in collections
+        ]
+        return Response(data)
+
+
 class CreateCollectionView(View):
     def post(self, request):
         name = request.POST.get("name")

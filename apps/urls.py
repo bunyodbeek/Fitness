@@ -34,6 +34,7 @@ from apps.views.favorite import (
 	CreateCollectionView,
 	FavoriteToggleAPIView,
 	ExerciseRemoveFromCollection,
+    UserCollectionsAPIView,
     UserCustomProgramListView,
     CreateCustomProgramView as FavoritesCreateCustomProgramView,
     CustomProgramStartView,
@@ -136,6 +137,7 @@ urlpatterns = [
 	
 	path('favorites/', FavoritesListView.as_view(), name='favorite_list_page'),
 	path('favorites/collection/<int:collection_id>/toggle/', FavoriteToggleAPIView.as_view(), name='favorite-toggle'),
+    path('api/collections/', UserCollectionsAPIView.as_view(), name='user_collections_api'),
 	path("create/collection/", CreateCollectionView.as_view(), name="favorites"),
 	path('collection/delete/<int:collection_id>/', CollectionDeleteView.as_view(), name="collection_delete"),
 	path('collection/update/<int:collection_id>/', CollectionUpdateView.as_view(), name="collection_update"),
