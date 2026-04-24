@@ -212,6 +212,61 @@
             color: #1a1a2e;
         }
 
+        .programs-container {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .program-filters {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .program-select {
+            background: #0d0f18;
+            border: 1px solid rgba(255, 215, 0, 0.25);
+            color: #fff;
+            border-radius: 10px;
+            padding: 10px 12px;
+        }
+
+        .create-program-btn {
+            background: #ffd700;
+            color: #0d0f18;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-weight: 800;
+            align-self: flex-start;
+            cursor: pointer;
+        }
+
+        .program-card {
+            background: linear-gradient(180deg, #151826 0%, #111320 100%);
+            border: 1px solid rgba(255, 215, 0, 0.16);
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 10px;
+        }
+
+        .program-card h4 {
+            color: #ffd700;
+            margin-bottom: 8px;
+        }
+
+        .start-program-btn {
+            margin-top: 10px;
+            background: #ffd700;
+            color: #0d0f18;
+            border: none;
+            border-radius: 10px;
+            padding: 9px 12px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
         /* ===== FAVORITES LIST ===== */
         .favorites-list {
             display: flex;
@@ -1267,8 +1322,8 @@
         </div>
 
         <div class="favorites-tabs">
-            <button class="tab-btn active" data-tab="all">
-                <i class="fas fa-th-large"></i> {% trans "ALL" %}
+            <button class="tab-btn active" data-tab="programs">
+                <i class="fas fa-layer-group"></i> {% trans "PROGRAMS" %}
             </button>
             <button class="tab-btn" data-tab="exercise">
                 <i class="fas fa-dumbbell"></i> {% trans "EXERCISES" %}
@@ -1282,8 +1337,49 @@
             </button>
         </div>
 
+        <!-- PROGRAMS -->
+        <div class="programs-container" id="programsContainer">
+            <div class="program-filters">
+                <select class="program-select" id="goalFilter">
+                    <option value="">{% trans "Goal: All" %}</option>
+                    <option value="mg">{% trans "MG (Muscle Gain)" %}</option>
+                    <option value="ft">{% trans "FT (Fat Loss)" %}</option>
+                    <option value="rc">{% trans "RC (Recovery)" %}</option>
+                </select>
+                <select class="program-select" id="collectionFilter">
+                    <option value="">{% trans "Collection: All" %}</option>
+                    {% for collection in favorite_collections %}
+                        <option value="{{ collection.id }}">{{ collection.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button class="create-program-btn" id="openProgramModalBtn">
+                <i class="fas fa-plus"></i> {% trans "Create Program" %}
+            </button>
+            <div id="programCardsWrap">
+                {% for program in custom_programs %}
+                    <div class="program-card" data-goal="{{ program.goal }}"
+                         data-collection-id="{{ program.collection_id|default:'' }}">
+                        <h4>{{ program.name }}</h4>
+                        <div>🎯 {{ program.get_goal_display }}</div>
+                        <div>🏋️ {% trans "Total exercises" %}: {{ program.total_exercises }}</div>
+                        <div>📅 {% trans "Estimated weeks" %}: {{ program.weeks }}</div>
+                        <button class="start-program-btn" data-start-url="{% url 'custom_program_start' program.id %}">
+                            {% trans "START WORKOUT" %}
+                        </button>
+                    </div>
+                {% empty %}
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🧩</div>
+                        <h3>{% trans "No custom programs yet" %}</h3>
+                        <p>{% trans "Create your first program from a favorite collection." %}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
         <!-- EXERCISES -->
-        <div class="favorites-list" id="favoritesList">
+        <div class="favorites-list" id="favoritesList" style="display:none;">
             {% for fav in favorites %}
                 <div class="favorite-item" data-id="{{ fav.id }}">
                     <a href="{% url 'exercise_detail' fav.exercise_id %}" class="item-link-wrapper">
@@ -1515,6 +1611,42 @@
         </div>
     </div>
 
+    <div class="collection-modal" id="programModal">
+        <div class="collection-modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">🧩 {% trans "CREATE PROGRAM" %}</h3>
+                <button class="modal-close-btn" id="closeProgramModalBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="collection-name-group">
+                    <label class="collection-name-label">{% trans "Program Name" %}</label>
+                    <input type="text" class="collection-name-input" id="programName"
+                           placeholder="{% trans 'Enter program name' %}">
+                </div>
+                <div class="collection-name-group">
+                    <label class="collection-name-label">{% trans "Goal" %}</label>
+                    <select class="program-select" id="programGoal">
+                        <option value="mg">{% trans "MG (Muscle Gain)" %}</option>
+                        <option value="ft">{% trans "FT (Fat Loss)" %}</option>
+                        <option value="rc">{% trans "RC (Recovery)" %}</option>
+                    </select>
+                </div>
+                <div class="collection-name-group">
+                    <label class="collection-name-label">{% trans "Collection" %}</label>
+                    <select class="program-select" id="programCollection">
+                        {% for collection in favorite_collections %}
+                            <option value="{{ collection.id }}">{{ collection.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-cancel" id="cancelProgramBtn">{% trans "Cancel" %}</button>
+                <button class="modal-btn modal-btn-save" id="createProgramBtn">{% trans "Create Program" %}</button>
+            </div>
+        </div>
+    </div>
+
     {% csrf_token %}
 {% endblock %}
 
@@ -1539,11 +1671,14 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         this.classList.add('active');
 
+        document.getElementById('programsContainer').style.display = 'none';
         document.getElementById('favoritesList').style.display = 'none';
         document.getElementById('collectionsContainer').style.display = 'none';
         document.getElementById('editionsContainer').style.display = 'none';
 
-        if (tabName === 'all' || tabName === 'exercise') {
+        if (tabName === 'programs') {
+            document.getElementById('programsContainer').style.display = 'flex';
+        } else if (tabName === 'exercise') {
             document.getElementById('favoritesList').style.display = 'flex';
         } else if (tabName === 'collections') {
             document.getElementById('collectionsContainer').style.display = 'flex';
@@ -1552,6 +1687,88 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
         }
     });
 });
+
+// PROGRAM FILTERING
+function filterProgramCards() {
+    const goalValue = document.getElementById('goalFilter').value;
+    const collectionValue = document.getElementById('collectionFilter').value;
+
+    document.querySelectorAll('#programCardsWrap .program-card').forEach(card => {
+        const goalOk = !goalValue || card.dataset.goal === goalValue;
+        const collectionOk = !collectionValue || card.dataset.collectionId === collectionValue;
+        card.style.display = (goalOk && collectionOk) ? 'block' : 'none';
+    });
+}
+
+document.getElementById('goalFilter')?.addEventListener('change', filterProgramCards);
+document.getElementById('collectionFilter')?.addEventListener('change', filterProgramCards);
+
+// PROGRAM CREATE MODAL
+function openProgramModal() {
+    document.getElementById('programModal').classList.add('active');
+}
+
+function closeProgramModal() {
+    document.getElementById('programModal').classList.remove('active');
+}
+
+document.getElementById('openProgramModalBtn')?.addEventListener('click', openProgramModal);
+document.getElementById('closeProgramModalBtn')?.addEventListener('click', closeProgramModal);
+document.getElementById('cancelProgramBtn')?.addEventListener('click', closeProgramModal);
+
+document.getElementById('createProgramBtn')?.addEventListener('click', async () => {
+    const name = document.getElementById('programName').value.trim();
+    const goal = document.getElementById('programGoal').value;
+    const collectionId = document.getElementById('programCollection').value;
+
+    if (!name) {
+        alert("{% trans 'Please enter program name' %}");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('goal', goal);
+    formData.append('collection_id', collectionId);
+
+    const response = await fetch(`/${LANG}/favorites/programs/create/`, {
+        method: 'POST',
+        headers: {'X-CSRFToken': csrfToken},
+        body: formData
+    });
+
+    const data = await response.json();
+    if (!response.ok || !data.success) {
+        alert(data.error || "{% trans 'Failed to create program' %}");
+        return;
+    }
+
+    const wrap = document.getElementById('programCardsWrap');
+    const card = document.createElement('div');
+    card.className = 'program-card';
+    card.dataset.goal = data.program.goal;
+    card.dataset.collectionId = String(data.program.collection_id || '');
+    card.innerHTML = `
+        <h4>${data.program.name}</h4>
+        <div>🎯 ${data.program.goal_display}</div>
+        <div>🏋️ {% trans "Total exercises" %}: ${data.program.total_exercises}</div>
+        <div>📅 {% trans "Estimated weeks" %}: ${data.program.weeks}</div>
+        <button class="start-program-btn" data-start-url="/${LANG}/favorites/programs/${data.program.id}/start/">{% trans "START WORKOUT" %}</button>
+    `;
+    wrap.prepend(card);
+    closeProgramModal();
+    bindStartProgramButtons();
+    filterProgramCards();
+});
+
+function bindStartProgramButtons() {
+    document.querySelectorAll('.start-program-btn').forEach(btn => {
+        btn.onclick = function () {
+            window.location.href = this.dataset.startUrl;
+        };
+    });
+}
+bindStartProgramButtons();
 
 // OPEN CREATE MODAL
 document.getElementById('addCollectionBtn').addEventListener('click', function () {
@@ -1945,6 +2162,9 @@ document.addEventListener('keydown', (e) => {
         }
         if (document.getElementById('editModal').classList.contains('active')) {
             closeEditModal();
+        }
+        if (document.getElementById('programModal').classList.contains('active')) {
+            closeProgramModal();
         }
     }
 });
