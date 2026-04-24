@@ -105,6 +105,8 @@ class ExerciseDetailView(LoginRequiredMixin, DetailView):
             user_profile = None
         if user_profile:
             context['is_favorited'] = Favorite.objects.filter(user=user_profile, exercise=self.object).exists()
+            context['favorite_collections'] = user_profile.favorite_collections.all().order_by('-created_at')
         else:
             context['is_favorited'] = False
+            context['favorite_collections'] = []
         return context

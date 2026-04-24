@@ -1,5 +1,13 @@
 from apps.models.base import CreatedBaseModel
-from django.db.models import CASCADE, SET_NULL, CharField, FloatField, ForeignKey, IntegerField
+from django.db.models import (
+    CASCADE,
+    SET_NULL,
+    BooleanField,
+    CharField,
+    FloatField,
+    ForeignKey,
+    IntegerField,
+)
 from django.utils.translation import gettext_lazy as _
 
 class FavoriteCollection(CreatedBaseModel):
@@ -79,3 +87,37 @@ class FavoriteProgram(CreatedBaseModel):
 
     def __str__(self):
         return f"{self.user} - {self.program}"
+
+
+class UserCustomProgram(CreatedBaseModel):
+    class GoalType:
+        MUSCLE_GAIN = "mg"
+        FAT_LOSS = "ft"
+        RECOVERY = "rc"
+
+        CHOICES = (
+            (MUSCLE_GAIN, "Muscle Gain"),
+            (FAT_LOSS, "Fat Loss"),
+            (RECOVERY, "Recovery"),
+        )
+
+    user = ForeignKey("apps.UserProfile", CASCADE, related_name="custom_programs")
+    name = CharField(max_length=100)
+    goal = CharField(max_length=10, choices=GoalType.CHOICES)
+    collection = ForeignKey("apps.FavoriteCollection", SET_NULL, null=True, blank=True)
+    weeks = IntegerField(default=6)
+    is_active = BooleanField(default=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = _("Custom Program")
+        verbose_name_plural = _("Custom Programs")
+
+    def __str__(self):
+        return f"{self.user.name} - {self.name}"
+
+    @property
+    def total_exercises(self):
+        if not self.collection_id:
+            return 0
+        return self.collection.exercise_count

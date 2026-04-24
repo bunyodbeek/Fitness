@@ -1,8 +1,9 @@
 from apps.models import Exercise
-from apps.models.favorites import FavoriteCollection, Favorite
+from apps.models.favorites import FavoriteCollection, Favorite, UserCustomProgram
+from apps.services.workout_calculator import WorkoutCalculatorService
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_protect
@@ -39,6 +40,10 @@ class FavoritesListView(LoginRequiredMixin, ListView):
         context['total_count'] = Favorite.objects.filter(user=user_profile).count()
         context['favorite_collections'] = FavoriteCollection.objects.filter(user=user_profile).order_by('-created_at')
         context['collections_count'] = context['favorite_collections'].count()
+        context['custom_programs'] = UserCustomProgram.objects.filter(
+            user=user_profile,
+            is_active=True
+        ).select_related('collection')
         favorites = Favorite.objects.filter(user=user_profile, collection__isnull=True).select_related('exercise')
         context['all_exercises'] = [fav.exercise for fav in favorites]
         return context
@@ -66,7 +71,17 @@ class ToggleFavoriteView(APIView):
             favorite.delete()
             return Response({'success': True, 'status': 'removed'})
 
-        return Response({'success': True, 'status': 'added'})
+        thumbnail = exercise.thumbnail.url if getattr(exercise, "thumbnail", None) else None
+        return Response({
+            'success': True,
+            'status': 'added',
+            'favorite_id': favorite.id,
+            'exercise_id': exercise.id,
+            'exercise_name': exercise.name,
+            'thumbnail': thumbnail,
+            'body_part': exercise.body_part,
+            'difficulty': exercise.difficulty,
+        })
 
 
 class FavoriteToggleAPIView(GenericAPIView):
@@ -106,6 +121,22 @@ class FavoriteToggleAPIView(GenericAPIView):
             "items_count": collection.exercise_count,
             "message": message,
         })
+
+
+class UserCollectionsAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        collections = FavoriteCollection.objects.filter(user=request.user.profile)
+        data = [
+            {
+                "id": c.id,
+                "name": c.name,
+                "exercise_count": c.exercise_count,
+            }
+            for c in collections
+        ]
+        return Response(data)
 
 
 class CreateCollectionView(View):
@@ -230,6 +261,8 @@ class ExerciseRemoveFromCollection(View):
             exercise_id=favorited_id,
             collection=collection
         )
+        exercise = favorite.exercise
+        thumbnail = exercise.thumbnail.url if getattr(exercise, "thumbnail", None) else None
 
         favorite.collection = None
         favorite.save(update_fields=["collection"])
@@ -237,7 +270,144 @@ class ExerciseRemoveFromCollection(View):
         return JsonResponse(
             {
                 "success": True,
-                "message": "Exercise collectiondan olib tashlandi"
+                "message": "Exercise collectiondan olib tashlandi",
+                "favorite_id": favorite.id,
+                "exercise_id": exercise.id,
+                "exercise_name": exercise.name,
+                "thumbnail": thumbnail,
+                "body_part": exercise.body_part,
+                "difficulty": exercise.difficulty,
             },
             status=status.HTTP_200_OK
+        )
+
+
+class UserCustomProgramListView(LoginRequiredMixin, View):
+    def get(self, request):
+        user_profile = request.user.profile
+        goal = (request.GET.get("goal") or "").strip().lower()
+        collection_id = request.GET.get("collection_id")
+
+        programs = UserCustomProgram.objects.filter(user=user_profile, is_active=True).select_related("collection")
+        if goal in {"mg", "ft", "rc"}:
+            programs = programs.filter(goal=goal)
+        if collection_id and collection_id.isdigit():
+            programs = programs.filter(collection_id=int(collection_id))
+
+        return JsonResponse(
+            {
+                "success": True,
+                "programs": [
+                    {
+                        "id": p.id,
+                        "name": p.name,
+                        "goal": p.goal,
+                        "goal_display": p.get_goal_display(),
+                        "total_exercises": p.total_exercises,
+                        "weeks": p.weeks,
+                        "collection_id": p.collection_id,
+                        "collection_name": p.collection.name if p.collection_id else "",
+                    }
+                    for p in programs
+                ],
+            }
+        )
+
+
+class CreateCustomProgramView(LoginRequiredMixin, View):
+    def post(self, request):
+        user_profile = request.user.profile
+        name = (request.POST.get("name") or "").strip()
+        goal = (request.POST.get("goal") or "").strip().lower()
+        collection_id = request.POST.get("collection_id")
+
+        if not name:
+            return JsonResponse({"success": False, "error": "Program name is required"}, status=400)
+        if goal not in {"mg", "ft", "rc"}:
+            return JsonResponse({"success": False, "error": "Invalid goal"}, status=400)
+        if not collection_id or not str(collection_id).isdigit():
+            return JsonResponse({"success": False, "error": "Collection is required"}, status=400)
+
+        collection = get_object_or_404(FavoriteCollection, id=int(collection_id), user=user_profile)
+        collection_exercises = Exercise.objects.filter(favorites__collection=collection, favorites__user=user_profile).distinct()
+
+        if not collection_exercises.exists():
+            return JsonResponse({"success": False, "error": "Collection has no exercises"}, status=400)
+
+        program = UserCustomProgram.objects.create(
+            user=user_profile,
+            name=name,
+            goal=goal,
+            collection=collection,
+            weeks=6,
+            is_active=True,
+        )
+
+        schedule = WorkoutCalculatorService.generate_program(collection_exercises, weeks=program.weeks, days_per_week=3)
+
+        return JsonResponse(
+            {
+                "success": True,
+                "program": {
+                    "id": program.id,
+                    "name": program.name,
+                    "goal": program.goal,
+                    "goal_display": program.get_goal_display(),
+                    "total_exercises": program.total_exercises,
+                    "weeks": program.weeks,
+                    "collection_id": program.collection_id,
+                    "collection_name": collection.name,
+                },
+                "schedule": schedule,
+            },
+            status=201,
+        )
+
+
+class CustomProgramStartView(LoginRequiredMixin, View):
+    def get(self, request, pk):
+        program = get_object_or_404(UserCustomProgram, pk=pk, user=request.user.profile, is_active=True)
+        if not program.collection_id:
+            return render(request, "error_page.html", {"error_message": "Collection topilmadi."})
+
+        exercises_qs = Exercise.objects.filter(
+            favorites__collection=program.collection,
+            favorites__user=request.user.profile,
+        ).distinct()
+        if not exercises_qs.exists():
+            return render(request, "error_page.html", {"error_message": "Mashqlar topilmadi."})
+
+        schedule = WorkoutCalculatorService.generate_program(exercises_qs, weeks=program.weeks, days_per_week=3)
+        day_one = schedule[0]["days"][0] if schedule and schedule[0]["days"] else {"sets": 3, "reps": 10, "exercises": []}
+
+        lang_code = getattr(request, "LANGUAGE_CODE", "en")
+        exercises_data = []
+        for item in day_one["exercises"]:
+            ex = exercises_qs.filter(id=item["exercise_id"]).first()
+            if not ex:
+                continue
+            exercises_data.append(
+                {
+                    "exercise_id": ex.id,
+                    "name": getattr(ex, f"name_{lang_code}", ex.name) or ex.name,
+                    "sets": day_one["sets"],
+                    "reps": day_one["reps"],
+                    "duration_minutes": 0,
+                    "type": "strength",
+                    "image": ex.thumbnail.url if ex.thumbnail else None,
+                    "video": ex.video.url if ex.video else None,
+                }
+            )
+
+        return render(
+            request,
+            "workouts/active_workout.html",
+            {
+                "workout": program,
+                "exercises": exercises_data,
+                "total_exercises": len(exercises_data),
+                "initial_exercise_index": 0,
+                "initial_set": 1,
+                "initial_completed": 0,
+            },
         )
