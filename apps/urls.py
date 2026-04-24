@@ -34,6 +34,9 @@ from apps.views.favorite import (
 	CreateCollectionView,
 	FavoriteToggleAPIView,
 	ExerciseRemoveFromCollection,
+    UserCustomProgramListView,
+    CreateCustomProgramView as FavoritesCreateCustomProgramView,
+    CustomProgramStartView,
 )
 from apps.views.users import ChangeLanguageView, AdminAnalyticsView
 from apps.views.home_workouts import (
@@ -138,5 +141,8 @@ urlpatterns = [
 	path('collection/update/<int:collection_id>/', CollectionUpdateView.as_view(), name="collection_update"),
 	path('collection/remove-exercise/<int:collection_id>/<int:favorited_id>/', ExerciseRemoveFromCollection.as_view(),
 	     name="exercise_remove"),
+    path('favorites/programs/', UserCustomProgramListView.as_view(), name='user_custom_program_list'),
+    path('favorites/programs/create/', FavoritesCreateCustomProgramView.as_view(), name='favorites_create_custom_program'),
+    path('favorites/programs/<int:pk>/start/', CustomProgramStartView.as_view(), name='custom_program_start'),
 
 ]
