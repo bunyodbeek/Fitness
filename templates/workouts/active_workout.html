@@ -109,6 +109,13 @@
         restartUrl: "{% url 'gym_workout_start' workout.pk %}",
     };
 </script>
+<script>
+    const WORKOUT_URLS = {
+        complete: "{% url 'gym_workout_complete' workout.pk %}",
+        start: "{% url 'gym_workout_start' workout.pk %}"
+    };
+</script>
+<script src="{% static 'js/active_workout.js' %}"></script>
 <script src="{% static 'js/active_workout.js' %}"></script>
 </body>
 </html>

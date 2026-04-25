@@ -79,8 +79,8 @@ class ToggleFavoriteView(APIView):
             'exercise_id': exercise.id,
             'exercise_name': exercise.name,
             'thumbnail': thumbnail,
-            'body_part': exercise.body_part,
-            'difficulty': exercise.difficulty,
+            'body_part': str(exercise.primary_body_part) if exercise.primary_body_part else "",
+            # 'difficulty': exercise.difficulty,
         })
 
 
@@ -275,7 +275,7 @@ class ExerciseRemoveFromCollection(View):
                 "exercise_id": exercise.id,
                 "exercise_name": exercise.name,
                 "thumbnail": thumbnail,
-                "body_part": exercise.body_part,
+                "body_part": str(exercise.primary_body_part) if exercise.primary_body_part else "",
                 "difficulty": exercise.difficulty,
             },
             status=status.HTTP_200_OK
@@ -364,7 +364,7 @@ class CreateCustomProgramView(LoginRequiredMixin, View):
         )
 
 
-class CustomProgramStartView(LoginRequiredMixin, View):
+class   CustomProgramStartView(LoginRequiredMixin, View):
     def get(self, request, pk):
         program = get_object_or_404(UserCustomProgram, pk=pk, user=request.user.profile, is_active=True)
         if not program.collection_id:
@@ -405,6 +405,8 @@ class CustomProgramStartView(LoginRequiredMixin, View):
             {
                 "workout": program,
                 "exercises": exercises_data,
+                "rest_seconds": 60,
+                "calories_per_minute": 5.0,
                 "total_exercises": len(exercises_data),
                 "initial_exercise_index": 0,
                 "initial_set": 1,

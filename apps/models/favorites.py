@@ -47,19 +47,11 @@ class Favorite(CreatedBaseModel):
 
     def __str__(self):
         return f"{self.user.name}"
-
+    
     def save(self, *args, **kwargs):
-        from apps.services.programs import WorkoutCalculatorService
-
         if self.last_performed_weight is not None:
             self.recommended_weight = self.last_performed_weight
-        elif self.progression_setting_id:
-            self.recommended_weight = WorkoutCalculatorService.calculate_weight(
-                self.recommended_weight,
-                self.progression_setting,
-            )
         super().save(*args, **kwargs)
-
 
 class FavoriteExercise(CreatedBaseModel):
     user = ForeignKey('apps.UserProfile', CASCADE, related_name='favorite_exercises')
