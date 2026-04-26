@@ -380,7 +380,7 @@
             .empty-state { grid-column: 1 / -1; }
         }
 
-        .recommended-badge {
+        .for-you-badge {
             position: absolute;
             top: 12px;
             left: 12px;
@@ -523,7 +523,7 @@
                             <div class="premium-badge">👑 {% trans 'Premium' %}</div>
                         {% endif %}
                         {% if program == recommended_program %}
-                            <div class="recommended-badge">⭐ FOR YOU</div>
+                            <div class="for-you-badge">⭐ FOR YOU</div>
                         {% endif %}
                         <div class="program-title-overlay">
                             <h2>{{ program.title }}</h2>
@@ -607,7 +607,7 @@
 
         const overlay = document.getElementById('recommendedOverlay');
         if (overlay) {
-            const sessionKey = `shredz_recommended_shown_${window.location.pathname}`;
+            const sessionKey = 'recommendation_shown';
             if (!sessionStorage.getItem(sessionKey)) {
                 overlay.classList.add('show');
                 sessionStorage.setItem(sessionKey, '1');
