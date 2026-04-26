@@ -113,3 +113,19 @@ class UserCustomProgram(CreatedBaseModel):
         if not self.collection_id:
             return 0
         return self.collection.exercise_count
+
+
+class CustomProgramProgress(CreatedBaseModel):
+    user = ForeignKey("apps.UserProfile", CASCADE, related_name="custom_program_progresses")
+    program = ForeignKey("apps.UserCustomProgram", CASCADE, related_name="progresses")
+    total_calories = FloatField(default=0)
+    total_duration_seconds = IntegerField(default=0)
+    exercises_completed = IntegerField(default=0)
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = _("Custom Program Progress")
+        verbose_name_plural = _("Custom Program Progress")
+
+    def __str__(self):
+        return f"{self.user} - {self.program} custom progress"

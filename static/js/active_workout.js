@@ -6,6 +6,13 @@ const exercises = window.ACTIVE_WORKOUT_CONFIG.exercises;
 const initialExerciseIndex = window.ACTIVE_WORKOUT_CONFIG.initialExerciseIndex;
 const initialSet = window.ACTIVE_WORKOUT_CONFIG.initialSet;
 const initialCompleted = window.ACTIVE_WORKOUT_CONFIG.initialCompleted;
+const currentPath = window.location.pathname || '';
+const isCustomProgramFlow = /\/favorites\/programs\/\d+\/start\/?$/.test(currentPath);
+
+if (isCustomProgramFlow) {
+    WORKOUT_URLS.complete = currentPath.replace(/\/start\/?$/, '/complete/');
+    WORKOUT_URLS.start = currentPath;
+}
 
 // TO'G'RILANGAN TIMER LOGIKASI
 let currentExerciseIndex = initialExerciseIndex;

@@ -29,7 +29,7 @@
 <div class="exercise-content">
     <div class="exercise-media-container" onclick="toggleExerciseMedia()">
         <video class="exercise-video" id="exerciseVideo" playsinline controls></video>
-        <img src="{% static 'images/default_exercise.png' %}" alt="Exercise" class="exercise-image" id="exerciseImage">
+        <img src="{% static 'images/default_exercise.svg' %}" alt="Exercise" class="exercise-image" id="exerciseImage">
         <div class="play-video-hint" id="playVideoHint" style="display:none;">Tap image to play video</div>
         <div class="exercise-description-overlay" id="exerciseDescriptionCard" onclick="toggleExerciseDescription(event)" style="display:none;">
             <div class="exercise-description-text" id="exerciseDescription"></div>
@@ -51,7 +51,7 @@
 <div class="up-next-section" id="upNext" style="display:none;">
     <div class="up-next-label">UP NEXT</div>
     <div class="up-next-content">
-        <img src="{% static 'images/default_exercise.png' %}" alt="Next" class="up-next-image" id="upNextImage">
+        <img src="{% static 'images/default_exercise.svg' %}" alt="Next" class="up-next-image" id="upNextImage">
         <div class="up-next-info">
             <div class="up-next-name" id="upNextName"></div>
             <div class="up-next-details" id="upNextDetails"></div>
@@ -104,15 +104,15 @@
         initialExerciseIndex: {{ initial_exercise_index|default:0 }},
         initialSet: {{ initial_set|default:1 }},
         initialCompleted: {{ initial_completed|default:0 }},
-        defaultExerciseImage: "{% static 'images/default_exercise.png' %}",
-        completeUrl: "{% url 'gym_workout_complete' workout.pk %}",
-        restartUrl: "{% url 'gym_workout_start' workout.pk %}",
+        defaultExerciseImage: "{% static 'images/default_exercise.svg' %}",
+        completeUrl: "{{ workout_complete_url|default:'' }}",
+        restartUrl: "{{ workout_start_url|default:'' }}",
     };
 </script>
 <script>
     const WORKOUT_URLS = {
-        complete: "{% url 'gym_workout_complete' workout.pk %}",
-        start: "{% url 'gym_workout_start' workout.pk %}"
+        complete: "{{ workout_complete_url|default:'' }}",
+        start: "{{ workout_start_url|default:'' }}"
     };
 </script>
 <script src="{% static 'js/active_workout.js' %}"></script>

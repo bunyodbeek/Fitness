@@ -25,6 +25,7 @@ from rest_framework.views import APIView
 
 from apps.forms import UserProfileForm
 from apps.models import User, UserMotivation, UserProfile
+from apps.models.favorites import CustomProgramProgress
 from apps.models.payments import Subscription, Payment
 from apps.models.workouts import WorkoutProgress, WorkoutType
 from apps.services.program_progression import create_onboarding_program
@@ -300,26 +301,39 @@ class ProgressView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         profile, _ = UserProfile.objects.get_or_create(user=self.request.user)
-        progress_qs = WorkoutProgress.objects.filter(
+        workout_progress_qs = WorkoutProgress.objects.filter(
             user=profile,
             status=WorkoutProgress.Status.COMPLETED,
         ).select_related('workout')
-        totals = progress_qs.aggregate(
+        custom_progress_qs = CustomProgramProgress.objects.filter(
+            user=profile,
+        ).select_related('program')
+
+        workout_totals = workout_progress_qs.aggregate(
             total_calories=Sum('total_calories'),
             total_duration=Sum('total_duration_seconds'),
             total_exercises=Sum('exercises_completed'),
         )
-        total_workouts = progress_qs.count()
-        total_calories = int(totals['total_calories'] or 0)
-        total_exercises = int(totals['total_exercises'] or 0)
-        total_hours = round((totals['total_duration'] or 0) / 3600, 1)
+        custom_totals = custom_progress_qs.aggregate(
+            total_calories=Sum('total_calories'),
+            total_duration=Sum('total_duration_seconds'),
+            total_exercises=Sum('exercises_completed'),
+        )
+        total_workouts = workout_progress_qs.count() + custom_progress_qs.count()
+        total_calories = int((workout_totals['total_calories'] or 0) + (custom_totals['total_calories'] or 0))
+        total_exercises = int((workout_totals['total_exercises'] or 0) + (custom_totals['total_exercises'] or 0))
+        total_duration = (workout_totals['total_duration'] or 0) + (custom_totals['total_duration'] or 0)
+        total_hours = round(total_duration / 3600, 1)
 
         today = timezone.localdate()
         start_of_week = today - timedelta(days=6)
         daily_counts = []
         for day_offset in range(7):
             day = start_of_week + timedelta(days=day_offset)
-            count = progress_qs.filter(completed_at__date=day).count()
+            count = (
+                workout_progress_qs.filter(completed_at__date=day).count()
+                + custom_progress_qs.filter(created_at__date=day).count()
+            )
             daily_counts.append(count)
         max_count = max(daily_counts) if daily_counts else 0
         week_data = [
@@ -331,16 +345,32 @@ class ProgressView(LoginRequiredMixin, TemplateView):
         ]
 
         recent_workouts = []
-        for progress in progress_qs.order_by('-completed_at')[:5]:
+        recent_items = []
+
+        for progress in workout_progress_qs.order_by('-completed_at')[:5]:
             workout = progress.workout
             workout_name = workout.title or f"{_('Day')} {workout.day_number}"
-            recent_workouts.append({
+            recent_items.append({
                 'name': workout_name,
                 'date': timezone.localtime(progress.completed_at).strftime('%b %d, %H:%M'),
                 'exercises': progress.exercises_completed or 0,
                 'duration': int((progress.total_duration_seconds or 0) / 60),
                 'calories': int(progress.total_calories or 0),
+                'sort_dt': progress.completed_at,
             })
+
+        for progress in custom_progress_qs.order_by('-created_at')[:5]:
+            recent_items.append({
+                'name': progress.program.name,
+                'date': timezone.localtime(progress.created_at).strftime('%b %d, %H:%M'),
+                'exercises': progress.exercises_completed or 0,
+                'duration': int((progress.total_duration_seconds or 0) / 60),
+                'calories': int(progress.total_calories or 0),
+                'sort_dt': progress.created_at,
+            })
+
+        recent_items = sorted(recent_items, key=lambda x: x['sort_dt'], reverse=True)[:5]
+        recent_workouts = [{k: v for k, v in item.items() if k != 'sort_dt'} for item in recent_items]
 
         body_measurements = []
         if profile.weight:
