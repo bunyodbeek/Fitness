@@ -11,6 +11,7 @@ from django.views.generic import DetailView, ListView
 
 from apps.models.workouts import Plan, Program, Workout, WorkoutType, UserWorkoutProgress
 from apps.services import UserProgramService
+from apps.workouts.recommendation import get_recommended_program
 
 
 def get_active_mode(request):
@@ -44,6 +45,11 @@ class HomeProgramListView(ListView):
         context = super().get_context_data(**kwargs)
         context['active_workout_type'] = WorkoutType.HOME
         context['is_home_mode'] = True
+        context['recommended_program'] = (
+            get_recommended_program(self.request.user.profile, workout_type=WorkoutType.HOME)
+            if self.request.user.is_authenticated and hasattr(self.request.user, "profile")
+            else None
+        )
         return context
 
 
@@ -219,5 +225,4 @@ class HomeWeekDetailView(DetailView):
         context['completed_workout_ids'] = completed_ids
         context['is_home_mode'] = True
         return context
-
 

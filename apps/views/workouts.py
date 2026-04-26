@@ -8,6 +8,7 @@ import math
 
 from apps.models import Program, Plan, Week
 from apps.models.workouts import Workout, WorkoutExercise, WorkoutProgress, WorkoutType
+from apps.workouts.recommendation import get_recommended_program
 
 
 def get_session_workout_type(request, forced_type=None):
@@ -50,8 +51,11 @@ class ProgramListView(ListView):
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		active_type = self.active_workout_type()
+		recommended = get_recommended_program(self.request.user.profile, workout_type=active_type) \
+			if self.request.user.is_authenticated and hasattr(self.request.user, "profile") else None
 		context['active_workout_type'] = active_type
 		context['is_home_mode'] = active_type == WorkoutType.HOME
+		context['recommended_program'] = recommended
 		return context
 
 
