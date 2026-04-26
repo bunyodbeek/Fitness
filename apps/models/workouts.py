@@ -15,6 +15,7 @@ from django.db.models import (
 from django.db.models.fields import DateTimeField
 from django.utils.translation import gettext_lazy as _
 
+from apps.models import Exercise
 from apps.models.base import CreatedBaseModel
 
 
@@ -195,10 +196,7 @@ class HomeWorkout(Workout):
 
 
 class ProgressionSetting(Model):
-	"""
-	Google Sheets SETTINGS tabiga to'liq mos keladi.
-	KEY = goal + gender + level  (masalan: "FLMaleBeginner")
-	"""
+	
 	key = CharField(max_length=64, unique=True)
 	
 	# Weight multipliers (har hafta uchun alohida)
@@ -253,10 +251,7 @@ class WorkoutExercise(Model):
 		ordering = ["order", "id"]
 
 	def save(self, *args, **kwargs):
-		"""
-		Minutes/recommended_weight berilmasa, Exercise kartasidan olish.
-		Bu admin nested inline va boshqa yaratish oqimlarida ham bir xil ishlaydi.
-		"""
+	
 		if self.exercise_id:
 			exercise_obj = getattr(self, "exercise", None)
 			if exercise_obj is None:
