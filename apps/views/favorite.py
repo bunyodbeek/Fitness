@@ -1,9 +1,10 @@
 from apps.models import Exercise
-from apps.models.favorites import FavoriteCollection, Favorite, UserCustomProgram
+from apps.models.favorites import FavoriteCollection, Favorite, UserCustomProgram, CustomProgramProgress
 from apps.services.workout_calculator import WorkoutCalculatorService
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
+from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_protect
@@ -411,5 +412,59 @@ class   CustomProgramStartView(LoginRequiredMixin, View):
                 "initial_exercise_index": 0,
                 "initial_set": 1,
                 "initial_completed": 0,
+                "workout_complete_url": reverse("custom_program_complete", args=[program.pk]),
+                "workout_start_url": reverse("custom_program_start", args=[program.pk]),
+            },
+        )
+
+
+class CustomProgramCompleteView(LoginRequiredMixin, View):
+    template_name = "workouts/workout_complete.html"
+
+    def get(self, request, pk):
+        program = get_object_or_404(UserCustomProgram, pk=pk, user=request.user.profile, is_active=True)
+        return render(
+            request,
+            self.template_name,
+            {
+                "workout": program,
+                "workout_summary": {
+                    "total_calories": 0,
+                    "duration_seconds": 0,
+                    "exercises_completed": 0,
+                },
+            },
+        )
+
+    def post(self, request, pk):
+        program = get_object_or_404(UserCustomProgram, pk=pk, user=request.user.profile, is_active=True)
+
+        try:
+            total_calories = float(request.POST.get("total_calories", 0))
+            total_duration = int(request.POST.get("total_duration", 0))
+            exercises_completed = int(request.POST.get("exercises_completed", 0))
+        except (ValueError, TypeError):
+            return JsonResponse({"success": False, "error": "Invalid input data"}, status=400)
+
+        CustomProgramProgress.objects.create(
+            user=request.user.profile,
+            program=program,
+            total_calories=total_calories,
+            total_duration_seconds=total_duration,
+            exercises_completed=exercises_completed,
+        )
+
+        return render(
+            request,
+            self.template_name,
+            {
+                "workout": program,
+                "workout_summary": {
+                    "total_calories": total_calories,
+                    "duration_seconds": total_duration,
+                    "exercises_completed": exercises_completed,
+                    "total_reps": 0,
+                    "total_weight": 0,
+                },
             },
         )

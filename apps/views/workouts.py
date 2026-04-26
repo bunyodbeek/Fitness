@@ -188,6 +188,16 @@ class WorkoutStartView(LoginRequiredMixin, View):
 			"exercises": self._prepare_exercises_data(workout_exercises, getattr(request, "LANGUAGE_CODE", "en")),
 			"total_exercises": len(exercises_data),
 			"initial_exercise_index": progress.current_exercise_index if progress else 0,
+			"workout_complete_url": (
+				f"/{getattr(request, 'LANGUAGE_CODE', 'en')}/gym/workout/{workout.pk}/complete/"
+				if wtype == WorkoutType.GYM
+				else f"/{getattr(request, 'LANGUAGE_CODE', 'en')}/workout/{workout.pk}/complete/"
+			),
+			"workout_start_url": (
+				f"/{getattr(request, 'LANGUAGE_CODE', 'en')}/gym/workout/{workout.pk}/start/"
+				if wtype == WorkoutType.GYM
+				else f"/{getattr(request, 'LANGUAGE_CODE', 'en')}/workout/{workout.pk}/start/"
+			),
 		})
 	
 	def _prepare_exercises_data(self, workout_exercises, lang_code="en"):
