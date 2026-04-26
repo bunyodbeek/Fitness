@@ -309,6 +309,10 @@ class ProgressView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        period = (self.request.GET.get('period', 'week') or 'week').strip().lower()
+        if period not in {'today', 'week', 'month', 'year', 'all'}:
+            period = 'week'
+
         profile, _ = UserProfile.objects.get_or_create(user=self.request.user)
         workout_progress_qs = WorkoutProgress.objects.filter(
             user=profile,
@@ -317,6 +321,25 @@ class ProgressView(LoginRequiredMixin, TemplateView):
         custom_progress_qs = CustomProgramProgress.objects.filter(
             user=profile,
         ).select_related('program')
+
+        now = timezone.now()
+        today = timezone.localdate()
+
+        if period == 'today':
+            workout_progress_qs = workout_progress_qs.filter(completed_at__date=today)
+            custom_progress_qs = custom_progress_qs.filter(created_at__date=today)
+        elif period == 'week':
+            since = now - timedelta(days=7)
+            workout_progress_qs = workout_progress_qs.filter(completed_at__gte=since)
+            custom_progress_qs = custom_progress_qs.filter(created_at__gte=since)
+        elif period == 'month':
+            since = now - timedelta(days=30)
+            workout_progress_qs = workout_progress_qs.filter(completed_at__gte=since)
+            custom_progress_qs = custom_progress_qs.filter(created_at__gte=since)
+        elif period == 'year':
+            since = now - timedelta(days=365)
+            workout_progress_qs = workout_progress_qs.filter(completed_at__gte=since)
+            custom_progress_qs = custom_progress_qs.filter(created_at__gte=since)
 
         workout_totals = workout_progress_qs.aggregate(
             total_calories=Sum('total_calories'),
@@ -340,7 +363,6 @@ class ProgressView(LoginRequiredMixin, TemplateView):
         )
         total_hours = round(total_duration / 3600, 1)
 
-        today = timezone.localdate()
         start_of_week = today - timedelta(days=6)
         daily_counts = []
         for day_offset in range(7):
@@ -400,6 +422,7 @@ class ProgressView(LoginRequiredMixin, TemplateView):
 
         context.update({
             'profile': profile,
+            'period': period,
             'total_workouts': total_workouts,
             'total_calories': total_calories,
             'total_hours': total_hours,
