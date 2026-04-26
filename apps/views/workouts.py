@@ -46,13 +46,42 @@ class ProgramListView(ListView):
 	
 	def get_queryset(self):
 		workout_type = self.active_workout_type()
-		return Program.objects.filter(is_active=True, workout_type=workout_type).prefetch_related('plans')
+		qs = Program.objects.filter(is_active=True, workout_type=workout_type).prefetch_related('plans__weeks__workouts')
+		if not self.request.user.is_authenticated or not hasattr(self.request.user, "profile"):
+			return qs
+
+		profile = self.request.user.profile
+		completed_workout_ids = set(
+			WorkoutProgress.objects.filter(
+				user=profile,
+				status=WorkoutProgress.Status.COMPLETED,
+			).values_list("workout_id", flat=True)
+		)
+
+		filtered_programs = []
+		for program in qs:
+			workout_ids = [
+				w.id
+				for plan in program.plans.all()
+				for week in plan.weeks.all()
+				for w in week.workouts.all()
+			]
+			if workout_ids and all(wid in completed_workout_ids for wid in workout_ids):
+				continue
+			filtered_programs.append(program)
+
+		recommended = get_recommended_program(profile, workout_type=workout_type)
+		if recommended:
+			filtered_programs.sort(key=lambda p: (p.id != recommended.id, p.id))
+		return filtered_programs
 	
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		active_type = self.active_workout_type()
 		recommended = get_recommended_program(self.request.user.profile, workout_type=active_type) \
 			if self.request.user.is_authenticated and hasattr(self.request.user, "profile") else None
+		if recommended and all(p.id != recommended.id for p in context.get("programs", [])):
+			recommended = None
 		context['active_workout_type'] = active_type
 		context['is_home_mode'] = active_type == WorkoutType.HOME
 		context['recommended_program'] = recommended

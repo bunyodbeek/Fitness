@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.views import View
 from django.views.generic import DetailView, ListView
 
-from apps.models.workouts import Plan, Program, Workout, WorkoutType, UserWorkoutProgress
+from apps.models.workouts import Plan, Program, Workout, WorkoutType, UserWorkoutProgress, WorkoutProgress
 from apps.services import UserProgramService
 from apps.workouts.recommendation import get_recommended_program
 
@@ -37,19 +37,49 @@ class HomeProgramListView(ListView):
     context_object_name = 'programs'
 
     def get_queryset(self):
-        return Program.objects.filter(
+        qs = Program.objects.filter(
             is_active=True, workout_type=WorkoutType.HOME
-        ).prefetch_related('plans')
+        ).prefetch_related('plans__weeks__workouts')
+        if not self.request.user.is_authenticated or not hasattr(self.request.user, "profile"):
+            return qs
+
+        profile = self.request.user.profile
+        completed_workout_ids = set(
+            WorkoutProgress.objects.filter(
+                user=profile,
+                status=WorkoutProgress.Status.COMPLETED,
+            ).values_list("workout_id", flat=True)
+        )
+
+        filtered_programs = []
+        for program in qs:
+            workout_ids = [
+                w.id
+                for plan in program.plans.all()
+                for week in plan.weeks.all()
+                for w in week.workouts.all()
+            ]
+            if workout_ids and all(wid in completed_workout_ids for wid in workout_ids):
+                continue
+            filtered_programs.append(program)
+
+        recommended = get_recommended_program(profile, workout_type=WorkoutType.HOME)
+        if recommended:
+            filtered_programs.sort(key=lambda p: (p.id != recommended.id, p.id))
+        return filtered_programs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['active_workout_type'] = WorkoutType.HOME
         context['is_home_mode'] = True
-        context['recommended_program'] = (
+        recommended = (
             get_recommended_program(self.request.user.profile, workout_type=WorkoutType.HOME)
             if self.request.user.is_authenticated and hasattr(self.request.user, "profile")
             else None
         )
+        if recommended and all(p.id != recommended.id for p in context.get("programs", [])):
+            recommended = None
+        context['recommended_program'] = recommended
         return context
 
 
@@ -225,4 +255,3 @@ class HomeWeekDetailView(DetailView):
         context['completed_workout_ids'] = completed_ids
         context['is_home_mode'] = True
         return context
-
