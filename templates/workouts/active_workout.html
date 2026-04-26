@@ -37,11 +37,6 @@
         </div>
     </div>
     <h2 class="exercise-name" id="exerciseName"></h2>
-    <div class="exercise-description-card" id="exerciseDescriptionCard" onclick="toggleExerciseDescription()" style="display:none;">
-        <div class="exercise-description-text" id="exerciseDescription"></div>
-        <div class="exercise-description-hint" id="exerciseDescriptionHint">Tap to expand</div>
-    </div>
-
     <div id="strengthDetails">
         <div class="strength-chip">Set <span id="currentSet">1</span> / <span id="totalSets"></span></div>
         <div class="strength-chip"><span id="repsCount"></span> Reps</div>
@@ -100,7 +95,7 @@
         workoutPk: "{{ workout.pk }}",
         totalExercises: {{ total_exercises|default:0 }},
         csrfToken: "{{ csrf_token }}",
-        exercises: {{ exercises|safe }},
+        exercises: {{ exercises_json|safe }},
         initialExerciseIndex: {{ initial_exercise_index|default:0 }},
         initialSet: {{ initial_set|default:1 }},
         initialCompleted: {{ initial_completed|default:0 }},
@@ -115,7 +110,6 @@
         start: "{{ workout_start_url|default:'' }}"
     };
 </script>
-<script src="{% static 'js/active_workout.js' %}"></script>
 <script src="{% static 'js/active_workout.js' %}"></script>
 </body>
 </html>
