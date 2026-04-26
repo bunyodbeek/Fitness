@@ -38,6 +38,7 @@ from apps.views.favorite import (
     UserCustomProgramListView,
     CreateCustomProgramView as FavoritesCreateCustomProgramView,
     CustomProgramStartView,
+    CustomProgramCompleteView,
 )
 from apps.views.users import ChangeLanguageView, AdminAnalyticsView
 from apps.views.home_workouts import (
@@ -146,5 +147,6 @@ urlpatterns = [
     path('favorites/programs/', UserCustomProgramListView.as_view(), name='user_custom_program_list'),
     path('favorites/programs/create/', FavoritesCreateCustomProgramView.as_view(), name='favorites_create_custom_program'),
     path('favorites/programs/<int:pk>/start/', CustomProgramStartView.as_view(), name='custom_program_start'),
+    path('favorites/programs/<int:pk>/complete/', CustomProgramCompleteView.as_view(), name='custom_program_complete'),
 
 ]

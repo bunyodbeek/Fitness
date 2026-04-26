@@ -110,7 +110,7 @@
         <div class="stats-box">
             <div class="stats-row">
                 <span class="stats-label">{% trans 'Workout' %}</span>
-                <span class="stats-value">{{ workout.title }}</span>
+                <span class="stats-value">{{ workout.title|default:workout.name }}</span>
             </div>
             <div class="stats-row">
                 <span class="stats-label">{% trans 'Sets  Done' %}</span>

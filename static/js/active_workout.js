@@ -6,6 +6,13 @@ const exercises = window.ACTIVE_WORKOUT_CONFIG.exercises;
 const initialExerciseIndex = window.ACTIVE_WORKOUT_CONFIG.initialExerciseIndex;
 const initialSet = window.ACTIVE_WORKOUT_CONFIG.initialSet;
 const initialCompleted = window.ACTIVE_WORKOUT_CONFIG.initialCompleted;
+const currentPath = window.location.pathname || '';
+const isCustomProgramFlow = /\/favorites\/programs\/\d+\/start\/?$/.test(currentPath);
+
+if (isCustomProgramFlow) {
+    WORKOUT_URLS.complete = currentPath.replace(/\/start\/?$/, '/complete/');
+    WORKOUT_URLS.start = currentPath;
+}
 
 // TO'G'RILANGAN TIMER LOGIKASI
 let currentExerciseIndex = initialExerciseIndex;
@@ -24,6 +31,11 @@ let pauseStartTime = null;    // Pause boshlangan vaqt
 let totalCaloriesBurned = 0;
 let totalDurationSeconds = 0;
 let totalExercisesCompleted = initialCompleted;
+
+const toFiniteNumber = (value, fallback = 0) => {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : fallback;
+};
 
 // Yordamchi funksiyalar
 const formatTime = (s) => {
@@ -210,15 +222,17 @@ const completeExercise = (auto = false) => {
     updateExitButtonState();
 
     // Kaloriya hisoblash
+    const caloriesPerMinute = toFiniteNumber(ex.calories_per_minute, 5);
+    const durationMinutes = toFiniteNumber(ex.duration_minutes, 0);
     if (ex.type === 'cardio') {
-        totalCaloriesBurned += ex.calories_per_minute * ex.duration_minutes;
+        totalCaloriesBurned += caloriesPerMinute * durationMinutes;
     } else if (ex.type === 'strength' && currentSet >= ex.sets) {
-        totalCaloriesBurned += ex.calories_per_minute * ex.duration_minutes;
+        totalCaloriesBurned += caloriesPerMinute * durationMinutes;
     }
 
     if (ex.type === 'strength' && currentSet < ex.sets) {
         totalExercisesCompleted += 1;
-        startRest(ex.rest_seconds, currentSet, ex.sets);
+        startRest(toFiniteNumber(ex.rest_seconds, 60), currentSet, ex.sets);
         currentSet++;
         return;
     }
