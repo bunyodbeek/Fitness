@@ -1,6 +1,7 @@
 from apps.models import Exercise
 from apps.models.favorites import FavoriteCollection, Favorite, UserCustomProgram, CustomProgramProgress
 from apps.services.workout_calculator import WorkoutCalculatorService
+import math
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
@@ -394,6 +395,8 @@ class   CustomProgramStartView(LoginRequiredMixin, View):
                     "sets": day_one["sets"],
                     "reps": day_one["reps"],
                     "duration_minutes": 0,
+                    "rest_seconds": 60,
+                    "calories_per_minute": 5.0,
                     "type": "strength",
                     "image": ex.thumbnail.url if ex.thumbnail else None,
                     "video": ex.video.url if ex.video else None,
@@ -421,6 +424,22 @@ class   CustomProgramStartView(LoginRequiredMixin, View):
 class CustomProgramCompleteView(LoginRequiredMixin, View):
     template_name = "workouts/workout_complete.html"
 
+    @staticmethod
+    def _safe_float(value, default=0.0):
+        try:
+            parsed = float(value)
+        except (TypeError, ValueError):
+            return default
+        return parsed if math.isfinite(parsed) else default
+
+    @staticmethod
+    def _safe_int(value, default=0):
+        try:
+            parsed = int(float(value))
+        except (TypeError, ValueError):
+            return default
+        return parsed if math.isfinite(parsed) else default
+
     def get(self, request, pk):
         program = get_object_or_404(UserCustomProgram, pk=pk, user=request.user.profile, is_active=True)
         return render(
@@ -439,12 +458,9 @@ class CustomProgramCompleteView(LoginRequiredMixin, View):
     def post(self, request, pk):
         program = get_object_or_404(UserCustomProgram, pk=pk, user=request.user.profile, is_active=True)
 
-        try:
-            total_calories = float(request.POST.get("total_calories", 0))
-            total_duration = int(request.POST.get("total_duration", 0))
-            exercises_completed = int(request.POST.get("exercises_completed", 0))
-        except (ValueError, TypeError):
-            return JsonResponse({"success": False, "error": "Invalid input data"}, status=400)
+        total_calories = self._safe_float(request.POST.get("total_calories", 0))
+        total_duration = self._safe_int(request.POST.get("total_duration", 0))
+        exercises_completed = self._safe_int(request.POST.get("exercises_completed", 0))
 
         CustomProgramProgress.objects.create(
             user=request.user.profile,

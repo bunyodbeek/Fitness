@@ -1,6 +1,7 @@
 import json
 import traceback
 from datetime import timedelta
+import math
 
 import requests
 from django.conf import settings
@@ -298,6 +299,14 @@ class SettingsView(LoginRequiredMixin, TemplateView):
 class ProgressView(LoginRequiredMixin, TemplateView):
     template_name = 'users/progress.html'
 
+    @staticmethod
+    def _finite_number(value, default=0.0):
+        try:
+            parsed = float(value)
+        except (TypeError, ValueError):
+            return default
+        return parsed if math.isfinite(parsed) else default
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         profile, _ = UserProfile.objects.get_or_create(user=self.request.user)
@@ -320,9 +329,15 @@ class ProgressView(LoginRequiredMixin, TemplateView):
             total_exercises=Sum('exercises_completed'),
         )
         total_workouts = workout_progress_qs.count() + custom_progress_qs.count()
-        total_calories = int((workout_totals['total_calories'] or 0) + (custom_totals['total_calories'] or 0))
-        total_exercises = int((workout_totals['total_exercises'] or 0) + (custom_totals['total_exercises'] or 0))
-        total_duration = (workout_totals['total_duration'] or 0) + (custom_totals['total_duration'] or 0)
+        total_calories = int(
+            self._finite_number(workout_totals['total_calories']) + self._finite_number(custom_totals['total_calories'])
+        )
+        total_exercises = int(
+            self._finite_number(workout_totals['total_exercises']) + self._finite_number(custom_totals['total_exercises'])
+        )
+        total_duration = (
+            self._finite_number(workout_totals['total_duration']) + self._finite_number(custom_totals['total_duration'])
+        )
         total_hours = round(total_duration / 3600, 1)
 
         today = timezone.localdate()
@@ -353,9 +368,9 @@ class ProgressView(LoginRequiredMixin, TemplateView):
             recent_items.append({
                 'name': workout_name,
                 'date': timezone.localtime(progress.completed_at).strftime('%b %d, %H:%M'),
-                'exercises': progress.exercises_completed or 0,
-                'duration': int((progress.total_duration_seconds or 0) / 60),
-                'calories': int(progress.total_calories or 0),
+                'exercises': int(self._finite_number(progress.exercises_completed)),
+                'duration': int(self._finite_number(progress.total_duration_seconds) / 60),
+                'calories': int(self._finite_number(progress.total_calories)),
                 'sort_dt': progress.completed_at,
             })
 
@@ -363,9 +378,9 @@ class ProgressView(LoginRequiredMixin, TemplateView):
             recent_items.append({
                 'name': progress.program.name,
                 'date': timezone.localtime(progress.created_at).strftime('%b %d, %H:%M'),
-                'exercises': progress.exercises_completed or 0,
-                'duration': int((progress.total_duration_seconds or 0) / 60),
-                'calories': int(progress.total_calories or 0),
+                'exercises': int(self._finite_number(progress.exercises_completed)),
+                'duration': int(self._finite_number(progress.total_duration_seconds) / 60),
+                'calories': int(self._finite_number(progress.total_calories)),
                 'sort_dt': progress.created_at,
             })
 
