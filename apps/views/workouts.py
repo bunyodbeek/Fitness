@@ -1,3 +1,5 @@
+import json
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count
 from django.http import Http404
@@ -219,7 +221,7 @@ class WorkoutStartView(LoginRequiredMixin, View):
 		)
 		return render(request, template, {
 			"workout": workout,
-			"exercises": self._prepare_exercises_data(workout_exercises, getattr(request, "LANGUAGE_CODE", "en")),
+			"exercises_json": json.dumps(exercises_data),
 			"total_exercises": len(exercises_data),
 			"initial_exercise_index": progress.current_exercise_index if progress else 0,
 			"workout_complete_url": (
