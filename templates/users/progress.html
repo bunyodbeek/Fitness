@@ -732,11 +732,11 @@
 <div class="container">
     <!-- Period Selector -->
     <div class="period-selector">
-        <button class="period-btn" data-period="today">{% trans "Today" %}</button>
-        <button class="period-btn active" data-period="week">{% trans "Week" %}</button>
-        <button class="period-btn" data-period="month">{% trans "Month" %}</button>
-        <button class="period-btn" data-period="year">{% trans "Year" %}</button>
-        <button class="period-btn" data-period="all">{% trans "All" %}</button>
+        <button class="period-btn {% if period == 'today' %}active{% endif %}" data-period="today">{% trans "Today" %}</button>
+        <button class="period-btn {% if period == 'week' or not period %}active{% endif %}" data-period="week">{% trans "Week" %}</button>
+        <button class="period-btn {% if period == 'month' %}active{% endif %}" data-period="month">{% trans "Month" %}</button>
+        <button class="period-btn {% if period == 'year' %}active{% endif %}" data-period="year">{% trans "Year" %}</button>
+        <button class="period-btn {% if period == 'all' %}active{% endif %}" data-period="all">{% trans "All" %}</button>
     </div>
 
     <!-- Stats Grid -->
@@ -917,16 +917,21 @@
 {% block extra_js %}
 <script>
     // Period selector
-    document.querySelectorAll('.period-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
+    const allowedPeriods = new Set(['today', 'week', 'month', 'year', 'all']);
+    const currentUrl = new URL(window.location.href);
+    const urlPeriod = (currentUrl.searchParams.get('period') || 'week').toLowerCase();
+    const normalizedPeriod = allowedPeriods.has(urlPeriod) ? urlPeriod : 'week';
 
-            const period = this.dataset.period;
-            // Backend ga request yuborish uchun
-            console.log('Selected period:', period);
-            // Fetch data for selected period
-            // fetchProgressData(period);
+    document.querySelectorAll('.period-btn').forEach(btn => {
+        const btnPeriod = (btn.dataset.period || '').toLowerCase();
+        btn.classList.toggle('active', btnPeriod === normalizedPeriod);
+
+        btn.addEventListener('click', function() {
+            const selectedPeriod = (this.dataset.period || 'week').toLowerCase();
+            const finalPeriod = allowedPeriods.has(selectedPeriod) ? selectedPeriod : 'week';
+            const nextUrl = new URL(window.location.href);
+            nextUrl.searchParams.set('period', finalPeriod);
+            window.location.href = nextUrl.toString();
         });
     });
 

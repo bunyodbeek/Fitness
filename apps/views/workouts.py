@@ -1,12 +1,14 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count
-from django.http import HttpResponseBadRequest, Http404
+from django.http import Http404
 from django.shortcuts import redirect, render, get_object_or_404
 from django.views import View
 from django.views.generic import DetailView, ListView, TemplateView
+import math
 
 from apps.models import Program, Plan, Week
 from apps.models.workouts import Workout, WorkoutExercise, WorkoutProgress, WorkoutType
+from apps.workouts.recommendation import get_recommended_program
 
 
 def get_session_workout_type(request, forced_type=None):
@@ -49,8 +51,11 @@ class ProgramListView(ListView):
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		active_type = self.active_workout_type()
+		recommended = get_recommended_program(self.request.user.profile, workout_type=active_type) \
+			if self.request.user.is_authenticated and hasattr(self.request.user, "profile") else None
 		context['active_workout_type'] = active_type
 		context['is_home_mode'] = active_type == WorkoutType.HOME
+		context['recommended_program'] = recommended
 		return context
 
 
@@ -188,6 +193,16 @@ class WorkoutStartView(LoginRequiredMixin, View):
 			"exercises": self._prepare_exercises_data(workout_exercises, getattr(request, "LANGUAGE_CODE", "en")),
 			"total_exercises": len(exercises_data),
 			"initial_exercise_index": progress.current_exercise_index if progress else 0,
+			"workout_complete_url": (
+				f"/{getattr(request, 'LANGUAGE_CODE', 'en')}/gym/workout/{workout.pk}/complete/"
+				if wtype == WorkoutType.GYM
+				else f"/{getattr(request, 'LANGUAGE_CODE', 'en')}/workout/{workout.pk}/complete/"
+			),
+			"workout_start_url": (
+				f"/{getattr(request, 'LANGUAGE_CODE', 'en')}/gym/workout/{workout.pk}/start/"
+				if wtype == WorkoutType.GYM
+				else f"/{getattr(request, 'LANGUAGE_CODE', 'en')}/workout/{workout.pk}/start/"
+			),
 		})
 	
 	def _prepare_exercises_data(self, workout_exercises, lang_code="en"):
@@ -220,6 +235,22 @@ class WorkoutStartView(LoginRequiredMixin, View):
 class WorkoutCompleteView(LoginRequiredMixin, View):
 	forced_workout_type = None
 	template_name = "workouts/workout_complete.html"
+
+	@staticmethod
+	def _safe_float(value, default=0.0):
+		try:
+			parsed = float(value)
+		except (ValueError, TypeError):
+			return default
+		return parsed if math.isfinite(parsed) else default
+
+	@staticmethod
+	def _safe_int(value, default=0):
+		try:
+			parsed = int(float(value))
+		except (ValueError, TypeError):
+			return default
+		return parsed if math.isfinite(parsed) else default
 	
 	def get_template_name(self, request):
 		return self.template_name
@@ -231,12 +262,9 @@ class WorkoutCompleteView(LoginRequiredMixin, View):
 			                                                                                                       "forced_workout_type",
 			                                                                                                       None)))
 		
-		try:
-			total_calories = float(request.POST.get("total_calories", 0))
-			total_duration = int(request.POST.get("total_duration", 0))
-			exercises_completed = int(request.POST.get("exercises_completed", 0))
-		except (ValueError, TypeError):
-			return HttpResponseBadRequest("Invalid input data")
+		total_calories = self._safe_float(request.POST.get("total_calories", 0))
+		total_duration = self._safe_int(request.POST.get("total_duration", 0))
+		exercises_completed = self._safe_int(request.POST.get("exercises_completed", 0))
 		
 		WorkoutProgress.objects.filter(
 			user=request.user.profile,
