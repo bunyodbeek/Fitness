@@ -2,6 +2,7 @@ from apps.models import Exercise
 from apps.models.favorites import FavoriteCollection, Favorite, UserCustomProgram, CustomProgramProgress
 from apps.services.workout_calculator import WorkoutCalculatorService
 import math
+from apps.workouts.recommendation import get_recommended_program
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
@@ -39,6 +40,7 @@ class FavoritesListView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user_profile = self.request.user.profile
+        context['recommended_program'] = get_recommended_program(user_profile)
         context['total_count'] = Favorite.objects.filter(user=user_profile).count()
         context['favorite_collections'] = FavoriteCollection.objects.filter(user=user_profile).order_by('-created_at')
         context['collections_count'] = context['favorite_collections'].count()

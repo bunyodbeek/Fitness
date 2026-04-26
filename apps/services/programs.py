@@ -4,6 +4,7 @@ from django.db import transaction
 
 from apps.models import Plan, Program, Week, Workout, WorkoutExercise
 from apps.models.workouts import ProgressionSetting
+from apps.workouts.recommendation import get_recommended_program
 
 try:
     from apps.models import UserProgram
@@ -148,16 +149,8 @@ class UserProgramService:
             return UserProgram.objects.filter(user=profile, is_active=True).first()
 
         matched_program = (
-            Program.objects.filter(
-                type=Program.ProgramType.ADMIN,
-                level=profile.experience_level,
-                goal=profile.fitness_goal,
-                is_active=True,
-            ).first()
-            or Program.objects.filter(
-                type=Program.ProgramType.ADMIN,
-                is_active=True,
-            ).first()
+            get_recommended_program(profile)
+            or Program.objects.filter(type=Program.ProgramType.ADMIN, is_active=True).first()
         )
 
         if not matched_program:
