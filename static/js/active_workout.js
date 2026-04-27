@@ -74,7 +74,9 @@ const updateExitButtonState = () => {
 };
 
 const toggleExerciseDescription = (event) => {
-    event.stopPropagation();
+    if (event) {
+        event.stopPropagation();
+    }
     const card = document.getElementById('exerciseDescriptionCard');
     const hint = document.getElementById('exerciseDescriptionHint');
     const isExpanded = card.classList.toggle('expanded');
@@ -394,4 +396,16 @@ const exitWithoutSaving = () => {
 document.addEventListener('DOMContentLoaded', () => {
     loadExercise(initialExerciseIndex, initialSet);
     updateExitButtonState();
+});
+
+Object.assign(window, {
+    completeExercise,
+    exitWithoutSaving,
+    returnToWorkout,
+    saveAndExit,
+    showExitModal,
+    skipRest,
+    toggleExerciseDescription,
+    toggleExerciseMedia,
+    togglePause,
 });

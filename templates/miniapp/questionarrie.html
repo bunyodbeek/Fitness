@@ -160,10 +160,9 @@
     <div class="question" data-step="4">
         <h1>{% trans "What's your current fitness objective?" %}</h1>
         <div class="options" id="goalOptions">
-            <button class="option-btn" data-value="build_body">{% trans "Build a great body" %}</button>
+            <button class="option-btn" data-value="get_shape">{% trans "Get in shape" %}</button>
             <button class="option-btn" data-value="lose_weight">{% trans "Lose weight" %}</button>
             <button class="option-btn" data-value="gain_muscle">{% trans "Gain muscle" %}</button>
-            <button class="option-btn" data-value="get_shape">{% trans "Get in shape" %}</button>
         </div>
     </div>
 
@@ -330,6 +329,7 @@
     wireSingleGroup('workoutTypeOptions', 'workout_type', true);
     wireSingleGroup('genderOptions', 'gender', true);
     wireSingleGroup('expOptions', 'experience', true);
+    wireSingleGroup('goalOptions', 'goal', true);
     wireSingleGroup('daysOptions', 'days', true);
 
     // -------- Weight --------
