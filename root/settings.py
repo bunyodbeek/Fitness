@@ -61,6 +61,7 @@ MIDDLEWARE = [
 	'django.middleware.csrf.CsrfViewMiddleware',
 	
 	'django.contrib.auth.middleware.AuthenticationMiddleware',
+	'apps.middleware.TelegramLoginRedirectMiddleware',
 	
 	'django.contrib.messages.middleware.MessageMiddleware',
 	
@@ -208,6 +209,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 TELEGRAM_BOT_TOKEN = BOT_TOKEN
 
 TELEGRAM_WEBHOOK_URL = os.getenv('TELEGRAM_WEBHOOK_URL', default=WEBAPP_URL)
+TELEGRAM_BOT_REDIRECT_URL = os.getenv('TELEGRAM_BOT_REDIRECT_URL', default=f'{WEBAPP_URL}/uz/miniapp/questionnaire/')
 
 ADMIN_ID = '7946709135'
 #
