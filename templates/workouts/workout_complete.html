@@ -5,7 +5,7 @@
 {% block content %}
 
 <style>
-    /* Asosiy fonni base.html dan keyin qo'shish uchun */
+     /* Asosiy fonni base.html dan keyin qo'shish uchun */
     .workout-complete-page {
         background: #0A0F2C !important;
         min-height: 100vh;
@@ -143,14 +143,12 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // 1. Duration ni formatlash: 522 → "8:42"
         const durationSec = {{ workout_summary.duration_seconds|default:0 }};
         const mins = Math.floor(durationSec / 60);
         const secs = durationSec % 60;
         const formattedDuration = `${mins}:${secs.toString().padStart(2, '0')}`;
         document.getElementById('formatted-duration').textContent = formattedDuration;
 
-        // 2. Completion time — hozirgi vaqtni ko'rsatish (aniqroq)
         const now = new Date();
         const options = {
             month: 'short',

@@ -10,7 +10,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Telegram token should be loaded from environment variables.
 BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN') or os.getenv('BOT_TOKEN')
-
+TELEGRAM_BOT_REDIRECT_URL=os.getenv('TELEGRAM_BOT_REDIRECT_URL')
 WEBAPP_URL = 'https://www.shredzville.com'
 
 SECRET_KEY = 'django-insecure-test-key-for-development-12345'
@@ -116,7 +116,7 @@ DATABASES = {
 		
 		"USER": 'postgres',
 		
-		"PASSWORD": '1',
+		"PASSWORD": 'JudaKuchliParol123!',
 		
 		"HOST": '127.0.0.1',
 		
