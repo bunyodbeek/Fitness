@@ -7,11 +7,12 @@ from django.db import transaction
 from django.http import HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect
 from django.views import View
-from django.views.generic import DetailView, ListView
+from django.views.generic import DetailView, ListView, TemplateView
 
-from apps.models.workouts import Plan, Program, Workout, WorkoutType, UserWorkoutProgress, WorkoutProgress
+from apps.models.workouts import Plan, Program, Workout, WorkoutType, UserWorkoutProgress, WorkoutProgress, HomeWorkout, HomeProgressionSetting
 from apps.services import UserProgramService
 from apps.workouts.recommendation import get_recommended_program
+from apps.utils.home_progression import calculate_home_week_exercise
 
 
 def get_active_mode(request):
@@ -125,7 +126,7 @@ class HomeWorkoutDetailView(LoginRequiredMixin, DetailView):
     Workout (kun) tafsilotlari + progress.
     """
     model = Workout
-    template_name = 'home/workout_detail.html'
+    template_name = 'workouts/home_workout_detail.html'
     context_object_name = 'workout'
 
     def get_queryset(self):
@@ -156,13 +157,34 @@ class HomeWorkoutDetailView(LoginRequiredMixin, DetailView):
             else None
         )
 
+        setting = HomeProgressionSetting.objects.first() or HomeProgressionSetting.objects.create(key="default")
+        week_number = workout.week.week_number
+        exercises = []
+        rounds = workout.rounds
+        rest_seconds = setting.rest_between_rounds
+        for wex in workout_exercises:
+            calc = calculate_home_week_exercise(workout.rounds, int((wex.minutes or 0) * 60), week_number, setting)
+            rounds = calc["rounds"]
+            rest_seconds = calc["rest_seconds"]
+            exercises.append({
+                "name": wex.exercise.name,
+                "name_uz": wex.exercise.name_uz,
+                "name_ru": wex.exercise.name_ru,
+                "image": wex.exercise.thumbnail,
+                "duration_seconds": calc["duration_seconds"],
+                "order": wex.order,
+            })
+        total_time_seconds = rounds * sum(x["duration_seconds"] for x in exercises) + max(0, rounds - 1) * rest_seconds
         context.update({
-            'workout_exercises': workout_exercises,
-            'exercise_count': len(workout_exercises),
+            "workout": workout,
+            "exercises": exercises,
+            "rounds": rounds,
+            "rest_seconds": rest_seconds,
+            "total_time_seconds": total_time_seconds,
+            "week_number": week_number,
             'progress': progress,
-            'current_exercise': current_exercise,
-            'is_home_mode': True,
-            # Template uchun back URL ni plan.id orqali
+            'current_round': progress.current_round,
+            'current_order': progress.current_order,
             'plan': workout.week.plan,
             'week': workout.week,
         })
@@ -254,4 +276,26 @@ class HomeWeekDetailView(DetailView):
         context['workouts'] = workouts
         context['completed_workout_ids'] = completed_ids
         context['is_home_mode'] = True
+        return context
+
+
+class HomeSessionView(LoginRequiredMixin, TemplateView):
+    template_name = "workouts/home_session.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        workout = get_object_or_404(HomeWorkout.objects.select_related("week__plan__program"), pk=self.kwargs["pk"])
+        progress, _ = UserWorkoutProgress.objects.get_or_create(user=self.request.user.profile, workout=workout)
+        setting = HomeProgressionSetting.objects.first() or HomeProgressionSetting.objects.create(key="default")
+        week_number = workout.week.week_number
+        workout_exercises = workout.workout_exercises.select_related("exercise").order_by("order", "id")
+        exercises=[]
+        rounds = workout.rounds
+        rest_seconds = setting.rest_between_rounds
+        for wex in workout_exercises:
+            calc = calculate_home_week_exercise(workout.rounds, int((wex.minutes or 0) * 60), week_number, setting)
+            rounds = calc["rounds"]; rest_seconds = calc["rest_seconds"]
+            exercises.append({"name": wex.exercise.name, "name_uz": wex.exercise.name_uz, "name_ru": wex.exercise.name_ru, "image": wex.exercise.thumbnail, "duration_seconds": calc["duration_seconds"], "order": wex.order})
+        total_time_seconds = rounds * sum(x["duration_seconds"] for x in exercises) + max(0, rounds-1) * rest_seconds
+        context.update({"workout": workout, "exercises": exercises, "rounds": rounds, "rest_seconds": rest_seconds, "total_time_seconds": total_time_seconds, "week_number": week_number, "current_round": progress.current_round, "current_order": progress.current_order})
         return context

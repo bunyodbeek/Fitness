@@ -36,7 +36,6 @@ class ExercisesByMuscleView(ListView):
         muscle_name = self.kwargs['muscle']
         qs = qs.filter(
             primary_body_part__iexact=muscle_name,
-            workout_type=get_session_workout_type(self.request),
         )
         self.muscle = muscle_name
         return qs
@@ -66,7 +65,7 @@ class ExerciseDetailView(LoginRequiredMixin, DetailView):
     model = Exercise
 
     def get_queryset(self):
-        return Exercise.objects.filter(workout_type=get_session_workout_type(self.request))
+        return Exercise.objects.all()
     template_name = 'exercises/exercise_detail.html'
     context_object_name = 'exercise'
     pk_url_kwarg = 'exercise_id'

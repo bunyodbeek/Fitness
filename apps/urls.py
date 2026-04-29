@@ -47,7 +47,7 @@ from apps.views.home_workouts import (
 	HomeProgramListView,
 	HomeWorkoutDetailView,
 	HomeWorkoutDoneView,
-	WorkoutModeSwitchView, HomeWeekDetailView,
+	WorkoutModeSwitchView, HomeWeekDetailView, HomeSessionView,
 )
 
 from apps.views.handbook import (
@@ -117,6 +117,7 @@ urlpatterns = [
 	path('home/workout/<int:pk>/', HomeWorkoutDetailView.as_view(), name='home_workout_detail'),
 	path('home/workouts/<int:pk>/', HomeWorkoutDetailView.as_view(), name='home_workout_detail_legacy'),
 	path('home/workout/<int:pk>/done/', HomeWorkoutDoneView.as_view(), name='home_workout_done'),
+	path('home/workout/<int:pk>/session/', HomeSessionView.as_view(), name='home_workout_session'),
 	path('home/workouts/<int:pk>/done/', HomeWorkoutDoneView.as_view(), name='home_workout_done_legacy'),
 	path('home/week/<int:pk>/', HomeWeekDetailView.as_view(), name='home_week_detail'),
 	
