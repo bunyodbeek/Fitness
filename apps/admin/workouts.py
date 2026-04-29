@@ -9,7 +9,7 @@ import nested_admin
 from apps.models import (
     Plan, Program, WorkoutExercise, Week, Exercise, Workout,
 )
-from apps.models.workouts import HomeWorkout, GymWorkout, ProgressionSetting
+from apps.models.workouts import HomeWorkout, GymWorkout, ProgressionSetting, HomeProgressionSetting
 
 
 # ─────────────────────────────────────────────
@@ -285,7 +285,7 @@ class GymWorkoutAdmin(admin.ModelAdmin):
     search_fields = ("title", "week__plan__name", "week__plan__program__name")
     exclude = ("rounds", "description", "description_uz", "description_ru")
     autocomplete_fields = ["week"]
-    inlines = [WorkoutExerciseInline]
+    inlines = [HomeWorkoutExerciseInline]
     ordering = ("week__plan__program", "week__plan", "week__week_number", "day_number")
 
     fieldsets = (
@@ -361,6 +361,16 @@ class GymWorkoutAdmin(admin.ModelAdmin):
 # ─────────────────────────────────────────────
 # 6. HomeWorkout Admin
 # ─────────────────────────────────────────────
+class HomeWorkoutExerciseInline(WorkoutExerciseInline):
+    fields = ("exercise", "minutes", "order")
+
+    def formfield_for_dbfield(self, db_field, request, **kwargs):
+        formfield = super().formfield_for_dbfield(db_field, request, **kwargs)
+        if db_field.name == "minutes":
+            formfield.label = "Duration (sec)"
+        return formfield
+
+
 @admin.register(HomeWorkout)
 class HomeWorkoutAdmin(admin.ModelAdmin):
     list_display = ("__str__", "week_link", "day_number", "rounds", "exercise_count", "apply_to_all_weeks")
@@ -405,7 +415,7 @@ class PlanAdmin(admin.ModelAdmin):
     inlines = [WeekInline]
 
     fieldsets = (
-        (None, {"fields": ("program", "order", "is_premium")}),
+        (None, {"fields": ("program", "order", "is_premium", "is_4_week")}),
         (_("Nomlar"), {"fields": ("name", "name_uz", "name_ru")}),
         (_("Progression sozlamalari"), {
             "fields": ("weeks_count", "progression_config"),
@@ -512,4 +522,13 @@ class ProgressionSettingAdmin(admin.ModelAdmin):
                 "small_boost qo'shiladi (aks holda +2.5 kg)."
             ),
         }),
+    )
+
+
+@admin.register(HomeProgressionSetting)
+class HomeProgressionSettingAdmin(admin.ModelAdmin):
+    fieldsets = (
+        ("Rounds Progression", {"fields": ("key", "round_w2", "round_w3", "round_w4")}),
+        ("Duration Progression (sec)", {"fields": ("duration_w2", "duration_w3", "duration_w4")}),
+        ("Rest Between Rounds (sec)", {"fields": ("rest_between_rounds", "rest_w2", "rest_w3", "rest_w4")}),
     )

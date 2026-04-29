@@ -84,6 +84,7 @@ class Plan(CreatedBaseModel):
 	order = IntegerField(default=1)
 	weeks_count = IntegerField(default=6)
 	is_premium = BooleanField(default=False, verbose_name="Premium Plan")
+	is_4_week = BooleanField(default=False, verbose_name="4-haftalik tsikl (Home)", help_text="Faqat Home Plan uchun. Belgilansa, 4 hafta bilan cheklanadi.")
 	progression_config = ForeignKey(
 		"apps.ProgressionSetting",
 		SET_NULL,
@@ -139,8 +140,12 @@ class Week(Model):
 		# Bunday holatda TypeError chiqmasligi uchun erta qaytamiz.
 		if self.week_number is None:
 			return
-		if self.week_number < 1 or self.week_number > 6:
-			raise ValidationError("Week number must be between 1 and 6.")
+		try:
+			max_weeks = 4 if getattr(self.plan, 'is_4_week', False) else 6
+		except Exception:
+			max_weeks = 6
+		if self.week_number < 1 or self.week_number > max_weeks:
+			raise ValidationError(f"Week number must be between 1 and {max_weeks}.")
 	
 	# MODEL ICHIGA OLINDI
 	@property
@@ -231,6 +236,26 @@ class ProgressionSetting(Model):
 	def __str__(self):
 		return self.key
 
+
+class HomeProgressionSetting(Model):
+	key = CharField(max_length=64, unique=True)
+	round_w2 = IntegerField(default=0, verbose_name="Rounds +/- W2")
+	round_w3 = IntegerField(default=1, verbose_name="Rounds +/- W3")
+	round_w4 = IntegerField(default=0, verbose_name="Rounds +/- W4")
+	duration_w2 = IntegerField(default=5, verbose_name="Duration +/- W2 (sec)")
+	duration_w3 = IntegerField(default=5, verbose_name="Duration +/- W3 (sec)")
+	duration_w4 = IntegerField(default=10, verbose_name="Duration +/- W4 (sec)")
+	rest_between_rounds = IntegerField(default=60, verbose_name="Rest between rounds (sec)")
+	rest_w2 = IntegerField(default=55, verbose_name="Rest W2 (sec)")
+	rest_w3 = IntegerField(default=50, verbose_name="Rest W3 (sec)")
+	rest_w4 = IntegerField(default=45, verbose_name="Rest W4 (sec)")
+
+	class Meta:
+		verbose_name = "Home Progression Setting"
+		verbose_name_plural = "Home Progression Settings"
+
+	def __str__(self):
+		return self.key
 
 class WorkoutExercise(Model):
 	workout = ForeignKey("apps.Workout", CASCADE, related_name="workout_exercises")

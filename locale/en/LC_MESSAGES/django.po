@@ -1307,3 +1307,21 @@ msgstr ""
 
 #~ msgid "Til tanlang"
 #~ msgstr "Choose the language"
+
+msgid "Round"
+msgstr "Round"
+
+msgid "Rest"
+msgstr "Rest"
+
+msgid "Rest between rounds"
+msgstr "Rest between rounds"
+
+msgid "Next Round"
+msgstr "Next Round"
+
+msgid "4-Week Program"
+msgstr "4-Week Program"
+
+msgid "Start Workout"
+msgstr "Start Workout"

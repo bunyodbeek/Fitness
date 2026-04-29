@@ -1557,3 +1557,21 @@ msgstr "Ошибка:"
 
 msgid "Network error. Please try again."
 msgstr "Ошибка сети. Пожалуйста, попробуйте снова."
+
+msgid "Round"
+msgstr "Раунд"
+
+msgid "Rest"
+msgstr "Отдых"
+
+msgid "Rest between rounds"
+msgstr "Отдых между раундами"
+
+msgid "Next Round"
+msgstr "Следующий раунд"
+
+msgid "4-Week Program"
+msgstr "4-недельная программа"
+
+msgid "Start Workout"
+msgstr "Начать тренировку"

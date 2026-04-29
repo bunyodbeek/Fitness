@@ -1,0 +1,1 @@
+{% extends 'base.html' %}{% load i18n %}{% block content %}<div style="max-width:480px;margin:0 auto;padding:16px;background:#0d0f18;">{% for week in weeks|slice:':4' %}<a href="#" style="color:#ffd700;">{% trans 'Week' %} {{ week.week_number }}</a>{% endfor %}</div>{% endblock %}

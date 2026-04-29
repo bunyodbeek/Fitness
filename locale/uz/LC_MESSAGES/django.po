@@ -1538,3 +1538,21 @@ msgstr "Xato:"
 
 msgid "Network error. Please try again."
 msgstr "Tarmoq xatosi. Iltimos, qayta urinib ko‘ring."
+
+msgid "Round"
+msgstr "Raund"
+
+msgid "Rest"
+msgstr "Dam olish"
+
+msgid "Rest between rounds"
+msgstr "Raundlar orasida dam olish"
+
+msgid "Next Round"
+msgstr "Keyingi raund"
+
+msgid "4-Week Program"
+msgstr "4 haftalik dastur"
+
+msgid "Start Workout"
+msgstr "Mashg'ulotni boshlash"
