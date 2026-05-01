@@ -102,8 +102,12 @@ class Plan(CreatedBaseModel):
 		return f"{self.program.name} - {self.name}"
 	
 	def clean(self):
-		if self.weeks_count != 6:
-			raise ValidationError("Plan must contain exactly 6 weeks.")
+		if self.is_4_week:
+			if self.weeks_count != 4:
+				raise ValidationError("4-week Home plans must contain exactly 4 weeks.")
+		else:
+			if self.weeks_count != 6:
+				raise ValidationError("Plan must contain exactly 6 weeks.")
 
 
 class Edition(Plan):

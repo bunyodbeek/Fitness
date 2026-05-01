@@ -126,6 +126,14 @@ class WorkoutExerciseNestedInline(nested_admin.NestedStackedInline):
     verbose_name_plural = "Mashqlar"
 
 
+class HomeWorkoutExerciseNestedInline(WorkoutExerciseNestedInline):
+    fields = (
+        "exercise",
+        "minutes",
+        "order",
+    )
+
+
 class GymWorkoutNestedInline(nested_admin.NestedStackedInline):
     model = GymWorkout
     extra = 0
@@ -145,7 +153,7 @@ class HomeWorkoutNestedInline(nested_admin.NestedStackedInline):
     fields = (("day_number", "apply_to_all_weeks"), "rounds", "title")
     verbose_name = "Home kuni"
     verbose_name_plural = "Home kunlari"
-    inlines = [WorkoutExerciseNestedInline]
+    inlines = [HomeWorkoutExerciseNestedInline]
 
 
 # ─────────────────────────────────────────────
@@ -210,15 +218,19 @@ class WeekAdmin(nested_admin.NestedModelAdmin):
 
         # Add form holatida plan query param bor bo'lsa, workout turini shundan aniqlaymiz.
         # Bu home plan tanlanganda ham to'g'ri inline ko'rsatishga yordam beradi.
-        plan_id = request.GET.get("plan")
+        plan_id = request.GET.get("plan") or request.POST.get("plan")
         if plan_id:
             try:
                 wtype = Plan.objects.select_related("program").get(pk=plan_id).program.workout_type
                 if wtype == "home":
                     return [HomeWorkoutNestedInline]
+                if wtype == "gym":
+                    return [GymWorkoutNestedInline]
             except Plan.DoesNotExist:
                 pass
-        return [GymWorkoutNestedInline]
+        # Plan turi noma'lum bo'lsa, ikkala variantni ham ko'rsatamiz
+        # shunda Home plan uchun Home workout inline mavjud bo'ladi.
+        return [GymWorkoutNestedInline, HomeWorkoutNestedInline]
 
     def plan_link(self, obj):
         url = reverse('admin:apps_plan_change', args=[obj.plan.id])
@@ -285,7 +297,7 @@ class GymWorkoutAdmin(admin.ModelAdmin):
     search_fields = ("title", "week__plan__name", "week__plan__program__name")
     exclude = ("rounds", "description", "description_uz", "description_ru")
     autocomplete_fields = ["week"]
-    inlines = [HomeWorkoutExerciseInline]
+    inlines = [WorkoutExerciseInline]
     ordering = ("week__plan__program", "week__plan", "week__week_number", "day_number")
 
     fieldsets = (
@@ -377,7 +389,7 @@ class HomeWorkoutAdmin(admin.ModelAdmin):
     list_filter = ("week__plan__program", "week__plan", "week__week_number", "apply_to_all_weeks")
     search_fields = ("title", "week__plan__name")
     autocomplete_fields = ["week"]
-    inlines = [WorkoutExerciseInline]
+    inlines = [HomeWorkoutExerciseInline]
     ordering = ("week__plan__program", "week__plan", "week__week_number", "day_number")
 
     fieldsets = (
@@ -421,7 +433,8 @@ class PlanAdmin(admin.ModelAdmin):
             "fields": ("weeks_count", "progression_config"),
             "description": (
                 "⚠️ Progression Config tanlangan bo'lsa, "
-                "1-haftaga mashq qo'shilganda 2-6 haftalarga avtomatik hisoblanadi."
+                "1-haftaga mashq qo'shilganda 2-6 haftalarga avtomatik hisoblanadi. "
+                "Home plan uchun is_4_week belgilansa, 4 hafta bilan ishlaydi."
             ),
         }),
     )

@@ -3,7 +3,7 @@ import math
 from django.db import transaction
 
 from apps.models import Plan, Program, Week, Workout, WorkoutExercise
-from apps.models.workouts import ProgressionSetting
+from apps.models.workouts import ProgressionSetting, HomeProgressionSetting
 from apps.workouts.recommendation import get_recommended_program
 
 try:
@@ -128,6 +128,75 @@ class ProgramGenerationService:
             ProgramGenerationService.generate_progression_from_week_one(seed)
             count += 1
         return count
+
+    @staticmethod
+    def generate_home_progression_from_week_one(instance: WorkoutExercise):
+        """
+        Home workout progression generator.
+        Weeks 2-6 ni 1-haftadan yaratadi, duration va rounds ni oshiradi.
+        """
+        plan = instance.workout.week.plan
+        setting = HomeProgressionSetting.objects.first()
+        
+        if not setting:
+            setting = HomeProgressionSetting.objects.create(key="default")
+
+        base_minutes = float(instance.minutes or 0)
+        base_rounds = int(instance.workout.rounds or 1)
+        
+        # Home progression weeks mapping
+        home_week_map = {
+            2: ("duration_w2", "round_w2"),
+            3: ("duration_w3", "round_w3"),
+            4: ("duration_w4", "round_w4"),
+            5: ("duration_w2", "round_w2"),  # Week 5 same as week 2 (repeat cycle)
+            6: ("duration_w3", "round_w3"),  # Week 6 same as week 3
+        }
+
+        for week_num in range(2, 7):
+            duration_field, round_field = home_week_map.get(week_num, ("duration_w2", "round_w2"))
+            duration_increase = getattr(setting, duration_field, 0) or 0  # in seconds
+            round_increase = getattr(setting, round_field, 0) or 0
+            
+            # Calculate new duration (convert seconds to minutes)
+            new_minutes = base_minutes + (duration_increase / 60)
+            if new_minutes < base_minutes:  # Ensure at least same as base
+                new_minutes = base_minutes
+
+            # Calculate new rounds
+            new_rounds = max(1, base_rounds + round_increase)
+
+            target_week = Week.objects.filter(plan=plan, week_number=week_num).first()
+            if not target_week:
+                continue
+
+            target_workout, _ = Workout.objects.get_or_create(
+                week=target_week,
+                day_number=instance.workout.day_number,
+                defaults={
+                    "title":    instance.workout.title,
+                    "title_uz": instance.workout.title_uz,
+                    "title_ru": instance.workout.title_ru,
+                    "rounds":   new_rounds,
+                },
+            )
+            
+            # Update rounds if workout already exists
+            if not _:
+                target_workout.rounds = new_rounds
+                target_workout.save(update_fields=['rounds'])
+
+            WorkoutExercise.objects.update_or_create(
+                workout=target_workout,
+                exercise=instance.exercise,
+                defaults={
+                    "minutes":         new_minutes,
+                    "order":           instance.order,
+                    "source_week_one": instance,
+                },
+            )
+
+
 
 
 # ─────────────────────────────────────────────
