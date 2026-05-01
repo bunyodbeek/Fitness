@@ -50,8 +50,9 @@ class ProgramGenerationService:
 
     @staticmethod
     def ensure_plan_weeks(plan):
-        """Plan yaratilganda 1-6 haftalarni avtomatik yaratish."""
-        for i in range(1, 7):
+        """Plan yaratilganda haftalarni avtomatik yaratish."""
+        max_weeks = 4 if getattr(plan, "is_4_week", False) else 6
+        for i in range(1, max_weeks + 1):
             Week.objects.get_or_create(plan=plan, week_number=i)
 
     @staticmethod
@@ -70,7 +71,8 @@ class ProgramGenerationService:
         base_reps   = int(instance.reps or 0)
         base_weight = float(instance.recommended_weight or 0)
 
-        for week_num in range(2, 7):
+        max_weeks = 4 if getattr(plan, "is_4_week", False) else 6
+        for week_num in range(2, max_weeks + 1):
             weight_field, set_field, rep_field = WEEK_FIELD_MAP[week_num]
 
             weight_mult   = getattr(config, weight_field)
@@ -153,7 +155,8 @@ class ProgramGenerationService:
             6: ("duration_w3", "round_w3"),  # Week 6 same as week 3
         }
 
-        for week_num in range(2, 7):
+        max_weeks = 4 if getattr(plan, "is_4_week", False) else 6
+        for week_num in range(2, max_weeks + 1):
             duration_field, round_field = home_week_map.get(week_num, ("duration_w2", "round_w2"))
             duration_increase = getattr(setting, duration_field, 0) or 0  # in seconds
             round_increase = getattr(setting, round_field, 0) or 0

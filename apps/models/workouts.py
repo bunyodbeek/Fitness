@@ -160,6 +160,20 @@ class Week(Model):
 		return f"{self.plan.name} - Week {self.week_number}"
 
 
+class GymWeek(Week):
+	class Meta:
+		proxy = True
+		verbose_name = "Gym Week"
+		verbose_name_plural = "Gym Weeks"
+
+
+class HomeWeek(Week):
+	class Meta:
+		proxy = True
+		verbose_name = "Home Week"
+		verbose_name_plural = "Home Weeks"
+
+
 class Workout(CreatedBaseModel):
 	week = ForeignKey("apps.Week", CASCADE, related_name="workouts")
 	day_number = IntegerField(default=1)
