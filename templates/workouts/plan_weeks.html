@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load i18n %}
 
-{% block title %}{{ plan.title }} - {% trans "Weeks" %}{% endblock %}
+{% block title %}{{ plan.name }} - {% trans "Weeks" %}{% endblock %}
 
 {% block bottom_nav %}{% endblock %}
 
@@ -283,14 +283,14 @@
     <!-- Plan banner -->
     <div class="plan-header">
         {% if plan.program.image %}
-            <img src="{{ plan.program.image.url }}" alt="{{ plan.program.title }}" class="plan-header-image">
+            <img src="{{ plan.program.image.url }}" alt="{{ plan.program.name }}" class="plan-header-image">
         {% else %}
             <div class="plan-header-placeholder"></div>
         {% endif %}
         <div class="plan-header-overlay">
-            <div class="plan-title">{{ plan.title|upper }}</div>
+            <div class="plan-title">{{ plan.name|upper }}</div>
             <div class="plan-subtitle">
-                {{ plan.duration_weeks }} {% trans "Weeks" %} &bull; {{ plan.days_per_week }} {% trans "Days/Week" %}
+                {{ weeks|length }} {% trans "Weeks" %} &bull; {{ plan.days_per_week }} {% trans "Days/Week" %}
             </div>
         </div>
     </div>
@@ -302,7 +302,7 @@
             <div class="stat-label">{% trans "Weeks" %}</div>
         </div>
         <div class="stat-item">
-            <div class="stat-value">{{ plan.duration_weeks }}</div>
+            <div class="stat-value">{{ weeks|length }}</div>
             <div class="stat-label">{% trans "Duration" %}</div>
         </div>
         <div class="stat-item">
@@ -319,11 +319,7 @@
                 <div class="week-number">{{ week.week_number }}</div>
                 <div class="week-content">
                     <div class="week-title">
-                        {% if week.title %}
-                            {{ week.title }}
-                        {% else %}
-                            {% trans "Week" %} {{ week.week_number }}
-                        {% endif %}
+                        {% trans "Week" %} {{ week.week_number }}
                     </div>
                     <div class="week-meta">
                         {{ week.workouts.count }} {% trans "Days" %}
