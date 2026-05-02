@@ -206,6 +206,34 @@ class ProgramGenerationService:
 
 
 
+    @staticmethod
+    def ensure_home_plan_integrity(plan: Plan):
+        """
+        Ensure Home plans have workouts/exercises for all expected weeks.
+        Repairs existing broken plans by generating weeks 2..N from week-1 seeds.
+        """
+        if plan.program.workout_type != "home":
+            return
+
+        ProgramGenerationService.ensure_plan_weeks(plan)
+
+        week_one = Week.objects.filter(plan=plan, week_number=1).first()
+        if not week_one:
+            return
+
+        seeds = WorkoutExercise.objects.filter(
+            workout__week=week_one,
+            source_week_one__isnull=True,
+        ).select_related("workout", "exercise")
+
+        if not seeds.exists():
+            return
+
+        for seed in seeds:
+            ProgramGenerationService.generate_home_progression_from_week_one(seed)
+
+
+
 # ─────────────────────────────────────────────
 # UserProgramService
 # ─────────────────────────────────────────────
@@ -262,7 +290,8 @@ class UserProgramService:
                 program=cloned,
                 name=source_plan.name,
                 order=source_plan.order,
-                weeks_count=6,
+                weeks_count=source_plan.weeks_count,
+                is_4_week=source_plan.is_4_week,
                 progression_config=source_plan.progression_config,
             )
             ProgramGenerationService.ensure_plan_weeks(plan)
@@ -283,8 +312,11 @@ class UserProgramService:
                             exercise=source_exercise.exercise,
                             sets=source_exercise.sets,
                             reps=source_exercise.reps,
+                            minutes=source_exercise.minutes,
                             recommended_weight=source_exercise.recommended_weight,
                             order=source_exercise.order,
                         )
+
+            ProgramGenerationService.ensure_home_plan_integrity(plan)
         return cloned
     

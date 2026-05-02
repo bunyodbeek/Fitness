@@ -11,6 +11,7 @@ from django.views.generic import DetailView, ListView, TemplateView
 
 from apps.models.workouts import Plan, Program, Workout, WorkoutType, UserWorkoutProgress, WorkoutProgress, HomeWorkout, HomeProgressionSetting
 from apps.services import UserProgramService
+from apps.services.programs import ProgramGenerationService
 from apps.workouts.recommendation import get_recommended_program
 from apps.utils.home_progression import calculate_home_week_exercise
 
@@ -116,6 +117,7 @@ class HomePlanWeeksView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        ProgramGenerationService.ensure_home_plan_integrity(self.object)
         # weeks — gym dagi plan_weeks.html bilan bir xil context key
         self.request.session['workout_type'] = WorkoutType.HOME
         self.request.session.modified = True
