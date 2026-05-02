@@ -9,10 +9,7 @@ import nested_admin
 from apps.models import (
     Plan, Program, WorkoutExercise, Week, Exercise, Workout,
 )
-from apps.models.workouts import (
-    HomeWorkout, GymWorkout, ProgressionSetting, HomeProgressionSetting,
-    GymWeek, HomeWeek,
-)
+from apps.models.workouts import HomeWorkout, GymWorkout, ProgressionSetting, HomeProgressionSetting
 
 
 # ─────────────────────────────────────────────
@@ -25,8 +22,10 @@ class WorkoutExerciseInlineForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["minutes"].required = False
-        self.fields["recommended_weight"].required = False
+        if "minutes" in self.fields:
+            self.fields["minutes"].required = False
+        if "recommended_weight" in self.fields:
+            self.fields["recommended_weight"].required = False
 
     def clean(self):
         cleaned_data = super().clean()
@@ -36,9 +35,9 @@ class WorkoutExerciseInlineForm(forms.ModelForm):
 
         if exercise:
             # Admin UX: vaqt/og'irlik kiritilmasa Exercise dan avtomatik to'ldiriladi.
-            if minutes in (None, 0, 0.0, ""):
+            if "minutes" in self.fields and minutes in (None, 0, 0.0, ""):
                 cleaned_data["minutes"] = exercise.duration or 0
-            if recommended_weight in (None, 0, 0.0, ""):
+            if "recommended_weight" in self.fields and recommended_weight in (None, 0, 0.0, ""):
                 cleaned_data["recommended_weight"] = exercise.recommended_weight or 0
 
         return cleaned_data
@@ -47,7 +46,7 @@ class WorkoutExerciseInlineForm(forms.ModelForm):
 class WeekAdminForm(forms.ModelForm):
     generate_remaining_weeks = forms.BooleanField(
         required=False,
-        label="Generate remaining weeks",
+        label="Generate remaining weeks (up to week 6)",
         help_text="Belgilansa, joriy weekdan keyingi yetishmayotgan haftalar avtomatik yaratiladi.",
     )
 
@@ -204,22 +203,6 @@ class WeekAdmin(nested_admin.NestedModelAdmin):
     search_fields = ("plan__name", "plan__program__name")
     ordering = ("plan__program", "plan", "week_number")
 
-    def get_form(self, request, obj=None, change=False, **kwargs):
-        form = super().get_form(request, obj, change, **kwargs)
-        if "generate_remaining_weeks" in form.base_fields:
-            max_weeks = 6
-            target_plan_id = request.GET.get("plan") or request.POST.get("plan")
-            if obj and obj.plan_id:
-                max_weeks = 4 if obj.plan.is_4_week else 6
-            elif target_plan_id:
-                try:
-                    plan = Plan.objects.get(pk=target_plan_id)
-                    max_weeks = 4 if plan.is_4_week else 6
-                except Plan.DoesNotExist:
-                    pass
-            form.base_fields["generate_remaining_weeks"].label = f"Generate remaining weeks (up to week {max_weeks})"
-        return form
-
     def has_add_permission(self, request):
         """
         Week'lar Plan yaratilganda avtomatik (1..6) yaratiladi.
@@ -275,7 +258,7 @@ class WeekAdmin(nested_admin.NestedModelAdmin):
         super().save_model(request, obj, form, change)
         if form.cleaned_data.get("generate_remaining_weeks"):
             created_count = 0
-            max_weeks = 4 if obj.plan.is_4_week else 6
+            max_weeks = 4 if getattr(obj.plan, 'is_4_week', False) else 6
             for week_number in range(obj.week_number + 1, max_weeks + 1):
                 _, created = Week.objects.get_or_create(plan=obj.plan, week_number=week_number)
                 if created:
@@ -477,31 +460,6 @@ class PlanAdmin(admin.ModelAdmin):
             color, filled, total
         )
     week_fill_status.short_description = "To'ldirilgan"
-
-    def save_model(self, request, obj, form, change):
-        if obj.is_4_week:
-            obj.weeks_count = 4
-        elif obj.weeks_count == 4:
-            obj.weeks_count = 6
-        super().save_model(request, obj, form, change)
-
-
-@admin.register(GymWeek)
-class GymWeekAdmin(WeekAdmin):
-    list_display = ("__str__", "plan_link", "week_number", "workout_summary", "exercise_total")
-
-    def get_queryset(self, request):
-        qs = super().get_queryset(request)
-        return qs.filter(plan__program__workout_type="gym")
-
-
-@admin.register(HomeWeek)
-class HomeWeekAdmin(WeekAdmin):
-    list_display = ("__str__", "plan_link", "week_number", "workout_summary", "exercise_total")
-
-    def get_queryset(self, request):
-        qs = super().get_queryset(request)
-        return qs.filter(plan__program__workout_type="home")
 
 
 # ─────────────────────────────────────────────

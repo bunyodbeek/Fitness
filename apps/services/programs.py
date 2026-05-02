@@ -122,12 +122,16 @@ class ProgramGenerationService:
 
         seeds = WorkoutExercise.objects.filter(
             workout__week=week_one,
+            workout__apply_to_all_weeks=True,
             source_week_one__isnull=True,
         ).select_related("workout", "exercise")
 
         count = 0
         for seed in seeds:
-            ProgramGenerationService.generate_progression_from_week_one(seed)
+            if plan.program.workout_type == "home":
+                ProgramGenerationService.generate_home_progression_from_week_one(seed)
+            else:
+                ProgramGenerationService.generate_progression_from_week_one(seed)
             count += 1
         return count
 

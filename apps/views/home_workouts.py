@@ -117,7 +117,11 @@ class HomePlanWeeksView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # weeks — gym dagi plan_weeks.html bilan bir xil context key
+        self.request.session['workout_type'] = WorkoutType.HOME
+        self.request.session.modified = True
         context['weeks'] = self.object.weeks.all().order_by('week_number')
+        context['active_workout_type'] = WorkoutType.HOME
+        context['is_home_mode'] = True
         return context
 
 
@@ -141,7 +145,6 @@ class HomeWorkoutDetailView(LoginRequiredMixin, DetailView):
         workout_exercises = list(
             workout.workout_exercises
             .select_related('exercise')
-            .filter(exercise__workout_type=WorkoutType.HOME)
             .order_by('order', 'id')
         )
 
@@ -206,9 +209,7 @@ class HomeWorkoutDoneView(LoginRequiredMixin, View):
             week__plan__program__workout_type=WorkoutType.HOME,
         )
 
-        exercise_count = workout.workout_exercises.filter(
-            exercise__workout_type=WorkoutType.HOME
-        ).count()
+        exercise_count = workout.workout_exercises.count()
 
         if exercise_count == 0:
             return HttpResponseBadRequest("No exercises in workout")

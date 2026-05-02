@@ -315,7 +315,7 @@
     <div class="weeks-list">
         {% for week in weeks %}
             {# URL nomini o'z url.py ga qarab moslashtiring #}
-            <a href="{% url 'week_detail' week.id %}" class="week-card">
+            <a href="{% if is_home_mode %}{% url 'home_week_detail' week.id %}{% else %}{% url 'week_detail' week.id %}{% endif %}" class="week-card">
                 <div class="week-number">{{ week.week_number }}</div>
                 <div class="week-content">
                     <div class="week-title">

@@ -129,7 +129,10 @@ class PlanWeeksView(DetailView):
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		# Plan ichidagi hamma haftalarni chiqaramiz
+		active_type = get_session_workout_type(self.request, self.forced_workout_type)
 		context['weeks'] = self.object.weeks.all().order_by('week_number')
+		context['active_workout_type'] = active_type
+		context['is_home_mode'] = active_type == WorkoutType.HOME
 		return context
 
 
@@ -144,6 +147,11 @@ class WeekDetailView(DetailView):
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		# Shu haftaga tegishli hamma kunlarni olish
+		active_type = (
+			self.forced_workout_type
+			or self.object.plan.program.workout_type
+			or get_session_workout_type(self.request)
+		)
 		workouts = self.object.workouts.all().order_by('day_number').annotate(
 			exercise_count=Count('workout_exercises')
 		)
@@ -160,6 +168,8 @@ class WeekDetailView(DetailView):
 		
 		context['workouts'] = workouts
 		context['completed_workout_ids'] = completed_ids
+		context['active_workout_type'] = active_type
+		context['is_home_mode'] = active_type == WorkoutType.HOME
 		return context
 
 
@@ -174,11 +184,9 @@ class WorkoutDetailView(DetailView):
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		workout = self.object
-		workout_type = get_session_workout_type(self.request)
 		
 		workout_exercises = WorkoutExercise.objects.filter(
 			workout=workout,
-			exercise__workout_type=workout_type,
 		).select_related('exercise').order_by('order')
 		
 		context.update({
@@ -195,11 +203,14 @@ class WorkoutStartView(LoginRequiredMixin, View):
 	
 	def get(self, request, pk):
 		workout = get_object_or_404(Workout, pk=pk)
-		wtype = get_session_workout_type(request)
+		wtype = (
+			self.forced_workout_type
+			or workout.week.plan.program.workout_type
+			or get_session_workout_type(request)
+		)
 		
 		workout_exercises = WorkoutExercise.objects.filter(
-			workout=workout,
-			exercise__workout_type=wtype
+			workout=workout
 		).select_related('exercise').order_by('order')
 		
 		if not workout_exercises.exists():

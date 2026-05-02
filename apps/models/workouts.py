@@ -108,6 +108,13 @@ class Plan(CreatedBaseModel):
 		else:
 			if self.weeks_count != 6:
 				raise ValidationError("Plan must contain exactly 6 weeks.")
+	
+	@property
+	def days_per_week(self):
+		week = self.weeks.filter(week_number=1).first()
+		if week:
+			return week.workouts.count()
+		return 0
 
 
 class Edition(Plan):
