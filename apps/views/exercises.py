@@ -33,7 +33,7 @@ class ExercisesByMuscleView(ListView):
 
     def get_queryset(self):
         qs = super().get_queryset()
-        muscle_name = self.kwargs['muscle']
+        muscle_name = (self.kwargs['muscle'] or "").strip().lower()
         qs = qs.filter(
             primary_body_part__iexact=muscle_name,
         )
@@ -43,6 +43,7 @@ class ExercisesByMuscleView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['muscle'] = self.muscle.capitalize()
+        context['body_part'] = {'name': self.muscle.capitalize()}
         user = self.request.user
         try:
             user_profile = user.profile
