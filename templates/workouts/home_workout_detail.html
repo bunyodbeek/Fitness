@@ -1,1 +1,539 @@
-{% extends 'base.html' %}{% load i18n %}{% block content %}<div style="max-width:480px;margin:0 auto;padding:16px;background:#0d0f18;color:#fff;"><p style="color:#ffd700;">{{ workout.week.plan.program.name }} / {% trans 'Week' %} {{ week_number }} / {% trans 'Day' %} {{ workout.day_number }}</p><h2>{{ workout.title }}</h2><h4 style="color:#ffd700;">{% trans 'Round' %} 1 {% trans 'of' %} {{ rounds }}</h4>{% for e in exercises %}<div style="display:flex;gap:8px;align-items:center;background:rgba(255,255,255,.08);backdrop-filter:blur(8px);padding:8px;border-radius:10px;margin-bottom:8px;"><span>{{ forloop.counter }}</span><span>{{ e.name }}</span><span style="margin-left:auto;">{{ e.duration_seconds }} {% trans 'sec' %}</span></div>{% endfor %}<div>{% trans 'Rest between rounds' %}: {{ rest_seconds }} {% trans 'sec' %}</div><a href="{% url 'home_workout_session' workout.id %}" style="display:block;background:#ffd700;color:#0d0f18;text-align:center;padding:12px;border-radius:10px;margin-top:14px;">{% trans 'Start Workout' %}</a></div>{% endblock %}
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{{ workout.title }} - {% trans "Workout" %}{% endblock %}
+
+{% block bottom_nav %}{% endblock %}
+
+{% block extra_css %}
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        background: #0d0f18;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        min-height: 100vh;
+        color: #fff;
+        overflow-x: hidden;
+    }
+
+    /* ── HEADER ── */
+    .page-header {
+        background: rgba(13, 15, 24, 0.95);
+        backdrop-filter: blur(12px);
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+    }
+
+    .back-btn {
+        background: none;
+        border: none;
+        color: #ffd700;
+        font-size: 22px;
+        cursor: pointer;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        transition: background 0.2s;
+    }
+    .back-btn:hover { background: rgba(255,215,0,0.1); }
+
+    .page-title {
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        background: linear-gradient(135deg, #ffd700, #ff6b6b);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .header-spacer { width: 36px; }
+
+    /* ── CONTAINER ── */
+    .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 0 14px 100px;
+    }
+
+    /* ── BREADCRUMB ── */
+    .breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 14px 0 10px;
+        font-size: 11px;
+        color: rgba(255,255,255,0.4);
+        flex-wrap: wrap;
+    }
+    .breadcrumb span { color: rgba(255,215,0,0.7); font-weight: 600; }
+    .breadcrumb-sep { color: rgba(255,255,255,0.2); }
+
+    /* ── HERO CARD ── */
+    .hero-card {
+        background: linear-gradient(135deg, rgba(255,215,0,0.08) 0%, rgba(255,107,107,0.05) 100%);
+        border: 1.5px solid rgba(255,215,0,0.2);
+        border-radius: 20px;
+        padding: 20px;
+        margin-bottom: 16px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero-card::before {
+        content: '';
+        position: absolute;
+        top: -40px;
+        right: -40px;
+        width: 120px;
+        height: 120px;
+        background: radial-gradient(circle, rgba(255,215,0,0.12) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    .hero-day-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255,215,0,0.15);
+        border: 1px solid rgba(255,215,0,0.3);
+        border-radius: 20px;
+        padding: 4px 12px;
+        font-size: 11px;
+        font-weight: 700;
+        color: #ffd700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 10px;
+    }
+
+    .hero-title {
+        font-size: 22px;
+        font-weight: 900;
+        color: #fff;
+        margin-bottom: 14px;
+        line-height: 1.2;
+    }
+
+    .hero-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+    }
+
+    .hero-stat {
+        background: rgba(255,255,255,0.05);
+        border-radius: 12px;
+        padding: 10px 8px;
+        text-align: center;
+    }
+
+    .hero-stat-val {
+        font-size: 18px;
+        font-weight: 900;
+        background: linear-gradient(135deg, #ffd700, #ffed4e);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        line-height: 1;
+        margin-bottom: 4px;
+    }
+
+    .hero-stat-label {
+        font-size: 9px;
+        color: rgba(255,255,255,0.5);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* ── SECTION TITLE ── */
+    .section-title {
+        font-size: 11px;
+        font-weight: 700;
+        color: rgba(255,255,255,0.4);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin: 16px 0 10px;
+    }
+
+    /* ── ROUNDS INFO ── */
+    .rounds-info {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: rgba(255,215,0,0.06);
+        border: 1px solid rgba(255,215,0,0.15);
+        border-radius: 14px;
+        padding: 12px 16px;
+        margin-bottom: 14px;
+    }
+
+    .rounds-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .rounds-icon {
+        width: 36px;
+        height: 36px;
+        background: linear-gradient(135deg, #ffd700, #ff6b6b);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+    }
+
+    .rounds-text-label {
+        font-size: 10px;
+        color: rgba(255,255,255,0.4);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .rounds-text-val {
+        font-size: 15px;
+        font-weight: 800;
+        color: #fff;
+    }
+
+    .rest-badge {
+        background: rgba(255,255,255,0.06);
+        border-radius: 10px;
+        padding: 6px 12px;
+        text-align: right;
+    }
+
+    .rest-badge-label {
+        font-size: 9px;
+        color: rgba(255,255,255,0.4);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .rest-badge-val {
+        font-size: 14px;
+        font-weight: 800;
+        color: #4ecdc4;
+    }
+
+    /* ── EXERCISE LIST ── */
+    .exercises-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .exercise-card {
+        background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%);
+        border: 1.5px solid rgba(255,255,255,0.08);
+        border-radius: 16px;
+        padding: 14px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        transition: all 0.3s ease;
+        animation: slideIn 0.4s ease both;
+    }
+
+    .exercise-card:hover {
+        border-color: rgba(255,215,0,0.25);
+        transform: translateX(4px);
+        background: linear-gradient(135deg, rgba(255,215,0,0.06) 0%, rgba(255,255,255,0.02) 100%);
+    }
+
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateY(12px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .exercise-card:nth-child(1) { animation-delay: 0.05s; }
+    .exercise-card:nth-child(2) { animation-delay: 0.10s; }
+    .exercise-card:nth-child(3) { animation-delay: 0.15s; }
+    .exercise-card:nth-child(4) { animation-delay: 0.20s; }
+    .exercise-card:nth-child(5) { animation-delay: 0.25s; }
+
+    .exercise-num {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,107,107,0.15));
+        border: 1px solid rgba(255,215,0,0.25);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: 800;
+        color: #ffd700;
+        flex-shrink: 0;
+    }
+
+    .exercise-thumb {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        object-fit: cover;
+        flex-shrink: 0;
+        background: rgba(255,255,255,0.05);
+    }
+
+    .exercise-thumb-placeholder {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,107,107,0.08));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        flex-shrink: 0;
+    }
+
+    .exercise-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .exercise-name {
+        font-size: 14px;
+        font-weight: 700;
+        color: #fff;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-bottom: 3px;
+    }
+
+    .exercise-meta {
+        font-size: 11px;
+        color: rgba(255,255,255,0.4);
+        font-weight: 500;
+    }
+
+    .exercise-duration {
+        background: rgba(78,205,196,0.12);
+        border: 1px solid rgba(78,205,196,0.25);
+        border-radius: 8px;
+        padding: 6px 10px;
+        text-align: center;
+        flex-shrink: 0;
+    }
+
+    .exercise-duration-val {
+        font-size: 15px;
+        font-weight: 800;
+        color: #4ecdc4;
+        line-height: 1;
+    }
+
+    .exercise-duration-label {
+        font-size: 9px;
+        color: rgba(78,205,196,0.6);
+        text-transform: uppercase;
+        font-weight: 600;
+    }
+
+    /* ── TOTAL TIME ── */
+    .total-time-bar {
+        background: linear-gradient(135deg, rgba(78,205,196,0.08), rgba(78,205,196,0.03));
+        border: 1px solid rgba(78,205,196,0.2);
+        border-radius: 14px;
+        padding: 14px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 16px;
+    }
+
+    .total-time-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: rgba(255,255,255,0.5);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .total-time-val {
+        font-size: 20px;
+        font-weight: 900;
+        color: #4ecdc4;
+    }
+
+    /* ── START BUTTON ── */
+    .start-btn-wrap {
+        margin-top: 20px;
+    }
+
+    .start-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        width: 100%;
+        background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+        color: #0d0f18;
+        font-size: 16px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        padding: 16px;
+        border-radius: 16px;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 8px 32px rgba(255,215,0,0.35);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .start-btn::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    .start-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 40px rgba(255,215,0,0.5);
+    }
+
+    .start-btn:hover::before { opacity: 1; }
+    .start-btn:active { transform: translateY(0); }
+
+    .start-btn-icon { font-size: 20px; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <button class="back-btn" onclick="window.history.back()">&#8592;</button>
+    <div class="page-title">{% trans "Workout" %}</div>
+    <div class="header-spacer"></div>
+</div>
+
+<div class="container">
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+        <span>{{ workout.week.plan.program.name }}</span>
+        <span class="breadcrumb-sep">›</span>
+        <span>{% trans "Week" %} {{ week_number }}</span>
+        <span class="breadcrumb-sep">›</span>
+        <span>{% trans "Day" %} {{ workout.day_number }}</span>
+    </div>
+
+    <!-- Hero -->
+    <div class="hero-card">
+        <div class="hero-day-badge">
+            📅 {% trans "Day" %} {{ workout.day_number }}
+        </div>
+        <div class="hero-title">
+            {% if workout.title %}{{ workout.title }}{% else %}{% blocktrans with num=workout.day_number %}Day {{ num }}{% endblocktrans %}{% endif %}
+        </div>
+        <div class="hero-stats">
+            <div class="hero-stat">
+                <div class="hero-stat-val">{{ exercises|length }}</div>
+                <div class="hero-stat-label">{% trans "Exercises" %}</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hero-stat-val">{{ rounds }}</div>
+                <div class="hero-stat-label">{% trans "Rounds" %}</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hero-stat-val">
+                    {% widthratio total_time_seconds 60 1 %}
+                </div>
+                <div class="hero-stat-label">{% trans "Min" %}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rounds info -->
+    <div class="rounds-info">
+        <div class="rounds-left">
+            <div class="rounds-icon">🔄</div>
+            <div>
+                <div class="rounds-text-label">{% trans "Rounds" %}</div>
+                <div class="rounds-text-val">{{ rounds }} {% trans "rounds" %}</div>
+            </div>
+        </div>
+        <div class="rest-badge">
+            <div class="rest-badge-label">{% trans "Rest" %}</div>
+            <div class="rest-badge-val">{{ rest_seconds }}s</div>
+        </div>
+    </div>
+
+    <!-- Exercises -->
+    <div class="section-title">{% trans "Exercises" %}</div>
+
+    <div class="exercises-list">
+        {% for e in exercises %}
+        <div class="exercise-card">
+            <div class="exercise-num">{{ forloop.counter }}</div>
+
+            {% if e.image %}
+                <img src="{{ e.image.url }}" alt="{{ e.name }}" class="exercise-thumb">
+            {% else %}
+                <div class="exercise-thumb-placeholder">💪</div>
+            {% endif %}
+
+            <div class="exercise-info">
+                <div class="exercise-name">
+                    {% if LANGUAGE_CODE == 'uz' and e.name_uz %}{{ e.name_uz }}
+                    {% elif LANGUAGE_CODE == 'ru' and e.name_ru %}{{ e.name_ru }}
+                    {% else %}{{ e.name }}{% endif %}
+                </div>
+                <div class="exercise-meta">{% trans "Exercise" %} {{ forloop.counter }}</div>
+            </div>
+
+            <div class="exercise-duration">
+                <div class="exercise-duration-val">{{ e.duration_seconds }}</div>
+                <div class="exercise-duration-label">{% trans "sec" %}</div>
+            </div>
+        </div>
+        {% empty %}
+        <div style="text-align:center;padding:40px 20px;color:rgba(255,255,255,0.4);">
+            <div style="font-size:40px;margin-bottom:10px;">🏋️</div>
+            <div style="font-size:14px;font-weight:700;">{% trans "No exercises" %}</div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Total time -->
+    {% if total_time_seconds %}
+    <div class="total-time-bar">
+        <div class="total-time-label">⏱ {% trans "Total time" %}</div>
+        <div class="total-time-val">
+            {% widthratio total_time_seconds 60 1 %} {% trans "min" %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Start button -->
+    <div class="start-btn-wrap">
+        <a href="{% url 'home_workout_session' workout.id %}" class="start-btn">
+            <span class="start-btn-icon">▶</span>
+            {% trans "Start Workout" %}
+        </a>
+    </div>
+
+</div>
+
+{% endblock %}

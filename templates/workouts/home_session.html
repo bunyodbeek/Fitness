@@ -1,1 +1,765 @@
-{% extends 'base.html' %}{% load i18n %}{% block content %}<div style="max-width:480px;margin:0 auto;padding:16px;background:#0d0f18;color:#fff;"><div style="color:#ffd700;text-align:center;">{% trans 'Round' %} {{ current_round }} {% trans 'of' %} {{ rounds }}</div><div style="height:220px;border-radius:50%;border:4px solid #ffd700;display:flex;align-items:center;justify-content:center;margin:20px auto;max-width:220px;">{{ exercises.0.duration_seconds }} {% trans 'sec' %}</div><h3 style="text-align:center;">{{ exercises.0.name }}</h3><button style="float:right;background:#ffd700;border:0;padding:10px 18px;">NEXT ></button><div style="clear:both"></div><h4 style="color:#ffd700;">{% trans 'Rest' %}</h4><button style="background:#ffd700;border:0;padding:10px 18px;">{% trans 'Next Round' %}</button></div>{% endblock %}
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Workout Session" %}{% endblock %}
+{% block bottom_nav %}{% endblock %}
+
+{% block extra_css %}
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    background: #0d0f18;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    min-height: 100vh;
+    color: #fff;
+    overflow-x: hidden;
+}
+
+/* ── HEADER ── */
+.session-header {
+    background: rgba(13,15,24,0.98);
+    backdrop-filter: blur(12px);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 1px solid rgba(255,215,0,0.1);
+}
+
+.back-btn {
+    background: none;
+    border: none;
+    color: #ffd700;
+    font-size: 22px;
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+}
+
+.round-indicator {
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    background: linear-gradient(135deg, #ffd700, #ff6b6b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.exercise-counter {
+    font-size: 12px;
+    color: rgba(255,255,255,0.5);
+    font-weight: 600;
+}
+
+/* ── ROUND PROGRESS ── */
+.round-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 0 0;
+}
+
+.round-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    transition: all 0.3s ease;
+}
+
+.round-dot.active {
+    background: #ffd700;
+    box-shadow: 0 0 8px rgba(255,215,0,0.6);
+    width: 24px;
+    border-radius: 4px;
+}
+
+.round-dot.done {
+    background: rgba(255,215,0,0.4);
+}
+
+/* ── MAIN CONTAINER ── */
+.container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 0 16px 100px;
+}
+
+/* ── EXERCISE IMAGE ── */
+.exercise-image-wrap {
+    position: relative;
+    margin: 16px 0;
+    border-radius: 20px;
+    overflow: hidden;
+    height: 200px;
+    background: linear-gradient(135deg, rgba(255,215,0,0.08), rgba(255,107,107,0.05));
+    border: 1.5px solid rgba(255,215,0,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.exercise-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.exercise-image-placeholder {
+    font-size: 64px;
+    opacity: 0.6;
+}
+
+.exercise-order-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: rgba(13,15,24,0.85);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,215,0,0.3);
+    border-radius: 10px;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #ffd700;
+}
+
+/* ── EXERCISE NAME ── */
+.exercise-name {
+    font-size: 20px;
+    font-weight: 900;
+    color: #fff;
+    text-align: center;
+    margin-bottom: 20px;
+    line-height: 1.2;
+}
+
+/* ── TIMER CIRCLE ── */
+.timer-wrap {
+    display: flex;
+    justify-content: center;
+    margin: 0 0 20px;
+}
+
+.timer-circle-container {
+    position: relative;
+    width: 180px;
+    height: 180px;
+}
+
+.timer-svg {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    transform: rotate(-90deg);
+}
+
+.timer-bg-circle {
+    fill: none;
+    stroke: rgba(255,255,255,0.08);
+    stroke-width: 6;
+}
+
+.timer-progress-circle {
+    fill: none;
+    stroke: url(#timerGrad);
+    stroke-width: 6;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1s linear;
+}
+
+.timer-inner {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.timer-seconds {
+    font-size: 42px;
+    font-weight: 900;
+    background: linear-gradient(135deg, #ffd700, #ffed4e);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1;
+}
+
+.timer-label {
+    font-size: 11px;
+    color: rgba(255,255,255,0.4);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 4px;
+}
+
+/* ── CONTROLS ── */
+.controls {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.btn-pause {
+    flex: 1;
+    background: rgba(255,255,255,0.07);
+    border: 1.5px solid rgba(255,255,255,0.12);
+    border-radius: 14px;
+    padding: 14px;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-pause:hover { background: rgba(255,255,255,0.12); }
+
+.btn-next {
+    flex: 2;
+    background: linear-gradient(135deg, #ffd700, #ffed4e);
+    border: none;
+    border-radius: 14px;
+    padding: 14px;
+    color: #0d0f18;
+    font-size: 15px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 6px 24px rgba(255,215,0,0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-next:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 32px rgba(255,215,0,0.5);
+}
+
+.btn-next:active { transform: translateY(0); }
+
+/* ── REST STATE ── */
+.rest-panel {
+    display: none;
+    background: linear-gradient(135deg, rgba(78,205,196,0.1), rgba(78,205,196,0.04));
+    border: 1.5px solid rgba(78,205,196,0.25);
+    border-radius: 20px;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+.rest-panel.visible { display: block; }
+
+.rest-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: rgba(78,205,196,0.8);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+}
+
+.rest-timer {
+    font-size: 48px;
+    font-weight: 900;
+    color: #4ecdc4;
+    line-height: 1;
+    margin-bottom: 8px;
+}
+
+.rest-label {
+    font-size: 12px;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 14px;
+}
+
+.btn-skip-rest {
+    background: rgba(78,205,196,0.15);
+    border: 1px solid rgba(78,205,196,0.3);
+    border-radius: 12px;
+    padding: 10px 24px;
+    color: #4ecdc4;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-skip-rest:hover { background: rgba(78,205,196,0.25); }
+
+/* ── EXERCISE LIST (mini) ── */
+.mini-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.mini-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+    transition: all 0.3s;
+}
+
+.mini-item.current {
+    background: rgba(255,215,0,0.08);
+    border-color: rgba(255,215,0,0.25);
+}
+
+.mini-item.done {
+    opacity: 0.4;
+}
+
+.mini-num {
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.07);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 800;
+    color: rgba(255,255,255,0.5);
+    flex-shrink: 0;
+}
+
+.mini-item.current .mini-num {
+    background: rgba(255,215,0,0.2);
+    color: #ffd700;
+}
+
+.mini-item.done .mini-num {
+    background: rgba(78,205,196,0.15);
+    color: #4ecdc4;
+}
+
+.mini-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.7);
+    flex: 1;
+}
+
+.mini-item.current .mini-name { color: #fff; font-weight: 700; }
+
+.mini-dur {
+    font-size: 11px;
+    color: rgba(255,255,255,0.35);
+    font-weight: 600;
+}
+
+/* ── COMPLETE OVERLAY ── */
+.complete-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(13,15,24,0.97);
+    z-index: 200;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 32px;
+}
+
+.complete-overlay.visible { display: flex; }
+
+.complete-emoji { font-size: 72px; margin-bottom: 20px; animation: bounce 0.6s ease; }
+
+@keyframes bounce {
+    0% { transform: scale(0); }
+    70% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+.complete-title {
+    font-size: 28px;
+    font-weight: 900;
+    background: linear-gradient(135deg, #ffd700, #ff6b6b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+}
+
+.complete-sub {
+    font-size: 14px;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 32px;
+}
+
+.complete-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    width: 100%;
+    max-width: 300px;
+    margin-bottom: 32px;
+}
+
+.complete-stat {
+    background: rgba(255,255,255,0.05);
+    border-radius: 14px;
+    padding: 14px;
+}
+
+.complete-stat-val {
+    font-size: 22px;
+    font-weight: 900;
+    color: #ffd700;
+}
+
+.complete-stat-label {
+    font-size: 10px;
+    color: rgba(255,255,255,0.4);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 4px;
+}
+
+.btn-done {
+    background: linear-gradient(135deg, #ffd700, #ffed4e);
+    border: none;
+    border-radius: 16px;
+    padding: 16px 48px;
+    color: #0d0f18;
+    font-size: 16px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+    box-shadow: 0 8px 32px rgba(255,215,0,0.35);
+    text-decoration: none;
+    display: inline-block;
+}
+
+.section-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.3);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin: 16px 0 8px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Complete overlay -->
+<div class="complete-overlay" id="completeOverlay">
+    <div class="complete-emoji">🏆</div>
+    <div class="complete-title">{% trans "Workout Complete!" %}</div>
+    <div class="complete-sub">{% trans "Amazing work! You crushed it!" %}</div>
+    <div class="complete-stats">
+        <div class="complete-stat">
+            <div class="complete-stat-val" id="finalRounds">{{ rounds }}</div>
+            <div class="complete-stat-label">{% trans "Rounds" %}</div>
+        </div>
+        <div class="complete-stat">
+            <div class="complete-stat-val" id="finalExercises">{{ exercises|length }}</div>
+            <div class="complete-stat-label">{% trans "Exercises" %}</div>
+        </div>
+    </div>
+    <a href="{% url 'home_workout_detail' workout.id %}" class="btn-done">{% trans "Done" %} ✓</a>
+</div>
+
+<!-- Header -->
+<div class="session-header">
+    <button class="back-btn" onclick="confirmExit()">&#8592;</button>
+    <div class="round-indicator" id="roundLabel">{% trans "Round" %} {{ current_round }} {% trans "of" %} {{ rounds }}</div>
+    <div class="exercise-counter" id="exerciseCounter">1 / {{ exercises|length }}</div>
+</div>
+
+<!-- Round dots -->
+<div class="round-dots" id="roundDots">
+    {% for i in rounds_range %}
+    <div class="round-dot {% if forloop.first %}active{% endif %}" id="dot{{ forloop.counter }}"></div>
+    {% endfor %}
+</div>
+
+<div class="container">
+
+    <!-- Exercise image -->
+    <div class="exercise-image-wrap">
+        <div class="exercise-order-badge" id="exOrderBadge">1 / {{ exercises|length }}</div>
+        {% if exercises.0.image %}
+            <img src="{{ exercises.0.image.url }}" alt="" class="exercise-image" id="exImage">
+        {% else %}
+            <div class="exercise-image-placeholder" id="exImage">💪</div>
+        {% endif %}
+    </div>
+
+    <!-- Exercise name -->
+    <div class="exercise-name" id="exName">{{ exercises.0.name }}</div>
+
+    <!-- Timer -->
+    <div class="timer-wrap">
+        <div class="timer-circle-container">
+            <svg class="timer-svg" viewBox="0 0 180 180">
+                <defs>
+                    <linearGradient id="timerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#ffd700"/>
+                        <stop offset="100%" style="stop-color:#ff6b6b"/>
+                    </linearGradient>
+                </defs>
+                <circle class="timer-bg-circle" cx="90" cy="90" r="82"/>
+                <circle class="timer-progress-circle" cx="90" cy="90" r="82"
+                    id="timerCircle"
+                    stroke-dasharray="515"
+                    stroke-dashoffset="0"/>
+            </svg>
+            <div class="timer-inner">
+                <div class="timer-seconds" id="timerDisplay">{{ exercises.0.duration_seconds }}</div>
+                <div class="timer-label">{% trans "sec" %}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rest panel -->
+    <div class="rest-panel" id="restPanel">
+        <div class="rest-title">💤 {% trans "Rest" %}</div>
+        <div class="rest-timer" id="restDisplay">{{ rest_seconds }}</div>
+        <div class="rest-label">{% trans "Next round starting soon..." %}</div>
+        <button class="btn-skip-rest" onclick="skipRest()">{% trans "Skip Rest" %} ⚡</button>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+        <button class="btn-pause" id="pauseBtn" onclick="togglePause()">
+            <span id="pauseIcon">⏸</span> <span id="pauseText">{% trans "Pause" %}</span>
+        </button>
+        <button class="btn-next" onclick="nextExercise()">
+            {% trans "Next" %} ›
+        </button>
+    </div>
+
+    <!-- Mini exercise list -->
+    <div class="section-label">{% trans "Exercises" %}</div>
+    <div class="mini-list" id="miniList">
+        {% for e in exercises %}
+        <div class="mini-item {% if forloop.first %}current{% endif %}" id="mini{{ forloop.counter0 }}">
+            <div class="mini-num">
+                {% if not forloop.first %}{{ forloop.counter }}{% else %}▶{% endif %}
+            </div>
+            <div class="mini-name">{{ e.name }}</div>
+            <div class="mini-dur">{{ e.duration_seconds }}s</div>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+<script>
+// ── DATA ──
+const EXERCISES = [
+    {% for e in exercises %}
+    {
+        name: "{{ e.name|escapejs }}",
+        duration: {{ e.duration_seconds }},
+        image: "{% if e.image %}{{ e.image.url }}{% endif %}",
+        order: {{ forloop.counter }}
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+];
+
+const TOTAL_ROUNDS = {{ rounds }};
+const REST_SECONDS = {{ rest_seconds }};
+const TOTAL_EXERCISES = EXERCISES.length;
+
+// ── STATE ──
+let currentRound = {{ current_round }};
+let currentExIndex = {{ current_order|default:1 }} - 1;
+let timeLeft = EXERCISES[currentExIndex]?.duration || 30;
+let totalDuration = timeLeft;
+let isPaused = false;
+let isResting = false;
+let restLeft = REST_SECONDS;
+let timer = null;
+
+const CIRCUMFERENCE = 2 * Math.PI * 82; // r=82
+
+// ── INIT ──
+function init() {
+    updateUI();
+    startTimer();
+}
+
+// ── UI UPDATE ──
+function updateUI() {
+    const ex = EXERCISES[currentExIndex];
+    if (!ex) return;
+
+    // Header
+    document.getElementById('roundLabel').textContent =
+        `{% trans "Round" %} ${currentRound} {% trans "of" %} ${TOTAL_ROUNDS}`;
+    document.getElementById('exerciseCounter').textContent =
+        `${currentExIndex + 1} / ${TOTAL_EXERCISES}`;
+    document.getElementById('exOrderBadge').textContent =
+        `${currentExIndex + 1} / ${TOTAL_EXERCISES}`;
+
+    // Exercise info
+    document.getElementById('exName').textContent = ex.name;
+
+    // Image
+    const imgEl = document.getElementById('exImage');
+    if (ex.image) {
+        imgEl.outerHTML = `<img src="${ex.image}" alt="" class="exercise-image" id="exImage">`;
+    } else {
+        if (imgEl.tagName === 'IMG') {
+            imgEl.outerHTML = `<div class="exercise-image-placeholder" id="exImage">💪</div>`;
+        }
+    }
+
+    // Timer
+    timeLeft = ex.duration;
+    totalDuration = ex.duration;
+    updateTimerDisplay();
+
+    // Mini list
+    EXERCISES.forEach((_, i) => {
+        const item = document.getElementById(`mini${i}`);
+        if (!item) return;
+        item.className = 'mini-item';
+        const num = item.querySelector('.mini-num');
+        if (i < currentExIndex) {
+            item.classList.add('done');
+            num.textContent = '✓';
+        } else if (i === currentExIndex) {
+            item.classList.add('current');
+            num.textContent = '▶';
+        } else {
+            num.textContent = i + 1;
+        }
+    });
+
+    // Round dots
+    for (let i = 1; i <= TOTAL_ROUNDS; i++) {
+        const dot = document.getElementById(`dot${i}`);
+        if (!dot) continue;
+        dot.className = 'round-dot';
+        if (i < currentRound) dot.classList.add('done');
+        else if (i === currentRound) dot.classList.add('active');
+    }
+}
+
+function updateTimerDisplay() {
+    document.getElementById('timerDisplay').textContent = timeLeft;
+    const circle = document.getElementById('timerCircle');
+    const pct = totalDuration > 0 ? timeLeft / totalDuration : 0;
+    circle.style.strokeDashoffset = CIRCUMFERENCE * (1 - pct);
+}
+
+// ── TIMER ──
+function startTimer() {
+    clearInterval(timer);
+    timer = setInterval(tick, 1000);
+}
+
+function tick() {
+    if (isPaused) return;
+
+    if (isResting) {
+        restLeft--;
+        document.getElementById('restDisplay').textContent = restLeft;
+        if (restLeft <= 0) endRest();
+        return;
+    }
+
+    timeLeft--;
+    updateTimerDisplay();
+
+    if (timeLeft <= 0) {
+        autoNext();
+    }
+}
+
+function autoNext() {
+    nextExercise();
+}
+
+// ── NEXT EXERCISE ──
+function nextExercise() {
+    currentExIndex++;
+
+    if (currentExIndex >= TOTAL_EXERCISES) {
+        // Round tugadi
+        if (currentRound >= TOTAL_ROUNDS) {
+            // Workout tugadi!
+            clearInterval(timer);
+            document.getElementById('completeOverlay').classList.add('visible');
+            return;
+        }
+        // Rest boshlash
+        startRest();
+        return;
+    }
+
+    updateUI();
+    startTimer();
+}
+
+// ── REST ──
+function startRest() {
+    isResting = true;
+    restLeft = REST_SECONDS;
+    document.getElementById('restPanel').classList.add('visible');
+    document.getElementById('restDisplay').textContent = restLeft;
+}
+
+function endRest() {
+    isResting = false;
+    currentRound++;
+    currentExIndex = 0;
+    document.getElementById('restPanel').classList.remove('visible');
+    updateUI();
+    startTimer();
+}
+
+function skipRest() {
+    endRest();
+}
+
+// ── PAUSE ──
+function togglePause() {
+    isPaused = !isPaused;
+    document.getElementById('pauseIcon').textContent = isPaused ? '▶' : '⏸';
+    document.getElementById('pauseText').textContent = isPaused ? '{% trans "Resume" %}' : '{% trans "Pause" %}';
+}
+
+// ── EXIT ──
+function confirmExit() {
+    if (confirm('{% trans "Exit workout? Your progress will be lost." %}')) {
+        window.history.back();
+    }
+}
+
+// ── START ──
+init();
+</script>
+
+{% endblock %}

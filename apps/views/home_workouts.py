@@ -121,7 +121,7 @@ class HomePlanWeeksView(DetailView):
         # weeks — gym dagi plan_weeks.html bilan bir xil context key
         self.request.session['workout_type'] = WorkoutType.HOME
         self.request.session.modified = True
-        context['weeks'] = self.object.weeks.all().order_by('week_number')
+        context['weeks'] = self.object.weeks.prefetch_related('workouts').order_by('week_number')
         context['active_workout_type'] = WorkoutType.HOME
         context['is_home_mode'] = True
         return context
