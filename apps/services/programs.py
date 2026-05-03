@@ -45,7 +45,6 @@ WEEK_FIELD_MAP = {
 }
 
 
-
 class ProgramGenerationService:
 
     @staticmethod
@@ -58,11 +57,11 @@ class ProgramGenerationService:
     @staticmethod
     def generate_progression_from_week_one(instance: WorkoutExercise):
         print(f"DEBUG generate called: exercise_id={instance.id}, week={instance.workout.week.week_number}")
-        
+
         plan = instance.workout.week.plan
         config: ProgressionSetting = plan.progression_config
         print(f"DEBUG config={config}, plan={plan}")
-        
+
         if not config:
             print("DEBUG: config None, returning!")
             return
@@ -137,47 +136,41 @@ class ProgramGenerationService:
 
     @staticmethod
     def generate_home_progression_from_week_one(instance: WorkoutExercise):
-        """
-        Home workout progression generator.
-        Weeks 2-6 ni 1-haftadan yaratadi, duration va rounds ni oshiradi.
-        """
         plan = instance.workout.week.plan
         setting = HomeProgressionSetting.objects.first()
-        
+
         if not setting:
             setting = HomeProgressionSetting.objects.create(key="default")
 
         base_minutes = float(instance.minutes or 0)
         base_rounds = int(instance.workout.rounds or 1)
-        
-        # Home progression weeks mapping
-        home_week_map = {
-            2: ("duration_w2", "round_w2"),
-            3: ("duration_w3", "round_w3"),
-            4: ("duration_w4", "round_w4"),
-            5: ("duration_w2", "round_w2"),  # Week 5 same as week 2 (repeat cycle)
-            6: ("duration_w3", "round_w3"),  # Week 6 same as week 3
-        }
+
+        cumulative_seconds = 0
+        cumulative_rounds = 0
 
         max_weeks = 4 if getattr(plan, "is_4_week", False) else 6
-        for week_num in range(2, max_weeks + 1):
-            duration_field, round_field = home_week_map.get(week_num, ("duration_w2", "round_w2"))
-            duration_increase = getattr(setting, duration_field, 0) or 0  # in seconds
-            round_increase = getattr(setting, round_field, 0) or 0
-            
-            # Calculate new duration (convert seconds to minutes)
-            new_minutes = base_minutes + (duration_increase / 60)
-            if new_minutes < base_minutes:  # Ensure at least same as base
-                new_minutes = base_minutes
 
-            # Calculate new rounds
-            new_rounds = max(1, base_rounds + round_increase)
+        week_increments = {
+            2: (getattr(setting, "duration_w2", 0) or 0, getattr(setting, "round_w2", 0) or 0),
+            3: (getattr(setting, "duration_w3", 0) or 0, getattr(setting, "round_w3", 0) or 0),
+            4: (getattr(setting, "duration_w4", 0) or 0, getattr(setting, "round_w4", 0) or 0),
+            5: (getattr(setting, "duration_w2", 0) or 0, getattr(setting, "round_w2", 0) or 0),
+            6: (getattr(setting, "duration_w3", 0) or 0, getattr(setting, "round_w3", 0) or 0),
+        }
+
+        for week_num in range(2, max_weeks + 1):
+            d_inc, r_inc = week_increments.get(week_num, (0, 0))
+            cumulative_seconds += d_inc
+            cumulative_rounds += r_inc
+
+            new_minutes = base_minutes + (cumulative_seconds / 60)
+            new_rounds = max(1, base_rounds + cumulative_rounds)
 
             target_week = Week.objects.filter(plan=plan, week_number=week_num).first()
             if not target_week:
                 continue
 
-            target_workout, _ = Workout.objects.get_or_create(
+            target_workout, created = Workout.objects.get_or_create(
                 week=target_week,
                 day_number=instance.workout.day_number,
                 defaults={
@@ -187,24 +180,22 @@ class ProgramGenerationService:
                     "rounds":   new_rounds,
                 },
             )
-            
-            # Update rounds if workout already exists
-            if not _:
+
+            if not created:
                 target_workout.rounds = new_rounds
-                target_workout.save(update_fields=['rounds'])
+                target_workout.save(update_fields=["rounds"])
 
             WorkoutExercise.objects.update_or_create(
                 workout=target_workout,
                 exercise=instance.exercise,
                 defaults={
                     "minutes":         new_minutes,
+                    "sets":            instance.sets,
+                    "reps":            instance.reps,
                     "order":           instance.order,
                     "source_week_one": instance,
                 },
             )
-
-
-
 
     @staticmethod
     def ensure_home_plan_integrity(plan: Plan):
@@ -231,7 +222,6 @@ class ProgramGenerationService:
 
         for seed in seeds:
             ProgramGenerationService.generate_home_progression_from_week_one(seed)
-
 
 
 # ─────────────────────────────────────────────
@@ -319,4 +309,3 @@ class UserProgramService:
 
             ProgramGenerationService.ensure_home_plan_integrity(plan)
         return cloned
-    
