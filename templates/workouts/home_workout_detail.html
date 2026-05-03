@@ -79,6 +79,22 @@
     .breadcrumb span { color: rgba(255,215,0,0.7); font-weight: 600; }
     .breadcrumb-sep { color: rgba(255,255,255,0.2); }
 
+    .completed-banner {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid rgba(16,185,129,0.3);
+        background: rgba(16,185,129,0.12);
+        border-radius: 12px;
+        padding: 10px 14px;
+        margin-bottom: 14px;
+        color: #6ee7b7;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+    }
+
     /* ── HERO CARD ── */
     .hero-card {
         background: linear-gradient(135deg, rgba(255,215,0,0.08) 0%, rgba(255,107,107,0.05) 100%);
@@ -417,6 +433,15 @@
     .start-btn:active { transform: translateY(0); }
 
     .start-btn-icon { font-size: 20px; }
+
+    .start-btn.completed {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        box-shadow: 0 8px 32px rgba(16,185,129,0.35);
+    }
+
+    .start-btn.completed:hover {
+        box-shadow: 0 12px 40px rgba(16,185,129,0.45);
+    }
 </style>
 {% endblock %}
 
@@ -438,6 +463,13 @@
         <span class="breadcrumb-sep">›</span>
         <span>{% trans "Day" %} {{ workout.day_number }}</span>
     </div>
+
+    {% if progress.is_finished %}
+    <div class="completed-banner">
+        <span>✅</span>
+        <span>{% trans "Completed" %}</span>
+    </div>
+    {% endif %}
 
     <!-- Hero -->
     <div class="hero-card">
@@ -528,9 +560,13 @@
 
     <!-- Start button -->
     <div class="start-btn-wrap">
-        <a href="{% url 'home_workout_session' workout.id %}" class="start-btn">
+        <a href="{% url 'home_workout_session' workout.id %}" class="start-btn {% if progress.is_finished %}completed{% endif %}">
             <span class="start-btn-icon">▶</span>
-            {% trans "Start Workout" %}
+            {% if progress.is_finished %}
+                {% trans "Redo Workout" %}
+            {% else %}
+                {% trans "Start Workout" %}
+            {% endif %}
         </a>
     </div>
 
