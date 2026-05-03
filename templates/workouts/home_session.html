@@ -256,6 +256,7 @@ body {
 }
 
 .btn-next:active { transform: translateY(0); }
+.btn-next.hidden { display: none; }
 
 /* ── REST STATE ── */
 .rest-panel {
@@ -553,7 +554,7 @@ body {
         <button class="btn-pause" id="pauseBtn" onclick="togglePause()">
             <span id="pauseIcon">⏸</span> <span id="pauseText">{% trans "Pause" %}</span>
         </button>
-        <button class="btn-next" onclick="nextExercise()">
+        <button class="btn-next" id="nextBtn" onclick="nextExercise()">
             {% trans "Next" %} ›
         </button>
     </div>
@@ -699,11 +700,13 @@ function tick() {
 }
 
 function autoNext() {
+    if (isResting) return;
     nextExercise();
 }
 
 // ── NEXT EXERCISE ──
 function nextExercise() {
+    if (isResting) return;
     currentExIndex++;
 
     if (currentExIndex >= TOTAL_EXERCISES) {
@@ -729,6 +732,7 @@ function startRest() {
     restLeft = REST_SECONDS;
     document.getElementById('restPanel').classList.add('visible');
     document.getElementById('restDisplay').textContent = restLeft;
+    document.getElementById('nextBtn').classList.add('hidden');
 }
 
 function endRest() {
@@ -736,6 +740,7 @@ function endRest() {
     currentRound++;
     currentExIndex = 0;
     document.getElementById('restPanel').classList.remove('visible');
+    document.getElementById('nextBtn').classList.remove('hidden');
     updateUI();
     startTimer();
 }
