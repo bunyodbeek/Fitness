@@ -1,115 +1,158 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Active Workout - {{ workout.title }}</title>
-    <link rel="stylesheet" href="{% static 'apps/css/active_workout_style.css' %}">
-    <!-- Font Awesome (ikonkalar uchun) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="{% static 'css/active_workout.css' %}">
+    <!-- Eski stillar ham saqlanadi (override qilinadi lekin xavfsiz) -->
+    <link rel="stylesheet" href="{% static 'apps/css/active_workout_style.css' %}">
 </head>
+
 <body>
-<input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
 
-<!-- Floating Timer -->
-<div class="floating-timer" id="floatingTimer">00:00</div>
+    <!-- ============================================================
+     HEADER
+     ============================================================ -->
+    <div class="session-header">
+        <button class="exit-btn" onclick="showExitModal()">EXIT</button>
 
-<div class="session-header">
-    <button class="exit-btn" onclick="showExitModal()">EXIT</button>
-    <div class="progress-counter">
-        <span id="current">1</span> / <span id="total">{{ total_exercises }}</span>
+        <div class="progress-counter">
+            <span id="current">1</span>&nbsp;/&nbsp;<span id="total">{{ total_exercises }}</span>
+        </div>
+
+        <!-- Timer header ichida, menu-btn dan chap tomonda -->
+        <div class="floating-timer" id="floatingTimer">00:00</div>
+
+        <button class="menu-btn">
+            <i class="fas fa-ellipsis-v"></i>
+        </button>
     </div>
-    <button class="menu-btn">
-        <i class="fas fa-ellipsis-v"></i>
-    </button>
-</div>
 
-<div class="exercise-content">
-    <div class="exercise-media-container" onclick="toggleExerciseMedia()">
-        <video class="exercise-video" id="exerciseVideo" playsinline controls></video>
-        <img src="{% static 'images/default_exercise.svg' %}" alt="Exercise" class="exercise-image" id="exerciseImage">
-        <div class="play-video-hint" id="playVideoHint" style="display:none;">Tap image to play video</div>
-        <div class="exercise-description-overlay" id="exerciseDescriptionCard" onclick="toggleExerciseDescription(event)" style="display:none;">
-            <div class="exercise-description-text" id="exerciseDescription"></div>
-            <div class="exercise-description-hint" id="exerciseDescriptionHint">Tap to expand</div>
+    <!-- ============================================================
+     MAIN CONTENT
+     ============================================================ -->
+    <div class="exercise-content">
+
+        <!-- Media card -->
+        <div class="exercise-media-container" onclick="toggleExerciseMedia()">
+            <video class="exercise-video" id="exerciseVideo" playsinline controls></video>
+            <img src="{% static 'images/default_exercise.svg' %}" alt="Exercise" class="exercise-image"
+                id="exerciseImage">
+            <div class="play-video-hint" id="playVideoHint" style="display:none;">
+                Tap image to play video
+            </div>
+            <div class="exercise-description-overlay" id="exerciseDescriptionCard"
+                onclick="toggleExerciseDescription(event)" style="display:none;">
+                <div class="exercise-description-text" id="exerciseDescription"></div>
+                <div class="exercise-description-hint" id="exerciseDescriptionHint">Tap to expand</div>
+            </div>
+        </div>
+
+        <!-- Exercise name -->
+        <h2 class="exercise-name" id="exerciseName"></h2>
+
+        <!-- Set / Reps chips -->
+        <div id="strengthDetails">
+            <div class="strength-chip">
+                Set <span id="currentSet">1</span> / <span id="totalSets"></span>
+            </div>
+            <div class="strength-chip">
+                <span id="repsCount"></span> Reps
+            </div>
+        </div>
+
+        <!-- Up next -->
+        <div class="up-next-section" id="upNext" style="display:none;">
+            <div class="up-next-label">UP NEXT</div>
+            <div class="up-next-content">
+                <img src="{% static 'images/default_exercise.svg' %}" alt="Next" class="up-next-image" id="upNextImage">
+                <div class="up-next-info">
+                    <div class="up-next-name" id="upNextName"></div>
+                    <div class="up-next-details" id="upNextDetails"></div>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /exercise-content -->
+
+    <!-- ============================================================
+     BOTTOM ACTION BAR
+     ============================================================ -->
+    <div class="action-buttons">
+        <button class="pause-btn" id="pauseBtn" onclick="togglePause()">
+            <span id="pauseIcon"><i class="fas fa-pause"></i></span>
+        </button>
+        <button class="did-it-btn" id="didItBtn" onclick="completeExercise()">
+            Set Done
+        </button>
+    </div>
+
+    <!-- ============================================================
+     REST OVERLAY
+     ============================================================ -->
+    <div class="rest-overlay" id="restOverlay">
+        <div class="rest-overlay-panel">
+            <div class="rest-title">Rest</div>
+            <div class="set-complete-badge" id="setCompleteBadge">Set 1 Complete ✅</div>
+
+            <div class="rest-timer-circle">
+                <div class="rest-timer" id="restTimer">00:00</div>
+                <div class="rest-skip-text">Recover &amp; breathe</div>
+            </div>
+
+            <button class="rest-skip-btn" onclick="skipRest()">Skip Rest</button>
+
+            <div class="rest-up-next">
+                <div class="rest-up-next-label">Next Up</div>
+                <div class="rest-up-next-name" id="restUpNextName">Set 2</div>
+            </div>
         </div>
     </div>
-    <h2 class="exercise-name" id="exerciseName"></h2>
-    <div id="strengthDetails">
-        <div class="strength-chip">Set <span id="currentSet">1</span> / <span id="totalSets"></span></div>
-        <div class="strength-chip"><span id="repsCount"></span> Reps</div>
-    </div>
-</div>
 
-<div class="up-next-section" id="upNext" style="display:none;">
-    <div class="up-next-label">UP NEXT</div>
-    <div class="up-next-content">
-        <img src="{% static 'images/default_exercise.svg' %}" alt="Next" class="up-next-image" id="upNextImage">
-        <div class="up-next-info">
-            <div class="up-next-name" id="upNextName"></div>
-            <div class="up-next-details" id="upNextDetails"></div>
+    <!-- ============================================================
+     EXIT MODAL
+     ============================================================ -->
+    <div class="exit-modal" id="exitModal">
+        <div class="exit-modal-content">
+            <h3>Finish Workout?</h3>
+            <p>You have not completed all exercises.</p>
+            <div class="exit-modal-buttons">
+                <button id="saveExitBtn" class="btn-save-exit" onclick="saveAndExit()">
+                    Save &amp; Exit
+                </button>
+                <button onclick="exitWithoutSaving()">Exit without Saving</button>
+                <button onclick="returnToWorkout()">Return to Workout</button>
+            </div>
         </div>
     </div>
-</div>
 
-<div class="action-buttons">
-    <button class="pause-btn" id="pauseBtn" onclick="togglePause()">
-        <span id="pauseIcon"><i class="fas fa-pause"></i></span>
-    </button>
-    <button class="did-it-btn" id="didItBtn" onclick="completeExercise()">Set Done</button>
-</div>
-
-<div class="rest-overlay" id="restOverlay">
-    <div class="rest-overlay-panel">
-        <div class="rest-title">Rest</div>
-        <div class="set-complete-badge" id="setCompleteBadge">Set 1 Complete ✅</div>
-        <div class="rest-timer-circle">
-            <div class="rest-timer" id="restTimer">00:00</div>
-            <div class="rest-skip-text">Recover & breathe</div>
-        </div>
-        <button class="rest-skip-btn" onclick="skipRest()">Skip Rest</button>
-        <div class="rest-up-next">
-            <div class="rest-up-next-label">Next Up</div>
-            <div class="rest-up-next-name" id="restUpNextName">Set 2</div>
-        </div>
-    </div>
-</div>
-
-<!-- Exit Modal -->
-<div class="exit-modal" id="exitModal">
-    <div class="exit-modal-content">
-        <h3>Finish Workout?</h3>
-        <p>You did not complete all the exercises.</p>
-        <div class="exit-modal-buttons">
-            <button id="saveExitBtn" class="btn-save-exit" onclick="saveAndExit()">Save and Exit</button>
-            <button onclick="exitWithoutSaving()">Exit without Saving</button>
-            <button onclick="returnToWorkout()">Return</button>
-        </div>
-    </div>
-</div>
-
-<script>
-    window.ACTIVE_WORKOUT_CONFIG = {
-        workoutPk: "{{ workout.pk }}",
-        totalExercises: {{ total_exercises|default:0 }},
+    <!-- ============================================================
+     CONFIG & SCRIPTS
+     ============================================================ -->
+    <script>
+        window.ACTIVE_WORKOUT_CONFIG = {
+            workoutPk: "{{ workout.pk }}",
+            totalExercises: {{ total_exercises |default: 0 }},
         csrfToken: "{{ csrf_token }}",
-        exercises: {{ exercises_json|safe }},
-        initialExerciseIndex: {{ initial_exercise_index|default:0 }},
-        initialSet: {{ initial_set|default:1 }},
-        initialCompleted: {{ initial_completed|default:0 }},
+            exercises: { { exercises_json | safe } },
+        initialExerciseIndex: { { initial_exercise_index |default: 0 } },
+        initialSet: { { initial_set |default: 1 } },
+        initialCompleted: { { initial_completed |default: 0 } },
         defaultExerciseImage: "{% static 'images/default_exercise.svg' %}",
-        completeUrl: "{{ workout_complete_url|default:'' }}",
-        restartUrl: "{{ workout_start_url|default:'' }}",
+            completeUrl: "{{ workout_complete_url|default:'' }}",
+                restartUrl: "{{ workout_start_url|default:'' }}",
     };
-</script>
-<script>
-    const WORKOUT_URLS = {
-        complete: "{{ workout_complete_url|default:'' }}",
-        start: "{{ workout_start_url|default:'' }}"
-    };
-</script>
-<script src="{% static 'js/active_workout.js' %}"></script>
+        const WORKOUT_URLS = {
+            complete: "{{ workout_complete_url|default:'' }}",
+            start: "{{ workout_start_url|default:'' }}"
+        };
+    </script>
+    <script src="{% static 'js/active_workout.js' %}"></script>
 </body>
+
 </html>

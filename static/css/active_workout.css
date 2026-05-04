@@ -1,691 +1,765 @@
-        /* === ASOSIY STILAR === */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
-            color: white;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            margin: 0;
-            padding: 0;
-            overflow-x: hidden;
-            min-height: 100vh;
-            position: relative;
-        }
-
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background:
-                    radial-gradient(circle at 20% 50%, rgba(255, 215, 0, 0.05) 0%, transparent 50%),
-                    radial-gradient(circle at 80% 80%, rgba(255, 107, 107, 0.05) 0%, transparent 50%),
-                    radial-gradient(circle at 40% 90%, rgba(78, 205, 196, 0.05) 0%, transparent 50%);
-            animation: particleFloat 15s ease-in-out infinite;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        @keyframes particleFloat {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            33% { transform: translate(30px, -30px) scale(1.1); }
-            66% { transform: translate(-20px, 20px) scale(0.9); }
-        }
-
-        /* Floating timer — yuqori o'ng burchakda */
-        .floating-timer {
-            position: fixed;
-            top: 70px;
-            right: 16px;
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.15) 0%, rgba(255, 215, 0, 0.08) 100%);
-            backdrop-filter: blur(10px);
-            color: #ffd700;
-            padding: 8px 14px;
-            border-radius: 12px;
-            font-size: 15px;
-            font-weight: 700;
-            z-index: 100;
-            box-shadow: 0 4px 16px rgba(255, 215, 0, 0.2);
-            border: 1.5px solid rgba(255, 215, 0, 0.3);
-            min-width: 75px;
-            text-align: center;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            transition: all 0.3s ease;
-        }
-
-        .floating-timer.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        /* Header — o'rtada progress counter */
-        .session-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 14px 16px;
-            background: linear-gradient(135deg, rgba(15, 52, 96, 0.95) 0%, rgba(22, 33, 62, 0.95) 100%);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 215, 0, 0.1);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .exit-btn {
-            background: rgba(255, 215, 0, 0.1);
-            border: 1.5px solid rgba(255, 215, 0, 0.3);
-            color: #ffd700;
-            padding: 8px 18px;
-            border-radius: 10px;
-            font-size: 13px;
-            font-weight: 700;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.3s ease;
-            flex-shrink: 0;
-        }
-
-        .exit-btn:hover {
-            background: rgba(255, 215, 0, 0.2);
-            border-color: #ffd700;
-            transform: translateY(-1px);
-        }
-
-        .progress-counter {
-            color: #ffd700;
-            font-size: 15px;
-            font-weight: 700;
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            letter-spacing: 0.5px;
-        }
-
-        .menu-btn {
-            background: rgba(255, 215, 0, 0.1);
-            border: 1.5px solid rgba(255, 215, 0, 0.3);
-            color: #ffd700;
-            font-size: 20px;
-            cursor: pointer;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-        }
-
-        .menu-btn:hover {
-            background: rgba(255, 215, 0, 0.2);
-            border-color: #ffd700;
-        }
-
-        /* Asosiy mashq kontent */
-        .exercise-content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 40px 20px 20px 20px;
-            margin-top: 10px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .exercise-media-container {
-            width: min(420px, 100%);
-            height: 250px;
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.12) 0%, rgba(255, 215, 0, 0.06) 100%);
-            backdrop-filter: blur(10px);
-            border-radius: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-            overflow: hidden;
-            border: 1.5px solid rgba(255, 215, 0, 0.3);
-            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.15);
-            transition: all 0.3s ease;
-            position: relative;
-            cursor: pointer;
-        }
-
-        .exercise-media-container:hover {
-            transform: scale(1.05);
-            border-color: rgba(255, 215, 0, 0.5);
-        }
-
-        .exercise-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 16px;
-        }
-
-        .exercise-video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: none;
-        }
-
-        .exercise-video.active {
-            display: block;
-        }
-
-        .play-video-hint {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            background: rgba(10, 14, 39, 0.75);
-            border: 1px solid rgba(255, 215, 0, 0.45);
-            color: #ffd700;
-            font-size: 11px;
-            padding: 6px 10px;
-            border-radius: 999px;
-            font-weight: 700;
-            z-index: 3;
-            letter-spacing: 0.4px;
-        }
-
-        .exercise-name {
-            font-size: 26px;
-            font-weight: 800;
-            text-align: center;
-            margin: 0 0 12px 0;
-            background: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-        }
-
-        .exercise-description-overlay {
-            position: absolute;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            padding: 40px 14px 12px;
-            background: linear-gradient(180deg, transparent 0%, rgba(8, 11, 29, 0.9) 55%, rgba(8, 11, 29, 0.98) 100%);
-            color: rgba(255, 255, 255, 0.82);
-            font-size: 13px;
-            line-height: 1.45;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            z-index: 2;
-        }
-
-        .exercise-description-overlay.expanded {
-            max-height: 85%;
-            overflow-y: auto;
-        }
-
-        .exercise-description-text {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            word-break: break-word;
-        }
-
-        .exercise-description-overlay.expanded .exercise-description-text {
-            display: block;
-            -webkit-line-clamp: unset;
-        }
-
-        .exercise-description-hint {
-            margin-top: 6px;
-            font-size: 11px;
-            color: rgba(255, 215, 0, 0.82);
-            font-weight: 600;
-            letter-spacing: 0.4px;
-        }
-
-        #strengthDetails {
-            display: none;
-            width: min(420px, 100%);
-            margin-top: 8px;
-            gap: 8px;
-            justify-content: flex-start;
-        }
-
-        .strength-chip {
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.18) 0%, rgba(255, 215, 0, 0.08) 100%);
-            border: 1px solid rgba(255, 215, 0, 0.28);
-            padding: 8px 12px;
-            border-radius: 999px;
-            font-size: 12px;
-            color: rgba(255,255,255,0.9);
-            font-weight: 600;
-        }
-
-        .strength-chip span {
-            font-weight: 700;
-            color: #ffd700;
-        }
-
-        /* Up Next blok */
-        #upNext {
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.12) 0%, rgba(255, 215, 0, 0.06) 100%);
-            backdrop-filter: blur(10px);
-            border: 1.5px solid rgba(255, 215, 0, 0.25);
-            border-radius: 14px;
-            padding: 14px 18px;
-            margin: 20px 16px 0;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
-            position: relative;
-            z-index: 1;
-        }
-
-        #upNext:hover {
-            transform: translateY(-2px);
-            border-color: rgba(255, 215, 0, 0.4);
-            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.2);
-        }
-
-        .up-next-label {
-            font-size: 11px;
-            color: #ffd700;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-right: 8px;
-        }
-
-        .up-next-image {
-            width: 45px;
-            height: 45px;
-            border-radius: 10px;
-            object-fit: cover;
-            border: 1.5px solid rgba(255, 215, 0, 0.3);
-            box-shadow: 0 0 12px rgba(255, 215, 0, 0.15);
-        }
-
-        .up-next-info {
-            flex: 1;
-        }
-
-        .up-next-name {
-            font-size: 15px;
-            font-weight: 700;
-            margin: 0 0 3px 0;
-            color: white;
-        }
-
-        .up-next-details {
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.65);
-            margin: 0;
-            font-weight: 500;
-        }
-
-        /* Action buttons — YUQORIROQDA */
-        .action-buttons {
-            position: fixed;
-            bottom: 76px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 14px;
-            z-index: 10;
-            width: 90%;
-            max-width: 600px;
-            padding: 0 20px;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .pause-btn {
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.15) 0%, rgba(255, 215, 0, 0.08) 100%);
-            backdrop-filter: blur(10px);
-            color: #ffd700;
-            border: 1.5px solid rgba(255, 215, 0, 0.3);
-            width: 55px;
-            height: 55px;
-            border-radius: 14px;
-            font-size: 22px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 16px rgba(255, 215, 0, 0.15);
-        }
-
-        .pause-btn:hover {
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.25) 0%, rgba(255, 215, 0, 0.15) 100%);
-            border-color: #ffd700;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.25);
-        }
-
-        .pause-btn:active {
-            transform: translateY(0);
-        }
-
-        .did-it-btn {
-            flex: 1;
-            background: linear-gradient(135deg, #ffd700 0%, #f39c12 100%);
-            color: #1a1a2e;
-            border: none;
-            padding: 14px 24px;
-            border-radius: 14px;
-            font-size: 14px;
-            font-weight: 800;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            box-shadow: 0 6px 25px rgba(255, 215, 0, 0.4);
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .did-it-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
-            transition: left 0.4s ease;
-        }
-
-        .did-it-btn:hover::before {
-            left: 100%;
-        }
-
-        .did-it-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 35px rgba(255, 215, 0, 0.5);
-        }
-
-        .did-it-btn:active {
-            transform: translateY(0) scale(0.99);
-        }
-
-        .did-it-btn.completed {
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.15) 0%, rgba(255, 215, 0, 0.08) 100%);
-            color: #ffd700;
-            border: 1.5px solid rgba(255, 215, 0, 0.3);
-            box-shadow: none;
-        }
-
-        /* Rest overlay */
-        .rest-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(8, 11, 29, 0.65);
-            backdrop-filter: blur(8px);
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-            z-index: 1000;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-
-        .rest-overlay.active {
-            opacity: 1;
-            pointer-events: all;
-            animation: overlayFadeIn 0.3s ease;
-        }
-
-        @keyframes overlayFadeIn {
-            from {
-                opacity: 0;
-                transform: scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        .rest-overlay-panel {
-            width: min(430px, calc(100% - 28px));
-            margin: 0 auto;
-            border-radius: 22px;
-            border: 1.5px solid rgba(255, 215, 0, 0.28);
-            background: linear-gradient(135deg, rgba(10, 14, 39, 0.96) 0%, rgba(26, 31, 58, 0.96) 100%);
-            box-shadow: 0 24px 50px rgba(0, 0, 0, 0.5);
-            padding: 26px 20px 22px;
-            text-align: center;
-        }
-
-        .rest-title {
-            font-size: 38px;
-            font-weight: 800;
-            background: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-        }
-
-        .set-complete-badge {
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.15) 0%, rgba(255, 215, 0, 0.08) 100%);
-            backdrop-filter: blur(10px);
-            color: #ffd700;
-            padding: 10px 20px;
-            border-radius: 12px;
-            font-size: 15px;
-            font-weight: 700;
-            margin-bottom: 30px;
-            border: 1.5px solid rgba(255, 215, 0, 0.3);
-            box-shadow: 0 4px 16px rgba(255, 215, 0, 0.2);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        /* REST TIMER KATTALASHTIRISH */
-        .rest-timer-circle {
-            width: 200px;
-            height: 200px;
-            border: 5px solid #ffd700;
-            border-radius: 50%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin: 25px 0;
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.08) 0%, rgba(255, 215, 0, 0.03) 100%);
-            backdrop-filter: blur(10px);
-            box-shadow:
-                    0 0 40px rgba(255, 215, 0, 0.3),
-                    inset 0 0 20px rgba(255, 215, 0, 0.1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .rest-timer-circle::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255, 215, 0, 0.1), transparent);
-            animation: shimmer 3s infinite;
-        }
-
-        @keyframes shimmer {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .rest-timer-circle:hover {
-            transform: scale(1.05);
-            border-color: #ffc107;
-            box-shadow:
-                    0 0 50px rgba(255, 215, 0, 0.5),
-                    inset 0 0 30px rgba(255, 215, 0, 0.15);
-        }
-
-        .rest-timer-circle:active {
-            transform: scale(0.98);
-        }
-
-        .rest-timer {
-            font-size: 52px;
-            font-weight: 800;
-            color: #ffd700;
-            margin: 0;
-            position: relative;
-            z-index: 1;
-            text-shadow: 0 4px 20px rgba(255, 215, 0, 0.5);
-        }
-
-        .rest-skip-text {
-            font-size: 14px;
-            color: rgba(255, 215, 0, 0.7);
-            margin-top: 12px;
-            font-weight: 600;
-            position: relative;
-            z-index: 1;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .rest-up-next {
-            margin-top: 32px;
-            text-align: center;
-        }
-
-        .rest-up-next-label {
-            font-size: 13px;
-            color: #ffd700;
-            font-weight: 700;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-        }
-
-        .rest-up-next-name {
-            font-size: 24px;
-            font-weight: 800;
-            color: white;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .rest-skip-btn {
-            margin-top: 18px;
-            border: 1.5px solid rgba(255, 215, 0, 0.35);
-            background: rgba(255, 215, 0, 0.12);
-            color: #ffd700;
-            border-radius: 10px;
-            padding: 10px 16px;
-            font-weight: 700;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-size: 12px;
-        }
-
-        /* Exit modal */
-        .exit-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-
-        .exit-modal.active {
-            opacity: 1;
-            pointer-events: all;
-        }
-
-        .exit-modal-content {
-            background: #0F1535;
-            padding: 24px;
-            border-radius: 16px;
-            text-align: center;
-            max-width: 400px;
-            width: 90%;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-        }
-
-        .exit-modal h3 {
-            color: #FFD700;
-            margin-top: 0;
-            margin-bottom: 12px;
-        }
-
-        .exit-modal p {
-            color: #AAAAAA;
-            margin-bottom: 20px;
-        }
-
-        .exit-modal-buttons {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .exit-modal button {
-            background: #0F1535;
-            color: white;
-            border: 1px solid #1E2542;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .exit-modal button:hover {
-            background: #1E2542;
-        }
-
-        .exit-modal button:first-child {
-            background: #FFD700;
-            color: #0A0F2C;
-            border: none;
-        }
-
-        .exit-modal button:first-child:hover {
-            background: #FFC107;
-        }
-
-        .btn-save-exit:disabled {
-            background-color: #9ca3af !important; /* kulrang */
-            color: #f3f4f6 !important;
-            cursor: not-allowed !important;
-            opacity: 1 !important; /* opacity override */
-            box-shadow: none !important;
-        }
-    
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700;800&display=swap');
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --gold: #FFD700;
+    --gold-dim: rgba(255, 215, 0, 0.18);
+    --gold-border: rgba(255, 215, 0, 0.25);
+    --gold-glow: rgba(255, 215, 0, 0.35);
+    --bg-deep: #080b18;
+    --bg-card: rgba(255, 255, 255, 0.04);
+    --bg-card-hover: rgba(255, 255, 255, 0.07);
+    --text-primary: #ffffff;
+    --text-muted: rgba(255, 255, 255, 0.5);
+    --text-dim: rgba(255, 255, 255, 0.3);
+    --radius-card: 20px;
+    --radius-btn: 14px;
+    --bottom-bar-h: 88px;
+    --header-h: 60px;
+}
+
+body {
+    background: var(--bg-deep);
+    color: var(--text-primary);
+    font-family: 'DM Sans', -apple-system, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+/* Ambient background */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+        radial-gradient(ellipse 60% 40% at 50% 0%, rgba(255, 215, 0, 0.07) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 60% at 100% 100%, rgba(255, 100, 50, 0.04) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+.session-header {
+    position: sticky;
+    top: 0;
+    z-index: 200;
+    height: var(--header-h);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    background: rgba(8, 11, 24, 0.92);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--gold-border);
+}
+
+.exit-btn {
+    background: transparent;
+    border: 1.5px solid var(--gold-border);
+    color: var(--gold);
+    padding: 7px 16px;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 60px;
+}
+
+.exit-btn:hover {
+    background: var(--gold-dim);
+    border-color: var(--gold);
+}
+
+/* Progress counter — center absolute */
+.progress-counter {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 2px;
+    color: var(--gold);
+    line-height: 1;
+}
+
+.menu-btn {
+    background: transparent;
+    border: 1.5px solid var(--gold-border);
+    color: var(--gold);
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.menu-btn:hover {
+    background: var(--gold-dim);
+    border-color: var(--gold);
+}
+
+/* ============================================================
+   FLOATING TIMER — headerga joylashgan
+   ============================================================ */
+.floating-timer {
+    position: fixed;
+    top: 13px;
+    right: 62px;
+    /* menu-btn dan chap tomonda */
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 2px;
+    color: var(--gold);
+    z-index: 300;
+    line-height: 1;
+    transition: opacity 0.3s ease;
+}
+
+.floating-timer.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* ============================================================
+   MAIN SCROLL AREA
+   ============================================================ */
+.exercise-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 16px 0;
+    gap: 16px;
+}
+
+/* ============================================================
+   MEDIA CARD
+   ============================================================ */
+.exercise-media-container {
+    width: 100%;
+    max-width: 500px;
+    aspect-ratio: 16 / 10;
+    border-radius: var(--radius-card);
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    border: 1px solid var(--gold-border);
+    background: rgba(255, 215, 0, 0.04);
+    box-shadow:
+        0 0 0 1px rgba(255, 215, 0, 0.08),
+        0 20px 60px rgba(0, 0, 0, 0.5);
+    transition: border-color 0.3s ease;
+}
+
+.exercise-media-container:hover {
+    border-color: rgba(255, 215, 0, 0.4);
+}
+
+.exercise-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.exercise-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: none;
+}
+
+.exercise-video.active {
+    display: block;
+}
+
+/* Play hint pill */
+.play-video-hint {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(8, 11, 24, 0.8);
+    border: 1px solid var(--gold-border);
+    color: var(--gold);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 5px 10px;
+    border-radius: 999px;
+    z-index: 3;
+    backdrop-filter: blur(8px);
+}
+
+/* Description overlay */
+.exercise-description-overlay {
+    position: absolute;
+    inset: auto 0 0 0;
+    padding: 48px 16px 14px;
+    background: linear-gradient(180deg, transparent 0%, rgba(8, 11, 24, 0.96) 50%);
+    cursor: pointer;
+    z-index: 2;
+    transition: all 0.25s ease;
+}
+
+.exercise-description-overlay.expanded {
+    max-height: 80%;
+    overflow-y: auto;
+    padding-top: 20px;
+    background: rgba(8, 11, 24, 0.97);
+}
+
+.exercise-description-text {
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.75);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.exercise-description-overlay.expanded .exercise-description-text {
+    display: block;
+    -webkit-line-clamp: unset;
+}
+
+.exercise-description-hint {
+    margin-top: 6px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--gold);
+    text-transform: uppercase;
+}
+
+/* ============================================================
+   EXERCISE NAME
+   ============================================================ */
+.exercise-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    letter-spacing: 2px;
+    text-align: center;
+    color: var(--gold);
+    line-height: 1.1;
+    width: 100%;
+    max-width: 500px;
+    text-shadow: 0 0 40px rgba(255, 215, 0, 0.3);
+}
+
+/* ============================================================
+   SET / REPS CHIPS
+   ============================================================ */
+#strengthDetails {
+    display: none;
+    width: 100%;
+    max-width: 500px;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.strength-chip {
+    background: var(--gold-dim);
+    border: 1px solid var(--gold-border);
+    padding: 8px 18px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.85);
+    letter-spacing: 0.3px;
+}
+
+.strength-chip span {
+    color: var(--gold);
+    font-weight: 800;
+}
+
+/* ============================================================
+   UP NEXT
+   ============================================================ */
+#upNext {
+    width: 100%;
+    max-width: 500px;
+    background: var(--bg-card);
+    border: 1px solid var(--gold-border);
+    border-radius: var(--radius-card);
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 4px;
+    transition: all 0.2s ease;
+}
+
+#upNext:hover {
+    background: var(--bg-card-hover);
+    border-color: rgba(255, 215, 0, 0.4);
+}
+
+.up-next-content {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex: 1;
+    min-width: 0;
+}
+
+.up-next-label {
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    white-space: nowrap;
+}
+
+.up-next-image {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    object-fit: cover;
+    border: 1px solid var(--gold-border);
+    flex-shrink: 0;
+}
+
+.up-next-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.up-next-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: white;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.up-next-details {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+    font-weight: 500;
+}
+
+/* ============================================================
+   BOTTOM ACTION BAR
+   ============================================================ */
+.action-buttons {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: var(--bottom-bar-h);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 16px 16px;
+    background: rgba(8, 11, 24, 0.95);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid var(--gold-border);
+    z-index: 150;
+}
+
+/* Pause button */
+.pause-btn {
+    width: 54px;
+    height: 54px;
+    flex-shrink: 0;
+    background: var(--gold-dim);
+    border: 1.5px solid var(--gold-border);
+    color: var(--gold);
+    border-radius: var(--radius-btn);
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.pause-btn:hover {
+    background: rgba(255, 215, 0, 0.28);
+    border-color: var(--gold);
+}
+
+.pause-btn:active {
+    transform: scale(0.95);
+}
+
+/* DID IT button */
+.did-it-btn {
+    flex: 1;
+    height: 54px;
+    background: var(--gold);
+    color: #0a0d1a;
+    border: none;
+    border-radius: var(--radius-btn);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 24px rgba(255, 215, 0, 0.35);
+    position: relative;
+    overflow: hidden;
+}
+
+.did-it-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, transparent 60%);
+    pointer-events: none;
+}
+
+.did-it-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 32px rgba(255, 215, 0, 0.5);
+    background: #ffe033;
+}
+
+.did-it-btn:active {
+    transform: scale(0.98);
+}
+
+.did-it-btn.completed {
+    background: var(--gold-dim);
+    color: var(--gold);
+    border: 1.5px solid var(--gold-border);
+    box-shadow: none;
+}
+
+.did-it-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Extra bottom padding so content doesn't hide under bar */
+.exercise-content {
+    padding-bottom: calc(var(--bottom-bar-h) + 20px);
+}
+
+/* ============================================================
+   REST OVERLAY
+   ============================================================ */
+.rest-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(5, 7, 18, 0.75);
+    backdrop-filter: blur(12px);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 500;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease;
+    padding-bottom: 0;
+}
+
+.rest-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.rest-overlay-panel {
+    width: 100%;
+    max-width: 500px;
+    background: linear-gradient(180deg, #0d1025 0%, #080b18 100%);
+    border: 1px solid var(--gold-border);
+    border-bottom: none;
+    border-radius: 28px 28px 0 0;
+    padding: 32px 24px 40px;
+    text-align: center;
+    box-shadow: 0 -24px 60px rgba(0, 0, 0, 0.6);
+    transform: translateY(40px);
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.rest-overlay.active .rest-overlay-panel {
+    transform: translateY(0);
+}
+
+.rest-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 44px;
+    letter-spacing: 4px;
+    color: var(--gold);
+    margin-bottom: 8px;
+    text-shadow: 0 0 40px rgba(255, 215, 0, 0.4);
+}
+
+.set-complete-badge {
+    display: inline-block;
+    background: var(--gold-dim);
+    border: 1px solid var(--gold-border);
+    color: var(--gold);
+    padding: 8px 20px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin-bottom: 28px;
+}
+
+/* Timer circle */
+.rest-timer-circle {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    border: 3px solid rgba(255, 215, 0, 0.4);
+    background: radial-gradient(circle, rgba(255, 215, 0, 0.06) 0%, transparent 70%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+    box-shadow:
+        0 0 0 1px rgba(255, 215, 0, 0.1),
+        0 0 50px rgba(255, 215, 0, 0.15),
+        inset 0 0 30px rgba(255, 215, 0, 0.05);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.rest-timer-circle:hover {
+    border-color: var(--gold);
+    box-shadow: 0 0 60px rgba(255, 215, 0, 0.3), inset 0 0 30px rgba(255, 215, 0, 0.08);
+}
+
+.rest-timer {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 54px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    line-height: 1;
+    text-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+}
+
+.rest-skip-text {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: rgba(255, 215, 0, 0.5);
+    margin-top: 8px;
+}
+
+.rest-skip-btn {
+    background: transparent;
+    border: 1.5px solid var(--gold-border);
+    color: var(--gold);
+    padding: 10px 28px;
+    border-radius: var(--radius-btn);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: 24px;
+}
+
+.rest-skip-btn:hover {
+    background: var(--gold-dim);
+    border-color: var(--gold);
+}
+
+.rest-up-next {
+    margin-top: 8px;
+}
+
+.rest-up-next-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+}
+
+.rest-up-next-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    letter-spacing: 2px;
+    color: white;
+}
+
+/* ============================================================
+   EXIT MODAL
+   ============================================================ */
+.exit-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(5, 7, 18, 0.85);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+    padding: 20px;
+}
+
+.exit-modal.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.exit-modal-content {
+    width: 100%;
+    max-width: 380px;
+    background: #0d1025;
+    border: 1px solid var(--gold-border);
+    border-radius: 24px;
+    padding: 32px 24px;
+    text-align: center;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7);
+    transform: scale(0.95);
+    transition: transform 0.25s ease;
+}
+
+.exit-modal.active .exit-modal-content {
+    transform: scale(1);
+}
+
+.exit-modal h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    letter-spacing: 2px;
+    color: var(--gold);
+    margin-bottom: 8px;
+}
+
+.exit-modal p {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+    line-height: 1.5;
+}
+
+.exit-modal-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.exit-modal button {
+    width: 100%;
+    padding: 13px 20px;
+    border-radius: var(--radius-btn);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-save-exit {
+    background: var(--gold);
+    color: #0a0d1a;
+    border: none;
+    box-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
+}
+
+.btn-save-exit:hover:not(:disabled) {
+    background: #ffe033;
+    box-shadow: 0 6px 28px rgba(255, 215, 0, 0.45);
+}
+
+.btn-save-exit:disabled {
+    background: rgba(255, 215, 0, 0.2);
+    color: rgba(255, 215, 0, 0.4);
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.exit-modal button:not(.btn-save-exit) {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-muted);
+}
+
+.exit-modal button:not(.btn-save-exit):hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 380px) {
+    .exercise-name {
+        font-size: 26px;
+    }
+
+    .rest-title {
+        font-size: 36px;
+    }
+
+    .rest-timer {
+        font-size: 44px;
+    }
+
+    .rest-timer-circle {
+        width: 155px;
+        height: 155px;
+    }
+
+    .floating-timer {
+        font-size: 18px;
+        right: 58px;
+    }
+
+    .did-it-btn {
+        font-size: 18px;
+    }
+}
+
+@media (min-width: 600px) {
+    .exercise-name {
+        font-size: 36px;
+    }
+
+    .action-buttons {
+        padding: 0 24px 20px;
+    }
+
+    .exercise-content {
+        padding: 24px 24px calc(var(--bottom-bar-h) + 24px);
+    }
+}
