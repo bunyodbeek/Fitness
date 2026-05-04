@@ -604,3 +604,47 @@ class ChangeLanguageView(LoginRequiredMixin, TemplateView):
 
             context = self._get_language_context()
             return render(request, self.template_name, context)
+
+
+class ManageSubscriptionView(LoginRequiredMixin, TemplateView):
+    template_name = 'users/manage_subscription.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        subscription = (
+            Subscription.objects.filter(user=self.request.user)
+            .select_related('plan')
+            .order_by('-id')
+            .first()
+        )
+        payment_history = Payment.objects.filter(user=self.request.user).order_by('-created_at')
+        last_payment = payment_history.first()
+        next_payment_date = subscription.end_date if subscription and subscription.is_active else None
+
+        days_remaining = 0
+        if next_payment_date:
+            delta = (next_payment_date - timezone.localdate()).days
+            days_remaining = max(delta, 0)
+
+        context.update({
+            'subscription': subscription,
+            'last_payment': last_payment,
+            'next_payment_date': next_payment_date,
+            'days_remaining': days_remaining,
+        })
+        return context
+
+
+class PaymentHistoryView(LoginRequiredMixin, TemplateView):
+    template_name = 'users/payment_history.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        payment_history = Payment.objects.filter(user=self.request.user).order_by('-created_at')
+        total_paid = payment_history.filter(status='success').aggregate(total=Sum('amount'))['total'] or 0
+        context.update({
+            'payment_history': payment_history,
+            'payment_count': payment_history.count(),
+            'total_paid': total_paid,
+        })
+        return context
