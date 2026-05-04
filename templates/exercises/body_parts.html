@@ -4,674 +4,695 @@
 {% load i18n %}
 
 {% block extra_css %}
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        background: #0b0303;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        min-height: 100vh;
+        overflow-x: hidden;
+    }
+
+    /* ===== HEADER ===== */
+    .page-header {
+        background: #0b0303;
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+    }
+
+    .page-title {
+        color: white;
+        font-size: 16px;
+        font-weight: 800;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        text-align: center;
+        background: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    /* ===== MAIN CONTAINER ===== */
+    .body-container {
+        position: relative;
+        max-width: 420px;
+        margin: 8px auto 100px auto;
+        width: 100%;
+        z-index: 1;
+    }
+
+    /* ===== IMAGE + DOTS WRAPPER ===== */
+    .body-image-wrapper {
+        position: relative;
+        width: 100%;
+        /* cursor grab OLIB TASHLANDI */
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        /* Scroll bo'lmasin uchun touch-action: none EMAS,
+               faqat horizontal swipe uchun pan-y qoldiramiz */
+        touch-action: pan-y;
+    }
+
+    /* Glow effekt */
+    .body-image-wrapper::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 60%;
+        height: 80%;
+        background: rgba(255, 215, 0, 0.06);
+        filter: blur(40px);
+        z-index: 0;
+        pointer-events: none;
+    }
+
+    /* ===== IMAGE ===== */
+    .body-image {
+        display: block;
+        width: auto;
+        height: auto;
+        max-height: 88vh;
+        max-width: 85%;
+        object-fit: contain;
+        filter: drop-shadow(0 0 12px rgba(255, 215, 0, 0.12));
+        transition: opacity 0.3s ease;
+        user-select: none;
+        -webkit-user-drag: none;
+        position: relative;
+        z-index: 1;
+        /* cursor default */
+        cursor: default;
+    }
+
+    /* ===== DOTS OVERLAY ===== */
+    .dots-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 10;
+        pointer-events: none;
+    }
+
+    /* ===== DOT ===== */
+    .body-part-dot {
+        position: absolute;
+        width: 9px;
+        height: 9px;
+        background: linear-gradient(135deg, #ffd700, #ffed4e);
+        border: 0.5px solid rgba(255, 255, 255, 0.9);
+        border-radius: 50%;
+        cursor: pointer;
+        pointer-events: auto;
+        box-shadow: 0 0 12px rgba(255, 215, 0, 0.5), 0 0 25px rgba(255, 215, 0, 0.2);
+        animation: dotPulse 2.5s ease-in-out infinite;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.3s ease;
+        transform: translate(-50%, -50%);
+    }
+
+    .body-part-dot::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 3px;
+        height: 3px;
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 50%;
+    }
+
+    .body-part-dot:hover {
+        transform: translate(-50%, -50%) scale(1.5);
+        box-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 0 0 40px rgba(255, 215, 0, 0.4);
+    }
+
+    @keyframes dotPulse {
+
+        0%,
+        100% {
+            box-shadow: 0 0 12px rgba(255, 215, 0, 0.5), 0 0 25px rgba(255, 215, 0, 0.2);
         }
 
-        body {
-            background: #0b0303;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            min-height: 100vh;
-            overflow-x: hidden;
+        50% {
+            box-shadow: 0 0 18px rgba(255, 215, 0, 0.8), 0 0 35px rgba(255, 215, 0, 0.4);
+        }
+    }
+
+    /* ===== LABEL ===== */
+    .body-part-label {
+        position: absolute;
+        font-size: 9.5px;
+        font-weight: 700;
+        color: white;
+        text-decoration: none;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+        pointer-events: auto;
+        cursor: pointer;
+        text-shadow: 0 1px 6px rgba(0, 0, 0, 0.95), 0 0 16px rgba(0, 0, 0, 0.8);
+        transition: color 0.2s ease, transform 0.2s ease, opacity 0.3s ease;
+    }
+
+    .body-part-label:hover {
+        color: #ffd700;
+        transform: scale(1.08);
+    }
+
+    /* Label alignment helpers */
+    .label-right {
+        transform: translateY(-50%);
+    }
+
+    .label-right:hover {
+        transform: translateY(-50%) scale(1.08);
+    }
+
+    .label-left {
+        transform: translateY(-50%);
+        text-align: right;
+    }
+
+    .label-left:hover {
+        transform: translateY(-50%) scale(1.08);
+    }
+
+    /* ===== LINE (SVG) ===== */
+    .body-part-line {
+        position: absolute;
+        pointer-events: none;
+        overflow: visible;
+        transition: opacity 0.3s ease;
+    }
+
+    /* ===== DISABLED DOTS (qarama-qarshi tomon) ===== */
+    .dots-overlay .body-part-dot.dot-disabled,
+    .dots-overlay .body-part-label.dot-disabled,
+    .dots-overlay .body-part-line.dot-disabled {
+        opacity: 0.18;
+        pointer-events: none;
+        cursor: default;
+        animation: none;
+        filter: grayscale(1);
+    }
+
+    /* ===== ROTATE BUTTON ===== */
+    .rotate-btn {
+        position: fixed;
+        bottom: 100px;
+        right: 20px;
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #ffd700, #f39c12);
+        border-radius: 50%;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        z-index: 1000;
+    }
+
+    .rotate-btn:hover {
+        transform: scale(1.1) rotate(180deg);
+        box-shadow: 0 10px 30px rgba(255, 215, 0, 0.6);
+    }
+
+    /* ===== FRONT / BACK VISIBILITY ===== */
+    .front-dots,
+    .back-dots {
+        transition: opacity 0.3s ease;
+    }
+
+    .front-dots.hidden,
+    .back-dots.hidden {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .front-dots.visible,
+    .back-dots.visible {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 360px) {
+        .body-image {
+            max-height: 75vh;
+            max-width: 90%;
         }
 
-        /* ===== HEADER ===== */
-        .page-header {
-            background: #0b0303;
-            padding: 12px 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+        .body-part-dot {
+            width: 7px;
+            height: 7px;
+        }
+
+        .body-part-label {
+            font-size: 8px;
         }
 
         .page-title {
-            color: white;
-            font-size: 16px;
-            font-weight: 800;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            text-align: center;
-            background: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            font-size: 13px;
+            letter-spacing: 2px;
         }
 
-        /* ===== MAIN CONTAINER ===== */
-        .body-container {
-            position: relative;
-            max-width: 420px;
-            margin: 8px auto 100px auto;
-            width: 100%;
-            z-index: 1;
-        }
-
-        /* ===== IMAGE + DOTS WRAPPER ===== */
-        .body-image-wrapper {
-            position: relative;
-            width: 100%;
-            padding-bottom: 0;
-            cursor: grab;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-        }
-
-        .body-image-wrapper:active {
-            cursor: grabbing;
-        }
-
-        .body-image {
-            max-height: 96vh !important;
-            max-width: 85% !important;
-        }
-
-        /* Glow effekt */
-        .body-image-wrapper::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 60%;
-            height: 80%;
-            background: rgba(255, 215, 0, 0.06);
-            filter: blur(40px);
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        /* ===== IMAGE ===== */
-        .body-image {
-            display: block;
-            width: auto;
-            height: auto;
-            max-height: 90vh;
-            max-width: 90%;
-            object-fit: contain;
-            filter: drop-shadow(0 0 12px rgba(255, 215, 0, 0.12));
-            transition: opacity 0.3s ease, transform 0.3s ease;
-            user-select: none;
-            -webkit-user-drag: none;
-            position: relative;
-            z-index: 1;
-        }
-
-        /* ===== DOTS OVERLAY ===== */
-        /* Dots overlay rasmning ustiga chiqadi */
-        .dots-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 10;
-            pointer-events: none;
-        }
-
-        /* ===== DOT ===== */
-        .body-part-dot {
-            position: absolute;
-            width: 9px;
-            height: 9px;
-            background: linear-gradient(135deg, #ffd700, #ffed4e);
-            border: 0.5px solid rgba(255, 255, 255, 0.9);
-            border-radius: 50%;
-            cursor: pointer;
-            pointer-events: auto;
-            box-shadow: 0 0 12px rgba(255, 215, 0, 0.5), 0 0 25px rgba(255, 215, 0, 0.2);
-            animation: dotPulse 2.5s ease-in-out infinite;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            transform: translate(-50%, -50%);
-        }
-
-        .body-part-dot::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 3px;
-            height: 3px;
-            background: rgba(255, 255, 255, 0.8);
-            border-radius: 50%;
-        }
-
-        .body-part-dot:hover {
-            transform: translate(-50%, -50%) scale(1.5);
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 0 0 40px rgba(255, 215, 0, 0.4);
-        }
-
-        @keyframes dotPulse {
-            0%, 100% {
-                box-shadow: 0 0 12px rgba(255, 215, 0, 0.5), 0 0 25px rgba(255, 215, 0, 0.2);
-            }
-            50% {
-                box-shadow: 0 0 18px rgba(255, 215, 0, 0.8), 0 0 35px rgba(255, 215, 0, 0.4);
-            }
-        }
-
-        /* ===== LABEL ===== */
-        .body-part-label {
-            position: absolute;
-            font-size: 9.5px;
-            font-weight: 700;
-            color: white;
-            text-decoration: none;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            white-space: nowrap;
-            pointer-events: auto;
-            cursor: pointer;
-            text-shadow: 0 1px 6px rgba(0, 0, 0, 0.95), 0 0 16px rgba(0, 0, 0, 0.8);
-            transition: color 0.2s ease, transform 0.2s ease;
-        }
-
-        .body-part-label:hover {
-            color: #ffd700;
-            transform: scale(1.08);
-        }
-
-        /* Label alignment helpers */
-        .label-right {
-            transform: translateY(-50%);
-        }
-
-        .label-right:hover {
-            transform: translateY(-50%) scale(1.08);
-        }
-
-        .label-left {
-            transform: translateY(-50%);
-            text-align: right;
-        }
-
-        .label-left:hover {
-            transform: translateY(-50%) scale(1.08);
-        }
-
-        /* ===== LINE (SVG) ===== */
-        .body-part-line {
-            position: absolute;
-            pointer-events: none;
-            overflow: visible;
-        }
-
-        /* ===== ROTATE BUTTON ===== */
         .rotate-btn {
-            position: fixed;
-            bottom: 100px;
-            right: 20px;
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, #ffd700, #f39c12);
-            border-radius: 50%;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            z-index: 1000;
+            width: 44px;
+            height: 44px;
+            font-size: 18px;
+            bottom: 88px;
+            right: 14px;
+        }
+    }
+
+    @media (min-width: 500px) {
+        .body-image {
+            max-height: 80vh;
         }
 
-        .rotate-btn:hover {
-            transform: scale(1.1) rotate(180deg);
-            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.6);
+        .body-part-dot {
+            width: 10px;
+            height: 10px;
         }
 
-        /* ===== FRONT / BACK VISIBILITY ===== */
-        .front-dots, .back-dots {
-            transition: opacity 0.3s ease;
+        .body-part-label {
+            font-size: 10.5px;
         }
 
-        .front-dots.hidden, .back-dots.hidden {
-            opacity: 0;
-            pointer-events: none;
+        .rotate-btn {
+            width: 54px;
+            height: 54px;
+        }
+    }
+
+    @media (min-width: 768px) {
+        .body-image {
+            max-height: 82vh;
         }
 
-        .front-dots.visible, .back-dots.visible {
-            opacity: 1;
-            pointer-events: auto;
+        .body-part-dot {
+            width: 11px;
+            height: 11px;
         }
 
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 360px) {
-            .body-image {
-                max-height: 75vh;
-                max-width: 90%;
-            }
-
-            .body-part-dot {
-                width: 7px;
-                height: 7px;
-            }
-
-            .body-part-label {
-                font-size: 8px;
-            }
-
-            .page-title {
-                font-size: 13px;
-                letter-spacing: 2px;
-            }
-
-            .rotate-btn {
-                width: 44px;
-                height: 44px;
-                font-size: 18px;
-                bottom: 88px;
-                right: 14px;
-            }
+        .body-part-label {
+            font-size: 11.5px;
         }
 
-        @media (min-width: 500px) {
-            .body-image {
-                max-height: 80vh;
-            }
-
-            .body-part-dot {
-                width: 10px;
-                height: 10px;
-            }
-
-            .body-part-label {
-                font-size: 10.5px;
-            }
-
-            .rotate-btn {
-                width: 54px;
-                height: 54px;
-            }
+        .rotate-btn {
+            width: 58px;
+            height: 58px;
+            bottom: 110px;
+            right: 28px;
         }
+    }
 
-        @media (min-width: 768px) {
-            .body-image {
-                max-height: 82vh;
-            }
+    @media (prefers-reduced-motion: reduce) {
 
-            .body-part-dot {
-                width: 11px;
-                height: 11px;
-            }
-
-            .body-part-label {
-                font-size: 11.5px;
-            }
-
-            .rotate-btn {
-                width: 58px;
-                height: 58px;
-                bottom: 110px;
-                right: 28px;
-            }
+        *,
+        *::before,
+        *::after {
+            animation-duration: 0.01ms !important;
+            transition-duration: 0.01ms !important;
         }
-
-        @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after {
-                animation-duration: 0.01ms !important;
-                transition-duration: 0.01ms !important;
-            }
-        }
-    </style>
+    }
+</style>
 {% endblock %}
 
 {% block content %}
 
-    <div class="page-header">
-        <h1 class="page-title">{% trans '💪 EXERCISES' %}</h1>
-    </div>
+<div class="page-header">
+    <h1 class="page-title">{% trans '💪 EXERCISES' %}</h1>
+</div>
 
-    <div class="body-container">
-        <div class="body-image-wrapper" id="bodyWrapper">
+<div class="body-container">
+    <div class="body-image-wrapper" id="bodyWrapper">
 
-            <!-- FRONT IMAGE -->
-            <img src="{% static 'apps/images/body/rasul_front.PNG' %}"
-                 alt="Body Front" class="body-image" id="frontImage">
+        <!-- FRONT IMAGE -->
+        <img src="{% static 'apps/images/body/rasul_front.PNG' %}" alt="Body Front" class="body-image" id="frontImage">
 
-            <!-- BACK IMAGE -->
-            <img src="{% static 'apps/images/body/rasulback.PNG' %}"
-                 alt="Body Back" class="body-image" id="backImage"
-                 style="display:none; opacity:0;">
+        <!-- BACK IMAGE -->
+        <img src="{% static 'apps/images/body/rasulback.PNG' %}" alt="Body Back" class="body-image" id="backImage"
+            style="display:none; opacity:0;">
 
-            <!-- ======================================================
+        <!-- ======================================================
                  FRONT DOTS
-                 Barcha % qiymatlar rasm o'lchamiga nisbatan
-                 (rasm markazda, dots overlay butun wrapper ni qoplaydi)
             ====================================================== -->
-            <div class="front-dots visible dots-overlay" id="frontDots">
+        <div class="front-dots visible dots-overlay" id="frontDots">
 
-                <!-- Cardio -->
-                <a href="{% url 'exercises_by_muscle' 'cardio' %}"
-                   class="body-part-label label-right"
-                   style="top: 18%; right: 5%;">Cardio</a>
+            <!-- Cardio -->
+            <a href="{% url 'exercises_by_muscle' 'cardio' %}" class="body-part-label label-right"
+                style="top: 18%; right: 5%;">Cardio</a>
 
-                <!-- Shoulders -->
-                <svg class="body-part-line" style="top:24%; left:12%; width:22%; height:2px;">
-                    <line x1="100%" y1="1" x2="0%" y2="1" stroke="#FFD700" stroke-width="1" stroke-dasharray="3,3"
-                          opacity="0.65"/>
-                </svg>
-                <a href="{% url 'exercises_by_muscle' 'shoulders' %}"
-                   class="body-part-dot"
-                   style="top:24%; left:34%;"></a>
-                <a href="{% url 'exercises_by_muscle' 'shoulders' %}"
-                   class="body-part-label label-left"
-                   style="top:24%; left:2%;">{% trans 'Shoulders' %}</a>
+            <!-- Shoulders -->
+            <svg class="body-part-line" style="top:24%; left:12%; width:22%; height:2px;">
+                <line x1="100%" y1="1" x2="0%" y2="1" stroke="#FFD700" stroke-width="1" stroke-dasharray="3,3"
+                    opacity="0.65" />
+            </svg>
+            <a href="{% url 'exercises_by_muscle' 'shoulders' %}" class="body-part-dot" style="top:24%; left:34%;"></a>
+            <a href="{% url 'exercises_by_muscle' 'shoulders' %}" class="body-part-label label-left"
+                style="top:24%; left:2%;">{% trans 'Shoulders' %}</a>
 
-                <!-- Chest -->
-                <svg class="body-part-line" style="top:29%; left:12%; width:26%; height:2px;">
-                    <line x1="100%" y1="1" x2="0%" y2="1" stroke="#FFD700" stroke-width="1" stroke-dasharray="3,3"
-                          opacity="0.65"/>
-                </svg>
-                <a href="{% url 'exercises_by_muscle' 'chest' %}"
-                   class="body-part-dot"
-                   style="top:29%; left:40%;"></a>
-                <a href="{% url 'exercises_by_muscle' 'chest' %}"
-                   class="body-part-label label-left"
-                   style="top:29%; left:2%;">{% trans 'Chest' %}</a>
+            <!-- Chest -->
+            <svg class="body-part-line" style="top:29%; left:12%; width:26%; height:2px;">
+                <line x1="100%" y1="1" x2="0%" y2="1" stroke="#FFD700" stroke-width="1" stroke-dasharray="3,3"
+                    opacity="0.65" />
+            </svg>
+            <a href="{% url 'exercises_by_muscle' 'chest' %}" class="body-part-dot" style="top:29%; left:40%;"></a>
+            <a href="{% url 'exercises_by_muscle' 'chest' %}" class="body-part-label label-left"
+                style="top:29%; left:2%;">{% trans 'Chest' %}</a>
 
-                <!-- Biceps -->
-                <svg class="body-part-line" style="top:32%; right:16%; width:16%; height:2px;">
-                    <line x1="0%" y1="1" x2="100%" y2="1" stroke="#FFD700" stroke-width="1" stroke-dasharray="3,3"
-                          opacity="0.65"/>
-                </svg>
-                <a href="{% url 'exercises_by_muscle' 'biceps' %}"
-                   class="body-part-dot"
-                   style="top:32%; right:31%;"></a>
-                <a href="{% url 'exercises_by_muscle' 'biceps' %}"
-                   class="body-part-label label-right"
-                   style="top:32%; right:4%;">{% trans 'Biceps' %}</a>
+            <!-- Biceps -->
+            <svg class="body-part-line" style="top:32%; right:16%; width:16%; height:2px;">
+                <line x1="0%" y1="1" x2="100%" y2="1" stroke="#FFD700" stroke-width="1" stroke-dasharray="3,3"
+                    opacity="0.65" />
+            </svg>
+            <a href="{% url 'exercises_by_muscle' 'biceps' %}" class="body-part-dot" style="top:32%; right:31%;"></a>
+            <a href="{% url 'exercises_by_muscle' 'biceps' %}" class="body-part-label label-right"
+                style="top:32%; right:4%;">{% trans 'Biceps' %}</a>
 
-                <!-- Forearm -->
-                <svg class="body-part-line" style="top:38%; left:12%; width:18%; height:2px;">
-                    <line x1="100%" y1="1" x2="0%" y2="1" stroke="#FFD700" stroke-width="1" stroke-dasharray="3,3"
-                          opacity="0.65"/>
-                </svg>
-                <a href="{% url 'exercises_by_muscle' 'forearm' %}"
-                   class="body-part-dot"
-                   style="top:38%; left:28%;"></a>
-                <a href="{% url 'exercises_by_muscle' 'forearm' %}"
-                   class="body-part-label label-left"
-                   style="top:38%; left:2%;">{% trans 'Forearm' %}</a>
+            <!-- Forearm -->
+            <svg class="body-part-line" style="top:38%; left:12%; width:18%; height:2px;">
+                <line x1="100%" y1="1" x2="0%" y2="1" stroke="#FFD700" stroke-width="1" stroke-dasharray="3,3"
+                    opacity="0.65" />
+            </svg>
+            <a href="{% url 'exercises_by_muscle' 'forearm' %}" class="body-part-dot" style="top:38%; left:28%;"></a>
+            <a href="{% url 'exercises_by_muscle' 'forearm' %}" class="body-part-label label-left"
+                style="top:38%; left:2%;">{% trans 'Forearm' %}</a>
 
-                <!-- Abs -->
-                <svg class="body-part-line" style="top:35%; right:11%; width:28%; height:2px;">
-                    <line x1="0%" y1="1" x2="100%" y2="1" stroke="#FFD700" stroke-width="1" stroke-dasharray="3,3"
-                          opacity="0.65"/>
-                </svg>
-                <a href="{% url 'exercises_by_muscle' 'abs' %}"
-                   class="body-part-dot"
-                   style="top:35%; right:43%;"></a>
-                <a href="{% url 'exercises_by_muscle' 'abs' %}"
-                   class="body-part-label label-right"
-                   style="top:35%; right:4%;">{% trans 'Abs' %}</a>
+            <!-- Abs -->
+            <svg class="body-part-line" style="top:35%; right:11%; width:28%; height:2px;">
+                <line x1="0%" y1="1" x2="100%" y2="1" stroke="#FFD700" stroke-width="1" stroke-dasharray="3,3"
+                    opacity="0.65" />
+            </svg>
+            <a href="{% url 'exercises_by_muscle' 'abs' %}" class="body-part-dot" style="top:35%; right:43%;"></a>
+            <a href="{% url 'exercises_by_muscle' 'abs' %}" class="body-part-label label-right"
+                style="top:35%; right:4%;">{% trans 'Abs' %}</a>
 
-                <!-- Obliques -->
-                <svg class="body-part-line" style="top:42%; left:12%; width:26%; height:2px;">
-                    <line x1="100%" y1="1" x2="0%" y2="1" stroke="#FFD700" stroke-width="1" stroke-dasharray="3,3"
-                          opacity="0.65"/>
-                </svg>
-                <a href="{% url 'exercises_by_muscle' 'obliques' %}"
-                   class="body-part-dot"
-                   style="top:39%; left:40%;"></a>
-                <a href="{% url 'exercises_by_muscle' 'obliques' %}"
-                   class="body-part-label label-left"
-                   style="top:42%; left:2%;">{% trans 'Obliques' %}</a>
+            <!-- Obliques -->
+            <svg class="body-part-line" style="top:42%; left:12%; width:26%; height:2px;">
+                <line x1="100%" y1="1" x2="0%" y2="1" stroke="#FFD700" stroke-width="1" stroke-dasharray="3,3"
+                    opacity="0.65" />
+            </svg>
+            <a href="{% url 'exercises_by_muscle' 'obliques' %}" class="body-part-dot" style="top:39%; left:40%;"></a>
+            <a href="{% url 'exercises_by_muscle' 'obliques' %}" class="body-part-label label-left"
+                style="top:42%; left:2%;">{% trans 'Obliques' %}</a>
 
-               
-                <!-- Quads -->
-                <svg class="body-part-line" style="top:50%; left:12%; width:24%; height:2px;">
-                    <line x1="100%" y1="1" x2="0%" y2="1" stroke="#FFD700" stroke-width="1" stroke-dasharray="3,3"
-                          opacity="0.65"/>
-                </svg>
-                <a href="{% url 'exercises_by_muscle' 'quads' %}"
-                   class="body-part-dot"
-                   style="top:50%; left:36%;"></a>
-                <a href="{% url 'exercises_by_muscle' 'quads' %}"
-                   class="body-part-label label-left"
-                   style="top:50%; left:2%;">{% trans 'Quads' %}</a>
+            <!-- Quads -->
+            <svg class="body-part-line" style="top:50%; left:12%; width:24%; height:2px;">
+                <line x1="100%" y1="1" x2="0%" y2="1" stroke="#FFD700" stroke-width="1" stroke-dasharray="3,3"
+                    opacity="0.65" />
+            </svg>
+            <a href="{% url 'exercises_by_muscle' 'quads' %}" class="body-part-dot" style="top:50%; left:36%;"></a>
+            <a href="{% url 'exercises_by_muscle' 'quads' %}" class="body-part-label label-left"
+                style="top:50%; left:2%;">{% trans 'Quads' %}</a>
 
-                <!-- Adductors -->
-                <svg class="body-part-line" style="top:51%; right:16%; width:26%; height:2px;">
-                    <line x1="0%" y1="1" x2="100%" y2="1" stroke="#FFD700" stroke-width="1" stroke-dasharray="3,3"
-                          opacity="0.65"/>
-                </svg>
-                <a href="{% url 'exercises_by_muscle' 'adductors' %}"
-                   class="body-part-dot"
-                   style="top:51%; right:42%;"></a>
-                <a href="{% url 'exercises_by_muscle' 'adductors' %}"
-                   class="body-part-label label-right"
-                   style="top:51%; right:4%;">{% trans 'Adductors' %}</a>
+            <!-- Adductors -->
+            <svg class="body-part-line" style="top:51%; right:16%; width:26%; height:2px;">
+                <line x1="0%" y1="1" x2="100%" y2="1" stroke="#FFD700" stroke-width="1" stroke-dasharray="3,3"
+                    opacity="0.65" />
+            </svg>
+            <a href="{% url 'exercises_by_muscle' 'adductors' %}" class="body-part-dot" style="top:51%; right:42%;"></a>
+            <a href="{% url 'exercises_by_muscle' 'adductors' %}" class="body-part-label label-right"
+                style="top:51%; right:4%;">{% trans 'Adductors' %}</a>
 
-            </div><!-- /front-dots -->
+        </div><!-- /front-dots -->
 
-            <!-- ======================================================
+        <!-- ======================================================
                  BACK DOTS
             ====================================================== -->
-            <div class="back-dots hidden dots-overlay" id="backDots">
-                <!--traps-->
-                <svg class="body-part-line" style="top:32%; left:10%; width:21%; height:2px;">
-                    <line x1="100%" y1="1" x2="0%" y2="1" stroke="#FFD700" stroke-width="1" stroke-dasharray="3,3"
-                          opacity="0.65"/>
-                </svg>
-                <a href="{% url 'exercises_by_muscle' 'traps' %}"
-                   class="body-part-dot"
-                   style="top:32%; left:32%;"></a>
-                <a href="{% url 'exercises_by_muscle' 'traps' %}"
-                   class="body-part-label label-left"
-                   style="top:32%; left:2%;">{% trans 'Traps' %}</a>
+        <div class="back-dots hidden dots-overlay" id="backDots">
 
-                <!-- Triceps -->
-                <svg class="body-part-line" style="top:23%; left:16%; width:20%; height:2px;">
-                    <line x1="100%" y1="1" x2="0%" y2="1" stroke="#FFD700" stroke-width="1" stroke-dasharray="3,3"
-                          opacity="0.65"/>
-                </svg>
-                <a href="{% url 'exercises_by_muscle' 'triceps' %}"
-                   class="body-part-dot"
-                   style="top:23%; left:37%;"></a>
-                <a href="{% url 'exercises_by_muscle' 'triceps' %}"
-                   class="body-part-label label-left"
-                   style="top:23%; left:2%;">{% trans 'Triceps' %}</a>
+            <!-- Traps -->
+            <svg class="body-part-line" style="top:32%; left:10%; width:21%; height:2px;">
+                <line x1="100%" y1="1" x2="0%" y2="1" stroke="#FFD700" stroke-width="1" stroke-dasharray="3,3"
+                    opacity="0.65" />
+            </svg>
+            <a href="{% url 'exercises_by_muscle' 'traps' %}" class="body-part-dot" style="top:32%; left:32%;"></a>
+            <a href="{% url 'exercises_by_muscle' 'traps' %}" class="body-part-label label-left"
+                style="top:32%; left:2%;">{% trans 'Traps' %}</a>
 
-                <!-- Lats -->
-                <svg class="body-part-line" style="top:29%; right:10%; width:28%; height:2px;">
-                    <line x1="0%" y1="1" x2="100%" y2="1" stroke="#FFD700" stroke-width="1" stroke-dasharray="3,3"
-                          opacity="0.65"/>
-                </svg>
-                <a href="{% url 'exercises_by_muscle' 'lats' %}"
-                   class="body-part-dot"
-                   style="top:29%; right:36%;"></a>
-                <a href="{% url 'exercises_by_muscle' 'lats' %}"
-                   class="body-part-label label-right"
-                   style="top:29%; right:4%;">{% trans 'Lats' %}</a>
+            <!-- Triceps -->
+            <svg class="body-part-line" style="top:23%; left:16%; width:20%; height:2px;">
+                <line x1="100%" y1="1" x2="0%" y2="1" stroke="#FFD700" stroke-width="1" stroke-dasharray="3,3"
+                    opacity="0.65" />
+            </svg>
+            <a href="{% url 'exercises_by_muscle' 'triceps' %}" class="body-part-dot" style="top:23%; left:37%;"></a>
+            <a href="{% url 'exercises_by_muscle' 'triceps' %}" class="body-part-label label-left"
+                style="top:23%; left:2%;">{% trans 'Triceps' %}</a>
 
-                <!-- Lower Back -->
-                <svg class="body-part-line" style="top:38%; right:16%; width:28%; height:2px;">
-                    <line x1="0%" y1="1" x2="100%" y2="1" stroke="#FFD700" stroke-width="1" stroke-dasharray="3,3"
-                          opacity="0.65"/>
-                </svg>
-                <a href="{% url 'exercises_by_muscle' 'lower_back' %}"
-                   class="body-part-dot"
-                   style="top:38%; right:44%;"></a>
-                <a href="{% url 'exercises_by_muscle' 'lower_back' %}"
-                   class="body-part-label label-right"
-                   style="top:38%; right:4%;">{% trans 'Lower back' %}</a>
+            <!-- Lats -->
+            <svg class="body-part-line" style="top:29%; right:10%; width:28%; height:2px;">
+                <line x1="0%" y1="1" x2="100%" y2="1" stroke="#FFD700" stroke-width="1" stroke-dasharray="3,3"
+                    opacity="0.65" />
+            </svg>
+            <a href="{% url 'exercises_by_muscle' 'lats' %}" class="body-part-dot" style="top:29%; right:36%;"></a>
+            <a href="{% url 'exercises_by_muscle' 'lats' %}" class="body-part-label label-right"
+                style="top:29%; right:4%;">{% trans 'Lats' %}</a>
 
-                <!-- Glutes -->
-                <svg class="body-part-line" style="top:47%; right:16%; width:26%; height:2px;">
-                    <line x1="0%" y1="1" x2="100%" y2="1" stroke="#FFD700" stroke-width="1" stroke-dasharray="3,3"
-                          opacity="0.65"/>
-                </svg>
-                <a href="{% url 'exercises_by_muscle' 'glutes' %}"
-                   class="body-part-dot"
-                   style="top:47%; right:42%;"></a>
-                <a href="{% url 'exercises_by_muscle' 'glutes' %}"
-                   class="body-part-label label-right"
-                   style="top:47%; right:4%;">{% trans 'Glutes' %}</a>
-      <!-- Abductors -->
-                <svg class="body-part-line" style="top:54%; right:16%; width:20%; height:2px;">
-                    <line x1="0%" y1="1" x2="100%" y2="1" stroke="#FFD700" stroke-width="1" stroke-dasharray="3,3"
-                          opacity="0.65"/>
-                </svg>
-                <a href="{% url 'exercises_by_muscle' 'abductors' %}"
-                   class="body-part-dot"
-                   style="top:54%; right:34%;"></a>
-                <a href="{% url 'exercises_by_muscle' 'abductors' %}"
-                   class="body-part-label label-right"
-                   style="top:54%; right:4%;">{% trans 'Abductors' %}</a>
+            <!-- Lower Back -->
+            <svg class="body-part-line" style="top:38%; right:16%; width:28%; height:2px;">
+                <line x1="0%" y1="1" x2="100%" y2="1" stroke="#FFD700" stroke-width="1" stroke-dasharray="3,3"
+                    opacity="0.65" />
+            </svg>
+            <a href="{% url 'exercises_by_muscle' 'lower_back' %}" class="body-part-dot"
+                style="top:38%; right:44%;"></a>
+            <a href="{% url 'exercises_by_muscle' 'lower_back' %}" class="body-part-label label-right"
+                style="top:38%; right:4%;">{% trans 'Lower back' %}</a>
 
-                <!-- Hamstrings -->
-                <svg class="body-part-line" style="top:52%; left:16%; width:22%; height:2px;">
-                    <line x1="100%" y1="1" x2="0%" y2="1" stroke="#FFD700" stroke-width="1" stroke-dasharray="3,3"
-                          opacity="0.65"/>
-                </svg>
-                <a href="{% url 'exercises_by_muscle' 'hamstrings' %}"
-                   class="body-part-dot"
-                   style="top:52%; left:40%;"></a>
-                <a href="{% url 'exercises_by_muscle' 'hamstrings' %}"
-                   class="body-part-label label-left"
-                   style="top:52%; left:2%;">{% trans 'Hamstrings' %}</a>
+            <!-- Glutes -->
+            <svg class="body-part-line" style="top:47%; right:16%; width:26%; height:2px;">
+                <line x1="0%" y1="1" x2="100%" y2="1" stroke="#FFD700" stroke-width="1" stroke-dasharray="3,3"
+                    opacity="0.65" />
+            </svg>
+            <a href="{% url 'exercises_by_muscle' 'glutes' %}" class="body-part-dot" style="top:47%; right:42%;"></a>
+            <a href="{% url 'exercises_by_muscle' 'glutes' %}" class="body-part-label label-right"
+                style="top:47%; right:4%;">{% trans 'Glutes' %}</a>
 
-                <!-- Calves -->
-                <svg class="body-part-line" style="top:66%; left:12%; width:22%; height:2px;">
-                    <line x1="100%" y1="1" x2="0%" y2="1" stroke="#FFD700" stroke-width="1" stroke-dasharray="3,3"
-                          opacity="0.65"/>
-                </svg>
-                <a href="{% url 'exercises_by_muscle' 'calves' %}"
-                   class="body-part-dot"
-                   style="top:66%; left:38%;"></a>
-                <a href="{% url 'exercises_by_muscle' 'calves' %}"
-                   class="body-part-label label-left"
-                   style="top:66%; left:2%;">{% trans 'Calves' %}</a>
+            <!-- Abductors -->
+            <svg class="body-part-line" style="top:54%; right:16%; width:20%; height:2px;">
+                <line x1="0%" y1="1" x2="100%" y2="1" stroke="#FFD700" stroke-width="1" stroke-dasharray="3,3"
+                    opacity="0.65" />
+            </svg>
+            <a href="{% url 'exercises_by_muscle' 'abductors' %}" class="body-part-dot" style="top:54%; right:34%;"></a>
+            <a href="{% url 'exercises_by_muscle' 'abductors' %}" class="body-part-label label-right"
+                style="top:54%; right:4%;">{% trans 'Abductors' %}</a>
 
-            </div><!-- /back-dots -->
+            <!-- Hamstrings -->
+            <svg class="body-part-line" style="top:52%; left:16%; width:22%; height:2px;">
+                <line x1="100%" y1="1" x2="0%" y2="1" stroke="#FFD700" stroke-width="1" stroke-dasharray="3,3"
+                    opacity="0.65" />
+            </svg>
+            <a href="{% url 'exercises_by_muscle' 'hamstrings' %}" class="body-part-dot" style="top:52%; left:40%;"></a>
+            <a href="{% url 'exercises_by_muscle' 'hamstrings' %}" class="body-part-label label-left"
+                style="top:52%; left:2%;">{% trans 'Hamstrings' %}</a>
 
-        </div><!-- /body-image-wrapper -->
-    </div><!-- /body-container -->
+            <!-- Calves -->
+            <svg class="body-part-line" style="top:66%; left:12%; width:22%; height:2px;">
+                <line x1="100%" y1="1" x2="0%" y2="1" stroke="#FFD700" stroke-width="1" stroke-dasharray="3,3"
+                    opacity="0.65" />
+            </svg>
+            <a href="{% url 'exercises_by_muscle' 'calves' %}" class="body-part-dot" style="top:66%; left:38%;"></a>
+            <a href="{% url 'exercises_by_muscle' 'calves' %}" class="body-part-label label-left"
+                style="top:66%; left:2%;">{% trans 'Calves' %}</a>
 
-    <!-- Rotate Button -->
-    <button class="rotate-btn" onclick="rotateBody()" aria-label="Flip body">🔄</button>
+        </div><!-- /back-dots -->
+
+    </div><!-- /body-image-wrapper -->
+</div><!-- /body-container -->
+
+<!-- Rotate Button -->
+<button class="rotate-btn" onclick="rotateBody()" aria-label="Flip body">🔄</button>
 
 {% endblock %}
 
 {% block extra_js %}
-    <script>
-        let showingFront = true;
-        let touchStartX = 0;
-        let touchEndX = 0;
-        let isRotating = false;
+<script>
+    let showingFront = true;
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let isRotating = false;
+    let swipeHandled = false;
 
-        const bodyWrapper = document.getElementById('bodyWrapper');
+    const bodyWrapper = document.getElementById('bodyWrapper');
 
-        // ===== SWIPE =====
-        bodyWrapper.addEventListener('touchstart', function (e) {
-            touchStartX = e.changedTouches[0].screenX;
-        }, {passive: true});
+    // ===== SWIPE — scroll oldini olish =====
+    // passive:false bo'lishi kerak preventDefault() ishlashi uchun
+    bodyWrapper.addEventListener('touchstart', function (e) {
+        touchStartX = e.changedTouches[0].clientX;
+        touchStartY = e.changedTouches[0].clientY;
+        swipeHandled = false;
+    }, { passive: true });
 
-        bodyWrapper.addEventListener('touchend', function (e) {
-            touchEndX = e.changedTouches[0].screenX;
-            handleSwipe();
-        }, {passive: true});
+    bodyWrapper.addEventListener('touchmove', function (e) {
+        if (swipeHandled) return;
+        const dx = e.changedTouches[0].clientX - touchStartX;
+        const dy = e.changedTouches[0].clientY - touchStartY;
 
-        function handleSwipe() {
-            if (isRotating) return;
-            const threshold = 50;
-            if (touchEndX < touchStartX - threshold && showingFront) rotateBody();
-            if (touchEndX > touchStartX + threshold && !showingFront) rotateBody();
+        // Agar gorizontal harakat vertikal dan katta bo'lsa — scroll oldini ol
+        if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 10) {
+            e.preventDefault();
         }
+    }, { passive: false }); // <-- bu yerda false bo'lishi SHART
 
-        // ===== ROTATE =====
-        function rotateBody() {
-            if (isRotating) return;
-            isRotating = true;
+    bodyWrapper.addEventListener('touchend', function (e) {
+        if (swipeHandled) return;
+        const dx = e.changedTouches[0].clientX - touchStartX;
+        const dy = e.changedTouches[0].clientY - touchStartY;
 
-            const frontImg = document.getElementById('frontImage');
-            const backImg = document.getElementById('backImage');
-            const frontDots = document.getElementById('frontDots');
-            const backDots = document.getElementById('backDots');
-
-            if (showingFront) {
-                /* FRONT → BACK */
-                frontImg.style.opacity = '0';
-                frontDots.classList.remove('visible');
-                frontDots.classList.add('hidden');
-
-                setTimeout(() => {
-                    frontImg.style.display = 'none';
-
-                    backImg.style.display = 'block';
-                    requestAnimationFrame(() => {
-                        backImg.style.opacity = '1';
-                        backDots.classList.remove('hidden');
-                        backDots.classList.add('visible');
-                        isRotating = false;
-                    });
-                }, 300);
-
-            } else {
-                /* BACK → FRONT */
-                backImg.style.opacity = '0';
-                backDots.classList.remove('visible');
-                backDots.classList.add('hidden');
-
-                setTimeout(() => {
-                    backImg.style.display = 'none';
-
-                    frontImg.style.display = 'block';
-                    requestAnimationFrame(() => {
-                        frontImg.style.opacity = '1';
-                        frontDots.classList.remove('hidden');
-                        frontDots.classList.add('visible');
-                        isRotating = false;
-                    });
-                }, 300);
-            }
-
-            showingFront = !showingFront;
+        // Faqat aniq gorizontal swipe (vertikal scroll emas)
+        const threshold = 50;
+        if (Math.abs(dx) > threshold && Math.abs(dx) > Math.abs(dy) * 1.5) {
+            swipeHandled = true;
+            if (dx < 0 && showingFront) rotateBody();   // chapga swipe → orqa
+            if (dx > 0 && !showingFront) rotateBody();  // o'ngga swipe → oldi
         }
+    }, { passive: true });
 
-        // ===== INIT =====
-        window.addEventListener('DOMContentLoaded', function () {
-            const wrapper = document.getElementById('bodyWrapper');
+    // ===== DISABLED holatini qo'llash =====
+    function setDisabledState() {
+        const frontDots = document.getElementById('frontDots');
+        const backDots = document.getElementById('backDots');
 
-            // Front rasm yuklanganda wrapper balandligini fix qil
-            frontImg.addEventListener('load', function () {
-                wrapper.style.height = frontImg.offsetHeight + 'px';
-            });
+        // Barcha elementlarni olib disabled/enabled qilamiz
+        const frontItems = frontDots.querySelectorAll('.body-part-dot, .body-part-label, .body-part-line');
+        const backItems = backDots.querySelectorAll('.body-part-dot, .body-part-label, .body-part-line');
 
-            // Agar rasm allaqachon yuklangan bo'lsa
-            if (frontImg.complete) {
-                wrapper.style.height = frontImg.offsetHeight + 'px';
-            }
-            const frontImg = document.getElementById('frontImage');
-            frontImg.addEventListener('load', function () {
-                wrapper.style.height = frontImg.offsetHeight + 'px';
-                frontImg.addEventListener('load', function () {
-                    wrapper.style.height = frontImg.offsetHeight + 'px';
+        if (showingFront) {
+            // Oldi ko'rinadi → orqa DISABLED
+            frontItems.forEach(el => el.classList.remove('dot-disabled'));
+            backItems.forEach(el => el.classList.add('dot-disabled'));
+        } else {
+            // Orqa ko'rinadi → oldi DISABLED
+            backItems.forEach(el => el.classList.remove('dot-disabled'));
+            frontItems.forEach(el => el.classList.add('dot-disabled'));
+        }
+    }
+
+    // ===== ROTATE =====
+    function rotateBody() {
+        if (isRotating) return;
+        isRotating = true;
+
+        const frontImg = document.getElementById('frontImage');
+        const backImg = document.getElementById('backImage');
+        const frontDots = document.getElementById('frontDots');
+        const backDots = document.getElementById('backDots');
+
+        if (!frontImg || !backImg) { isRotating = false; return; }
+
+        if (showingFront) {
+            /* FRONT → BACK */
+            frontImg.style.opacity = '0';
+            frontDots.classList.remove('visible');
+            frontDots.classList.add('hidden');
+
+            setTimeout(() => {
+                frontImg.style.display = 'none';
+                backImg.style.display = 'block';
+                // wrapper balandligini yangilash
+                syncWrapperHeight(backImg);
+                requestAnimationFrame(() => {
+                    backImg.style.opacity = '1';
+                    backDots.classList.remove('hidden');
+                    backDots.classList.add('visible');
+                    showingFront = false;
+                    setDisabledState();
+                    isRotating = false;
                 });
-            });
-            const backImg = document.getElementById('backImage');
-            const frontDots = document.getElementById('frontDots');
-            const backDots = document.getElementById('backDots');
+            }, 300);
 
-            frontImg.style.display = 'block';
-            frontImg.style.opacity = '1';
-            frontDots.classList.add('visible');
-
-            backImg.style.display = 'none';
+        } else {
+            /* BACK → FRONT */
             backImg.style.opacity = '0';
+            backDots.classList.remove('visible');
             backDots.classList.add('hidden');
 
-            /* Back rasmni oldindan yuklash */
-            new Image().src = '{% static "apps/images/body/rasulback.PNG" %}';
-        });
-    </script>
+            setTimeout(() => {
+                backImg.style.display = 'none';
+                frontImg.style.display = 'block';
+                syncWrapperHeight(frontImg);
+                requestAnimationFrame(() => {
+                    frontImg.style.opacity = '1';
+                    frontDots.classList.remove('hidden');
+                    frontDots.classList.add('visible');
+                    showingFront = true;
+                    setDisabledState();
+                    isRotating = false;
+                });
+            }, 300);
+        }
+    }
+
+    // ===== WRAPPER BALANDLIGINI RASM BILAN SINXRONLASHTIRISH =====
+    function syncWrapperHeight(img) {
+        const wrapper = document.getElementById('bodyWrapper');
+        if (img.offsetHeight > 0) {
+            wrapper.style.height = img.offsetHeight + 'px';
+        }
+    }
+
+    // ===== INIT =====
+    function initBodyPage() {
+        const wrapper = document.getElementById('bodyWrapper');
+        const frontImg = document.getElementById('frontImage');
+        const backImg = document.getElementById('backImage');
+        const frontDots = document.getElementById('frontDots');
+        const backDots = document.getElementById('backDots');
+
+        if (!frontImg || !wrapper) return;
+
+        // Initial state
+        showingFront = true;
+
+        frontImg.style.display = 'block';
+        frontImg.style.opacity = '1';
+        if (backImg) { backImg.style.display = 'none'; backImg.style.opacity = '0'; }
+
+        if (frontDots) { frontDots.classList.remove('hidden'); frontDots.classList.add('visible'); }
+        if (backDots) { backDots.classList.remove('visible'); backDots.classList.add('hidden'); }
+
+        // Disabled state boshlang'ich holati
+        setDisabledState();
+
+        // Height sync
+        function doSync() {
+            if (frontImg.offsetHeight > 0) {
+                wrapper.style.height = frontImg.offsetHeight + 'px';
+            }
+        }
+        frontImg.addEventListener('load', doSync);
+        if (frontImg.complete) doSync();
+
+        // Back rasmni oldindan yuklash
+        new Image().src = '{% static "apps/images/body/rasulback.PNG" %}';
+    }
+
+    window.addEventListener('DOMContentLoaded', initBodyPage);
+
+    // bfcache restore
+    window.addEventListener('pageshow', function (e) {
+        if (e.persisted) initBodyPage();
+    });
+</script>
 {% endblock %}

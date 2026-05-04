@@ -920,11 +920,23 @@
     let currentExerciseId = null;
 
     document.addEventListener('DOMContentLoaded', function () {
+        initExerciseListEvents();
+    });
+
+    // Handle bfcache restore (when user presses Back button)
+    window.addEventListener('pageshow', function (e) {
+        if (e.persisted) initExerciseListEvents();
+    });
+
+    function initExerciseListEvents() {
         document.querySelectorAll('.favorite-icon').forEach(icon => {
             const exerciseId = icon.getAttribute('data-exercise-id');
             const isFavorited = icon.classList.contains('favorited');
             exerciseFavoriteState[exerciseId] = isFavorited;
-            icon.addEventListener('click', function (e) {
+            // Remove old listeners to avoid duplicates
+            const newIcon = icon.cloneNode(true);
+            icon.parentNode.replaceChild(newIcon, icon);
+            newIcon.addEventListener('click', function (e) {
                 e.preventDefault();
                 e.stopPropagation();
                 handleFavoriteClick(exerciseId);
@@ -937,7 +949,7 @@
         document.getElementById('collectionsModal').addEventListener('click', e => {
             if (e.target === e.currentTarget) closeCollectionsModal();
         });
-    });
+    }
 
     function handleFavoriteClick(exerciseId) {
         const isFavorited = exerciseFavoriteState[exerciseId];

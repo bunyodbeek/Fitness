@@ -832,7 +832,7 @@
 
 {% block extra_js %}
 <script>
-    function goBack() { window.history.back(); }
+    function goBack() { window.location.href = '{% url "home_program_list" %}'; }
     document.querySelectorAll('.edition-card').forEach(card => {
         card.addEventListener('touchstart', function () {
             this.style.transform = 'scale(0.98)';
