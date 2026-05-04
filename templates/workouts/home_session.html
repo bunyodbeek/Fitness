@@ -486,7 +486,7 @@ body {
             <div class="complete-stat-label">{% trans "Exercises" %}</div>
         </div>
     </div>
-    <a href="{% url 'home_workout_detail' workout.id %}" class="btn-done">{% trans "Done" %} ✓</a>
+    <form method="post" action="{% url 'home_workout_done' workout.id %}" style="display:inline;">{% csrf_token %}<button type="submit" class="btn-done">{% trans "Done" %} ✓</button></form>
 </div>
 
 <!-- Header -->
@@ -759,7 +759,7 @@ function togglePause() {
 // ── EXIT ──
 function confirmExit() {
     if (confirm('{% trans "Exit workout? Your progress will be lost." %}')) {
-        window.history.back();
+        window.location.href = '{% url "home_workout_detail" workout.id %}';
     }
 }
 

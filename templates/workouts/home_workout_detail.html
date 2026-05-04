@@ -448,7 +448,7 @@
 {% block content %}
 
 <div class="page-header">
-    <button class="back-btn" onclick="window.history.back()">&#8592;</button>
+    <button class="back-btn" onclick="window.location.href='{% url 'home_week_detail' workout.week.id %}'" >&#8592;</button>
     <div class="page-title">{% trans "Workout" %}</div>
     <div class="header-spacer"></div>
 </div>

@@ -274,7 +274,7 @@
 
 {% block content %}
 <div class="page-header">
-    <button class="back-btn" onclick="window.history.back()">&#8592;</button>
+    <button class="back-btn" onclick="window.location.href='{% url 'home_program_detail' plan.program.id %}'">&#8592;</button>
     <h1 class="page-title">{% trans 'WEEKS' %}</h1>
     <div class="header-spacer"></div>
 </div>

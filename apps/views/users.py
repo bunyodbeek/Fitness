@@ -313,7 +313,7 @@ class ProgressView(LoginRequiredMixin, TemplateView):
         if period not in {'today', 'week', 'month', 'year', 'all'}:
             period = 'week'
 
-        profile, _ = UserProfile.objects.get_or_create(user=self.request.user)
+        profile, _created = UserProfile.objects.get_or_create(user=self.request.user)
         workout_progress_qs = WorkoutProgress.objects.filter(
             user=profile,
             status=WorkoutProgress.Status.COMPLETED,
