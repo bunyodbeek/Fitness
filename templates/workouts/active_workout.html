@@ -137,12 +137,12 @@
     <script>
         window.ACTIVE_WORKOUT_CONFIG = {
             workoutPk: "{{ workout.pk }}",
-            totalExercises: {{ total_exercises |default: 0 }},
-        csrfToken: "{{ csrf_token }}",
-            exercises: { { exercises_json | safe } },
-        initialExerciseIndex: { { initial_exercise_index |default: 0 } },
-        initialSet: { { initial_set |default: 1 } },
-        initialCompleted: { { initial_completed |default: 0 } },
+            totalExercises: {{ total_exercises|default:0 }},
+            csrfToken: "{{ csrf_token }}",
+            exercises: {{ exercises_json|safe }},
+            initialExerciseIndex: {{ initial_exercise_index|default:0 }},
+            initialSet: {{ initial_set|default:1 }},
+            initialCompleted: {{ initial_completed|default:0 }},
         defaultExerciseImage: "{% static 'images/default_exercise.svg' %}",
             completeUrl: "{{ workout_complete_url|default:'' }}",
                 restartUrl: "{{ workout_start_url|default:'' }}",
