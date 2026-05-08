@@ -92,12 +92,13 @@ class HomeProgramDetailView(DetailView):
 
     def get_queryset(self):
         return Program.objects.filter(
-            workout_type=WorkoutType.HOME
+            is_active=True
         ).prefetch_related('plans')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['plans'] = self.object.plans.all().order_by('order')
+        context['is_home_mode'] = True
         return context
 
 

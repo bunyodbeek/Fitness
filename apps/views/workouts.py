@@ -101,6 +101,7 @@ class ProgramDetailView(DetailView):
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		context['plans'] = self.object.plans.all().order_by('order')
+		context['is_home_mode'] = self.forced_workout_type == WorkoutType.HOME if self.forced_workout_type else False
 		return context
 
 
