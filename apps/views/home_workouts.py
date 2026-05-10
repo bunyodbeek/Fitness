@@ -14,6 +14,7 @@ from apps.services import UserProgramService
 from apps.services.programs import ProgramGenerationService
 from apps.workouts.recommendation import get_recommended_program
 from apps.utils.home_progression import calculate_home_week_exercise
+from apps.views.workouts import WorkoutCompleteView
 
 
 def get_active_mode(request):
@@ -281,6 +282,14 @@ class HomeWeekDetailView(DetailView):
         context['completed_workout_ids'] = completed_ids
         context['is_home_mode'] = True
         return context
+
+
+class HomeWorkoutCompleteView(WorkoutCompleteView):
+    forced_workout_type = WorkoutType.HOME
+    template_name = "workouts/home_workout_complete.html"
+
+    def get_template_name(self, request):
+        return self.template_name
 
 
 class HomeSessionView(LoginRequiredMixin, TemplateView):
