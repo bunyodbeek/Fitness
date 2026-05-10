@@ -268,6 +268,7 @@ class WorkoutStartView(LoginRequiredMixin, View):
 				"rest_seconds": int(getattr(wex, 'rest_seconds', 60)),
 				"calories_per_minute": float(getattr(wex, 'calories_per_minute', 5.0)),
 				"type": "cardio" if (wex.minutes or 0) > 0 else "strength",
+				"recommended_weight": float(getattr(wex, 'recommended_weight', 0)),
 				"image": ex.thumbnail.url if ex.thumbnail else None,
 				"video": ex.video.url if ex.video else None,
 				"description": getattr(ex, f"description_{lang_code}", None) or getattr(ex, "description", None) or "",
@@ -308,6 +309,7 @@ class WorkoutCompleteView(LoginRequiredMixin, View):
 		total_calories = self._safe_float(request.POST.get("total_calories", 0))
 		total_duration = self._safe_int(request.POST.get("total_duration", 0))
 		exercises_completed = self._safe_int(request.POST.get("exercises_completed", 0))
+		total_weight = self._safe_float(request.POST.get("total_weight", 0))
 		
 		WorkoutProgress.objects.filter(
 			user=request.user.profile,
@@ -331,7 +333,7 @@ class WorkoutCompleteView(LoginRequiredMixin, View):
 				"duration_seconds": total_duration,
 				"exercises_completed": exercises_completed,
 				"total_reps": 0,
-				"total_weight": 0
+				"total_weight": total_weight
 			}
 		})
 	

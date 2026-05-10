@@ -126,6 +126,12 @@
                 <span class="stats-label">{% trans 'Calories Burned' %}</span>
                 <span class="stats-value">{{ workout_summary.total_calories|floatformat:0 }} {% trans 'kcal' %}</span>
             </div>
+            {% if workout_summary.total_weight > 0 %}
+            <div class="stats-row">
+                <span class="stats-label">{% trans 'Total Weight Lifted' %}</span>
+                <span class="stats-value">{{ workout_summary.total_weight }} {% trans 'kg' %}</span>
+            </div>
+            {% endif %}
             <div class="stats-row">
                 <span class="stats-label">{% trans 'Completed' %}</span>
                 <span class="stats-value" id="completion-time">

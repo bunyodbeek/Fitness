@@ -31,6 +31,7 @@ let pauseStartTime = null;    // Pause boshlangan vaqt
 let totalCaloriesBurned = 0;
 let totalDurationSeconds = 0;
 let totalExercisesCompleted = initialCompleted;
+let totalWeightLifted = 0;
 
 const toFiniteNumber = (value, fallback = 0) => {
     const parsed = Number(value);
@@ -171,6 +172,9 @@ const loadExercise = (index, startingSet = 1) => {
         document.getElementById('totalSets').textContent = ex.sets;
         document.getElementById('repsCount').textContent = ex.reps;
         document.getElementById('currentSet').textContent = currentSet;
+        if (document.getElementById('weightInput')) {
+            document.getElementById('weightInput').value = ex.recommended_weight || 0;
+        }
     } else {
         document.getElementById('strengthDetails').style.display = 'none';
     }
@@ -228,8 +232,14 @@ const completeExercise = (auto = false) => {
     const durationMinutes = toFiniteNumber(ex.duration_minutes, 0);
     if (ex.type === 'cardio') {
         totalCaloriesBurned += caloriesPerMinute * durationMinutes;
-    } else if (ex.type === 'strength' && currentSet >= ex.sets) {
-        totalCaloriesBurned += caloriesPerMinute * durationMinutes;
+    } else if (ex.type === 'strength') {
+        if (currentSet >= ex.sets) {
+            totalCaloriesBurned += caloriesPerMinute * durationMinutes;
+        }
+        if (document.getElementById('weightInput')) {
+            const weightVal = parseFloat(document.getElementById('weightInput').value) || 0;
+            totalWeightLifted += weightVal * ex.reps;
+        }
     }
 
     if (ex.type === 'strength' && currentSet < ex.sets) {
@@ -356,6 +366,7 @@ const createForm = (save, action) => {
         total_duration: totalDurationSeconds,
         total_calories: totalCaloriesBurned.toFixed(2),
         exercises_completed: totalExercisesCompleted,
+        total_weight: totalWeightLifted.toFixed(2),
     };
 
     if (action === 'exit' && save) {

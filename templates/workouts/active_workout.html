@@ -10,6 +10,144 @@
     <link rel="stylesheet" href="{% static 'css/active_workout.css' %}">
     <!-- Eski stillar ham saqlanadi (override qilinadi lekin xavfsiz) -->
     <link rel="stylesheet" href="{% static 'apps/css/active_workout_style.css' %}">
+    
+    <!-- Home Mode Styles Override -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;700;900&display=swap');
+
+        :root {
+            --gold: #ffd700;
+            --gold2: #ffb300;
+            --red: #ff4757;
+            --green: #2ed573;
+            --bg: #080c1a;
+            --bg2: #111629;
+            --bg3: #1a2038;
+            --border: rgba(255,215,0,0.15);
+            --text: #ffffff;
+            --muted: rgba(255,255,255,0.45);
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 60% 40% at 20% 10%, rgba(255,215,0,0.07) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 50% at 80% 90%, rgba(255,71,87,0.06) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .session-header {
+            background: rgba(8,12,26,0.92);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .exit-btn {
+            background: rgba(255,71,87,0.12);
+            border: 1px solid rgba(255,71,87,0.3);
+            color: var(--red);
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .progress-counter {
+            color: var(--gold);
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 20px;
+            letter-spacing: 1px;
+        }
+        
+        #floatingTimer {
+            font-family: 'Bebas Neue', sans-serif;
+            color: var(--gold);
+            letter-spacing: 2px;
+        }
+
+        .exercise-name {
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 2px;
+            color: var(--text);
+            font-size: clamp(28px, 8vw, 38px);
+        }
+
+        .strength-chip {
+            background: rgba(255,215,0,0.08);
+            border: 1px solid rgba(255,215,0,0.2);
+            color: var(--gold);
+            font-family: 'DM Sans', sans-serif;
+            border-radius: 999px;
+        }
+        
+        .strength-chip input[type="number"] {
+            background: transparent;
+            border: none;
+            color: var(--gold);
+            width: 40px;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 16px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,215,0,0.5);
+            outline: none;
+        }
+        
+        .strength-chip input[type="number"]::-webkit-inner-spin-button, 
+        .strength-chip input[type="number"]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+
+        .did-it-btn {
+            background: linear-gradient(135deg, var(--gold), var(--gold2));
+            color: var(--bg);
+            border: none;
+            box-shadow: 0 6px 24px rgba(255,215,0,0.35);
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+        
+        .did-it-btn.completed {
+            background: linear-gradient(135deg, var(--green), #1db954);
+            box-shadow: 0 6px 24px rgba(46,213,115,0.3);
+            color: #fff;
+        }
+        
+        .pause-btn {
+            background: var(--bg3);
+            color: var(--text);
+            border: 1.5px solid var(--border);
+        }
+        
+        .rest-overlay-panel, .exit-modal-content {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+        }
+        
+        .rest-title {
+            font-family: 'Bebas Neue', sans-serif;
+            color: var(--gold);
+            letter-spacing: 2px;
+        }
+        
+        .rest-timer {
+            font-family: 'Bebas Neue', sans-serif;
+            color: var(--gold);
+        }
+        
+        .btn-save-exit {
+            background: linear-gradient(135deg, var(--gold), var(--gold2)) !important;
+            color: var(--bg) !important;
+        }
+
+    </style>
 </head>
 
 <body>
@@ -63,6 +201,9 @@
             </div>
             <div class="strength-chip">
                 <span id="repsCount"></span> Reps
+            </div>
+            <div class="strength-chip" style="display:flex; align-items:center; gap:5px;">
+                <input type="number" id="weightInput" value="" step="0.5" min="0" placeholder="0"> kg
             </div>
         </div>
 
