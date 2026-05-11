@@ -1,8 +1,10 @@
 {% extends 'base.html' %}
 {% load i18n %}
 
-{% block title %}{% trans "Workout Session" %}{% endblock %}
-{% block bottom_nav %}{% endblock %}
+{% block title %}{% trans "Workout Session" %}
+{% endblock %}
+{% block bottom_nav %}
+{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -28,6 +30,19 @@ body {
     top: 0;
     z-index: 100;
     border-bottom: 1px solid rgba(255,215,0,0.1);
+}
+
+.exit-btn {
+    background: transparent;
+    border: 1.5px solid rgba(255,71,87,0.4);
+    color: #ff4757;
+    padding: 7px 16px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
 }
 
 .back-btn {
@@ -467,6 +482,7 @@ body {
     margin: 16px 0 8px;
 }
 </style>
+
 {% endblock %}
 
 {% block content %}
@@ -491,7 +507,7 @@ body {
 
 <!-- Header -->
 <div class="session-header">
-    <button class="back-btn" onclick="confirmExit()">&#8592;</button>
+    <button class="exit-btn" onclick="showExitModal()">EXIT</button>
     <div class="round-indicator" id="roundLabel">{% trans "Round" %} {{ current_round }} {% trans "of" %} {{ rounds }}</div>
     <div class="exercise-counter" id="exerciseCounter">1 / {{ exercises|length }}</div>
 </div>
@@ -714,7 +730,7 @@ function nextExercise() {
         if (currentRound >= TOTAL_ROUNDS) {
             // Workout tugadi!
             clearInterval(timer);
-            document.getElementById('completeOverlay').classList.add('visible');
+            submitWorkoutComplete();
             return;
         }
         // Rest boshlash
@@ -756,15 +772,125 @@ function togglePause() {
     document.getElementById('pauseText').textContent = isPaused ? '{% trans "Resume" %}' : '{% trans "Pause" %}';
 }
 
-// ── EXIT ──
-function confirmExit() {
-    if (confirm('{% trans "Exit workout? Your progress will be lost." %}')) {
-        window.location.href = '{% url "home_workout_detail" workout.id %}';
-    }
+// ── EXIT MODAL ──
+let sessionStartTime = Date.now();
+
+function showExitModal() {
+    isPaused = true;
+    clearInterval(timer);
+    document.getElementById('exitModal').classList.add('active');
+}
+
+function returnToWorkout() {
+    document.getElementById('exitModal').classList.remove('active');
+    isPaused = false;
+    startTimer();
+}
+
+function exitWithoutSaving() {
+    window.location.href = '{% url "home_workout_detail" workout.id %}';
+}
+
+function submitWorkoutComplete() {
+    const durationSeconds = Math.floor((Date.now() - sessionStartTime) / 1000);
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '{% url "home_workout_complete" workout.id %}';
+    const fields = {
+        csrfmiddlewaretoken: '{{ csrf_token }}',
+        action: 'complete',
+        total_duration: durationSeconds,
+        total_calories: Math.round(TOTAL_EXERCISES * TOTAL_ROUNDS * 8),
+        exercises_completed: TOTAL_EXERCISES * TOTAL_ROUNDS,
+        total_weight: '0',
+    };
+    Object.entries(fields).forEach(([name, value]) => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = name;
+        input.value = value;
+        form.appendChild(input);
+    });
+    document.body.appendChild(form);
+    form.submit();
 }
 
 // ── START ──
 init();
 </script>
 
+
+<div class="exit-modal" id="exitModal">
+    <div class="exit-modal-content">
+        <h3>Exit Workout?</h3>
+        <p>Your progress will be lost.</p>
+        <div class="exit-modal-buttons">
+            <button onclick="exitWithoutSaving()" class="btn-exit-confirm">Exit</button>
+            <button onclick="returnToWorkout()" class="btn-return">Continue Workout</button>
+        </div>
+    </div>
+</div>
+
+<style>
+.exit-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(5,7,18,0.88);
+    backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+    padding: 20px;
+}
+.exit-modal.active { opacity: 1; pointer-events: all; }
+.exit-modal-content {
+    width: 100%;
+    max-width: 340px;
+    background: #0d1025;
+    border: 1px solid rgba(255,215,0,0.2);
+    border-radius: 24px;
+    padding: 32px 24px;
+    text-align: center;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.7);
+}
+.exit-modal-content h3 {
+    font-size: 26px;
+    font-weight: 900;
+    color: #ffd700;
+    margin-bottom: 8px;
+}
+.exit-modal-content p {
+    font-size: 13px;
+    color: rgba(255,255,255,0.45);
+    margin-bottom: 24px;
+    line-height: 1.5;
+}
+.exit-modal-buttons { display: flex; flex-direction: column; gap: 10px; }
+.btn-exit-confirm {
+    width: 100%;
+    padding: 13px;
+    border-radius: 14px;
+    background: rgba(255,71,87,0.12);
+    border: 1.5px solid rgba(255,71,87,0.35);
+    color: #ff4757;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+.btn-return {
+    width: 100%;
+    padding: 13px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #ffd700, #ffb300);
+    border: none;
+    color: #0a0d1a;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+}
+</style>
 {% endblock %}

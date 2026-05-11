@@ -88,7 +88,7 @@ class HomeProgramListView(ListView):
 
 class HomeProgramDetailView(DetailView):
     model = Program
-    template_name = 'workouts/edition_list.html'
+    template_name = 'home/edition_list.html'
     context_object_name = 'program'
 
     def get_queryset(self):
@@ -98,7 +98,7 @@ class HomeProgramDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['plans'] = self.object.plans.all().order_by('order')
+        context['plans'] = self.object.plans.filter(program__workout_type='home').order_by('order')
         context['is_home_mode'] = True
         return context
 
@@ -109,7 +109,7 @@ class HomePlanWeeksView(DetailView):
     Gym dagi PlanWeeksView bilan bir xil logika.
     """
     model = Plan
-    template_name = 'workouts/plan_weeks.html'
+    template_name = 'home/plan_weeks.html'
     context_object_name = 'plan'
 
     def get_queryset(self):
@@ -123,7 +123,16 @@ class HomePlanWeeksView(DetailView):
         # weeks — gym dagi plan_weeks.html bilan bir xil context key
         self.request.session['workout_type'] = WorkoutType.HOME
         self.request.session.modified = True
-        context['weeks'] = self.object.weeks.prefetch_related('workouts').order_by('week_number')
+        weeks = self.object.weeks.prefetch_related('workouts').order_by('week_number')
+        workouts = []
+        for week in weeks:
+            for wo in week.workouts.all().order_by('day_number'):
+                workouts.append(wo)
+        completed_ids = set()
+        context['workouts'] = workouts
+        context['completed_workout_ids'] = completed_ids
+        context['total_weeks'] = weeks.count()
+        context['weeks'] = weeks
         context['active_workout_type'] = WorkoutType.HOME
         context['is_home_mode'] = True
         return context
