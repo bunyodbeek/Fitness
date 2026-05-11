@@ -5,11 +5,12 @@
 {% block title %}{{ exercise_name|default:exercise.name|default:_("Exercise details") }}{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/exercise_detail.css' %}">
+    <link rel="stylesheet" href="{% static 'css/exercise_detail.css' %}">
 {% endblock %}
 
 {% block content %}
     <!-- Compact Header -->
+
     <div class="page-header">
         <button class="back-btn" onclick="history.back()">‹</button>
         <h1 class="page-title">{{ exercise_name|default:exercise.name|default:_("Exercise") }}</h1>
@@ -22,11 +23,11 @@
         <div class="media-container">
             {% if exercise.video %}
                 <video
-                       class="exercise-image"
-                       id="exerciseVideo"
-                       src="{{ exercise.video.url }}"
-                       poster="{{ exercise.thumbnail.url|default:'' }}"
-                       autoplay muted loop playsinline>
+                        class="exercise-image"
+                        id="exerciseVideo"
+                        src="{{ exercise.video.url }}"
+                        poster="{{ exercise.thumbnail.url|default:'' }}"
+                        autoplay muted loop playsinline>
                     {% trans "Your browser doesn't support video tag" %}
                 </video>
             {% elif exercise.thumbnail %}
@@ -47,18 +48,43 @@
     </div>
     <div class="save-sheet-backdrop" id="saveSheetBackdrop"></div>
     <div class="save-sheet" id="saveSheet">
-        <button class="sheet-close" id="sheetCloseBtn">✕</button>
-        <button class="save-option-btn primary" id="quickSaveBtn">{% trans "Quick save" %}</button>
-        <button class="save-option-btn" id="existingCollectionBtn">{% trans "Existing collection" %}</button>
-        <button class="save-option-btn" id="newCollectionBtn">{% trans "New collection" %}</button>
-
-        <div id="existingCollectionsWrap" style="display:none;">
+        <div class="modal-handle"></div>
+        <h3 class="modal-title">⭐ {% trans "Save to" %}</h3>
+        <div class="save-options-list">
+            <div class="save-option" id="quickSaveBtn">
+                <div class="save-option-icon">⚡</div>
+                <div class="save-option-info">
+                    <div class="save-option-title">{% trans "Quick save" %}</div>
+                    <div class="save-option-desc">{% trans "Add to favorites" %}</div>
+                </div>
+            </div>
+            <div class="save-option" id="existingCollectionBtn">
+                <div class="save-option-icon">📁</div>
+                <div class="save-option-info">
+                    <div class="save-option-title">{% trans "Existing collection" %}</div>
+                    <div class="save-option-desc">{% trans "Choose a collection" %}</div>
+                </div>
+            </div>
+            <div class="save-option" id="newCollectionBtn">
+                <div class="save-option-icon">➕</div>
+                <div class="save-option-info">
+                    <div class="save-option-title">{% trans "New collection" %}</div>
+                    <div class="save-option-desc">{% trans "Create new" %}</div>
+                </div>
+            </div>
+        </div>
+        <div id="existingCollectionsWrap" style="display:none; margin-top:12px;">
             <div class="collection-list" id="collectionsList"></div>
         </div>
-        <div id="newCollectionBlock" style="display:none; margin-top: 10px;">
-            <input id="newCollectionName" class="collection-name-input" style="min-height:44px;"
+        <div id="newCollectionBlock" style="display:none; margin-top:12px;">
+            <input id="newCollectionName" class="collection-input"
                    placeholder="{% trans 'Collection name' %}">
-            <button class="save-option-btn primary" id="createCollectionFromDetailBtn">{% trans "Create collection" %}</button>
+            <div class="save-option primary-option" id="createCollectionFromDetailBtn"
+                 style="margin-top:10px; background:linear-gradient(135deg,#ffd700,#ffb300); cursor:pointer;">
+                <div class="save-option-info" style="text-align:center;">
+                    <div class="save-option-title" style="color:#0d0f18;">{% trans "Create collection" %}</div>
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}
@@ -80,6 +106,19 @@
                 error: "{% trans 'Error' %}",
             }
         };
+        screen.orientation?.addEventListener('change', function () {
+            const video = document.getElementById('exerciseVideo');
+            if (!video) return;
+            if (screen.orientation.type.includes('landscape')) {
+                video.requestFullscreen && video.requestFullscreen().catch(() => {
+                    video.webkitRequestFullscreen && video.webkitRequestFullscreen();
+                });
+            } else {
+                if (document.fullscreenElement) {
+                    document.exitFullscreen && document.exitFullscreen();
+                }
+            }
+        });
     </script>
     <script src="{% static 'js/exercise_save.js' %}"></script>
 {% endblock %}

@@ -220,6 +220,7 @@
             backdrop-filter: blur(10px);
             padding: 14px;
             margin: 0 12px 12px;
+
             /* HOME: to'liq yumaloq */
             border-radius: 20px;
             border: 1.5px solid rgba(255, 215, 0, 0.15);
@@ -549,10 +550,6 @@
                 {{ program.description|default:"Transform your body with this comprehensive home workout program designed for all fitness levels."|truncatewords:25 }}
             </p>
 
-            <div class="info-highlight">
-                💡 <strong>{% trans 'Tip:' %}</strong>
-                {% trans 'Complete each plan for 4-6 weeks before moving to the next' %}
-            </div>
         </div>
 
         <div class="section-title">{% trans 'Choose Your Plan' %}</div>
