@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 from telebot.types import (
 	InlineKeyboardButton,
 	InlineKeyboardMarkup,
+	KeyboardButton,  # ✅ qo'shildi
 	ReplyKeyboardMarkup,
 	Update,
 	WebAppInfo,
@@ -70,17 +71,23 @@ def _send_webapp_message(chat_id, first_name, lang_code):
 	
 	webapp_link = f"{WEBAPP_URL}/{lang_code}/miniapp/questionnaire/"
 	webapp_info = WebAppInfo(url=webapp_link)
+	
+	# ✅ persistent_keyboard ishlatilmoqda
 	persistent_keyboard = ReplyKeyboardMarkup(
 		resize_keyboard=True,
-		is_persistent=True  
+		is_persistent=True
 	)
-	keyboard = InlineKeyboardMarkup()
-	keyboard.add(InlineKeyboardButton(texts["start_button"], web_app=webapp_info))
+	persistent_keyboard.add(
+		KeyboardButton(
+			text=texts["start_button"],
+			web_app=webapp_info
+		)
+	)
 	
 	bot.send_message(
 		chat_id,
 		texts["welcome"].format(first_name=first_name or "User"),
-		reply_markup=keyboard,
+		reply_markup=persistent_keyboard,
 	)
 
 
