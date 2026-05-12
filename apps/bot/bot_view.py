@@ -72,7 +72,7 @@ def _send_webapp_message(chat_id, first_name, lang_code):
 	webapp_link = f"{WEBAPP_URL}/{lang_code}/miniapp/questionnaire/"
 	webapp_info = WebAppInfo(url=webapp_link)
 	
-	# ✅ persistent_keyboard ishlatilmoqda
+	# ✅ 1. Pastda doim turadigan keyboard
 	persistent_keyboard = ReplyKeyboardMarkup(
 		resize_keyboard=True,
 		is_persistent=True
@@ -84,10 +84,23 @@ def _send_webapp_message(chat_id, first_name, lang_code):
 		)
 	)
 	
+	# ✅ 2. Avval persistent keyboardni yuboramiz (bo'sh xabar bilan)
+	bot.send_message(
+		chat_id,
+		".",  # yoki "👇" — biror narsa bo'lishi kerak
+		reply_markup=persistent_keyboard,
+	)
+	
+	# ✅ 3. Keyin asosiy xabarni inline button bilan yuboramiz
+	inline_keyboard = InlineKeyboardMarkup()
+	inline_keyboard.add(
+		InlineKeyboardButton(texts["start_button"], web_app=webapp_info)
+	)
+	
 	bot.send_message(
 		chat_id,
 		texts["welcome"].format(first_name=first_name or "User"),
-		reply_markup=persistent_keyboard,
+		reply_markup=inline_keyboard,
 	)
 
 
