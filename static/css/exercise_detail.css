@@ -472,6 +472,41 @@ background: rgba(13,15,24,0.98);
             transition-duration: 0.01ms !important;
         }
     }
+    /* Landscape - video fullscreen, content yashirin */
+@media (orientation: landscape) and (max-height: 500px) {
+    .page-header {
+        display: none;
+    }
+
+    .container {
+        padding: 0;
+    }
+
+    .media-container {
+        margin: 0;
+        border-radius: 0;
+        height: 100vh;
+    }
+
+    .exercise-image {
+        height: 100vh;
+        max-height: 100vh;
+        min-height: 100vh;
+        object-fit: contain;
+        background: #000;
+    }
+
+    video.exercise-image {
+        object-fit: contain;
+        background: #000;
+    }
+
+    .description-card,
+    .save-sheet,
+    .bottom-nav {
+        display: none !important;
+    }
+}
 
 .save-sheet-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;z-index:220}
 .save-sheet{position:fixed;left:0;right:0;bottom:0;background:#0d0f18;border-top:1px solid rgba(255,215,0,.25);padding:14px;border-radius:16px 16px 0 0;display:none;z-index:221}
