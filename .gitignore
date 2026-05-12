@@ -17,7 +17,9 @@ secrets.json
 # 4. Media va Static (Rasmlar va yig'ilgan static fayllar)
 # Serverda foydalanuvchilar yuklagan rasmlar Git'da bo'lmasligi shart
 media/
-static/
+static/*
+!static/css/
+!static/js/
 staticfiles/
 
 # 5. IDE va Tizim fayllari
