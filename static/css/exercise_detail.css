@@ -507,7 +507,27 @@ background: rgba(13,15,24,0.98);
         display: none !important;
     }
 }
+.media-container {
+    margin-bottom: 14px;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    background: #000;  /* qora background */
+    position: relative;
+    width: 100%;
+    /* aspect-ratio qo'shish */
+    aspect-ratio: 16/9;
+}
 
+video.exercise-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;  /* contain o'rniga cover */
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
 .save-sheet-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;z-index:220}
 .save-sheet{position:fixed;left:0;right:0;bottom:0;background:#0d0f18;border-top:1px solid rgba(255,215,0,.25);padding:14px;border-radius:16px 16px 0 0;display:none;z-index:221}
 .save-sheet.active,.save-sheet-backdrop.active{display:block}
