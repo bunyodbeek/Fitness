@@ -1,422 +1,405 @@
-// Backend ma'lumotlar
-const workoutId = window.ACTIVE_WORKOUT_CONFIG.workoutPk;
-const totalExercises = window.ACTIVE_WORKOUT_CONFIG.totalExercises;
-const csrfToken = window.ACTIVE_WORKOUT_CONFIG.csrfToken;
-const exercises = window.ACTIVE_WORKOUT_CONFIG.exercises;
-const initialExerciseIndex = window.ACTIVE_WORKOUT_CONFIG.initialExerciseIndex;
-const initialSet = window.ACTIVE_WORKOUT_CONFIG.initialSet;
-const initialCompleted = window.ACTIVE_WORKOUT_CONFIG.initialCompleted;
-const currentPath = window.location.pathname || '';
-const isCustomProgramFlow = /\/favorites\/programs\/\d+\/start\/?$/.test(currentPath);
+// ── CONFIG ───────────────────────────────────────────────────────────────────
+const CFG              = window.ACTIVE_WORKOUT_CONFIG || {};
+const exercises        = CFG.exercises        || [];
+const csrfToken        = CFG.csrfToken        || '';
+const initialExIdx     = CFG.initialExerciseIndex || 0;
+const initialCompleted = CFG.initialCompleted || 0;
+const exitRedirectUrl  = CFG.exitRedirectUrl  || '';
+const defaultImage     = CFG.defaultExerciseImage || '';
 
-if (isCustomProgramFlow) {
-    WORKOUT_URLS.complete = currentPath.replace(/\/start\/?$/, '/complete/');
-    WORKOUT_URLS.start = currentPath;
-}
-
-// TO'G'RILANGAN TIMER LOGIKASI
-let currentExerciseIndex = initialExerciseIndex;
-let currentSet = initialSet;
-let isPaused = false;
-let isResting = false;
-let timerInterval = null;
-let restInterval = null;
-let restTimeLeft = 0;
-
-// YANGI: Umumiy trenirovka vaqti uchun
-let sessionStartTime = null;  // Trenirovka boshlangan vaqt
-let totalPausedTime = 0;      // Umumiy pause qilingan vaqt (millisekunda)
-let pauseStartTime = null;    // Pause boshlangan vaqt
-
-let totalCaloriesBurned = 0;
-let totalDurationSeconds = 0;
-let totalExercisesCompleted = initialCompleted;
-let totalWeightLifted = 0;
-
-const toFiniteNumber = (value, fallback = 0) => {
-    const parsed = Number(value);
-    return Number.isFinite(parsed) ? parsed : fallback;
-};
-
-// Yordamchi funksiyalar
-const formatTime = (s) => {
-    const m = Math.floor(s / 60);
-    const sec = s % 60;
-    return `${m.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
-};
-
-// YANGI: Haqiqiy o'tgan vaqtni hisoblash (pause vaqtini hisobga olgan holda)
-const getElapsedSeconds = () => {
-    if (!sessionStartTime) return 0;
-
-    const now = Date.now();
-    let totalElapsed = now - sessionStartTime;
-
-    // Agar hozir pause holatida bo'lsa
-    if (isPaused && pauseStartTime) {
-        totalElapsed -= (now - pauseStartTime);
+try {
+    const p = window.location.pathname;
+    if (/\/favorites\/programs\/\d+\/start\/?$/.test(p)) {
+        WORKOUT_URLS.complete = p.replace(/\/start\/?$/, '/complete/');
+        WORKOUT_URLS.start = p;
     }
+} catch(e) {}
 
-    // Umumiy pause vaqtini ayirish
-    totalElapsed -= totalPausedTime;
+// ── STATE ────────────────────────────────────────────────────────────────────
+let currentExIdx   = initialExIdx;
+let isPaused       = false;
+let isResting      = false;
+let timerInterval  = null;
+let restInterval   = null;
+let restTimeLeft   = 0;
+let sessionStart   = null;
+let totalPaused    = 0;
+let pauseStart     = null;
+let totalCalories  = 0;
+let totalSecs      = 0;
+let totalCompleted = initialCompleted;
+let totalWeight    = 0;
 
-    return Math.floor(totalElapsed / 1000);
+const setWeights = {}; // { exIdx: { setIdx: kg } }
+const doneSets   = {}; // { exIdx: Set<setIdx> }
+
+// ── UTILS ────────────────────────────────────────────────────────────────────
+const toFin   = (v, fb=0) => { const n=Number(v); return isFinite(n)?n:fb; };
+const fmtTime = s => `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+const $       = id => document.getElementById(id);
+
+const elapsed = () => {
+    if (!sessionStart) return 0;
+    let e = Date.now() - sessionStart;
+    if (isPaused && pauseStart) e -= (Date.now() - pauseStart);
+    e -= totalPaused;
+    return Math.max(0, Math.floor(e/1000));
 };
 
-const updateExitButtonState = () => {
-    const btn = document.getElementById("saveExitBtn");
-    if (!btn) return;
+const getW  = (ei,si) => setWeights[ei]?.[si] !== undefined ? setWeights[ei][si] : toFin(exercises[ei]?.recommended_weight, 0);
+const saveW = (ei,si,v) => { if(!setWeights[ei]) setWeights[ei]={}; setWeights[ei][si]=Math.max(0,toFin(v,0)); };
+const isDone = (ei,si) => doneSets[ei]?.has(si) ?? false;
+const markD  = (ei,si) => { if(!doneSets[ei]) doneSets[ei]=new Set(); doneSets[ei].add(si); };
+const doneN  = ei => doneSets[ei]?.size ?? 0;
 
-    const disabled = totalExercisesCompleted < 1;
-
-    btn.disabled = disabled;
-    btn.style.opacity = disabled ? "0.5" : "1";
-    btn.style.cursor = disabled ? "not-allowed" : "pointer";
+const updateExit = () => {
+    const b=$('saveExitBtn'); if(!b) return;
+    b.disabled=totalCompleted<1; b.style.opacity=totalCompleted<1?'0.5':'1';
 };
 
-const toggleExerciseDescription = (event) => {
-    if (event) {
-        event.stopPropagation();
+// ── MEDIA ────────────────────────────────────────────────────────────────────
+const resetMedia = ex => {
+    const v=$('exerciseVideo'), img=$('exerciseImage'); if(!v||!img) return;
+    v.pause(); v.currentTime=0;
+    if (ex?.video) {
+        v.src=ex.video; v.muted=true; v.autoplay=true; v.loop=true;
+        v.setAttribute('playsinline',''); v.removeAttribute('controls');
+        v.classList.add('active'); img.style.display='none';
+        v.load(); v.play().catch(()=>{});
+    } else {
+        v.removeAttribute('src'); v.load(); v.classList.remove('active');
+        img.src=ex?.image||defaultImage; img.style.display='block';
     }
-    const card = document.getElementById('exerciseDescriptionCard');
-    const hint = document.getElementById('exerciseDescriptionHint');
-    const isExpanded = card.classList.toggle('expanded');
-    hint.textContent = isExpanded ? 'Tap to collapse' : 'Tap to expand';
+};
+const toggleExerciseMedia = () => { if(exercises[currentExIdx]?.description) openDescModal(); };
+
+// ── DESC MODAL ───────────────────────────────────────────────────────────────
+const renderDescTrigger = desc => {
+    const t=$('descTrigger'), tx=$('descTriggerText'); if(!t||!tx) return;
+    if(!desc?.trim()) { t.style.display='none'; return; }
+    tx.textContent=desc.trim(); t.style.display='flex';
 };
 
-const renderExerciseDescription = (description) => {
-    const card = document.getElementById('exerciseDescriptionCard');
-    const text = document.getElementById('exerciseDescription');
-    const hint = document.getElementById('exerciseDescriptionHint');
-    const safeDescription = (description || '').trim();
-
-    if (!safeDescription) {
-        card.style.display = 'none';
-        card.classList.remove('expanded');
-        return;
+const openDescModal = () => {
+    const ex=exercises[currentExIdx]; if(!ex) return;
+    const ov=$('descModal'), mv=$('descModalVideo'), mi=$('descModalImg'); if(!ov) return;
+    const n=$('descModalName'), tx=$('descModalText');
+    if(n) n.textContent=ex.name||'';
+    if(tx) tx.textContent=ex.description||'';
+    if(mv) {
+        if(ex.video) {
+            mv.src=ex.video; mv.muted=true; mv.autoplay=true; mv.loop=true;
+            mv.setAttribute('playsinline',''); mv.classList.add('has-v');
+            if(mi) mi.classList.add('hidden');
+        } else {
+            mv.removeAttribute('src'); mv.load(); mv.classList.remove('has-v');
+            if(mi) { mi.src=ex.image||defaultImage; mi.classList.remove('hidden'); }
+        }
     }
-
-    text.textContent = safeDescription;
-    card.style.display = 'block';
-    card.classList.remove('expanded');
-    hint.textContent = 'Tap to expand';
+    ov.classList.add('active');
+    if(!isPaused&&!isResting) { isPaused=true; pauseStart=Date.now(); }
 };
 
-const toggleExerciseMedia = () => {
-    const video = document.getElementById('exerciseVideo');
-    const image = document.getElementById('exerciseImage');
-    const hint = document.getElementById('playVideoHint');
+const closeDescModal = () => {
+    const ov=$('descModal'), mv=$('descModalVideo');
+    if(ov) ov.classList.remove('active');
+    if(mv) mv.pause();
+    if(isPaused&&pauseStart&&!isResting) {
+        isPaused=false; totalPaused+=(Date.now()-pauseStart); pauseStart=null;
+        const pi=$('pauseIcon'); if(pi) pi.innerHTML='<i class="fas fa-pause"></i>';
+    }
+};
+const closeDescModalOnBg = e => { if(e.target===$('descModal')) closeDescModal(); };
 
-    if (!video.src) return;
+// ── SET CARDS ────────────────────────────────────────────────────────────────
+const renderSetCards = () => {
+    const ex=exercises[currentExIdx], wr=$('setsWrapper');
+    if(!wr||!ex||ex.type!=='strength') return;
+    wr.innerHTML='';
 
-    if (!video.classList.contains('active')) {
-        video.classList.add('active');
-        image.style.display = 'none';
-        hint.style.display = 'none';
-        video.play().catch(() => {
+    for (let i=0; i<ex.sets; i++) {
+        const done = isDone(currentExIdx, i);
+        const w    = getW(currentExIdx, i);
+        const wStr = w%1===0 ? String(w) : w.toFixed(1);
+        const rStr = ex.reps_max && ex.reps_max!==ex.reps
+            ? `${ex.reps}–${ex.reps_max}` : String(ex.reps);
+
+        // Label row
+        const lr = document.createElement('div');
+        lr.className='set-label-row';
+        lr.innerHTML=`
+            <span class="set-label-text">SET ${i+1} OF ${ex.sets}</span>
+            <span class="set-label-done${done?' show':''}" id="dl_${currentExIdx}_${i}">✓ Done</span>
+        `;
+        wr.appendChild(lr);
+
+        // Card — build with DOM, not innerHTML, so input events work reliably
+        const card = document.createElement('div');
+        card.className=`set-card${done?' done':''}`;
+        card.id=`sc_${currentExIdx}_${i}`;
+
+        // Weight zone
+        const wZone = document.createElement('div');
+        wZone.className='set-weight-zone';
+
+        if (!done) {
+            // VISIBLE input styled as large bold number
+            const inp = document.createElement('input');
+            inp.type='number';
+            inp.className='w-inp';
+            inp.id=`wi_${currentExIdx}_${i}`;
+            inp.value=wStr;
+            inp.step='0.5';
+            inp.min='0';
+            inp.setAttribute('inputmode','decimal');
+            inp.setAttribute('pattern','[0-9.]*');
+
+            const ei=currentExIdx, si=i;
+            // Save on every change
+            inp.addEventListener('input', () => {
+                saveW(ei, si, parseFloat(inp.value)||0);
+            });
+            // Restore formatted value on blur
+            inp.addEventListener('blur', () => {
+                const val=Math.max(0,parseFloat(inp.value)||0);
+                saveW(ei,si,val);
+                inp.value = val%1===0 ? String(val) : val.toFixed(1);
+            });
+            // Select all on focus for easy editing
+            inp.addEventListener('focus', () => {
+                setTimeout(()=>inp.select(), 50);
+            });
+
+            wZone.appendChild(inp);
+        } else {
+            // Done: show static text
+            const sp=document.createElement('span');
+            sp.className='w-inp';
+            sp.textContent=wStr;
+            wZone.appendChild(sp);
+        }
+
+        const unitLbl=document.createElement('span');
+        unitLbl.className='w-unit'; unitLbl.textContent='kg';
+        wZone.appendChild(unitLbl);
+
+        // Divider
+        const div=document.createElement('div'); div.className='set-divider';
+
+        // Reps zone
+        const rZone=document.createElement('div'); rZone.className='set-reps-zone';
+        rZone.innerHTML=`<span class="r-num">${rStr}</span><span class="r-lbl">reps</span>`;
+
+        // Did It cell
+        const diCell=document.createElement('div');
+        diCell.className='did-it-cell';
+        diCell.id=`di_${currentExIdx}_${i}`;
+        diCell.textContent=done?'✓':'Did It';
+        if(!done) {
+            diCell.addEventListener('click', ()=>didItSet(i));
+        }
+
+        card.appendChild(wZone);
+        card.appendChild(div);
+        card.appendChild(rZone);
+        card.appendChild(diCell);
+        wr.appendChild(card);
+    }
+};
+
+// ── DID IT ───────────────────────────────────────────────────────────────────
+const didItSet = si => {
+    const ei=currentExIdx;
+    if(isDone(ei,si)) return;
+
+    // Save current weight
+    const inp=$(`wi_${ei}_${si}`);
+    if(inp&&inp.tagName==='INPUT') saveW(ei,si,parseFloat(inp.value)||0);
+
+    const w=getW(ei,si), ex=exercises[ei]; if(!ex) return;
+
+    totalWeight    += w*ex.reps;
+    totalCompleted += 1;
+    updateExit();
+    markD(ei,si);
+
+    // Ripple on Did It cell
+    const di=$(`di_${ei}_${si}`);
+    if(di) {
+        const r=document.createElement('span'); r.className='ripple-c';
+        const sz=Math.max(di.offsetWidth,di.offsetHeight);
+        Object.assign(r.style,{
+            width:sz+'px',height:sz+'px',
+            left:(di.offsetWidth/2-sz/2)+'px',
+            top:(di.offsetHeight/2-sz/2)+'px'
         });
+        di.appendChild(r);
+        setTimeout(()=>r.remove(),600);
     }
-};
 
-const resetExerciseMedia = (ex) => {
-    const video = document.getElementById('exerciseVideo');
-    const image = document.getElementById('exerciseImage');
-    const hint = document.getElementById('playVideoHint');
-
-    video.pause();
-    video.currentTime = 0;
-    video.classList.remove('active');
-    image.style.display = 'block';
-
-    if (ex.video) {
-        video.src = ex.video;
-        hint.style.display = 'block';
-    } else {
-        video.removeAttribute('src');
-        video.load();
-        hint.style.display = 'none';
-    }
-};
-
-// === Asosiy: Mashqni yuklash ===
-const loadExercise = (index, startingSet = 1) => {
-    if (index >= exercises.length) return finishWorkout();
-
-    const ex = exercises[index];
-    currentExerciseIndex = index;
-    currentSet = startingSet;
-    isResting = false;
-    isPaused = false;
-
-    // UI yangilash
-    document.getElementById('current').textContent = index + 1;
-    document.getElementById('exerciseName').textContent = ex.name;
-    document.getElementById('exerciseImage').src = ex.image || window.ACTIVE_WORKOUT_CONFIG.defaultExerciseImage;
-    resetExerciseMedia(ex);
-    renderExerciseDescription(ex.description);
-
-    // Tugmalar
-    const didBtn = document.getElementById('didItBtn');
-    didBtn.classList.remove('completed');
-    didBtn.disabled = false;
-    didBtn.style.display = 'inline-flex';
-    didBtn.textContent = ex.type === 'cardio' ? 'Did it' : 'Set Done';
-
-    const pauseBtn = document.getElementById('pauseBtn');
-    pauseBtn.style.display = 'inline-flex';
-    document.getElementById('pauseIcon').innerHTML = '<i class="fas fa-pause"></i>';
-
-    // Set details (faqat strength)
-    if (ex.type === 'strength') {
-        document.getElementById('strengthDetails').style.display = 'flex';
-        document.getElementById('totalSets').textContent = ex.sets;
-        document.getElementById('repsCount').textContent = ex.reps;
-        document.getElementById('currentSet').textContent = currentSet;
-        if (document.getElementById('weightInput')) {
-            document.getElementById('weightInput').value = ex.recommended_weight || 0;
+    // Transition card to done
+    setTimeout(()=>{
+        const card=$(`sc_${ei}_${si}`), dl=$(`dl_${ei}_${si}`);
+        if(card) {
+            card.classList.add('done','pulse');
+            setTimeout(()=>card.classList.remove('pulse'),700);
         }
+        if(dl) dl.classList.add('show');
+        if(di) { di.textContent='✓'; di.style.pointerEvents='none'; }
+
+        // Replace input with static span so it looks the same but not editable
+        if(inp&&inp.tagName==='INPUT') {
+            const val=getW(ei,si);
+            const sp=document.createElement('span');
+            sp.className='w-inp';
+            sp.textContent=val%1===0?String(val):val.toFixed(1);
+            inp.parentNode.replaceChild(sp,inp);
+        }
+    },150);
+
+    // Next action
+    const dn=doneN(ei);
+    if(dn < ex.sets) {
+        setTimeout(()=>startRest(toFin(ex.rest_seconds,60),si+1,ex.sets,si+2,ex),400);
     } else {
-        document.getElementById('strengthDetails').style.display = 'none';
+        totalCalories+=toFin(ex.calories_per_minute,5)*toFin(ex.duration_minutes,0);
+        setTimeout(()=>loadExercise(ei+1),500);
     }
-
-    // Trenirovka faqat birinchi marta boshlanganda
-    if (sessionStartTime === null) {
-        sessionStartTime = Date.now();
-        startSessionTimer();
-    }
-
-    showUpNext(index);
 };
 
-// TO'G'RILANGAN TIMER
-const startSessionTimer = () => {
+// ── LOAD EXERCISE ─────────────────────────────────────────────────────────────
+const loadExercise = idx => {
+    if(idx>=exercises.length) { finishWorkout(); return; }
+    const ex=exercises[idx]; if(!ex) { finishWorkout(); return; }
+
+    currentExIdx=idx; isResting=false; isPaused=false;
+
+    const cur=$('current'), nm=$('exerciseName'),
+          pb=$('pauseBtn'), pi=$('pauseIcon'), ft=$('floatingTimer');
+    if(cur) cur.textContent=idx+1;
+    if(nm)  nm.textContent=ex.name||'';
+    if(pb)  pb.style.display='flex';
+    if(pi)  pi.innerHTML='<i class="fas fa-pause"></i>';
+    if(ft)  ft.classList.remove('hidden');
+
+    resetMedia(ex);
+    renderDescTrigger(ex.description);
+
+    const wr=$('setsWrapper');
+    if(wr) {
+        wr.style.display=ex.type==='strength'?'flex':'none';
+        if(ex.type==='strength') renderSetCards();
+    }
+
+    if(!sessionStart) { sessionStart=Date.now(); startTimer(); }
+};
+
+// ── TIMER ────────────────────────────────────────────────────────────────────
+const startTimer=()=>{
     clearInterval(timerInterval);
-    timerInterval = setInterval(() => {
-        // Pause yoki rest paytida timer to'xtaydi
-        if (!isPaused && !isResting) {
-            const elapsedSec = getElapsedSeconds();
-            document.getElementById('floatingTimer').textContent = formatTime(elapsedSec);
+    timerInterval=setInterval(()=>{
+        if(!isPaused&&!isResting){
+            const ft=$('floatingTimer'); if(ft) ft.textContent=fmtTime(elapsed());
         }
-    }, 100);
+    },100);
 };
 
-// TO'G'RILANGAN PAUSE
-const togglePause = () => {
-    if (isResting) return;
-
-    if (!isPaused) {
-        // Pause boshlash
-        isPaused = true;
-        pauseStartTime = Date.now();
-        document.getElementById('pauseIcon').innerHTML = '<i class="fas fa-play"></i>';
+// ── PAUSE ────────────────────────────────────────────────────────────────────
+const togglePause=()=>{
+    if(isResting) return;
+    const pi=$('pauseIcon');
+    if(!isPaused){
+        isPaused=true; pauseStart=Date.now();
+        if(pi) pi.innerHTML='<i class="fas fa-play"></i>';
     } else {
-        // Pause tugashi
-        isPaused = false;
-        if (pauseStartTime) {
-            totalPausedTime += (Date.now() - pauseStartTime);
-            pauseStartTime = null;
-        }
-        document.getElementById('pauseIcon').innerHTML = '<i class="fas fa-pause"></i>';
+        isPaused=false;
+        if(pauseStart){ totalPaused+=(Date.now()-pauseStart); pauseStart=null; }
+        if(pi) pi.innerHTML='<i class="fas fa-pause"></i>';
     }
 };
 
-// === Mashqni tugatish (Set Done yoki Did it) ===
-const completeExercise = (auto = false) => {
-    const ex = exercises[currentExerciseIndex];
-    const btn = document.getElementById('didItBtn');
-    btn.disabled = true;
-    updateExitButtonState();
+// ── REST ─────────────────────────────────────────────────────────────────────
+const startRest=(sec,completedN,totalSets,nextN,ex)=>{
+    isResting=true;
+    const ft=$('floatingTimer'), pb=$('pauseBtn');
+    if(ft) ft.classList.add('hidden');
+    if(pb) pb.style.display='none';
 
-    // Kaloriya hisoblash
-    const caloriesPerMinute = toFiniteNumber(ex.calories_per_minute, 5);
-    const durationMinutes = toFiniteNumber(ex.duration_minutes, 0);
-    if (ex.type === 'cardio') {
-        totalCaloriesBurned += caloriesPerMinute * durationMinutes;
-    } else if (ex.type === 'strength') {
-        if (currentSet >= ex.sets) {
-            totalCaloriesBurned += caloriesPerMinute * durationMinutes;
-        }
-        if (document.getElementById('weightInput')) {
-            const weightVal = parseFloat(document.getElementById('weightInput').value) || 0;
-            totalWeightLifted += weightVal * ex.reps;
-        }
-    }
-
-    if (ex.type === 'strength' && currentSet < ex.sets) {
-        totalExercisesCompleted += 1;
-        startRest(toFiniteNumber(ex.rest_seconds, 60), currentSet, ex.sets);
-        currentSet++;
-        return;
-    }
-
-    // Oxirgi set yoki cardio
-    totalExercisesCompleted += 1;
-    btn.classList.add('completed');
-    btn.innerHTML = '✅ Done';
-    setTimeout(() => loadExercise(currentExerciseIndex + 1), 800);
-};
-
-// === Rest boshlash ===
-const startRest = (restSec, completedSet, totalSets) => {
-    isResting = true;
-
-    // Floating timer yashirish
-    document.getElementById('floatingTimer').classList.add('hidden');
-
-    // Tugmalar yashiriladi
-    document.getElementById('didItBtn').style.display = 'none';
-    document.getElementById('pauseBtn').style.display = 'none';
-
-    // UI
-    document.getElementById('setCompleteBadge').textContent = `Set ${completedSet} Complete ✅`;
-    const ex = exercises[currentExerciseIndex];
-    const nextText = ex.type === 'strength'
-        ? `Set ${currentSet + 1}/${ex.sets}`
-        : (exercises[currentExerciseIndex + 1]?.name || "Workout Complete");
-    document.getElementById('restUpNextName').textContent = nextText;
-
-    document.getElementById('restOverlay').classList.add('active');
-    restTimeLeft = restSec;
-    document.getElementById('restTimer').textContent = formatTime(restTimeLeft);
+    const badge=$('restBadge'), nxt=$('restNextName'), rt=$('restTimer'), ov=$('restOverlay');
+    if(badge) badge.textContent=`Set ${completedN} Complete ✓`;
+    const nextName=nextN<=totalSets?`Set ${nextN} of ${totalSets}`:(exercises[currentExIdx+1]?.name||'Workout Complete');
+    if(nxt) nxt.textContent=nextName;
+    restTimeLeft=sec;
+    if(rt) rt.textContent=fmtTime(restTimeLeft);
+    if(ov) ov.classList.add('active');
 
     clearInterval(restInterval);
-    restInterval = setInterval(() => {
+    restInterval=setInterval(()=>{
         restTimeLeft--;
-        document.getElementById('restTimer').textContent = formatTime(restTimeLeft);
-        if (restTimeLeft <= 0) skipRest();
-    }, 1000);
+        const r=$('restTimer'); if(r) r.textContent=fmtTime(Math.max(0,restTimeLeft));
+        if(restTimeLeft<=0) skipRest();
+    },1000);
 };
 
-// === Restni o'tkazib yuborish ===
-const skipRest = () => {
-    isResting = false;
-    clearInterval(restInterval);
-    document.getElementById('restOverlay').classList.remove('active');
+const skipRest=()=>{
+    isResting=false; clearInterval(restInterval);
+    const ov=$('restOverlay'),ft=$('floatingTimer'),pb=$('pauseBtn'),pi=$('pauseIcon');
+    if(ov) ov.classList.remove('active');
+    if(ft) ft.classList.remove('hidden');
+    if(pb) pb.style.display='flex';
+    if(pi) pi.innerHTML='<i class="fas fa-pause"></i>';
+};
 
-    // Floating timer ko'rsatish
-    document.getElementById('floatingTimer').classList.remove('hidden');
+// ── EXIT ─────────────────────────────────────────────────────────────────────
+const showExitModal=()=>{
+    const m=$('exitModal'); if(m) m.classList.add('active');
+    if(!isPaused&&!isResting) togglePause();
+};
+const returnToWorkout=()=>{
+    const m=$('exitModal'); if(m) m.classList.remove('active');
+    if(isPaused&&!isResting) togglePause();
+};
 
-    // Tugmalar qayta paydo bo'ladi
-    const didBtn = document.getElementById('didItBtn');
-    didBtn.style.display = 'inline-flex';
-    didBtn.disabled = false;
-    didBtn.classList.remove('completed');
-
-    const pauseBtn = document.getElementById('pauseBtn');
-    pauseBtn.style.display = 'inline-flex';
-    document.getElementById('pauseIcon').innerHTML = '<i class="fas fa-pause"></i>';
-
-    const ex = exercises[currentExerciseIndex];
-    if (ex.type === 'strength' && currentSet <= ex.sets) {
-        document.getElementById('currentSet').textContent = currentSet;
+const submitForm=action=>{
+    totalSecs=elapsed();
+    const form=document.createElement('form'); form.method='POST';
+    const urls=typeof WORKOUT_URLS!=='undefined'?WORKOUT_URLS:{};
+    if(action==='complete'){
+        form.action=urls.complete||window.location.pathname;
     } else {
-        loadExercise(currentExerciseIndex + 1);
+        if(exitRedirectUrl){ window.location.href=exitRedirectUrl; return; }
+        form.action=urls.start||window.location.pathname;
     }
-};
-
-// === Up Next ko'rsatish ===
-const showUpNext = (index) => {
-    const upNext = document.getElementById('upNext');
-    const ex = exercises[index];
-
-    if (ex.type === 'strength' && currentSet < ex.sets) {
-        upNext.style.display = 'flex';
-        document.getElementById('upNextImage').src = ex.image || window.ACTIVE_WORKOUT_CONFIG.defaultExerciseImage;
-        document.getElementById('upNextName').textContent = ex.name;
-        document.getElementById('upNextDetails').textContent = `Next: Set ${currentSet + 1}/${ex.sets}`;
-        return;
-    }
-
-    if (index < exercises.length - 1) {
-        const next = exercises[index + 1];
-        upNext.style.display = 'flex';
-        document.getElementById('upNextImage').src = next.image || window.ACTIVE_WORKOUT_CONFIG.defaultExerciseImage;
-        document.getElementById('upNextName').textContent = next.name;
-        document.getElementById('upNextDetails').textContent = next.type === 'cardio'
-            ? `${next.duration_minutes} min`
-            : `${next.sets} sets × ${next.reps} reps`;
-    } else {
-        upNext.style.display = 'none';
-    }
-};
-
-// === Exit modal ===
-const showExitModal = () => {
-    document.getElementById('exitModal').classList.add('active');
-    if (!isPaused && !isResting) togglePause();
-};
-
-const returnToWorkout = () => {
-    document.getElementById('exitModal').classList.remove('active');
-    if (isPaused && !isResting) togglePause();
-};
-
-const createForm = (save, action) => {
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = action === 'complete'
-        ? WORKOUT_URLS.complete
-        : WORKOUT_URLS.start;
-    totalDurationSeconds = getElapsedSeconds();
-
-    const fields = {
-        csrfmiddlewaretoken: csrfToken,
-        action: action,
-        save_progress: save ? 'true' : 'false',
-        total_duration: totalDurationSeconds,
-        total_calories: totalCaloriesBurned.toFixed(2),
-        exercises_completed: totalExercisesCompleted,
-        total_weight: totalWeightLifted.toFixed(2),
+    const fields={
+        csrfmiddlewaretoken:csrfToken,action,save_progress:'true',
+        total_duration:totalSecs,total_calories:totalCalories.toFixed(2),
+        exercises_completed:totalCompleted,total_weight:totalWeight.toFixed(2),
     };
-
-    if (action === 'exit' && save) {
-        fields.current_exercise_index = currentExerciseIndex;
-        fields.current_set = currentSet;
-    }
-
-    Object.entries(fields).forEach(([name, value]) => {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = name;
-        input.value = value;
-        form.appendChild(input);
+    if(action==='exit'){ fields.current_exercise_index=currentExIdx; fields.current_set=doneN(currentExIdx)+1; }
+    Object.entries(fields).forEach(([n,v])=>{
+        const i=document.createElement('input'); i.type='hidden'; i.name=n; i.value=v; form.appendChild(i);
     });
-
-    return form;
+    document.body.appendChild(form); form.submit();
 };
 
-const finishWorkout = () => {
-    document.body.appendChild(createForm(true, 'complete'));
-    document.forms[document.forms.length - 1].submit();
+const finishWorkout    =()=>submitForm('complete');
+const saveAndExit      =()=>{ if(totalCompleted<1) return; submitForm('exit'); };
+const exitWithoutSaving=()=>exitRedirectUrl?(window.location.href=exitRedirectUrl):history.back();
+
+const completeExercise=()=>{
+    const ex=exercises[currentExIdx]; if(!ex||ex.type!=='cardio') return;
+    totalCalories+=toFin(ex.calories_per_minute,5)*toFin(ex.duration_minutes,0);
+    totalCompleted+=1; updateExit(); loadExercise(currentExIdx+1);
 };
 
-const saveAndExit = () => {
-    if (totalExercisesCompleted < 1) {
-        return;
-    }
-    document.body.appendChild(createForm(true, 'exit'));
-    document.forms[document.forms.length - 1].submit();
-};
-
-const exitWithoutSaving = () => {
-    document.body.appendChild(createForm(false, 'exit'));
-    document.forms[document.forms.length - 1].submit();
-};
-
-// === Ishga tushirish ===
-document.addEventListener('DOMContentLoaded', () => {
-    loadExercise(initialExerciseIndex, initialSet);
-    updateExitButtonState();
+// ── INIT ─────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded',()=>{
+    loadExercise(initialExIdx);
+    updateExit();
 });
 
-Object.assign(window, {
-    completeExercise,
-    exitWithoutSaving,
-    returnToWorkout,
-    saveAndExit,
-    showExitModal,
-    skipRest,
-    toggleExerciseDescription,
-    toggleExerciseMedia,
-    togglePause,
+Object.assign(window,{
+    closeDescModal,closeDescModalOnBg,completeExercise,
+    exitWithoutSaving,openDescModal,returnToWorkout,
+    saveAndExit,showExitModal,skipRest,togglePause,toggleExerciseMedia,
 });

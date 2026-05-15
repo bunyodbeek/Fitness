@@ -1,714 +1,403 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Active Workout - {{ workout.title }}</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <!-- Eski stillar ham saqlanadi (override qilinadi lekin xavfsiz) -->
-    
-    <!-- Home Mode Styles Override -->
     <style>
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700;900&display=swap');
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
 :root {
     --gold: #ffd700;
     --gold2: #ffb300;
     --red: #ff4757;
-    --green: #2ed573;
     --bg: #0d0f18;
-    --bg2: #111629;
-    --bg3: #1a2038;
     --border: rgba(255,215,0,0.12);
-    --text: #ffffff;
     --muted: rgba(255,255,255,0.45);
+    --card-bg: rgba(255,255,255,0.04);
 }
 
 body {
     background: var(--bg);
-    color: var(--text);
+    color: #fff;
     font-family: 'DM Sans', sans-serif;
     min-height: 100vh;
     overflow-x: hidden;
 }
 
-body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background:
-        radial-gradient(ellipse 60% 40% at 20% 10%, rgba(255,215,0,0.06) 0%, transparent 60%),
-        radial-gradient(ellipse 50% 50% at 80% 90%, rgba(255,71,87,0.04) 0%, transparent 60%);
-    pointer-events: none;
-    z-index: 0;
-}
-
-/* HEADER */
+/* ── HEADER ── */
 .session-header {
-    position: sticky;
-    top: 0;
-    z-index: 200;
-    height: 56px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 16px;
-    gap: 8px;
-    background: rgba(13,15,24,0.98);
-    backdrop-filter: blur(16px);
+    position: sticky; top: 0; z-index: 200;
+    height: 52px; display: flex; align-items: center;
+    justify-content: space-between; padding: 0 14px; gap: 8px;
+    background: rgba(13,15,24,0.98); backdrop-filter: blur(16px);
     border-bottom: 1px solid var(--border);
-    gap: 8px;
 }
-
 .exit-btn {
-    background: rgba(255,71,87,0.1);
-    border: 1.5px solid rgba(255,71,87,0.35);
-    color: var(--red);
-    padding: 7px 14px;
-    border-radius: 10px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    cursor: pointer;
-    flex-shrink: 0;
+    background: rgba(255,71,87,0.1); border: 1.5px solid rgba(255,71,87,0.35);
+    color: var(--red); padding: 6px 14px; border-radius: 10px;
+    font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; cursor: pointer; flex-shrink: 0;
 }
-
 .progress-counter {
-    flex: 1;
-    text-align: center;
+    flex: 1; text-align: center;
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 20px;
-    letter-spacing: 2px;
-    color: var(--gold);
+    font-size: 20px; letter-spacing: 2px; color: var(--gold);
 }
-
 .floating-timer {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 18px;
-    letter-spacing: 2px;
-    color: var(--gold);
-    line-height: 1;
-    flex-shrink: 0;
-    transition: opacity 0.3s ease;
+    font-size: 24px; letter-spacing: 2px; color: var(--gold);
+    line-height: 1; flex-shrink: 0; transition: opacity 0.3s;
 }
-
 .floating-timer.hidden { opacity: 0; pointer-events: none; }
 
-.menu-btn {
-    background: transparent;
-    border: 1.5px solid var(--border);
-    color: var(--gold);
-    width: 34px;
-    height: 34px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    flex-shrink: 0;
-}
-
-/* MAIN */
+/* ── MAIN ── */
 .exercise-content {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 16px 16px 110px;
-    gap: 14px;
-    max-width: 500px;
-    margin: 0 auto;
+    display: flex; flex-direction: column; align-items: center;
+    /* 80px bar + 26px buffer */
+    padding: 12px 14px 106px;
+    gap: 10px; max-width: 500px; margin: 0 auto;
 }
 
-/* MEDIA */
-.exercise-media-container {
-    width: 100%;
-    aspect-ratio: 16/10;
-    border-radius: 20px;
-    overflow: hidden;
-    position: relative;
-    cursor: pointer;
-    border: 1.5px solid rgba(255,215,0,0.15);
-    background: rgba(255,215,0,0.04);
-    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-}
-
-.exercise-image {
-    width: 100%; height: 100%;
-    object-fit: cover; display: block;
-}
-
-.exercise-video {
-    width: 100%; height: 100%;
-    object-fit: cover; display: none;
-}
-
-.exercise-video.active { display: block; }
-
-.play-video-hint {
-    position: absolute;
-    top: 10px; right: 10px;
-    background: rgba(13,15,24,0.8);
-    border: 1px solid rgba(255,215,0,0.2);
-    color: var(--gold);
-    font-size: 10px;
-    font-weight: 700;
-    padding: 5px 10px;
-    border-radius: 999px;
-    backdrop-filter: blur(8px);
-    z-index: 3;
-}
-
-.exercise-description-overlay {
-    position: absolute;
-    inset: auto 0 0 0;
-    padding: 40px 14px 12px;
-    background: linear-gradient(180deg, transparent 0%, rgba(13,15,24,0.96) 50%);
-    cursor: pointer;
-    z-index: 2;
-}
-
-.exercise-description-overlay.expanded {
-    max-height: 80%;
-    overflow-y: auto;
-    padding-top: 16px;
-    background: rgba(13,15,24,0.97);
-}
-
-.exercise-description-text {
-    font-size: 12px;
-    line-height: 1.5;
-    color: rgba(255,255,255,0.7);
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-.exercise-description-overlay.expanded .exercise-description-text {
-    display: block;
-    -webkit-line-clamp: unset;
-}
-
-.exercise-description-hint {
-    margin-top: 5px;
-    font-size: 10px;
-    font-weight: 700;
-    color: var(--gold);
-    text-transform: uppercase;
-}
-
-/* EXERCISE NAME */
 .exercise-name {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(26px, 8vw, 34px);
-    letter-spacing: 2px;
-    text-align: center;
-    color: var(--gold);
-    line-height: 1.1;
-    width: 100%;
-    text-shadow: 0 0 30px rgba(255,215,0,0.25);
+    font-size: clamp(20px, 6vw, 28px); letter-spacing: 2px;
+    text-align: center; color: var(--gold); line-height: 1.1; width: 100%;
 }
 
-/* CHIPS */
-#strengthDetails {
-    display: none;
-    width: 100%;
-    gap: 8px;
-    justify-content: center;
-    flex-wrap: wrap;
+/* ── MEDIA ── */
+.exercise-media-container {
+    width: 100%; aspect-ratio: 16/10; border-radius: 16px; overflow: hidden;
+    border: 1.5px solid rgba(255,215,0,0.15); background: rgba(0,0,0,0.4);
+    box-shadow: 0 12px 36px rgba(0,0,0,0.5); cursor: pointer; flex-shrink: 0;
+}
+.exercise-image { width:100%; height:100%; object-fit:cover; display:block; }
+.exercise-video { width:100%; height:100%; object-fit:cover; display:none; pointer-events:none; }
+.exercise-video.active { display:block; }
+
+/* ── DESC TRIGGER ── */
+.desc-trigger {
+    width: 100%; background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 12px; padding: 9px 14px; display: none;
+    align-items: center; justify-content: space-between; cursor: pointer; gap: 10px;
+}
+.desc-trigger-text { font-size:12px; color:rgba(255,255,255,0.6); flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.desc-trigger-btn { font-size:10px; font-weight:700; color:var(--gold); text-transform:uppercase; letter-spacing:1px; flex-shrink:0; }
+
+/* ── SETS ── */
+.sets-wrapper { width:100%; display:flex; flex-direction:column; gap:6px; }
+
+.set-label-row {
+    display:flex; align-items:center; justify-content:space-between; padding:0 2px;
+}
+.set-label-text { font-size:10px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); }
+.set-label-done { font-size:10px; font-weight:700; color:var(--gold); opacity:0; transition:opacity 0.3s; }
+.set-label-done.show { opacity:1; }
+
+/* ──────────────────────────────────────────────────────
+   SET CARD  layout:
+   ┌─────────────────────┬────────────┬──────────┐
+   │  [input kg]  kg     │  reps lbl  │  Did It  │
+   └─────────────────────┴────────────┴──────────┘
+   Input IS the weight display — no invisible overlay.
+────────────────────────────────────────────────── */
+.set-card {
+    width: 100%; border-radius: 14px; overflow: hidden;
+    display: flex; flex-direction: row; align-items: stretch;
+    min-height: 64px;
+    background: var(--gold);
+    box-shadow: 0 4px 18px rgba(255,215,0,0.15);
+    transition: background 0.4s, box-shadow 0.4s;
+}
+.set-card.done {
+    background: rgba(255,215,0,0.09);
+    border: 1.5px solid rgba(255,215,0,0.2);
+    box-shadow: none;
 }
 
-.strength-chip {
-    background: rgba(255,215,0,0.08);
-    border: 1px solid rgba(255,215,0,0.2);
-    padding: 8px 16px;
-    border-radius: 999px;
-    font-size: 13px;
-    font-weight: 600;
-    color: rgba(255,255,255,0.85);
+/* Weight zone — input styled like display text */
+.set-weight-zone {
+    flex: 0 0 42%;
+    display: flex; align-items: center;
+    padding: 0 6px 0 14px; gap: 3px;
+    position: relative;
 }
 
-.strength-chip span { color: var(--gold); font-weight: 800; }
-
-.strength-chip input[type="number"] {
-    background: transparent;
-    border: none;
-    border-bottom: 1px solid rgba(255,215,0,0.5);
-    color: var(--gold);
-    width: 38px;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 16px;
-    text-align: center;
-    outline: none;
-}
-
-.strength-chip input[type="number"]::-webkit-inner-spin-button,
-.strength-chip input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
-
-/* UP NEXT */
-.up-next-section {
-    width: 100%;
-    background: rgba(255,255,255,0.03);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 12px 14px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.up-next-label {
-    font-size: 9px;
-    font-weight: 800;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--gold);
-    white-space: nowrap;
-}
-
-.up-next-content {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex: 1;
+/*
+  KEY FIX: input is visible and styled as display text.
+  No opacity:0 tricks. The input IS what user sees & taps.
+*/
+.w-inp {
+    /* look like big bold number */
+    width: 0; flex: 1;
     min-width: 0;
-}
-
-.up-next-image {
-    width: 44px; height: 44px;
-    border-radius: 10px;
-    object-fit: cover;
-    border: 1px solid var(--border);
-    flex-shrink: 0;
-}
-
-.up-next-name {
-    font-size: 13px;
-    font-weight: 700;
-    color: white;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.up-next-details {
-    font-size: 11px;
-    color: var(--muted);
-    margin-top: 2px;
-}
-
-/* BOTTOM BAR */
-.action-buttons {
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    height: 88px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 0 16px 16px;
-    background: rgba(13,15,24,0.97);
-    backdrop-filter: blur(20px);
-    border-top: 1px solid var(--border);
-    z-index: 150;
-}
-
-.pause-btn {
-    width: 54px; height: 54px;
-    flex-shrink: 0;
-    background: rgba(255,215,0,0.08);
-    border: 1.5px solid rgba(255,215,0,0.2);
-    color: var(--gold);
-    border-radius: 14px;
-    font-size: 20px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.did-it-btn {
-    flex: 1;
-    height: 54px;
-    background: linear-gradient(135deg, var(--gold), var(--gold2));
-    color: #0a0d1a;
-    border: none;
-    border-radius: 14px;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 22px;
-    letter-spacing: 2px;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 20px rgba(255,215,0,0.3);
-}
-
-.did-it-btn.completed {
-    background: rgba(255,215,0,0.1);
-    color: var(--gold);
-    border: 1.5px solid rgba(255,215,0,0.2);
-    box-shadow: none;
-}
-
-.did-it-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-
-/* REST OVERLAY */
-.rest-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(5,7,18,0.75);
-    backdrop-filter: blur(12px);
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    z-index: 500;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.35s ease;
-}
-
-.rest-overlay.active { opacity: 1; pointer-events: all; }
-
-.rest-overlay-panel {
-    width: 100%;
-    max-width: 500px;
-    background: linear-gradient(180deg, #0d1025 0%, #0d0f18 100%);
-    border: 1px solid var(--border);
-    border-bottom: none;
-    border-radius: 28px 28px 0 0;
-    padding: 32px 24px 40px;
-    text-align: center;
-    box-shadow: 0 -24px 60px rgba(0,0,0,0.6);
-    transform: translateY(40px);
-    transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
-}
-
-.rest-overlay.active .rest-overlay-panel { transform: translateY(0); }
-
-.rest-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 44px;
-    letter-spacing: 4px;
-    color: var(--gold);
-    margin-bottom: 8px;
-    text-shadow: 0 0 40px rgba(255,215,0,0.4);
-}
-
-.set-complete-badge {
-    display: inline-block;
-    background: rgba(255,215,0,0.08);
-    border: 1px solid rgba(255,215,0,0.2);
-    color: var(--gold);
-    padding: 7px 18px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 700;
-    margin-bottom: 24px;
-}
-
-.rest-timer-circle {
-    width: 170px; height: 170px;
-    border-radius: 50%;
-    border: 3px solid rgba(255,215,0,0.35);
-    background: radial-gradient(circle, rgba(255,215,0,0.05) 0%, transparent 70%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 20px;
-    box-shadow: 0 0 50px rgba(255,215,0,0.12), inset 0 0 30px rgba(255,215,0,0.04);
-    cursor: pointer;
-}
-
-.rest-timer {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 52px;
-    letter-spacing: 3px;
-    color: var(--gold);
-    line-height: 1;
-    text-shadow: 0 0 30px rgba(255,215,0,0.5);
-}
-
-.rest-skip-text {
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    color: rgba(255,215,0,0.45);
-    margin-top: 6px;
-}
-
-.rest-skip-btn {
-    background: transparent;
-    border: 1.5px solid rgba(255,215,0,0.2);
-    color: var(--gold);
-    padding: 10px 28px;
-    border-radius: 14px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    cursor: pointer;
-    margin-bottom: 20px;
-}
-
-.rest-up-next-label {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 4px;
-}
-
-.rest-up-next-name {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 24px;
-    letter-spacing: 2px;
-    color: white;
-}
-
-/* EXIT MODAL */
-.exit-modal {
-    position: fixed;
-    inset: 0;
-    background: rgba(5,7,18,0.88);
-    backdrop-filter: blur(12px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.25s ease;
-    padding: 20px;
-}
-
-.exit-modal.active { opacity: 1; pointer-events: all; }
-
-.exit-modal-content {
-    width: 100%;
-    max-width: 360px;
-    background: #0d1025;
-    border: 1px solid rgba(255,215,0,0.18);
-    border-radius: 24px;
-    padding: 32px 24px;
-    text-align: center;
-    box-shadow: 0 24px 60px rgba(0,0,0,0.7);
-    transform: scale(0.95);
-    transition: transform 0.25s ease;
-}
-
-.exit-modal.active .exit-modal-content { transform: scale(1); }
-
-.exit-modal h3 {
-    font-family: 'Bebas Neue', sans-serif;
     font-size: 30px;
-    letter-spacing: 2px;
-    color: var(--gold);
-    margin-bottom: 8px;
-}
-
-.exit-modal p {
-    font-size: 13px;
-    color: var(--muted);
-    margin-bottom: 24px;
-    line-height: 1.5;
-}
-
-.exit-modal-buttons { display: flex; flex-direction: column; gap: 10px; }
-
-.exit-modal button {
-    width: 100%;
-    padding: 13px;
-    border-radius: 14px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.btn-save-exit {
-    background: linear-gradient(135deg, var(--gold), var(--gold2));
+    font-weight: 900;
     color: #0a0d1a;
-    border: none;
-    box-shadow: 0 4px 16px rgba(255,215,0,0.3);
-}
-
-.btn-save-exit:disabled {
-    background: rgba(255,215,0,0.15);
-    color: rgba(255,215,0,0.35);
-    cursor: not-allowed;
-    box-shadow: none;
-}
-
-.exit-modal button:not(.btn-save-exit) {
+    line-height: 1;
+    font-family: 'DM Sans', sans-serif;
+    letter-spacing: -1px;
+    /* remove all default input styling */
     background: transparent;
-    border: 1px solid rgba(255,255,255,0.1);
-    color: var(--muted);
+    border: none;
+    outline: none;
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
+    /* allow tap on mobile */
+    -webkit-user-select: text;
+    user-select: text;
+    cursor: text;
+    padding: 0;
+    text-align: left;
+    transition: color 0.4s;
+}
+.w-inp::-webkit-outer-spin-button,
+.w-inp::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.set-card.done .w-inp { color: var(--gold); pointer-events: none; }
+
+/* Subtle underline only when focused */
+.w-inp:focus { border-bottom: 2px solid rgba(0,0,0,0.25); }
+.set-card.done .w-inp:focus { border-bottom: none; }
+
+.w-unit {
+    font-size: 13px; font-weight: 700;
+    color: rgba(10,13,26,0.5); align-self: flex-end;
+    margin-bottom: 6px; flex-shrink: 0; pointer-events: none;
+    transition: color 0.4s;
+}
+.set-card.done .w-unit { color: rgba(255,215,0,0.4); }
+
+/* Divider */
+.set-divider {
+    width: 1.5px; background: rgba(0,0,0,0.1);
+    align-self: stretch; margin: 10px 0; flex-shrink: 0;
+    transition: background 0.4s;
+}
+.set-card.done .set-divider { background: rgba(255,215,0,0.12); }
+
+/* Reps zone */
+.set-reps-zone {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 8px; gap: 1px; min-width: 0;
+}
+.r-num {
+    font-size: 20px; font-weight: 900;
+    color: rgba(10,13,26,0.82); line-height: 1;
+    font-family: 'DM Sans', sans-serif; transition: color 0.4s; white-space: nowrap;
+}
+.set-card.done .r-num { color: rgba(255,215,0,0.6); }
+.r-lbl {
+    font-size: 9px; font-weight: 700;
+    color: rgba(10,13,26,0.4); text-transform: uppercase; letter-spacing: 1px;
+    transition: color 0.4s;
+}
+.set-card.done .r-lbl { color: rgba(255,215,0,0.28); }
+
+/* Did It — right edge, full height */
+.did-it-cell {
+    flex: 0 0 66px;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.13);
+    border-left: 1.5px solid rgba(0,0,0,0.08);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px; font-weight: 800; color: #0a0d1a;
+    letter-spacing: 0.3px; text-align: center;
+    line-height: 1.3; padding: 4px 6px;
+    cursor: pointer; user-select: none; -webkit-user-select: none;
+    position: relative; overflow: hidden;
+    transition: background 0.15s, color 0.4s, border-color 0.4s;
+    /* must be above siblings so tap lands here */
+    z-index: 1;
+}
+.did-it-cell:active { background: rgba(0,0,0,0.22); }
+.set-card.done .did-it-cell {
+    background: transparent; border-left-color: rgba(255,215,0,0.1);
+    color: rgba(255,215,0,0.5); font-size: 18px; pointer-events: none;
 }
 
-.exit-modal button:not(.btn-save-exit):hover {
-    background: rgba(255,255,255,0.05);
-    color: white;
+/* Ripple */
+.ripple-c {
+    position: absolute; border-radius: 50%;
+    background: rgba(255,255,255,0.4); transform: scale(0);
+    animation: ripAnim 0.55s linear forwards; pointer-events: none;
 }
-</style>
+@keyframes ripAnim { to { transform:scale(4); opacity:0; } }
+
+/* Pulse ring */
+@keyframes pulseRing {
+    0%   { box-shadow: 0 0 0 0 rgba(255,215,0,0.5); }
+    60%  { box-shadow: 0 0 0 14px rgba(255,215,0,0); }
+    100% { box-shadow: 0 0 0 0 rgba(255,215,0,0); }
+}
+.set-card.pulse { animation: pulseRing 0.6s ease-out; }
+
+/* ── BOTTOM BAR ── */
+.action-buttons {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    height: 80px; display: flex; align-items: center;
+    padding: 0 14px 14px;
+    background: rgba(13,15,24,0.98); backdrop-filter: blur(20px);
+    border-top: 1px solid var(--border); z-index: 300;
+}
+.pause-btn {
+    width: 52px; height: 52px;
+    background: rgba(255,215,0,0.07); border: 1.5px solid rgba(255,215,0,0.2);
+    color: var(--gold); border-radius: 14px; font-size: 18px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+}
+
+/* ── REST OVERLAY ── */
+.rest-overlay {
+    position: fixed; inset: 0; background: rgba(5,7,18,0.78);
+    backdrop-filter: blur(12px); display: flex; align-items: flex-end;
+    justify-content: center; z-index: 500; opacity: 0; pointer-events: none;
+    transition: opacity 0.35s;
+}
+.rest-overlay.active { opacity:1; pointer-events:all; }
+.rest-panel {
+    width:100%; max-width:500px;
+    background:linear-gradient(180deg,#0d1025,#0d0f18);
+    border:1px solid var(--border); border-bottom:none;
+    border-radius:28px 28px 0 0; padding:28px 24px 40px;
+    text-align:center; transform:translateY(40px);
+    transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+}
+.rest-overlay.active .rest-panel { transform:translateY(0); }
+.rest-title { font-family:'Bebas Neue',sans-serif; font-size:42px; letter-spacing:4px; color:var(--gold); margin-bottom:8px; }
+.rest-badge { display:inline-block; background:rgba(255,215,0,0.08); border:1px solid rgba(255,215,0,0.2); color:var(--gold); padding:6px 16px; border-radius:999px; font-size:12px; font-weight:700; margin-bottom:22px; }
+.rest-circle { width:164px; height:164px; border-radius:50%; border:3px solid rgba(255,215,0,0.3); background:radial-gradient(circle,rgba(255,215,0,0.05) 0%,transparent 70%); display:flex; flex-direction:column; align-items:center; justify-content:center; margin:0 auto 18px; cursor:pointer; }
+.rest-time { font-family:'Bebas Neue',sans-serif; font-size:50px; letter-spacing:3px; color:var(--gold); line-height:1; text-shadow:0 0 30px rgba(255,215,0,0.5); }
+.rest-skip-hint { font-size:10px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:rgba(255,215,0,0.4); margin-top:5px; }
+.rest-skip-btn { background:transparent; border:1.5px solid rgba(255,215,0,0.2); color:var(--gold); padding:9px 26px; border-radius:14px; font-size:12px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; cursor:pointer; margin-bottom:18px; }
+.rest-next-lbl { font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:4px; }
+.rest-next-name { font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:2px; color:#fff; }
+
+/* ── DESC MODAL ── */
+.desc-overlay { position:fixed; inset:0; background:rgba(5,7,18,0.8); backdrop-filter:blur(12px); z-index:700; display:flex; align-items:flex-start; justify-content:center; opacity:0; pointer-events:none; transition:opacity 0.25s; padding-top:52px; }
+.desc-overlay.active { opacity:1; pointer-events:all; }
+.desc-panel { width:100%; max-width:500px; background:#0d1025; border:1px solid var(--border); border-top:none; border-radius:0 0 24px 24px; overflow:hidden; transform:translateY(-20px); transition:transform 0.3s cubic-bezier(0.34,1.4,0.64,1); max-height:calc(100vh - 52px); display:flex; flex-direction:column; }
+.desc-overlay.active .desc-panel { transform:translateY(0); }
+.desc-video { width:100%; aspect-ratio:16/10; object-fit:cover; display:none; background:#000; pointer-events:none; }
+.desc-video.has-v { display:block; }
+.desc-img { width:100%; aspect-ratio:16/10; object-fit:cover; display:block; }
+.desc-img.hidden { display:none; }
+.desc-body { padding:20px; overflow-y:auto; flex:1; }
+.desc-name { font-family:'Bebas Neue',sans-serif; font-size:24px; letter-spacing:2px; color:var(--gold); margin-bottom:12px; }
+.desc-text { font-size:13px; line-height:1.7; color:rgba(255,255,255,0.75); }
+.desc-close { position:absolute; top:60px; right:14px; width:34px; height:34px; border-radius:50%; background:rgba(13,15,24,0.9); border:1px solid var(--border); color:var(--gold); font-size:14px; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:701; }
+
+/* ── EXIT MODAL ── */
+.exit-modal { position:fixed; inset:0; background:rgba(5,7,18,0.88); backdrop-filter:blur(12px); display:flex; align-items:center; justify-content:center; z-index:1000; opacity:0; pointer-events:none; transition:opacity 0.25s; padding:20px; }
+.exit-modal.active { opacity:1; pointer-events:all; }
+.exit-content { width:100%; max-width:360px; background:#0d1025; border:1px solid rgba(255,215,0,0.18); border-radius:24px; padding:30px 22px; text-align:center; transform:scale(0.95); transition:transform 0.25s; }
+.exit-modal.active .exit-content { transform:scale(1); }
+.exit-content h3 { font-family:'Bebas Neue',sans-serif; font-size:28px; letter-spacing:2px; color:var(--gold); margin-bottom:7px; }
+.exit-content p { font-size:13px; color:var(--muted); margin-bottom:22px; line-height:1.5; }
+.exit-btns { display:flex; flex-direction:column; gap:10px; }
+.exit-btns button { width:100%; padding:12px; border-radius:13px; font-size:13px; font-weight:700; cursor:pointer; }
+.btn-save { background:linear-gradient(135deg,var(--gold),var(--gold2)); color:#0a0d1a; border:none; }
+.btn-save:disabled { background:rgba(255,215,0,0.15); color:rgba(255,215,0,0.35); cursor:not-allowed; }
+.exit-btns button:not(.btn-save) { background:transparent; border:1px solid rgba(255,255,255,0.1); color:var(--muted); }
+    </style>
 </head>
-
 <body>
-    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
 
-    <!-- ============================================================
-     HEADER
-     ============================================================ -->
-    <div class="session-header">
-        <button class="exit-btn" onclick="showExitModal()">EXIT</button>
+<!-- HEADER -->
+<div class="session-header">
+    <button class="exit-btn" onclick="showExitModal()">EXIT</button>
+    <div class="progress-counter">
+        <span id="current">1</span>&nbsp;/&nbsp;<span id="total">{{ total_exercises }}</span>
+    </div>
+    <div class="floating-timer" id="floatingTimer">00:00</div>
+</div>
 
-        <div class="progress-counter">
-            <span id="current">1</span>&nbsp;/&nbsp;<span id="total">{{ total_exercises }}</span>
-        </div>
+<!-- MAIN -->
+<div class="exercise-content">
+    <h2 class="exercise-name" id="exerciseName"></h2>
 
-        <!-- Timer header ichida, menu-btn dan chap tomonda -->
-        <div class="floating-timer" id="floatingTimer">00:00</div>
-
-        <button class="menu-btn">
-            <i class="fas fa-ellipsis-v"></i>
-        </button>
+    <div class="exercise-media-container" onclick="toggleExerciseMedia()">
+        <video class="exercise-video" id="exerciseVideo" muted autoplay loop playsinline preload="auto"></video>
+        <img src="{% static 'images/default_exercise.svg' %}" alt="" class="exercise-image" id="exerciseImage">
     </div>
 
-    <!-- ============================================================
-     MAIN CONTENT
-     ============================================================ -->
-    <div class="exercise-content">
-
-        <!-- Media card -->
-        <div class="exercise-media-container" onclick="toggleExerciseMedia()">
-            <video class="exercise-video" id="exerciseVideo" playsinline controls></video>
-            <img src="{% static 'images/default_exercise.svg' %}" alt="Exercise" class="exercise-image"
-                id="exerciseImage">
-            <div class="play-video-hint" id="playVideoHint" style="display:none;">
-                Tap image to play video
-            </div>
-            <div class="exercise-description-overlay" id="exerciseDescriptionCard"
-                onclick="toggleExerciseDescription(event)" style="display:none;">
-                <div class="exercise-description-text" id="exerciseDescription"></div>
-                <div class="exercise-description-hint" id="exerciseDescriptionHint">Tap to expand</div>
-            </div>
-        </div>
-
-        <!-- Exercise name -->
-        <h2 class="exercise-name" id="exerciseName"></h2>
-
-        <!-- Set / Reps chips -->
-        <div id="strengthDetails">
-            <div class="strength-chip">
-                Set <span id="currentSet">1</span> / <span id="totalSets"></span>
-            </div>
-            <div class="strength-chip">
-                <span id="repsCount"></span> Reps
-            </div>
-            <div class="strength-chip" style="display:flex; align-items:center; gap:5px;">
-                <input type="number" id="weightInput" value="" step="0.5" min="0" placeholder="0"> kg
-            </div>
-        </div>
-
-        <!-- Up next -->
-        <div class="up-next-section" id="upNext" style="display:none;">
-            <div class="up-next-label">UP NEXT</div>
-            <div class="up-next-content">
-                <img src="{% static 'images/default_exercise.svg' %}" alt="Next" class="up-next-image" id="upNextImage">
-                <div class="up-next-info">
-                    <div class="up-next-name" id="upNextName"></div>
-                    <div class="up-next-details" id="upNextDetails"></div>
-                </div>
-            </div>
-        </div>
-
-    </div><!-- /exercise-content -->
-
-    <!-- ============================================================
-     BOTTOM ACTION BAR
-     ============================================================ -->
-    <div class="action-buttons">
-        <button class="pause-btn" id="pauseBtn" onclick="togglePause()">
-            <span id="pauseIcon"><i class="fas fa-pause"></i></span>
-        </button>
-        <button class="did-it-btn" id="didItBtn" onclick="completeExercise()">
-            Set Done
-        </button>
+    <div class="desc-trigger" id="descTrigger" onclick="openDescModal()">
+        <div class="desc-trigger-text" id="descTriggerText"></div>
+        <div class="desc-trigger-btn">TAP TO EXPAND</div>
     </div>
 
-    <!-- ============================================================
-     REST OVERLAY
-     ============================================================ -->
-    <div class="rest-overlay" id="restOverlay">
-        <div class="rest-overlay-panel">
-            <div class="rest-title">Rest</div>
-            <div class="set-complete-badge" id="setCompleteBadge">Set 1 Complete ✅</div>
+    <div class="sets-wrapper" id="setsWrapper"></div>
+</div>
 
-            <div class="rest-timer-circle">
-                <div class="rest-timer" id="restTimer">00:00</div>
-                <div class="rest-skip-text">Recover &amp; breathe</div>
-            </div>
+<!-- BOTTOM BAR -->
+<div class="action-buttons">
+    <button class="pause-btn" id="pauseBtn" onclick="togglePause()">
+        <span id="pauseIcon"><i class="fas fa-pause"></i></span>
+    </button>
+</div>
 
-            <button class="rest-skip-btn" onclick="skipRest()">Skip Rest</button>
-
-            <div class="rest-up-next">
-                <div class="rest-up-next-label">Next Up</div>
-                <div class="rest-up-next-name" id="restUpNextName">Set 2</div>
-            </div>
+<!-- DESC MODAL -->
+<div class="desc-overlay" id="descModal" onclick="closeDescModalOnBg(event)">
+    <button class="desc-close" onclick="closeDescModal()"><i class="fas fa-times"></i></button>
+    <div class="desc-panel">
+        <video class="desc-video" id="descModalVideo" muted autoplay loop playsinline></video>
+        <img src="" alt="" class="desc-img" id="descModalImg">
+        <div class="desc-body">
+            <div class="desc-name" id="descModalName"></div>
+            <div class="desc-text" id="descModalText"></div>
         </div>
     </div>
+</div>
 
-    <!-- ============================================================
-     EXIT MODAL
-     ============================================================ -->
-    <div class="exit-modal" id="exitModal">
-        <div class="exit-modal-content">
-            <h3>Finish Workout?</h3>
-            <p>You have not completed all exercises.</p>
-            <div class="exit-modal-buttons">
-                <button id="saveExitBtn" class="btn-save-exit" onclick="saveAndExit()">
-                    Save &amp; Exit
-                </button>
-                <button onclick="exitWithoutSaving()">Exit without Saving</button>
-                <button onclick="returnToWorkout()">Return to Workout</button>
-            </div>
+<!-- REST OVERLAY -->
+<div class="rest-overlay" id="restOverlay">
+    <div class="rest-panel">
+        <div class="rest-title">Rest</div>
+        <div class="rest-badge" id="restBadge">Set 1 Complete ✓</div>
+        <div class="rest-circle" onclick="skipRest()">
+            <div class="rest-time" id="restTimer">01:00</div>
+            <div class="rest-skip-hint">Tap to skip</div>
+        </div>
+        <button class="rest-skip-btn" onclick="skipRest()">Skip Rest</button>
+        <div class="rest-next-lbl">Next Up</div>
+        <div class="rest-next-name" id="restNextName">Set 2</div>
+    </div>
+</div>
+
+<!-- EXIT MODAL -->
+<div class="exit-modal" id="exitModal">
+    <div class="exit-content">
+        <h3>Finish Workout?</h3>
+        <p>You have not completed all exercises.</p>
+        <div class="exit-btns">
+            <button id="saveExitBtn" class="btn-save" onclick="saveAndExit()">Save &amp; Exit</button>
+            <button onclick="exitWithoutSaving()">Exit without Saving</button>
+            <button onclick="returnToWorkout()">Return to Workout</button>
         </div>
     </div>
+</div>
 
-    <!-- ============================================================
-     CONFIG & SCRIPTS
-     ============================================================ -->
-    <script>
-        window.ACTIVE_WORKOUT_CONFIG = {
-            workoutPk: "{{ workout.pk }}",
-            totalExercises: {{ total_exercises|default:0 }},
-            csrfToken: "{{ csrf_token }}",
-            exercises: {{ exercises_json|safe }},
-            initialExerciseIndex: {{ initial_exercise_index|default:0 }},
-            initialSet: {{ initial_set|default:1 }},
-            initialCompleted: {{ initial_completed|default:0 }},
-        defaultExerciseImage: "{% static 'images/default_exercise.svg' %}",
-            completeUrl: "{{ workout_complete_url|default:'' }}",
-                restartUrl: "{{ workout_start_url|default:'' }}",
-    };
-        const WORKOUT_URLS = {
-            complete: "{{ workout_complete_url|default:'' }}",
-            start: "{{ workout_start_url|default:'' }}"
-        };
-    </script>
-    <script src="{% static 'js/active_workout.js' %}"></script>
+<script>
+window.ACTIVE_WORKOUT_CONFIG = {
+    workoutPk:            "{{ workout.pk }}",
+    totalExercises:       {{ total_exercises|default:0 }},
+    csrfToken:            "{{ csrf_token }}",
+    exercises:            {{ exercises_json|safe }},
+    initialExerciseIndex: {{ initial_exercise_index|default:0 }},
+    initialCompleted:     {{ initial_completed|default:0 }},
+    defaultExerciseImage: "{% static 'images/default_exercise.svg' %}",
+    completeUrl:          "{{ workout_complete_url|default:'' }}",
+    exitRedirectUrl:      "",
+};
+const WORKOUT_URLS = {
+    complete: "{{ workout_complete_url|default:'' }}",
+    start:    "{{ workout_start_url|default:'' }}"
+};
+</script>
+<script src="{% static 'js/active_workout.js' %}"></script>
 </body>
-
 </html>
