@@ -1,0 +1,434 @@
+/* ===================================================
+   Base Styles & Reset
+   =================================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary-color: #ffd700; /* Gold/Sariq rang */
+    --accent-color: #ff6b6b; /* Qizil aksent */
+    --dark-bg: #0a0e27; /* To'q ko'k-qora asosiy fon */
+    --dark-card: #1a1f3a; /* Karta fon rangi */
+    --text-color: #ffffff;
+    --shadow-light: rgba(255, 215, 0, 0.4);
+    --shadow-dark: rgba(0, 0, 0, 0.5);
+    --border-color: rgba(255, 215, 0, 0.2);
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(135deg, var(--dark-bg) 0%, var(--dark-card) 100%);
+    color: var(--text-color);
+    min-height: 100vh;
+    padding-bottom: 100px; /* Action buttons uchun joy qoldirish */
+    position: relative;
+}
+
+button {
+    cursor: pointer;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+/* ===================================================
+   Header & Progress
+   =================================================== */
+.session-header {
+    background: linear-gradient(135deg, rgba(15, 52, 96, 0.95) 0%, rgba(22, 33, 62, 0.95) 100%);
+    backdrop-filter: blur(10px);
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 4px 20px var(--shadow-dark);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.exit-btn, .menu-btn {
+    background: rgba(255, 215, 0, 0.1);
+    border: 1.5px solid var(--border-color);
+    color: var(--primary-color);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 8px 14px;
+    border-radius: 10px;
+}
+
+.menu-btn {
+    font-size: 18px;
+    padding: 6px 12px;
+}
+
+.progress-counter {
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* ===================================================
+   Exercise Content
+   =================================================== */
+.exercise-content {
+    padding: 24px 16px 20px;
+    text-align: center;
+}
+
+.exercise-image-container {
+    max-width: 200px;
+    height: 150px;
+    margin: 0 auto 20px;
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 215, 0, 0.05) 100%);
+    border-radius: 16px;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.exercise-image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 10px;
+}
+
+.exercise-name {
+    font-size: 24px;
+    font-weight: 900;
+    margin-bottom: 25px;
+    color: var(--text-color);
+    text-transform: capitalize;
+}
+
+/* Timer (Cardio) */
+.timer-container {
+    max-width: 250px;
+    margin: 0 auto;
+    display: none;
+}
+
+.timer-box {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #f4e285 100%);
+    border-radius: 18px;
+    padding: 25px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    box-shadow: 0 8px 30px var(--shadow-light);
+}
+
+.timer-display {
+    font-size: 50px;
+    font-weight: 900;
+    color: var(--dark-bg);
+}
+
+.timer-label {
+    font-size: 16px;
+    color: var(--dark-bg);
+    font-weight: 700;
+    opacity: 0.8;
+}
+
+/* Strength Details */
+#strengthDetails {
+    margin-top: 25px;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--primary-color);
+    letter-spacing: 0.5px;
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.15) 0%, rgba(255, 215, 0, 0.08) 100%);
+    padding: 14px 20px;
+    border-radius: 14px;
+    border: 1px solid var(--border-color);
+    display: inline-block;
+}
+
+#strengthDetails span {
+    font-weight: 900;
+}
+
+/* ===================================================
+   Up Next Section
+   =================================================== */
+.up-next-section {
+    margin: 30px 16px 20px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 16px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 15px var(--shadow-dark);
+}
+
+.up-next-label {
+    font-size: 12px;
+    color: var(--primary-color);
+    font-weight: 700;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
+.up-next-content {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.up-next-image {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    object-fit: contain;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.up-next-info {
+    flex: 1;
+    text-align: left;
+}
+
+.up-next-name {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: var(--text-color);
+}
+
+.up-next-details {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 500;
+}
+
+/* ===================================================
+   Action Buttons
+   =================================================== */
+.action-buttons {
+    position: fixed;
+    bottom: 20px;
+    left: 16px;
+    right: 16px;
+    display: flex;
+    gap: 12px;
+    z-index: 1000;
+}
+
+.pause-btn {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    border: 1.5px solid var(--border-color);
+    border-radius: 16px;
+    color: var(--primary-color);
+    font-size: 24px;
+    box-shadow: 0 4px 15px var(--shadow-dark);
+}
+
+.did-it-btn {
+    flex: 1;
+    background: linear-gradient(135deg, var(--primary-color) 0%, #f4e285 100%);
+    border: none;
+    border-radius: 16px;
+    color: var(--dark-bg);
+    padding: 18px 20px;
+    font-size: 16px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    box-shadow: 0 8px 30px var(--shadow-light);
+}
+
+.did-it-btn:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+}
+
+.did-it-btn.completed {
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    color: white;
+    box-shadow: 0 6px 25px rgba(34, 197, 94, 0.4);
+}
+
+/* ===================================================
+   Rest Overlay
+   =================================================== */
+.rest-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(10, 14, 39, 0.98) 0%, rgba(26, 31, 58, 0.98) 100%);
+    backdrop-filter: blur(20px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    flex-direction: column;
+    padding: 20px;
+    text-align: center;
+}
+
+.rest-overlay.active {
+    display: flex;
+}
+
+.rest-title {
+    font-size: 28px;
+    color: var(--primary-color);
+    margin-bottom: 30px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+}
+
+.set-complete-badge {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #f4e285 100%);
+    padding: 12px 24px;
+    border-radius: 100px;
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--dark-bg);
+    margin-bottom: 40px;
+    box-shadow: 0 4px 20px var(--shadow-light);
+}
+
+.rest-timer-circle {
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    border: 6px solid rgba(255, 215, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    position: relative;
+    margin-bottom: 40px;
+    background: rgba(255, 215, 0, 0.05);
+    cursor: pointer;
+    box-shadow: 0 0 40px rgba(255, 215, 0, 0.1);
+}
+
+.rest-timer {
+    font-size: 60px;
+    font-weight: 900;
+    color: var(--primary-color);
+}
+
+.rest-skip-text {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 600;
+    position: absolute;
+    bottom: 30px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.rest-up-next-label {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.5);
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.rest-up-next-name {
+    font-size: 22px;
+    color: var(--text-color);
+    font-weight: 800;
+}
+
+/* ===================================================
+   Exit Modal
+   =================================================== */
+.exit-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 500;
+}
+
+.exit-modal.active {
+    display: flex;
+}
+
+.exit-modal-content {
+    background: var(--dark-card);
+    border-radius: 20px;
+    padding: 25px;
+    max-width: 350px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+    border: 1px solid var(--border-color);
+}
+
+.exit-modal-title {
+    color: var(--primary-color);
+    font-size: 20px;
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+
+.exit-modal-divider {
+    height: 1px;
+    background: var(--border-color);
+    margin: 15px 0;
+}
+
+.exit-modal-text {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 14px;
+    margin-bottom: 25px;
+}
+
+.exit-modal-buttons button {
+    width: 100%;
+    padding: 14px;
+    margin-top: 10px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.save-exit-btn {
+    background: var(--primary-color);
+    color: var(--dark-bg);
+}
+
+.no-save-btn {
+    background: transparent;
+    border: 2px solid var(--accent-color);
+    color: var(--accent-color);
+}
+
+.return-btn {
+    background: var(--dark-card);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.8);
+}

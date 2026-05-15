@@ -393,6 +393,11 @@ const completeExercise=()=>{
 };
 
 // ── INIT ─────────────────────────────────────────────────────────────────────
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.set-weight-zone') && !e.target.classList.contains('w-inp')) {
+        document.activeElement?.blur();
+    }
+});
 document.addEventListener('DOMContentLoaded',()=>{
     loadExercise(initialExIdx);
     updateExit();
