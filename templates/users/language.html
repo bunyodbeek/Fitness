@@ -20,7 +20,7 @@
             min-height: 100vh;
             position: relative;
             overflow-x: hidden;
-            color: white;
+            color: #0a0d1a;
         }
 
         /* Animated particles background — profile_detail kabi */
@@ -88,7 +88,7 @@
         }
 
         .page-title {
-            color: white;
+            color: #0a0d1a;
             font-size: 16px;
             font-weight: 800;
             letter-spacing: 3px;
@@ -109,6 +109,27 @@
             z-index: 12;
             max-width: 600px;
             margin: 0 auto;
+        }
+
+
+        .page-subtitle-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .title-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,179,0,0.08));
+            border: 1.5px solid rgba(255,215,0,0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: 0 0 24px rgba(255,215,0,0.2);
         }
 
         .page-subtitle {
@@ -262,7 +283,7 @@
         .language-text {
             font-size: 14px;
             font-weight: 700;
-            color: white;
+            color: #0a0d1a;
             margin-bottom: 2px;
             letter-spacing: 0.5px;
         }
@@ -295,9 +316,7 @@
 
         /* ===== BUTTON — profile_detail 'menu-card' kabi ===== */
         .bottom-button {
-            background: linear-gradient(135deg,
-            rgba(255, 255, 255, 0.06) 0%,
-            rgba(255, 255, 255, 0.02) 100%);
+            background: linear-gradient(135deg, #ffd700 0%, #ffb300 100%);
             backdrop-filter: blur(10px);
             border-radius: 14px;
             padding: 12px 14px;
@@ -312,7 +331,7 @@
             align-items: center;
             justify-content: center;
             gap: 12px;
-            color: white;
+            color: #0a0d1a;
             font-size: 14px;
             font-weight: 700;
             text-transform: uppercase;
