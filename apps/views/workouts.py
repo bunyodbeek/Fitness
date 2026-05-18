@@ -131,7 +131,7 @@ class PlanWeeksView(DetailView):
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		# Plan ichidagi hamma haftalarni chiqaramiz
-		active_type = get_session_workout_type(self.request, self.forced_workout_type)
+		active_type = self.object.program.workout_type
 		context['weeks'] = self.object.weeks.all().order_by('week_number')
 		context['active_workout_type'] = active_type
 		context['is_home_mode'] = active_type == WorkoutType.HOME
@@ -149,11 +149,7 @@ class WeekDetailView(DetailView):
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		# Shu haftaga tegishli hamma kunlarni olish
-		active_type = (
-			self.forced_workout_type
-			or self.object.plan.program.workout_type
-			or get_session_workout_type(self.request)
-		)
+		active_type = self.object.plan.program.workout_type
 		workouts = self.object.workouts.all().order_by('day_number').annotate(
 			exercise_count=Count('workout_exercises')
 		)
