@@ -257,7 +257,7 @@
 {% block extra_js %}
     <script>
         function startWorkout() {
-            window.location.href = "{% if is_home_mode %}{% url 'workout_start' workout.id %}{% else %}{% url 'gym_workout_start' workout.id %}{% endif %}";
+            window.location.href = "{% if is_home_mode %}{% url 'home_workout_session' workout.id %}{% else %}{% url 'gym_workout_start' workout.id %}{% endif %}";
         }
     </script>
 {% endblock %}
