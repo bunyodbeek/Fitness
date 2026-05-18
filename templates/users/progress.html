@@ -799,41 +799,41 @@
     </div>
 
     <!-- Body Measurements -->
-    <div class="measurements-section">
-        <h3 class="section-title">
-            <span class="section-icon">📏</span>
-            {% trans "Body Measurements" %}
-        </h3>
-
-        {% for measurement in body_measurements %}
-        <div class="measurement-item">
-            <div class="measurement-info">
-                <div class="measurement-icon">{{ measurement.icon }}</div>
-                <div class="measurement-details">
-                    <div class="measurement-name">{{ measurement.name }}</div>
-                    <div class="measurement-date">{{ measurement.date }}</div>
-                </div>
-            </div>
-            <div class="measurement-value-wrapper">
-                <span class="measurement-value">{{ measurement.value }}</span>
-                <span class="measurement-change {{ measurement.change_type }}">{{ measurement.change }}</span>
-            </div>
-        </div>
-        {% empty %}
-        <div class="measurement-item">
-            <div class="measurement-info">
-                <div class="measurement-icon">⚖️</div>
-                <div class="measurement-details">
-                    <div class="measurement-name">{% trans "Weight" %}</div>
-                    <div class="measurement-date">{% trans "Not recorded" %}</div>
-                </div>
-            </div>
-            <div class="measurement-value-wrapper">
-                <span class="measurement-value">- kg</span>
-            </div>
-        </div>
-        {% endfor %}
-    </div>
+{#    <div class="measurements-section">#}
+{#        <h3 class="section-title">#}
+{#            <span class="section-icon">📏</span>#}
+{#            {% trans "Body Measurements" %}#}
+{#        </h3>#}
+{##}
+{#        {% for measurement in body_measurements %}#}
+{#        <div class="measurement-item">#}
+{#            <div class="measurement-info">#}
+{#                <div class="measurement-icon">{{ measurement.icon }}</div>#}
+{#                <div class="measurement-details">#}
+{#                    <div class="measurement-name">{{ measurement.name }}</div>#}
+{#                    <div class="measurement-date">{{ measurement.date }}</div>#}
+{#                </div>#}
+{#            </div>#}
+{#            <div class="measurement-value-wrapper">#}
+{#                <span class="measurement-value">{{ measurement.value }}</span>#}
+{#                <span class="measurement-change {{ measurement.change_type }}">{{ measurement.change }}</span>#}
+{#            </div>#}
+{#        </div>#}
+{#        {% empty %}#}
+{#        <div class="measurement-item">#}
+{#            <div class="measurement-info">#}
+{#                <div class="measurement-icon">⚖️</div>#}
+{#                <div class="measurement-details">#}
+{#                    <div class="measurement-name">{% trans "Weight" %}</div>#}
+{#                    <div class="measurement-date">{% trans "Not recorded" %}</div>#}
+{#                </div>#}
+{#            </div>#}
+{#            <div class="measurement-value-wrapper">#}
+{#                <span class="measurement-value">- kg</span>#}
+{#            </div>#}
+{#        </div>#}
+{#        {% endfor %}#}
+{#    </div>#}
 
 {#    <!-- Achievements -->#}
 {#    <div class="achievements-section">#}
