@@ -87,6 +87,7 @@ class ProgramListView(ListView):
 		context['active_workout_type'] = active_type
 		context['is_home_mode'] = active_type == WorkoutType.HOME
 		context['recommended_program'] = recommended
+		context['show_recommendation_once'] = bool(self.request.session.pop('show_recommendation_once', False))
 		return context
 
 
@@ -130,7 +131,7 @@ class PlanWeeksView(DetailView):
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		# Plan ichidagi hamma haftalarni chiqaramiz
-		active_type = get_session_workout_type(self.request, self.forced_workout_type)
+		active_type = self.object.program.workout_type
 		context['weeks'] = self.object.weeks.all().order_by('week_number')
 		context['active_workout_type'] = active_type
 		context['is_home_mode'] = active_type == WorkoutType.HOME
@@ -148,11 +149,7 @@ class WeekDetailView(DetailView):
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		# Shu haftaga tegishli hamma kunlarni olish
-		active_type = (
-			self.forced_workout_type
-			or self.object.plan.program.workout_type
-			or get_session_workout_type(self.request)
-		)
+		active_type = self.object.plan.program.workout_type
 		workouts = self.object.workouts.all().order_by('day_number').annotate(
 			exercise_count=Count('workout_exercises')
 		)
@@ -185,6 +182,11 @@ class WorkoutDetailView(DetailView):
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		workout = self.object
+		week_workouts = list(workout.week.workouts.all().order_by('day_number', 'id'))
+		total_days = len(week_workouts)
+		current_day = next((idx for idx, w in enumerate(week_workouts, start=1) if w.id == workout.id), 1)
+		prev_workout = week_workouts[current_day - 2] if current_day > 1 else None
+		next_workout = week_workouts[current_day] if current_day < total_days else None
 		
 		workout_exercises = WorkoutExercise.objects.filter(
 			workout=workout,
@@ -192,6 +194,12 @@ class WorkoutDetailView(DetailView):
 		
 		context.update({
 			'plan': workout.week.plan,
+			'week': workout.week,
+			'current_day': current_day,
+			'total_days': total_days,
+			'day_range': range(1, total_days + 1),
+			'prev_workout': prev_workout,
+			'next_workout': next_workout,
 			'workout_exercises': workout_exercises,
 			'total_exercises': workout_exercises.count(),
 		})
