@@ -568,7 +568,7 @@
         {% endif %}
     </div>
 
-    {% if recommended_program and request.user.profile.onboarding_completed %}
+    {% if recommended_program and show_recommendation_once %}
         <div id="recommendedOverlay" class="recommend-overlay" data-program-id="{{ recommended_program.id }}">
             <div class="recommend-card">
                 <div class="recommend-label">⭐ RECOMMENDED FOR YOU</div>
