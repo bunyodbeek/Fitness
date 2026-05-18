@@ -98,11 +98,17 @@ class ProgramDetailView(DetailView):
 	model = Program
 	template_name = 'workouts/edition_list.html'
 	context_object_name = 'program'
+
+	def get_queryset(self):
+		workout_type = get_session_workout_type(self.request, self.forced_workout_type)
+		return Program.objects.filter(is_active=True, workout_type=workout_type).prefetch_related('plans')
 	
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		context['plans'] = self.object.plans.all().order_by('order')
-		context['is_home_mode'] = self.forced_workout_type == WorkoutType.HOME if self.forced_workout_type else False
+		active_type = self.object.workout_type
+		context['plans'] = self.object.plans.filter(program__workout_type=active_type).order_by('order')
+		context['active_workout_type'] = active_type
+		context['is_home_mode'] = active_type == WorkoutType.HOME
 		return context
 
 
@@ -178,6 +184,10 @@ class WorkoutDetailView(DetailView):
 	model = Workout
 	template_name = 'workouts/workout_detail.html'
 	context_object_name = 'workout'
+
+	def get_queryset(self):
+		workout_type = get_session_workout_type(self.request, self.forced_workout_type)
+		return Workout.objects.filter(week__plan__program__workout_type=workout_type).select_related('week__plan__program')
 	
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
@@ -192,6 +202,8 @@ class WorkoutDetailView(DetailView):
 			workout=workout,
 		).select_related('exercise').order_by('order')
 		
+		active_type = workout.week.plan.program.workout_type
+
 		context.update({
 			'plan': workout.week.plan,
 			'week': workout.week,
@@ -202,6 +214,8 @@ class WorkoutDetailView(DetailView):
 			'next_workout': next_workout,
 			'workout_exercises': workout_exercises,
 			'total_exercises': workout_exercises.count(),
+			'active_workout_type': active_type,
+			'is_home_mode': active_type == WorkoutType.HOME,
 		})
 		return context
 
@@ -232,7 +246,7 @@ class WorkoutStartView(LoginRequiredMixin, View):
 			status=WorkoutProgress.Status.IN_PROGRESS,
 		).first()
 		
-		template = 'workouts/home_active_workout.html' if wtype == WorkoutType.HOME else 'workouts/active_workout.html'
+		template = 'workouts/active_workout.html'
 		
 		# ✅ Avval o'zgaruvchiga saqla
 		exercises_data = self._prepare_exercises_data(
