@@ -763,7 +763,7 @@
         {% endif %}
         <div class="program-header-overlay">
             <div class="program-logo">{{ program.name|upper }}</div>
-            <div class="program-subtitle">{% trans "Professional Workout Program" %}</div>
+{#            <div class="program-subtitle">{% trans "Professional Workout Program" %}</div>#}
         </div>
     </div>
 
@@ -791,10 +791,10 @@
             {# description — Plan modelidagi to'g'ri field nomi #}
             {{ program.description|default:"Transform your body with this comprehensive workout program designed for all fitness levels."|truncatewords:25 }}
         </p>
-        <div class="info-highlight">
-            &#128161; <strong>{% trans 'Tip:' %}</strong>
-            {% trans 'Complete each plan for 4-6 weeks before moving to the next' %}
-        </div>
+{#        <div class="info-highlight">#}
+{#            &#128161; <strong>{% trans 'Tip:' %}</strong>#}
+{#            {% trans 'Complete each plan for 4-6 weeks before moving to the next' %}#}
+{#        </div>#}
     </div>
 
     <div class="section-title">{% trans 'Choose Your Plan' %}</div>

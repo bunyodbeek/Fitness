@@ -530,9 +530,9 @@
                             <p>
                                 🎯
                                 {% if is_home_mode %}
-                                    {% blocktrans count plan_count=program.plans.count %}{{ plan_count }} Round{% plural %}{{ plan_count }} Rounds{% endblocktrans %}
+                                    {% blocktrans count plan_count=program.plans.count %}{{ plan_count }} Plan{% plural %}{{ plan_count }} Plans{% endblocktrans %}
                                 {% else %}
-                                    {% blocktrans count plan_count=program.plans.count %}{{ plan_count }} Edition{% plural %}{{ plan_count }} Plans{% endblocktrans %}
+                                    {% blocktrans count plan_count=program.plans.count %}{{ plan_count }} Plan{% plural %}{{ plan_count }} Plans{% endblocktrans %}
                                 {% endif %}
                             </p>
                         </div>
