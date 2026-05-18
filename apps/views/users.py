@@ -147,6 +147,7 @@ class QuestionnaireSubmitAPIView(APIView):
             if not existing_profile.onboarding_completed:
                 existing_profile.onboarding_completed = True
                 existing_profile.save(update_fields=['onboarding_completed'])
+                request.session['show_recommendation_once'] = True
             login(request, existing_profile.user)
             return Response({
                 'success': True,
@@ -164,6 +165,7 @@ class QuestionnaireSubmitAPIView(APIView):
 
             profile = self.create_or_update_profile(user, data)
             create_onboarding_program(profile)
+            request.session['show_recommendation_once'] = True
 
             self.save_motivations(profile, data.get('motivation', []))
 

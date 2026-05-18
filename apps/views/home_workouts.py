@@ -83,6 +83,7 @@ class HomeProgramListView(ListView):
         if recommended and all(p.id != recommended.id for p in context.get("programs", [])):
             recommended = None
         context['recommended_program'] = recommended
+        context['show_recommendation_once'] = bool(self.request.session.pop('show_recommendation_once', False))
         return context
 
 

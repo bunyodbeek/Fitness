@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.shortcuts import redirect
+from urllib.parse import urlparse
 
 
 class TelegramLoginRedirectMiddleware:
@@ -24,11 +25,11 @@ class TelegramLoginRedirectMiddleware:
         if not location:
             return response
 
-        login_path = f"/{settings.LOGIN_URL.strip('/')}/"
-        if settings.LOGIN_URL.startswith(("http://", "https://")):
-            is_login_redirect = settings.LOGIN_URL in location
-        else:
-            is_login_redirect = login_path in location or f"/{settings.LOGIN_URL.strip('/')}" in location
+        parsed_location_path = urlparse(location).path
+        login_url = settings.LOGIN_URL
+        login_path = urlparse(login_url).path if login_url.startswith(("http://", "https://")) else login_url
+        normalized_login_path = f"/{login_path.strip('/')}"
+        is_login_redirect = parsed_location_path.rstrip("/") == normalized_login_path.rstrip("/")
 
         if not is_login_redirect:
             return response
