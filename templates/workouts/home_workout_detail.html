@@ -558,18 +558,6 @@
     </div>
     {% endif %}
 
-    <!-- Start button -->
-    <div class="start-btn-wrap">
-        <a href="{% url 'home_workout_session' workout.id %}" class="start-btn {% if progress.is_finished %}completed{% endif %}">
-            <span class="start-btn-icon">▶</span>
-            {% if progress.is_finished %}
-                {% trans "Redo Workout" %}
-            {% else %}
-                {% trans "Start Workout" %}
-            {% endif %}
-        </a>
-    </div>
-
 </div>
 
 {% endblock %}

@@ -246,7 +246,7 @@ class WorkoutStartView(LoginRequiredMixin, View):
 			status=WorkoutProgress.Status.IN_PROGRESS,
 		).first()
 		
-		template = 'workouts/home_active_workout.html' if wtype == WorkoutType.HOME else 'workouts/active_workout.html'
+		template = 'workouts/active_workout.html'
 		
 		# ✅ Avval o'zgaruvchiga saqla
 		exercises_data = self._prepare_exercises_data(
