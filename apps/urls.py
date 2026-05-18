@@ -47,13 +47,10 @@ from apps.views.users import (
 	PaymentHistoryView,
 )
 from apps.views.home_workouts import (
-	HomePlanWeeksView,
-	HomeProgramDetailView,
 	HomeProgramListView,
-	HomeWorkoutDetailView,
 	HomeWorkoutDoneView,
 	HomeWorkoutCompleteView,
-	WorkoutModeSwitchView, HomeWeekDetailView, HomeSessionView,
+	WorkoutModeSwitchView, HomeSessionView,
 )
 
 from apps.views.handbook import (
@@ -120,15 +117,15 @@ urlpatterns = [
 	# Home mode
 	path('mode/<str:workout_type>/', WorkoutModeSwitchView.as_view(), name='workout_mode_switch'),
 	path('home/programs/', HomeProgramListView.as_view(), name='home_program_list'),
-	path('home/program/<int:pk>/', HomeProgramDetailView.as_view(), name='home_program_detail'),
-	path('home/plan/<int:pk>/', HomePlanWeeksView.as_view(), name='home_plan_weeks'),
-	path('home/workout/<int:pk>/', HomeWorkoutDetailView.as_view(), name='home_workout_detail'),
-	path('home/workouts/<int:pk>/', HomeWorkoutDetailView.as_view(), name='home_workout_detail_legacy'),
+	path('home/program/<int:pk>/', ProgramDetailView.as_view(forced_workout_type=WorkoutType.HOME), name='home_program_detail'),
+	path('home/plan/<int:pk>/', PlanWeeksView.as_view(forced_workout_type=WorkoutType.HOME), name='home_plan_weeks'),
+	path('home/week/<int:pk>/', WeekDetailView.as_view(forced_workout_type=WorkoutType.HOME), name='home_week_detail'),
+	path('home/workout/<int:pk>/', WorkoutDetailView.as_view(forced_workout_type=WorkoutType.HOME), name='home_workout_detail'),
+	path('home/workouts/<int:pk>/', WorkoutDetailView.as_view(forced_workout_type=WorkoutType.HOME), name='home_workout_detail_legacy'),
 	path('home/workout/<int:pk>/done/', HomeWorkoutDoneView.as_view(), name='home_workout_done'),
 	path('home/workout/<int:pk>/session/', HomeSessionView.as_view(), name='home_workout_session'),
 	path('home/workout/<int:pk>/complete/', HomeWorkoutCompleteView.as_view(), name='home_workout_complete'),
 	path('home/workouts/<int:pk>/done/', HomeWorkoutDoneView.as_view(), name='home_workout_done_legacy'),
-	path('home/week/<int:pk>/', HomeWeekDetailView.as_view(), name='home_week_detail'),
 	
 	# HANDBOOK - yangi qo'shildi (My Trainer o'rniga)
 	path('handbook/', HandbookCategoryListView.as_view(), name='handbook_home'),
