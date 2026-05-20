@@ -296,38 +296,40 @@ class HomeWeekDetailView(DetailView):
 		context['is_home_mode'] = True
 		return context
 
+
 class HomeWorkoutCompleteView(LoginRequiredMixin, View):
-    template_name = "workouts/home_workout_complete.html"
+	template_name = "workouts/home_workout_complete.html"
+	
+	def post(self, request, pk):
+		workout = get_object_or_404(
+			HomeWorkout.objects.select_related("week__plan__program"),
+			pk=pk,
+			week__plan__program__workout_type=WorkoutType.HOME,
+		)
+		total_calories = float(request.POST.get("total_calories", 0) or 0)
+		total_duration = int(float(request.POST.get("total_duration", 0) or 0))
+		
+		UserWorkoutProgress.objects.filter(
+			user=request.user.profile,
+			workout=workout,
+		).update(is_finished=True, current_round=workout.rounds)
+		
+		return render(request, self.template_name, {
+			"workout": workout,
+			"workout_summary": {
+				"total_calories": total_calories,
+				"duration_seconds": total_duration,
+				"exercises_completed": workout.workout_exercises.count() * workout.rounds,
+				"total_weight": 0,
+			}
+		})
+	
+	def get(self, request, pk):
+		workout = get_object_or_404(
+			HomeWorkout.objects.select_related("week__plan__program"), pk=pk
+		)
+		return render(request, self.template_name, {"workout": workout})
 
-    def post(self, request, pk):
-        workout = get_object_or_404(
-            HomeWorkout.objects.select_related("week__plan__program"),
-            pk=pk,
-            week__plan__program__workout_type=WorkoutType.HOME,
-        )
-        total_calories = float(request.POST.get("total_calories", 0) or 0)
-        total_duration = int(float(request.POST.get("total_duration", 0) or 0))
-
-        UserWorkoutProgress.objects.filter(
-            user=request.user.profile,
-            workout=workout,
-        ).update(is_finished=True, current_round=workout.rounds)
-
-        return render(request, self.template_name, {
-            "workout": workout,
-            "workout_summary": {
-                "total_calories": total_calories,
-                "duration_seconds": total_duration,
-                "exercises_completed": workout.workout_exercises.count() * workout.rounds,
-                "total_weight": 0,
-            }
-        })
-
-    def get(self, request, pk):
-        workout = get_object_or_404(
-            HomeWorkout.objects.select_related("week__plan__program"), pk=pk
-        )
-        return render(request, self.template_name, {"workout": workout})
 
 class HomeSessionView(LoginRequiredMixin, TemplateView):
 	template_name = "workouts/home_session.html"
@@ -354,7 +356,8 @@ class HomeSessionView(LoginRequiredMixin, TemplateView):
 			rest_seconds = calc["rest_seconds"]
 			exercises.append(
 				{"name": wex.exercise.name, "name_uz": wex.exercise.name_uz, "name_ru": wex.exercise.name_ru,
-				 "image": wex.exercise.thumbnail, "duration_seconds": calc["duration_seconds"], "order": wex.order,
+				 "image": wex.exercise.thumbnail, "video": wex.exercise.video,
+				 "duration_seconds": calc["duration_seconds"], "order": wex.order,
 				 "description": wex.exercise.description or ""})
 		total_time_seconds = rounds * sum(x["duration_seconds"] for x in exercises) + max(0, rounds - 1) * rest_seconds
 		context.update({"workout": workout, "exercises": exercises, "rounds": rounds, "rest_seconds": rest_seconds,
