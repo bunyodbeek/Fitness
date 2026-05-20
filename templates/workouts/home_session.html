@@ -1,998 +1,952 @@
-    {% extends 'base.html' %}
-    {% load i18n %}
+{% extends 'base.html' %}
+{% load i18n %}
 
-    {% block title %}{% trans "Workout Session" %}{% endblock %}
-    {% block bottom_nav %}{% endblock %}
+{% block title %}{% trans "Workout Session" %}{% endblock %}
+{% block bottom_nav %}{% endblock %}
 
-    {% block extra_css %}
-        <style>
-            * {
-                margin: 0;
-                padding: 0;
-                box-sizing: border-box;
-            }
+{% block extra_css %}
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-            body {
-                background: #0a0a0a;
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                min-height: 100vh;
-                color: #fff;
-                overflow-x: hidden;
-            }
-
-            /* HEADER */
-            .session-header {
-                position: sticky;
-                top: 0;
-                z-index: 100;
-                background: rgba(10, 10, 10, 0.97);
-                backdrop-filter: blur(12px);
-                padding: 12px 16px;
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-            }
-
-            .exit-btn {
-                background: transparent;
-                border: 1.5px solid rgba(255, 71, 87, 0.5);
-                color: #ff4757;
-                padding: 7px 16px;
-                border-radius: 10px;
-                font-size: 12px;
-                font-weight: 700;
-                letter-spacing: 1.5px;
-                text-transform: uppercase;
-                cursor: pointer;
-                transition: background 0.2s;
-            }
-
-            .exit-btn:hover {
-                background: rgba(255, 71, 87, 0.1);
-            }
-
-            .round-indicator {
-                font-size: 13px;
-                font-weight: 800;
-                letter-spacing: 2px;
-                text-transform: uppercase;
-                color: #ffd700;
-            }
-
-            /* MAIN */
-            .container {
-                max-width: 540px;
-                margin: 0 auto;
-                padding: 16px 16px 120px;
-            }
-
-            /* EXERCISE IMAGE */
-         .exercise-image-wrap {
-    position: relative;
-    border-radius: 0;
-    overflow: hidden;
-    aspect-ratio: 16 / 9;
-    background: #000;
-    margin: 0 -16px 16px;
-    width: calc(100% + 32px);
+body {
+    background: #0a0a0a;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    min-height: 100vh;
+    color: #fff;
+    overflow-x: hidden;
 }
 
-            .exercise-image {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-            }
-
-            .fullscreen-btn {
-                position: absolute;
-                top: 12px;
-                right: 12px;
-                background: rgba(10, 10, 10, 0.75);
-                backdrop-filter: blur(8px);
-                border: 1px solid rgba(255, 255, 255, 0.15);
-                border-radius: 8px;
-                width: 34px;
-                height: 34px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                cursor: pointer;
-                color: #fff;
-                z-index: 2;
-            }
-
-            /* EXERCISE NAME */
-            .exercise-name {
-                font-size: clamp(20px, 6vw, 28px);
-                font-weight: 900;
-                color: #ffd700;
-                margin-bottom: 12px;
-                line-height: 1.2;
-                letter-spacing: 0.5px;
-                text-align: center;
-            }
-
-            /* DESCRIPTION BLOCK */
-            .description-block {
-                background: rgba(255, 255, 255, 0.04);
-                border: 1px solid rgba(255, 255, 255, 0.08);
-                border-radius: 14px;
-                padding: 14px 16px;
-                margin-bottom: 20px;
-                cursor: pointer;
-                transition: background 0.2s;
-            }
-
-            .description-block:hover {
-                background: rgba(255, 255, 255, 0.07);
-            }
-
-            .description-header {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-            }
-
-            .description-label {
-                font-size: 11px;
-                font-weight: 700;
-                letter-spacing: 1.5px;
-                color: rgba(255, 255, 255, 0.4);
-                text-transform: uppercase;
-            }
-
-            /* DESC MODAL */
-            .desc-modal {
-                display: none;
-                position: fixed;
-                inset: 0;
-                background: rgba(0, 0, 0, 0.85);
-                backdrop-filter: blur(8px);
-                z-index: 500;
-                align-items: center;
-                justify-content: center;
-                padding: 24px;
-            }
-
-            .desc-modal.visible {
-                display: flex;
-            }
-
-            .desc-modal-box {
-                background: #1a1a1a;
-                border: 1px solid rgba(255, 255, 255, 0.1);
-                border-radius: 20px;
-                padding: 24px;
-                max-width: 480px;
-                width: 100%;
-            }
-
-            .desc-modal-label {
-                font-size: 11px;
-                font-weight: 700;
-                letter-spacing: 1.5px;
-                color: rgba(255, 255, 255, 0.4);
-                text-transform: uppercase;
-                margin-bottom: 12px;
-            }
-
-            .desc-modal-text {
-                font-size: 14px;
-                color: rgba(255, 255, 255, 0.75);
-                line-height: 1.7;
-            }
-
-            .desc-modal-close {
-                margin-top: 20px;
-                width: 100%;
-                padding: 12px;
-                background: #ffd700;
-                border: none;
-                border-radius: 12px;
-                font-weight: 800;
-                font-size: 13px;
-                cursor: pointer;
-                color: #0a0a0a;
-            }
-
-            /* TIMER */
-            .timer-wrap {
-                display: flex;
-                justify-content: center;
-                margin-bottom: 24px;
-            }
-
-            .timer-circle-container {
-                position: relative;
-                width: 200px;
-                height: 200px;
-            }
-
-            .timer-svg {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                transform: rotate(-90deg);
-            }
-
-            .timer-bg-circle {
-                fill: none;
-                stroke: rgba(255, 255, 255, 0.06);
-                stroke-width: 5;
-            }
-
-            .timer-progress-circle {
-                fill: none;
-                stroke: url(#timerGrad);
-                stroke-width: 5;
-                stroke-linecap: round;
-                transition: stroke-dashoffset 1s linear;
-            }
-
-            .timer-inner {
-                position: absolute;
-                inset: 0;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-            }
-
-            .timer-display {
-                font-size: 52px;
-                font-weight: 900;
-                color: #ffd700;
-                line-height: 1;
-                font-variant-numeric: tabular-nums;
-                letter-spacing: -1px;
-            }
-
-            .timer-label {
-                font-size: 11px;
-                color: rgba(255, 255, 255, 0.35);
-                font-weight: 600;
-                text-transform: uppercase;
-                letter-spacing: 2px;
-                margin-top: 4px;
-            }
-
-            /* REST PANEL */
-            .rest-panel {
-                display: none;
-                background: rgba(78, 205, 196, 0.08);
-                border: 1.5px solid rgba(78, 205, 196, 0.2);
-                border-radius: 20px;
-                padding: 20px;
-                text-align: center;
-                margin-bottom: 16px;
-            }
-
-            .rest-panel.visible {
-                display: block;
-            }
-
-            .rest-title {
-                font-size: 11px;
-                font-weight: 700;
-                color: rgba(78, 205, 196, 0.7);
-                text-transform: uppercase;
-                letter-spacing: 2px;
-                margin-bottom: 8px;
-            }
-
-            .rest-timer {
-                font-size: 52px;
-                font-weight: 900;
-                color: #4ecdc4;
-                line-height: 1;
-                margin-bottom: 4px;
-            }
-
-            .rest-sub {
-                font-size: 12px;
-                color: rgba(255, 255, 255, 0.35);
-                margin-bottom: 14px;
-            }
-
-            .btn-skip-rest {
-                background: rgba(78, 205, 196, 0.12);
-                border: 1px solid rgba(78, 205, 196, 0.25);
-                border-radius: 10px;
-                padding: 9px 22px;
-                color: #4ecdc4;
-                font-size: 13px;
-                font-weight: 700;
-                cursor: pointer;
-                transition: background 0.2s;
-            }
-
-            .btn-skip-rest:hover {
-                background: rgba(78, 205, 196, 0.22);
-            }
-
-            /* CONTROLS */
-            .controls {
-                display: flex;
-                gap: 12px;
-                margin-bottom: 20px;
-            }
-
-            .btn-pause {
-                flex: 1;
-                background: rgba(255, 255, 255, 0.07);
-                border: 1.5px solid rgba(255, 255, 255, 0.1);
-                border-radius: 16px;
-                padding: 16px;
-                color: #fff;
-                font-size: 15px;
-                font-weight: 700;
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 8px;
-                transition: background 0.2s;
-            }
-
-            .btn-pause:hover {
-                background: rgba(255, 255, 255, 0.11);
-            }
-
-            .btn-next {
-                flex: 2;
-                background: #ffd700;
-                border: none;
-                border-radius: 16px;
-                padding: 16px;
-                color: #0a0a0a;
-                font-size: 15px;
-                font-weight: 900;
-                text-transform: uppercase;
-                letter-spacing: 1.5px;
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 8px;
-                transition: all 0.2s;
-                box-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
-            }
-
-            .btn-next:hover {
-                transform: translateY(-1px);
-                box-shadow: 0 8px 28px rgba(255, 215, 0, 0.45);
-            }
-
-            .btn-next:active {
-                transform: translateY(0);
-            }
-
-            /* NEXT UP */
-            .next-up-section {
-                margin-bottom: 16px;
-            }
-
-            .next-up-label {
-                font-size: 11px;
-                font-weight: 700;
-                color: #ffd700;
-                text-transform: uppercase;
-                letter-spacing: 2px;
-                margin-bottom: 8px;
-            }
-
-            .next-up-card {
-                display: flex;
-                align-items: center;
-                gap: 12px;
-                background: rgba(255, 255, 255, 0.04);
-                border: 1px solid rgba(255, 255, 255, 0.07);
-                border-radius: 14px;
-                padding: 10px 12px;
-                cursor: pointer;
-                transition: background 0.2s;
-            }
-
-            .next-up-card:hover {
-                background: rgba(255, 255, 255, 0.08);
-            }
-
-            .next-up-thumb {
-                width: 56px;
-                height: 56px;
-                border-radius: 10px;
-                object-fit: cover;
-                flex-shrink: 0;
-            }
-
-            .next-up-thumb-placeholder {
-                width: 56px;
-                height: 56px;
-                border-radius: 10px;
-                background: #1a1a1a;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 24px;
-                flex-shrink: 0;
-            }
-
-            .next-up-info {
-                flex: 1;
-            }
-
-            .next-up-name {
-                font-size: 14px;
-                font-weight: 700;
-                color: #fff;
-                margin-bottom: 2px;
-            }
-
-            .next-up-dur {
-                font-size: 12px;
-                color: rgba(255, 255, 255, 0.4);
-            }
-
-            /* EXERCISE LIST */
-            .exercises-section {
-                margin-top: 8px;
-            }
-
-            .exercises-label {
-                font-size: 11px;
-                font-weight: 700;
-                color: rgba(255, 255, 255, 0.3);
-                text-transform: uppercase;
-                letter-spacing: 2px;
-                margin-bottom: 8px;
-            }
-
-            .exercise-item {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                padding: 10px 12px;
-                border-radius: 12px;
-                background: rgba(255, 255, 255, 0.03);
-                border: 1px solid rgba(255, 255, 255, 0.05);
-                margin-bottom: 6px;
-                cursor: pointer;
-                transition: background 0.2s;
-            }
-
-            .exercise-item:hover {
-                background: rgba(255, 255, 255, 0.06);
-            }
-
-            .exercise-item.current {
-                background: rgba(255, 215, 0, 0.07);
-                border-color: rgba(255, 215, 0, 0.2);
-            }
-
-            .exercise-item.done {
-                opacity: 0.4;
-            }
-
-            .ex-play-btn {
-                width: 28px;
-                height: 28px;
-                border-radius: 8px;
-                background: rgba(255, 215, 0, 0.15);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                flex-shrink: 0;
-            }
-
-            .ex-play-btn svg {
-                width: 12px;
-                height: 12px;
-                fill: #ffd700;
-            }
-
-            .exercise-item.done .ex-play-btn {
-                background: rgba(78, 205, 196, 0.15);
-            }
-
-            .exercise-item.done .ex-play-btn svg {
-                fill: #4ecdc4;
-            }
-
-            .ex-name {
-                flex: 1;
-                font-size: 13px;
-                font-weight: 600;
-                color: rgba(255, 255, 255, 0.7);
-            }
-
-            .exercise-item.current .ex-name {
-                color: #fff;
-                font-weight: 700;
-            }
-
-            .ex-dur {
-                font-size: 12px;
-                color: rgba(255, 255, 255, 0.3);
-                font-weight: 600;
-            }
-
-            /* EXIT MODAL */
-            .exit-modal {
-                position: fixed;
-                inset: 0;
-                background: rgba(5, 5, 5, 0.9);
-                backdrop-filter: blur(12px);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                z-index: 1000;
-                opacity: 0;
-                pointer-events: none;
-                transition: opacity 0.25s;
-                padding: 20px;
-            }
-
-            .exit-modal.active {
-                opacity: 1;
-                pointer-events: all;
-            }
-
-            .exit-modal-box {
-                width: 100%;
-                max-width: 340px;
-                background: #141414;
-                border: 1px solid rgba(255, 215, 0, 0.15);
-                border-radius: 24px;
-                padding: 28px 24px;
-                text-align: center;
-            }
-
-            .exit-modal-box h3 {
-                font-size: 22px;
-                font-weight: 900;
-                color: #ffd700;
-                margin-bottom: 8px;
-            }
-
-            .exit-modal-box p {
-                font-size: 13px;
-                color: rgba(255, 255, 255, 0.4);
-                margin-bottom: 22px;
-                line-height: 1.5;
-            }
-
-            .exit-modal-buttons {
-                display: flex;
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .btn-exit-confirm {
-                width: 100%;
-                padding: 13px;
-                border-radius: 12px;
-                background: rgba(255, 71, 87, 0.1);
-                border: 1.5px solid rgba(255, 71, 87, 0.3);
-                color: #ff4757;
-                font-size: 13px;
-                font-weight: 700;
-                cursor: pointer;
-                transition: background 0.2s;
-            }
-
-            .btn-exit-confirm:hover {
-                background: rgba(255, 71, 87, 0.18);
-            }
-
-            .btn-return {
-                width: 100%;
-                padding: 13px;
-                border-radius: 12px;
-                background: #ffd700;
-                border: none;
-                color: #0a0a0a;
-                font-size: 13px;
-                font-weight: 800;
-                cursor: pointer;
-            }
-
-            .btn-return:hover {
-                opacity: 0.9;
-            }
-        </style>
-    {% endblock %}
-
-    {% block content %}
-
-        <!-- EXIT MODAL -->
-        <div class="exit-modal" id="exitModal">
-            <div class="exit-modal-box">
-                <h3>Exit Workout?</h3>
-                <p>Your progress will be lost.</p>
-                <div class="exit-modal-buttons">
-                    <button onclick="exitWithoutSaving()" class="btn-exit-confirm">Exit</button>
-                    <button onclick="returnToWorkout()" class="btn-return">Continue Workout</button>
-                </div>
-            </div>
+/* ── HEADER ── */
+.session-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(10,10,10,0.97);
+    backdrop-filter: blur(12px);
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    height: 52px;
+}
+
+.exit-btn {
+    background: rgba(255,255,255,0.07);
+    border: 1.5px solid rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.7);
+    padding: 6px 14px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s;
+    flex-shrink: 0;
+}
+.exit-btn:hover { background: rgba(255,255,255,0.12); }
+
+.header-center {
+    flex: 1;
+    text-align: center;
+}
+.header-day-name {
+    font-size: 15px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: 1px;
+    line-height: 1.2;
+}
+
+.overall-timer {
+    font-size: 13px;
+    font-weight: 700;
+    color: #ffd700;
+    letter-spacing: 1px;
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+    min-width: 52px;
+    text-align: right;
+}
+
+/* ── PROGRESS BAR ── */
+.progress-section {
+    padding: 8px 14px 0;
+    background: rgba(10,10,10,0.97);
+    position: sticky;
+    top: 52px;
+    z-index: 99;
+}
+
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+.progress-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.3);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+.progress-count {
+    font-size: 10px;
+    font-weight: 700;
+    color: #ffd700;
+}
+
+.progress-track {
+    height: 3px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 99px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ffd700, #ff6b6b);
+    border-radius: 99px;
+    transition: width 0.5s ease;
+}
+
+/* ── MAIN ── */
+.container {
+    max-width: 540px;
+    margin: 0 auto;
+    padding: 12px 0 100px;
+}
+
+/* ── EXERCISE NAME ── */
+.exercise-name {
+    font-size: clamp(18px, 5.5vw, 26px);
+    font-weight: 900;
+    color: #ffd700;
+    margin-bottom: 10px;
+    line-height: 1.2;
+    letter-spacing: 0.5px;
+    text-align: center;
+    padding: 0 14px;
+}
+
+/* ── VIDEO (frameless) ── */
+.exercise-image-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #000;
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+
+.exercise-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.exercise-image-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 64px;
+    opacity: 0.3;
+}
+
+/* ── DESCRIPTION ── */
+.description-block {
+    margin: 0 14px 14px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.description-block:hover { background: rgba(255,255,255,0.07); }
+
+.description-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: rgba(255,255,255,0.4);
+    text-transform: uppercase;
+}
+
+/* ── DESC MODAL ── */
+.desc-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.9);
+    backdrop-filter: blur(10px);
+    z-index: 500;
+    flex-direction: column;
+}
+.desc-modal.visible { display: flex; }
+
+.desc-modal-video-wrap {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: #000;
+    flex-shrink: 0;
+    position: relative;
+}
+.desc-modal-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.desc-modal-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.desc-modal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+}
+.desc-modal-name {
+    font-size: 20px;
+    font-weight: 900;
+    color: #ffd700;
+    margin-bottom: 12px;
+    letter-spacing: 0.5px;
+}
+.desc-modal-text {
+    font-size: 14px;
+    color: rgba(255,255,255,0.75);
+    line-height: 1.7;
+}
+
+.desc-modal-close {
+    margin: 16px 20px 20px;
+    padding: 14px;
+    background: #ffd700;
+    border: none;
+    border-radius: 14px;
+    font-weight: 800;
+    font-size: 14px;
+    cursor: pointer;
+    color: #0a0a0a;
+    flex-shrink: 0;
+}
+
+/* ── TIMER ── */
+.timer-wrap {
+    display: flex;
+    justify-content: center;
+    margin: 0 0 16px;
+}
+
+.timer-circle-container {
+    position: relative;
+    width: 180px;
+    height: 180px;
+}
+
+.timer-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.timer-bg-circle {
+    fill: none;
+    stroke: rgba(255,255,255,0.06);
+    stroke-width: 5;
+}
+
+.timer-progress-circle {
+    fill: none;
+    stroke: url(#timerGrad);
+    stroke-width: 5;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1s linear;
+}
+
+.timer-inner {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.timer-display {
+    font-size: 48px;
+    font-weight: 900;
+    color: #ffd700;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -1px;
+}
+
+.timer-label {
+    font-size: 10px;
+    color: rgba(255,255,255,0.35);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-top: 4px;
+}
+
+/* ── REST PANEL ── */
+.rest-panel {
+    display: none;
+    background: rgba(78,205,196,0.08);
+    border: 1.5px solid rgba(78,205,196,0.2);
+    border-radius: 20px;
+    padding: 20px;
+    text-align: center;
+    margin: 0 14px 14px;
+}
+.rest-panel.visible { display: block; }
+
+.rest-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: rgba(78,205,196,0.7);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+}
+.rest-timer {
+    font-size: 48px;
+    font-weight: 900;
+    color: #4ecdc4;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+.rest-sub {
+    font-size: 12px;
+    color: rgba(255,255,255,0.35);
+    margin-bottom: 14px;
+}
+.btn-skip-rest {
+    background: rgba(78,205,196,0.12);
+    border: 1px solid rgba(78,205,196,0.25);
+    border-radius: 10px;
+    padding: 9px 22px;
+    color: #4ecdc4;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* ── NEXT UP ── */
+.next-up-section {
+    margin: 0 14px 14px;
+}
+.next-up-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: #ffd700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+}
+.next-up-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 14px;
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.next-up-card:hover { background: rgba(255,255,255,0.08); }
+
+.next-up-thumb {
+    width: 52px;
+    height: 52px;
+    border-radius: 10px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+.next-up-thumb-placeholder {
+    width: 52px;
+    height: 52px;
+    border-radius: 10px;
+    background: #1a1a1a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+}
+.next-up-info { flex: 1; }
+.next-up-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 2px;
+}
+.next-up-dur {
+    font-size: 11px;
+    color: rgba(255,255,255,0.4);
+}
+
+/* ── BOTTOM BAR ── */
+.bottom-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 200;
+    background: rgba(10,10,10,0.98);
+    backdrop-filter: blur(16px);
+    border-top: 1px solid rgba(255,255,255,0.06);
+    padding: 12px 14px 20px;
+    display: flex;
+    gap: 10px;
+    max-width: 540px;
+    margin: 0 auto;
+}
+
+/* START button (initially shown) */
+.btn-start {
+    width: 100%;
+    padding: 16px;
+    background: #ffd700;
+    border: none;
+    border-radius: 16px;
+    color: #0a0a0a;
+    font-size: 16px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 20px rgba(255,215,0,0.35);
+}
+.btn-start:hover { opacity: 0.9; transform: translateY(-1px); }
+
+/* PAUSE + NEXT (shown after start) */
+.btn-pause {
+    flex: 1;
+    background: rgba(255,255,255,0.07);
+    border: 1.5px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 16px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background 0.2s;
+}
+.btn-pause:hover { background: rgba(255,255,255,0.11); }
+
+.btn-next {
+    flex: 1;
+    background: #ffd700;
+    border: none;
+    border-radius: 16px;
+    padding: 16px;
+    color: #0a0a0a;
+    font-size: 14px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.2s;
+    box-shadow: 0 4px 20px rgba(255,215,0,0.3);
+}
+.btn-next:hover { opacity: 0.9; transform: translateY(-1px); }
+
+/* ── EXIT MODAL ── */
+.exit-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(5,5,5,0.9);
+    backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s;
+    padding: 20px;
+}
+.exit-modal.active { opacity: 1; pointer-events: all; }
+
+.exit-modal-box {
+    width: 100%;
+    max-width: 340px;
+    background: #141414;
+    border: 1px solid rgba(255,215,0,0.15);
+    border-radius: 24px;
+    padding: 28px 24px;
+    text-align: center;
+}
+.exit-modal-box h3 {
+    font-size: 22px;
+    font-weight: 900;
+    color: #ffd700;
+    margin-bottom: 8px;
+}
+.exit-modal-box p {
+    font-size: 13px;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 22px;
+    line-height: 1.5;
+}
+.exit-modal-buttons { display: flex; flex-direction: column; gap: 10px; }
+.btn-exit-confirm {
+    width: 100%; padding: 13px; border-radius: 12px;
+    background: rgba(255,71,87,0.1);
+    border: 1.5px solid rgba(255,71,87,0.3);
+    color: #ff4757; font-size: 13px; font-weight: 700; cursor: pointer;
+}
+.btn-return {
+    width: 100%; padding: 13px; border-radius: 12px;
+    background: #ffd700; border: none;
+    color: #0a0a0a; font-size: 13px; font-weight: 800; cursor: pointer;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- EXIT MODAL -->
+<div class="exit-modal" id="exitModal">
+    <div class="exit-modal-box">
+        <h3>Exit Workout?</h3>
+        <p>Your progress will be lost.</p>
+        <div class="exit-modal-buttons">
+            <button onclick="exitWithoutSaving()" class="btn-exit-confirm">Exit</button>
+            <button onclick="returnToWorkout()" class="btn-return">Continue Workout</button>
         </div>
-
-        <!-- DESC MODAL -->
-        <div class="desc-modal" id="descModal" onclick="closeDescModal()">
-            <div class="desc-modal-box" onclick="event.stopPropagation()">
-                <div class="desc-modal-label">DESCRIPTION</div>
-                <div class="desc-modal-text" id="descModalText"></div>
-                <button class="desc-modal-close" onclick="closeDescModal()">Close</button>
-            </div>
-        </div>
-
-        <!-- HEADER -->
-        <div class="session-header">
-            <button class="exit-btn" onclick="showExitModal()">EXIT</button>
-            <div class="round-indicator" id="roundLabel">ROUND {{ current_round }} OF {{ rounds }}</div>
-            <div style="width:60px;text-align:right;font-size:12px;color:rgba(255,255,255,0.4);font-weight:600;"
-                 id="exCounterHeader">1 / {{ exercises|length }}</div>
-        </div>
-
-        <div class="container">
-
-            <!-- EXERCISE NAME -->
-            <div class="exercise-name" id="exName">{{ exercises.0.name }}</div>
-
-            <!-- EXERCISE IMAGE (video autoplay - gif effect) -->
-            <div class="exercise-image-wrap">
-    <div class="fullscreen-btn" onclick="toggleFullscreen()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
-        </svg>
     </div>
-    {% if exercises.0.video %}
-        <video autoplay loop muted playsinline class="exercise-image" id="exImage">
-            <source src="{{ exercises.0.video.url }}">
-        </video>
-    {% elif exercises.0.image %}
-        <img src="{{ exercises.0.image.url }}" alt="" class="exercise-image" id="exImage">
-    {% else %}
-        <div class="exercise-image-placeholder" id="exImage">💪</div>
-    {% endif %}
 </div>
-            <!-- DESCRIPTION (click = modal) -->
-            <div class="description-block" onclick="openDescModal()">
-                <div class="description-header">
-                    <span class="description-label">DESCRIPTION</span>
-                    <span style="color:rgba(255,255,255,0.4);font-size:14px;">▾</span>
+
+<!-- DESC MODAL -->
+<div class="desc-modal" id="descModal">
+    <div class="desc-modal-video-wrap" id="descMediaWrap"></div>
+    <div class="desc-modal-body">
+        <div class="desc-modal-name" id="descModalName"></div>
+        <div class="desc-modal-text" id="descModalText"></div>
+    </div>
+    <button class="desc-modal-close" onclick="closeDescModal()">Close</button>
+</div>
+
+<!-- HEADER -->
+<div class="session-header">
+    <button class="exit-btn" onclick="showExitModal()">EXIT</button>
+    <div class="header-center">
+        <div class="header-day-name">{{ workout.title|default:"Workout" }}</div>
+    </div>
+    <div class="overall-timer" id="overallTimer">00:00</div>
+</div>
+
+<!-- PROGRESS BAR -->
+<div class="progress-section">
+    <div class="progress-info">
+        <span class="progress-label" id="roundLabel">ROUND {{ current_round }} OF {{ rounds }}</span>
+        <span class="progress-count" id="exCounter">1 / {{ exercises|length }}</span>
+    </div>
+    <div class="progress-track">
+        <div class="progress-fill" id="progressFill" style="width:0%"></div>
+    </div>
+</div>
+
+<div class="container">
+
+    <!-- EXERCISE NAME -->
+    <div class="exercise-name" id="exName">{{ exercises.0.name }}</div>
+
+    <!-- VIDEO (frameless) -->
+    <div class="exercise-image-wrap">
+        {% if exercises.0.video %}
+            <video autoplay loop muted playsinline class="exercise-image" id="exImage">
+                <source src="{{ exercises.0.video.url }}">
+            </video>
+        {% elif exercises.0.image %}
+            <img src="{{ exercises.0.image.url }}" alt="" class="exercise-image" id="exImage">
+        {% else %}
+            <div class="exercise-image-placeholder" id="exImage">💪</div>
+        {% endif %}
+    </div>
+
+    <!-- DESCRIPTION -->
+    <div class="description-block" onclick="openDescModal()">
+        <span class="description-label">DESCRIPTION</span>
+        <span style="color:rgba(255,255,255,0.4);font-size:14px;">▾</span>
+    </div>
+
+    <!-- TIMER -->
+    <div class="timer-wrap">
+        <div class="timer-circle-container">
+            <svg class="timer-svg" viewBox="0 0 180 180">
+                <defs>
+                    <linearGradient id="timerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#ffd700"/>
+                        <stop offset="100%" style="stop-color:#ff6b6b"/>
+                    </linearGradient>
+                </defs>
+                <circle class="timer-bg-circle" cx="90" cy="90" r="82"/>
+                <circle class="timer-progress-circle" cx="90" cy="90" r="82"
+                    id="timerCircle" stroke-dasharray="515" stroke-dashoffset="515"/>
+            </svg>
+            <div class="timer-inner">
+                <div class="timer-display" id="timerDisplay">
+                    {{ exercises.0.duration_seconds|floatformat:0 }}s
                 </div>
+                <div class="timer-label">SEC</div>
             </div>
-
-            <!-- TIMER -->
-            <div class="timer-wrap">
-                <div class="timer-circle-container">
-                    <svg class="timer-svg" viewBox="0 0 200 200">
-                        <defs>
-                            <linearGradient id="timerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" style="stop-color:#ffd700"/>
-                                <stop offset="100%" style="stop-color:#ff6b6b"/>
-                            </linearGradient>
-                        </defs>
-                        <circle class="timer-bg-circle" cx="100" cy="100" r="90"/>
-                        <circle class="timer-progress-circle" cx="100" cy="100" r="90"
-                                id="timerCircle" stroke-dasharray="565" stroke-dashoffset="0"/>
-                    </svg>
-                    <div class="timer-inner">
-                        <div class="timer-display" id="timerDisplay">00:00</div>
-                        <div class="timer-label">SEC</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- REST PANEL -->
-            <div class="rest-panel" id="restPanel">
-                <div class="rest-title">💤 REST</div>
-                <div class="rest-timer" id="restDisplay">{{ rest_seconds }}</div>
-                <div class="rest-sub">Next round starting soon...</div>
-                <button class="btn-skip-rest" onclick="skipRest()">Skip Rest ›</button>
-            </div>
-
-            <!-- CONTROLS -->
-            <div class="controls">
-                <button class="btn-pause" id="pauseBtn" onclick="togglePause()">
-                    <span id="pauseIcon">⏸</span>
-                    <span id="pauseText">Pause</span>
-                </button>
-                <button class="btn-next" id="nextBtn" onclick="nextExercise()">
-                    NEXT ›
-                </button>
-            </div>
-
-            <!-- NEXT UP (faqat 2+ exercise bo'lsa ko'rinadi) -->
-            <div class="next-up-section" id="nextUpSection" style="display:none;">
-                <div class="next-up-label">NEXT UP</div>
-                <div class="next-up-card" id="nextUpCard" onclick="goToNextUp()">
-                    <div class="next-up-thumb-placeholder" id="nextUpThumb">💪</div>
-                    <div class="next-up-info">
-                        <div class="next-up-name" id="nextUpName">—</div>
-                        <div class="next-up-dur" id="nextUpDur">—</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- EXERCISE LIST -->
-
-
         </div>
+    </div>
 
-        <script>
-            const EXERCISES = [
-                {% for e in exercises %}
-                    {
-                        name: "{{ e.name|escapejs }}",
-                        description: "{{ e.description|default:''|escapejs }}",
-                        duration: {{ e.duration_seconds }},
-                        image: "{% if e.image %}{{ e.image.url }}{% endif %}",
-                        video: "{% if e.video %}{{ e.video.url }}{% endif %}",
+    <!-- REST PANEL -->
+    <div class="rest-panel" id="restPanel">
+        <div class="rest-title">💤 REST</div>
+        <div class="rest-timer" id="restDisplay">{{ rest_seconds }}</div>
+        <div class="rest-sub">Next round starting soon...</div>
+        <button class="btn-skip-rest" onclick="skipRest()">Skip Rest ›</button>
+    </div>
 
-                        order: {{ forloop.counter }}
-                    }{% if not forloop.last %},{% endif %}
-                {% endfor %}
-            ];
+    <!-- NEXT UP -->
+    <div class="next-up-section" id="nextUpSection" style="display:none;">
+        <div class="next-up-label">NEXT UP</div>
+        <div class="next-up-card" id="nextUpCard" onclick="goToNextUp()">
+            <div class="next-up-thumb-placeholder" id="nextUpThumb">💪</div>
+            <div class="next-up-info">
+                <div class="next-up-name" id="nextUpName">—</div>
+                <div class="next-up-dur" id="nextUpDur">—</div>
+            </div>
+        </div>
+    </div>
 
-            const TOTAL_ROUNDS = {{ rounds }};
-            const REST_SECONDS = {{ rest_seconds }};
-            const TOTAL_EXERCISES = EXERCISES.length;
-            const CIRCUMFERENCE = 2 * Math.PI * 90;
+</div>
 
-            let currentRound = {{ current_round }};
-            let currentExIndex = Math.max({{ current_order|default:1 }} - 1, 0);
-            let timeLeft = 0;
-            let totalDuration = 0;
-            let isPaused = false;
-            let isResting = false;
-            let restLeft = REST_SECONDS;
-            let timer = null;
-            let sessionStartTime = Date.now();
+<!-- BOTTOM BAR -->
+<div class="bottom-bar" id="bottomBar">
+    <!-- Initially: START -->
+    <button class="btn-start" id="startBtn" onclick="startWorkout()">
+        ▶ START
+    </button>
+    <!-- After start: PAUSE + NEXT (hidden initially) -->
+    <button class="btn-pause" id="pauseBtn" onclick="togglePause()" style="display:none;">
+        <span id="pauseIcon">⏸</span>
+        <span id="pauseText">Pause</span>
+    </button>
+    <button class="btn-next" id="nextBtn" onclick="nextExercise()" style="display:none;">
+        NEXT ›
+    </button>
+</div>
 
-            function formatTime(s) {
-                const m = Math.floor(s / 60);
-                const sec = s % 60;
-                return `${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
-            }
+<script>
+const EXERCISES = [
+    {% for e in exercises %}
+    {
+        name: "{{ e.name|escapejs }}",
+        description: "{{ e.description|default:''|escapejs }}",
+        duration: {{ e.duration_seconds }},
+        image: "{% if e.image %}{{ e.image.url }}{% endif %}",
+        video: "{% if e.video %}{{ e.video.url }}{% endif %}",
+        order: {{ forloop.counter }}
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+];
 
-            function init() {
-                updateUI();
-                startTimer();
-            }
+const TOTAL_ROUNDS = {{ rounds }};
+const REST_SECONDS = {{ rest_seconds }};
+const TOTAL_EXERCISES = EXERCISES.length;
+const CIRCUMFERENCE = 2 * Math.PI * 82;
 
-            function updateUI() {
-                const ex = EXERCISES[currentExIndex];
-                if (!ex) return;
+let currentRound = {{ current_round }};
+let currentExIndex = Math.max({{ current_order|default:1 }} - 1, 0);
+let timeLeft = 0;
+let totalDuration = 0;
+let isPaused = false;
+let isResting = false;
+let restLeft = REST_SECONDS;
+let timer = null;
+let isStarted = false;
 
-                document.getElementById('roundLabel').textContent = `ROUND ${currentRound} OF ${TOTAL_ROUNDS}`;
-                document.getElementById('exCounterHeader').textContent = `${currentExIndex + 1} / ${TOTAL_EXERCISES}`;
-                document.getElementById('exName').textContent = ex.name;
+// Overall timer
+let overallSeconds = 0;
+let overallTimer = null;
 
-                const imgWrap = document.getElementById('exImage');
-                if (ex.video) {
-                    if (imgWrap && imgWrap.tagName === 'VIDEO') {
-                        imgWrap.querySelector('source').src = ex.video;
-                        imgWrap.load();
-                    } else {
-                        imgWrap.outerHTML = `<video autoplay loop muted playsinline class="exercise-image" id="exImage"><source src="${ex.video}"></video>`;
-                    }
-                } else if (ex.image) {
-                    if (imgWrap && imgWrap.tagName !== 'IMG') {
-                        imgWrap.outerHTML = `<img src="${ex.image}" alt="" class="exercise-image" id="exImage">`;
-                    } else if (imgWrap && imgWrap.tagName === 'IMG') {
-                        imgWrap.src = ex.image;
-                    }
-                } else {
-                    imgWrap.outerHTML = `<div class="exercise-image-placeholder" id="exImage">💪</div>`;
-                }
+function formatTime(s) {
+    const m = Math.floor(s / 60);
+    const sec = s % 60;
+    return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+}
 
-                timeLeft = ex.duration;
-                totalDuration = ex.duration;
-                updateTimerDisplay();
-                updateNextUp();
+function startOverallTimer() {
+    overallTimer = setInterval(() => {
+        overallSeconds++;
+        document.getElementById('overallTimer').textContent = formatTime(overallSeconds);
+    }, 1000);
+}
 
-                EXERCISES.forEach((_, i) => {
-                    const item = document.getElementById(`exItem${i}`);
-                    if (!item) return;
-                    item.className = 'exercise-item';
-                    if (i < currentExIndex) item.classList.add('done');
-                    else if (i === currentExIndex) item.classList.add('current');
-                });
-            }
+// START WORKOUT
+function startWorkout() {
+    isStarted = true;
+    document.getElementById('startBtn').style.display = 'none';
+    document.getElementById('pauseBtn').style.display = 'flex';
+    document.getElementById('nextBtn').style.display = 'flex';
+    startOverallTimer();
+    updateUI();
+    startTimer();
+}
 
-            function updateTimerDisplay() {
-                document.getElementById('timerDisplay').textContent = formatTime(timeLeft);
-                const circle = document.getElementById('timerCircle');
-                const pct = totalDuration > 0 ? timeLeft / totalDuration : 0;
-                circle.style.strokeDashoffset = CIRCUMFERENCE * (1 - pct);
-            }
+function updateUI() {
+    const ex = EXERCISES[currentExIndex];
+    if (!ex) return;
 
-            function updateNextUp() {
-                const section = document.getElementById('nextUpSection');
+    // Header
+    document.getElementById('roundLabel').textContent = `ROUND ${currentRound} OF ${TOTAL_ROUNDS}`;
+    document.getElementById('exCounter').textContent = `${currentExIndex + 1} / ${TOTAL_EXERCISES}`;
 
-                // Faqat 1 ta exercise bo'lsa - ko'rsatma
-                if (TOTAL_EXERCISES <= 1) {
-                    section.style.display = 'none';
-                    return;
-                }
+    // Progress bar
+    const totalSteps = TOTAL_ROUNDS * TOTAL_EXERCISES;
+    const doneSteps = (currentRound - 1) * TOTAL_EXERCISES + currentExIndex;
+    document.getElementById('progressFill').style.width = `${(doneSteps / totalSteps) * 100}%`;
 
-                const nextIndex = currentExIndex + 1;
+    // Name
+    document.getElementById('exName').textContent = ex.name;
 
-                if (nextIndex >= TOTAL_EXERCISES) {
-                    if (currentRound < TOTAL_ROUNDS) {
-                        section.style.display = 'block';
-                        document.getElementById('nextUpName').textContent = EXERCISES[0].name + ' (Round ' + (currentRound + 1) + ')';
-                        document.getElementById('nextUpDur').textContent = formatTime(EXERCISES[0].duration);
-                        updateNextUpThumb(EXERCISES[0].image);
-                    } else {
-                        section.style.display = 'none';
-                    }
-                    return;
-                }
+    // Media
+    const imgWrap = document.getElementById('exImage');
+    if (ex.video) {
+        if (imgWrap && imgWrap.tagName === 'VIDEO') {
+            const src = imgWrap.querySelector('source');
+            if (src) src.src = ex.video;
+            imgWrap.load();
+        } else {
+            imgWrap.outerHTML = `<video autoplay loop muted playsinline class="exercise-image" id="exImage"><source src="${ex.video}"></video>`;
+        }
+    } else if (ex.image) {
+        if (imgWrap && imgWrap.tagName !== 'IMG') {
+            imgWrap.outerHTML = `<img src="${ex.image}" alt="" class="exercise-image" id="exImage">`;
+        } else if (imgWrap && imgWrap.tagName === 'IMG') {
+            imgWrap.src = ex.image;
+        }
+    } else {
+        if (imgWrap) imgWrap.outerHTML = `<div class="exercise-image-placeholder" id="exImage">💪</div>`;
+    }
 
-                section.style.display = 'block';
-                const next = EXERCISES[nextIndex];
-                document.getElementById('nextUpName').textContent = next.name;
-                document.getElementById('nextUpDur').textContent = formatTime(next.duration);
-                updateNextUpThumb(next.image);
-            }
+    // Timer init
+    timeLeft = ex.duration;
+    totalDuration = ex.duration;
+    updateTimerDisplay();
+    updateNextUp();
+}
 
-            function updateNextUpThumb(imageUrl) {
-                const thumbEl = document.getElementById('nextUpThumb');
-                if (!thumbEl) return;
-                if (imageUrl) {
-                    thumbEl.outerHTML = `<img src="${imageUrl}" alt="" class="next-up-thumb" id="nextUpThumb">`;
-                } else {
-                    if (thumbEl.tagName === 'IMG') {
-                        thumbEl.outerHTML = `<div class="next-up-thumb-placeholder" id="nextUpThumb">💪</div>`;
-                    }
-                }
-            }
+function updateTimerDisplay() {
+    document.getElementById('timerDisplay').textContent = formatTime(timeLeft);
+    const circle = document.getElementById('timerCircle');
+    const pct = totalDuration > 0 ? timeLeft / totalDuration : 0;
+    circle.style.strokeDashoffset = CIRCUMFERENCE * (1 - pct);
+}
 
-            function startTimer() {
-                clearInterval(timer);
-                timer = setInterval(tick, 1000);
-            }
+function updateNextUp() {
+    const section = document.getElementById('nextUpSection');
+    if (TOTAL_EXERCISES <= 1) { section.style.display = 'none'; return; }
 
-            function tick() {
-                if (isPaused) return;
-                if (isResting) {
-                    restLeft--;
-                    document.getElementById('restDisplay').textContent = restLeft;
-                    if (restLeft <= 0) endRest();
-                    return;
-                }
-                if (timeLeft > 0) {
-                    timeLeft--;
-                    updateTimerDisplay();
-                }
-                if (timeLeft <= 0) nextExercise();
-            }
+    const nextIndex = currentExIndex + 1;
+    if (nextIndex >= TOTAL_EXERCISES) {
+        if (currentRound < TOTAL_ROUNDS) {
+            section.style.display = 'block';
+            document.getElementById('nextUpName').textContent = EXERCISES[0].name + ' (Round ' + (currentRound + 1) + ')';
+            document.getElementById('nextUpDur').textContent = formatTime(EXERCISES[0].duration);
+            updateNextUpThumb(EXERCISES[0].image);
+        } else {
+            section.style.display = 'none';
+        }
+        return;
+    }
 
-            function nextExercise() {
-                if (isResting) return;
-                currentExIndex++;
-                if (currentExIndex >= TOTAL_EXERCISES) {
-                    if (currentRound >= TOTAL_ROUNDS) {
-                        clearInterval(timer);
-                        submitComplete();
-                        return;
-                    }
-                    startRest();
-                    return;
-                }
-                updateUI();
-                startTimer();
-            }
+    section.style.display = 'block';
+    const next = EXERCISES[nextIndex];
+    document.getElementById('nextUpName').textContent = next.name;
+    document.getElementById('nextUpDur').textContent = formatTime(next.duration);
+    updateNextUpThumb(next.image);
+}
 
-            function jumpToExercise(index) {
-                if (index <= currentExIndex) return;
-                currentExIndex = index;
-                isResting = false;
-                document.getElementById('restPanel').classList.remove('visible');
-                updateUI();
-                startTimer();
-            }
+function updateNextUpThumb(imageUrl) {
+    const thumbEl = document.getElementById('nextUpThumb');
+    if (!thumbEl) return;
+    if (imageUrl) {
+        thumbEl.outerHTML = `<img src="${imageUrl}" alt="" class="next-up-thumb" id="nextUpThumb">`;
+    } else if (thumbEl.tagName === 'IMG') {
+        thumbEl.outerHTML = `<div class="next-up-thumb-placeholder" id="nextUpThumb">💪</div>`;
+    }
+}
 
-            function startRest() {
-                isResting = true;
-                restLeft = REST_SECONDS;
-                document.getElementById('restPanel').classList.add('visible');
-                document.getElementById('restDisplay').textContent = restLeft;
-            }
+function startTimer() {
+    clearInterval(timer);
+    timer = setInterval(tick, 1000);
+}
 
-            function endRest() {
-                isResting = false;
-                currentRound++;
-                currentExIndex = 0;
-                document.getElementById('restPanel').classList.remove('visible');
-                updateUI();
-                startTimer();
-            }
+function tick() {
+    if (isPaused) return;
+    if (isResting) {
+        restLeft--;
+        document.getElementById('restDisplay').textContent = restLeft;
+        if (restLeft <= 0) endRest();
+        return;
+    }
+    if (timeLeft > 0) {
+        timeLeft--;
+        updateTimerDisplay();
+    }
+    if (timeLeft <= 0) nextExercise();
+}
 
-            function skipRest() {
-                endRest();
-            }
+function nextExercise() {
+    if (isResting) return;
+    currentExIndex++;
+    if (currentExIndex >= TOTAL_EXERCISES) {
+        if (currentRound >= TOTAL_ROUNDS) {
+            clearInterval(timer);
+            clearInterval(overallTimer);
+            submitComplete();
+            return;
+        }
+        startRest();
+        return;
+    }
+    updateUI();
+    startTimer();
+}
 
-            function togglePause() {
-                isPaused = !isPaused;
-                document.getElementById('pauseIcon').textContent = isPaused ? '▶' : '⏸';
-                document.getElementById('pauseText').textContent = isPaused ? 'Resume' : 'Pause';
-            }
+function startRest() {
+    isResting = true;
+    restLeft = REST_SECONDS;
+    document.getElementById('restPanel').classList.add('visible');
+    document.getElementById('restDisplay').textContent = restLeft;
+}
 
-            function goToNextUp() {
-                const nextIndex = currentExIndex + 1;
-                if (nextIndex < TOTAL_EXERCISES) {
-                    currentExIndex = nextIndex;
-                    isResting = false;
-                    document.getElementById('restPanel').classList.remove('visible');
-                    updateUI();
-                    startTimer();
-                }
-            }
+function endRest() {
+    isResting = false;
+    currentRound++;
+    currentExIndex = 0;
+    document.getElementById('restPanel').classList.remove('visible');
+    updateUI();
+    startTimer();
+}
 
-            function openDescModal() {
-                const ex = EXERCISES[currentExIndex];
-                document.getElementById('descModalText').textContent = ex.description || 'No description available.';
-                document.getElementById('descModal').classList.add('visible');
-            }
+function skipRest() { endRest(); }
 
-            function closeDescModal() {
-                document.getElementById('descModal').classList.remove('visible');
-            }
+function togglePause() {
+    isPaused = !isPaused;
+    document.getElementById('pauseIcon').textContent = isPaused ? '▶' : '⏸';
+    document.getElementById('pauseText').textContent = isPaused ? 'Resume' : 'Pause';
+    if (isPaused) clearInterval(overallTimer);
+    else overallTimer = setInterval(() => {
+        overallSeconds++;
+        document.getElementById('overallTimer').textContent = formatTime(overallSeconds);
+    }, 1000);
+}
 
-            function toggleFullscreen() {
-                const el = document.querySelector('.exercise-image-wrap');
-                if (!document.fullscreenElement) {
-                    el.requestFullscreen && el.requestFullscreen();
-                } else {
-                    document.exitFullscreen && document.exitFullscreen();
-                }
-            }
+function goToNextUp() {
+    const nextIndex = currentExIndex + 1;
+    if (nextIndex < TOTAL_EXERCISES) {
+        currentExIndex = nextIndex;
+        isResting = false;
+        document.getElementById('restPanel').classList.remove('visible');
+        updateUI();
+        if (isStarted) startTimer();
+    }
+}
 
-            function showExitModal() {
-                isPaused = true;
-                document.getElementById('exitModal').classList.add('active');
-            }
+// DESC MODAL with video
+function openDescModal() {
+    const ex = EXERCISES[currentExIndex];
+    document.getElementById('descModalName').textContent = ex.name;
+    document.getElementById('descModalText').textContent = ex.description || 'No description available.';
 
-            function returnToWorkout() {
-                document.getElementById('exitModal').classList.remove('active');
-                isPaused = false;
-            }
+    const wrap = document.getElementById('descMediaWrap');
+    if (ex.video) {
+        wrap.innerHTML = `<video autoplay loop muted playsinline class="desc-modal-video" style="width:100%;height:100%;object-fit:cover;display:block;"><source src="${ex.video}"></video>`;
+        wrap.style.display = 'block';
+    } else if (ex.image) {
+        wrap.innerHTML = `<img src="${ex.image}" alt="" class="desc-modal-img">`;
+        wrap.style.display = 'block';
+    } else {
+        wrap.style.display = 'none';
+    }
 
-            function exitWithoutSaving() {
-                window.location.href = '{% url "home_workout_detail" workout.id %}';
-            }
+    document.getElementById('descModal').classList.add('visible');
+}
 
-            function submitComplete() {
-                const durationSeconds = Math.floor((Date.now() - sessionStartTime) / 1000);
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = '{% url "home_workout_complete" workout.id %}';
-                const fields = {
-                    csrfmiddlewaretoken: '{{ csrf_token }}',
-                    action: 'complete',
-                    total_duration: durationSeconds,
-                    total_calories: Math.round(TOTAL_EXERCISES * TOTAL_ROUNDS * 8),
-                    exercises_completed: TOTAL_EXERCISES * TOTAL_ROUNDS,
-                    total_weight: '0',
-                };
-                Object.entries(fields).forEach(([name, value]) => {
-                    const input = document.createElement('input');
-                    input.type = 'hidden';
-                    input.name = name;
-                    input.value = value;
-                    form.appendChild(input);
-                });
-                document.body.appendChild(form);
-                form.submit();
-            }
+function closeDescModal() {
+    document.getElementById('descModal').classList.remove('visible');
+    // Video'ni to'xtatish
+    const video = document.querySelector('#descMediaWrap video');
+    if (video) video.pause();
+}
 
-            init();
-        </script>
+function showExitModal() {
+    isPaused = true;
+    document.getElementById('exitModal').classList.add('active');
+}
+function returnToWorkout() {
+    document.getElementById('exitModal').classList.remove('active');
+    isPaused = false;
+}
+function exitWithoutSaving() {
+    window.location.href = '{% url "home_workout_detail" workout.id %}';
+}
 
-    {% endblock %}
+function submitComplete() {
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '{% url "home_workout_complete" workout.id %}';
+    const fields = {
+        csrfmiddlewaretoken: '{{ csrf_token }}',
+        action: 'complete',
+        total_duration: overallSeconds,
+        total_calories: Math.round(TOTAL_EXERCISES * TOTAL_ROUNDS * 8),
+        exercises_completed: TOTAL_EXERCISES * TOTAL_ROUNDS,
+        total_weight: '0',
+    };
+    Object.entries(fields).forEach(([name, value]) => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = name;
+        input.value = value;
+        form.appendChild(input);
+    });
+    document.body.appendChild(form);
+    form.submit();
+}
+
+// Initial display
+document.getElementById('timerDisplay').textContent = formatTime(EXERCISES[currentExIndex]?.duration || 0);
+updateNextUp();
+</script>
+
+{% endblock %}
