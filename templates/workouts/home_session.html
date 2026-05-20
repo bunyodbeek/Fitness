@@ -189,10 +189,11 @@ body {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.9);
+    background: #0a0a0a;
     backdrop-filter: blur(10px);
     z-index: 500;
     flex-direction: column;
+
 }
 .desc-modal.visible { display: flex; }
 
@@ -202,6 +203,7 @@ body {
     background: #000;
     flex-shrink: 0;
     position: relative;
+    max-height: 200px;
 }
 .desc-modal-video {
     width: 100%;
@@ -598,10 +600,10 @@ body {
     </div>
 
     <!-- DESCRIPTION -->
-    <div class="description-block" onclick="openDescModal()">
-        <span class="description-label">DESCRIPTION</span>
-        <span style="color:rgba(255,255,255,0.4);font-size:14px;">▾</span>
-    </div>
+   <div class="description-block" onclick="openDescModal()">
+    <span class="description-label">DESCRIPTION</span>
+    <span style="font-size:10px;font-weight:700;color:rgba(255,215,0,0.6);letter-spacing:1px;text-transform:uppercase;">TAP TO EXPAND</span>
+</div>
 
     <!-- TIMER -->
     <div class="timer-wrap">
