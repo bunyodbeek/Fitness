@@ -7,268 +7,127 @@
 {% block extra_css %}
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0a0a0a; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; min-height: 100vh; color: #fff; }
 
-body {
-    background: #0a0a0a;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    min-height: 100vh;
-    color: #fff;
-}
+.page-header { position: sticky; top: 0; z-index: 100; background: rgba(10,10,10,0.97); backdrop-filter: blur(12px); padding: 14px 16px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.page-title { font-size: 16px; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; color: #ffd700; }
 
-.page-header {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: rgba(10,10,10,0.97);
-    backdrop-filter: blur(12px);
-    padding: 14px 16px;
-    text-align: center;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-}
-
-.page-title {
-    font-size: 16px;
-    font-weight: 800;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: #ffd700;
-}
-
-.favorites-content {
-    max-width: 540px;
-    margin: 0 auto;
-    padding: 16px 16px 100px;
-}
+.favorites-content { max-width: 540px; margin: 0 auto; padding: 16px 16px 100px; }
 
 /* TABS */
-.favorites-tabs {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 20px;
-}
+.favorites-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+.tab-btn { flex: 1; padding: 10px 16px; background: rgba(255,255,255,0.05); border: 1.5px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); font-size: 12px; font-weight: 700; cursor: pointer; border-radius: 12px; text-transform: uppercase; letter-spacing: 1px; transition: all 0.2s; }
+.tab-btn.active { background: #ffd700; border-color: #ffd700; color: #0a0a0a; }
 
-.tab-btn {
-    flex: 1;
-    padding: 10px 16px;
-    background: rgba(255,255,255,0.05);
-    border: 1.5px solid rgba(255,255,255,0.1);
-    color: rgba(255,255,255,0.5);
-    font-size: 12px;
-    font-weight: 700;
-    cursor: pointer;
-    border-radius: 12px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    transition: all 0.2s;
-}
-
-.tab-btn.active {
-    background: #ffd700;
-    border-color: #ffd700;
-    color: #0a0a0a;
-}
-
-/* CREATE PROGRAM BTN */
-.create-program-btn {
-    width: 100%;
-    padding: 14px;
-    background: rgba(255,215,0,0.1);
-    border: 1.5px dashed rgba(255,215,0,0.4);
-    border-radius: 14px;
-    color: #ffd700;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    margin-bottom: 16px;
-    transition: all 0.2s;
-    text-decoration: none;
-}
-.create-program-btn:hover {
-    background: rgba(255,215,0,0.15);
-    border-color: #ffd700;
-}
+/* CREATE BTN */
+.create-program-btn { width: 100%; padding: 14px; background: rgba(255,215,0,0.07); border: 1.5px dashed rgba(255,215,0,0.35); border-radius: 14px; color: #ffd700; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 16px; transition: all 0.2s; text-decoration: none; }
+.create-program-btn:hover { background: rgba(255,215,0,0.12); border-color: #ffd700; }
 
 /* PROGRAM CARD */
-.program-card {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,215,0,0.15);
-    border-radius: 16px;
-    overflow: hidden;
-    margin-bottom: 12px;
-    transition: all 0.2s;
-}
-.program-card:hover {
-    border-color: rgba(255,215,0,0.35);
-    transform: translateY(-2px);
-}
+.program-card { position: relative; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,215,0,0.12); border-radius: 18px; overflow: hidden; margin-bottom: 14px; cursor: pointer; transition: all 0.25s; text-decoration: none; display: block; color: inherit; }
+.program-card:hover { border-color: rgba(255,215,0,0.35); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(255,215,0,0.1); }
+.program-card-image { width: 100%; height: 130px; background: linear-gradient(135deg, #1a1a1a, #2a2a2a); position: relative; overflow: hidden; }
+.program-card-image img { width: 100%; height: 100%; object-fit: cover; }
+.program-card-image-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.6)); }
+.program-card-body { padding: 14px; }
+.program-card-name { font-size: 16px; font-weight: 900; color: #fff; margin-bottom: 8px; }
+.program-card-meta { display: flex; gap: 6px; flex-wrap: wrap; }
+.program-meta-tag { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; background: rgba(255,215,0,0.08); border: 1px solid rgba(255,215,0,0.15); color: rgba(255,215,0,0.8); }
 
-.program-card-image {
-    width: 100%;
-    height: 120px;
-    background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 40px;
-    position: relative;
-}
+/* 3 DOTS */
+.program-menu-btn { position: absolute; top: 10px; right: 10px; width: 32px; height: 32px; background: rgba(10,10,10,0.75); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: #fff; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10; transition: background 0.2s; letter-spacing: 1px; }
+.program-menu-btn:hover { background: rgba(30,30,30,0.9); }
+.program-dropdown { position: absolute; top: 48px; right: 10px; background: #1a1a1a; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; overflow: hidden; z-index: 20; display: none; min-width: 160px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
+.program-dropdown.open { display: block; }
+.dropdown-item { padding: 12px 16px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: background 0.15s; border: none; background: none; width: 100%; color: #fff; text-align: left; }
+.dropdown-item:hover { background: rgba(255,255,255,0.07); }
+.dropdown-item.delete { color: #ff4757; }
+.dropdown-item.delete:hover { background: rgba(255,71,87,0.1); }
 
-.program-card-body {
-    padding: 14px;
-}
+/* ADD EXERCISES BTN */
+.add-exercises-btn { width: 100%; padding: 13px; background: rgba(255,215,0,0.07); border: 1.5px dashed rgba(255,215,0,0.3); border-radius: 14px; color: #ffd700; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 16px; transition: all 0.2s; }
+.add-exercises-btn:hover { background: rgba(255,215,0,0.12); border-color: #ffd700; }
 
-.program-card-name {
-    font-size: 16px;
-    font-weight: 900;
-    color: #fff;
-    margin-bottom: 8px;
-}
-
-.program-card-meta {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-bottom: 12px;
-}
-
-.program-meta-tag {
-    font-size: 11px;
-    font-weight: 600;
-    padding: 4px 10px;
-    border-radius: 20px;
-    background: rgba(255,215,0,0.1);
-    border: 1px solid rgba(255,215,0,0.2);
-    color: #ffd700;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-
-.program-card-actions {
-    display: flex;
-    gap: 8px;
-}
-
-.btn-view-program {
-    flex: 1;
-    padding: 12px;
-    background: #ffd700;
-    border: none;
-    border-radius: 12px;
-    color: #0a0a0a;
-    font-size: 13px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    cursor: pointer;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    transition: all 0.2s;
-}
-.btn-view-program:hover { opacity: 0.9; }
-
-.btn-delete-program {
-    width: 44px;
-    height: 44px;
-    background: rgba(255,71,87,0.1);
-    border: 1.5px solid rgba(255,71,87,0.3);
-    border-radius: 12px;
-    color: #ff4757;
-    font-size: 16px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-    flex-shrink: 0;
-}
-.btn-delete-program:hover { background: rgba(255,71,87,0.2); }
-
-/* FAVORITES LIST */
-.favorite-item {
-    display: flex;
-    align-items: center;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.07);
-    border-radius: 14px;
-    margin-bottom: 10px;
-    overflow: hidden;
-    transition: all 0.2s;
-}
-.favorite-item:hover { border-color: rgba(255,215,0,0.25); }
-
-.item-link-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px;
-    flex: 1;
-    text-decoration: none;
-    color: white;
-    min-width: 0;
-}
-
-.favorite-thumbnail {
-    width: 60px;
-    height: 60px;
-    border-radius: 10px;
-    object-fit: cover;
-    background: #1a1a1a;
-    flex-shrink: 0;
-}
-
-.favorite-title {
-    font-size: 14px;
-    font-weight: 700;
-    color: #ffd700;
-    margin-bottom: 4px;
-}
-
-.favorite-meta {
-    font-size: 11px;
-    color: rgba(255,255,255,0.5);
-}
-
-.unfavorite-btn {
-    width: 44px;
-    height: 44px;
-    background: transparent;
-    border: none;
-    color: #ffd700;
-    font-size: 20px;
-    cursor: pointer;
-    flex-shrink: 0;
-    margin-right: 8px;
-    transition: transform 0.2s;
-}
+/* EXERCISE ITEM */
+.favorite-item { display: flex; align-items: center; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; margin-bottom: 10px; overflow: hidden; transition: all 0.2s; }
+.favorite-item:hover { border-color: rgba(255,215,0,0.2); }
+.item-link-wrapper { display: flex; align-items: center; gap: 12px; padding: 12px; flex: 1; text-decoration: none; color: white; min-width: 0; }
+.favorite-thumbnail { width: 60px; height: 60px; border-radius: 10px; object-fit: cover; background: #1a1a1a; flex-shrink: 0; }
+.favorite-title { font-size: 14px; font-weight: 700; color: #ffd700; margin-bottom: 4px; }
+.favorite-meta { font-size: 11px; color: rgba(255,255,255,0.5); }
+.unfavorite-btn { width: 44px; height: 44px; background: transparent; border: none; color: #ffd700; font-size: 20px; cursor: pointer; flex-shrink: 0; margin-right: 8px; transition: transform 0.2s; }
 .unfavorite-btn:hover { transform: scale(1.2); }
 
-/* EMPTY STATE */
-.empty-state {
-    text-align: center;
-    padding: 50px 20px;
-    color: rgba(255,255,255,0.4);
-}
+/* EXERCISE PICKER MODAL */
+.ex-picker-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.97); z-index: 500; display: none; flex-direction: column; }
+.ex-picker-modal.visible { display: flex; }
+.ex-picker-header { padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.07); display: flex; align-items: center; gap: 12px; background: #111; flex-shrink: 0; }
+.ex-picker-search { flex: 1; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 10px 14px; color: #fff; font-size: 14px; outline: none; }
+.ex-picker-search:focus { border-color: #ffd700; }
+.ex-picker-search::placeholder { color: rgba(255,255,255,0.3); }
+.ex-picker-close { width: 36px; height: 36px; background: rgba(255,255,255,0.07); border: none; border-radius: 10px; color: #fff; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.ex-picker-list { flex: 1; overflow-y: auto; padding: 12px 16px; }
+.ex-picker-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 12px; cursor: pointer; transition: all 0.15s; border: 1.5px solid transparent; margin-bottom: 6px; }
+.ex-picker-item:hover { background: rgba(255,255,255,0.05); }
+.ex-picker-item.already-added { opacity: 0.35; pointer-events: none; }
+.ex-picker-item.selected-in-picker { background: rgba(255,215,0,0.08); border-color: rgba(255,215,0,0.4); }
+.ex-picker-thumb { width: 44px; height: 44px; border-radius: 10px; background: #1a1a1a; flex-shrink: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+.ex-picker-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.ex-picker-info { flex: 1; min-width: 0; }
+.ex-picker-name { font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 2px; }
+.ex-picker-meta { font-size: 11px; color: rgba(255,255,255,0.4); }
+.ex-picker-check { width: 24px; height: 24px; border-radius: 6px; border: 1.5px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; font-size: 13px; color: transparent; }
+.ex-picker-item.selected-in-picker .ex-picker-check { background: #ffd700; border-color: #ffd700; color: #0a0a0a; }
+.ex-picker-footer { padding: 12px 16px; border-top: 1px solid rgba(255,255,255,0.07); background: #111; flex-shrink: 0; }
+.picker-done-btn { width: 100%; padding: 14px; background: #ffd700; border: none; border-radius: 12px; font-weight: 800; font-size: 14px; cursor: pointer; color: #0a0a0a; transition: all 0.2s; }
+.picker-done-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.picker-done-btn:not(:disabled):hover { opacity: 0.9; }
+
+/* EMPTY */
+.empty-state { text-align: center; padding: 50px 20px; color: rgba(255,255,255,0.4); }
 .empty-state-icon { font-size: 48px; margin-bottom: 12px; }
-.empty-state h3 {
-    font-size: 16px;
-    font-weight: 700;
-    color: #ffd700;
-    margin-bottom: 6px;
-}
+.empty-state h3 { font-size: 16px; font-weight: 700; color: #ffd700; margin-bottom: 6px; }
 .empty-state p { font-size: 13px; }
 </style>
 {% endblock %}
 
 {% block content %}
 
+<!-- EXERCISE PICKER MODAL -->
+<div class="ex-picker-modal" id="exPickerModal">
+    <div class="ex-picker-header">
+        <input type="text" class="ex-picker-search" id="exSearchInput"
+               placeholder="Search exercises..." oninput="filterExercises(this.value)">
+        <button class="ex-picker-close" onclick="closeExPicker()">✕</button>
+    </div>
+    <div class="ex-picker-list" id="exPickerList">
+        {% for ex in all_exercises %}
+        <div class="ex-picker-item {% if ex.id in favorite_exercise_ids %}already-added{% endif %}"
+             id="pickerItem{{ ex.id }}"
+             data-id="{{ ex.id }}"
+             data-name="{{ ex.name|escapejs }}"
+             data-muscle="{{ ex.primary_body_part }}"
+             data-thumb="{% if ex.thumbnail %}{{ ex.thumbnail.url }}{% endif %}"
+             onclick="toggleExercise({{ ex.id }})">
+            <div class="ex-picker-thumb">
+                {% if ex.thumbnail %}<img src="{{ ex.thumbnail.url }}" alt="{{ ex.name }}">{% else %}💪{% endif %}
+            </div>
+            <div class="ex-picker-info">
+                <div class="ex-picker-name">{{ ex.name }}</div>
+                <div class="ex-picker-meta">{{ ex.primary_body_part }}</div>
+            </div>
+            <div class="ex-picker-check">✓</div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="ex-picker-footer">
+        <button class="picker-done-btn" id="pickerDoneBtn" disabled onclick="confirmAddFavorites()">
+            Select exercises
+        </button>
+    </div>
+</div>
+
+<!-- HEADER -->
 <div class="page-header">
     <h1 class="page-title">⭐ {% trans "MY FAVORITES" %}</h1>
 </div>
@@ -287,61 +146,77 @@ body {
             + {% trans "Create Program" %}
         </a>
 
-        <div id="programCardsWrap">
-            {% for program in custom_programs %}
-            <div class="program-card" id="programCard{{ program.id }}">
-                <div class="program-card-image">💪</div>
-                <div class="program-card-body">
-                    <div class="program-card-name">{{ program.name }}</div>
-                    <div class="program-card-meta">
-                        <span class="program-meta-tag">🎯 {{ program.get_goal_display }}</span>
-                        <span class="program-meta-tag">📅 6 {% trans "weeks" %}</span>
-                        <span class="program-meta-tag">📋 {{ program.plans.count }} {% trans "plan" %}</span>
-                    </div>
-                    <div class="program-card-actions">
-                        <a href="{% url 'custom_program_detail' program.id %}" class="btn-view-program">
-                            {% trans "VIEW PROGRAM" %} →
-                        </a>
-                        <button class="btn-delete-program"
-                                onclick="deleteProgram({{ program.id }})"
-                                title="{% trans 'Delete' %}">🗑</button>
-                    </div>
+        {% for program in custom_programs %}
+        <div class="program-card" id="programCard{{ program.id }}"
+             onclick="openProgram(event, '{% url 'custom_program_detail' program.id %}')">
+            <div class="program-card-image">
+                {% if program.image %}
+                    <img src="{{ program.image.url }}" alt="{{ program.name }}">
+                {% else %}
+                    {% with first_ex=program.plans.first.weeks.first.workouts.first.workout_exercises.first.exercise %}
+                    {% if first_ex and first_ex.thumbnail %}
+                        <img src="{{ first_ex.thumbnail.url }}" alt="{{ program.name }}">
+                    {% endif %}
+                    {% endwith %}
+                {% endif %}
+                <div class="program-card-image-overlay"></div>
+            </div>
+            <button class="program-menu-btn" onclick="toggleMenu(event, {{ program.id }})">···</button>
+            <div class="program-dropdown" id="menu{{ program.id }}">
+                <button class="dropdown-item" onclick="editProgram(event, {{ program.id }})">✏️ {% trans "Edit Program" %}</button>
+                <button class="dropdown-item delete" onclick="deleteProgram(event, {{ program.id }})">🗑 {% trans "Delete Program" %}</button>
+            </div>
+            <div class="program-card-body">
+                <div class="program-card-name">{{ program.name }}</div>
+                <div class="program-card-meta">
+                    <span class="program-meta-tag">🎯 {{ program.get_goal_display }}</span>
+                    <span class="program-meta-tag">📅 6 {% trans "weeks" %}</span>
+                    <span class="program-meta-tag">📋 {{ program.plans.count }} {% trans "plan" %}</span>
                 </div>
             </div>
-            {% empty %}
-            <div class="empty-state">
-                <div class="empty-state-icon">💪</div>
-                <h3>{% trans "No custom programs yet" %}</h3>
-                <p>{% trans "Create your first program!" %}</p>
-            </div>
-            {% endfor %}
         </div>
+        {% empty %}
+        <div class="empty-state">
+            <div class="empty-state-icon">💪</div>
+            <h3>{% trans "No custom programs yet" %}</h3>
+            <p>{% trans "Create your first program!" %}</p>
+        </div>
+        {% endfor %}
     </div>
 
     <!-- EXERCISES TAB -->
     <div id="tabExercises" style="display:none;">
-        {% for fav in favorites %}
-        <div class="favorite-item" data-id="{{ fav.id }}">
-            <a href="{% url 'exercise_detail' fav.exercise_id %}" class="item-link-wrapper">
-                {% if fav.exercise.thumbnail %}
-                    <img src="{{ fav.exercise.thumbnail.url }}" alt="{{ fav.exercise.name }}" class="favorite-thumbnail">
-                {% else %}
-                    <div class="favorite-thumbnail" style="display:flex;align-items:center;justify-content:center;font-size:24px;">💪</div>
-                {% endif %}
-                <div>
-                    <div class="favorite-title">{{ fav.exercise.name }}</div>
-                    <div class="favorite-meta">{{ fav.exercise.primary_body_part }}</div>
-                </div>
-            </a>
-            <button class="unfavorite-btn" data-exercise-id="{{ fav.exercise.id }}">⭐</button>
+
+        <!-- ADD EXERCISES BUTTON -->
+        <button class="add-exercises-btn" onclick="openExPicker()">
+            + {% trans "Add Exercises" %}
+        </button>
+
+        <!-- FAVORITES LIST -->
+        <div id="favoritesList">
+            {% for fav in favorites %}
+            <div class="favorite-item" id="favItem{{ fav.exercise.id }}">
+                <a href="{% url 'exercise_detail' fav.exercise_id %}" class="item-link-wrapper">
+                    {% if fav.exercise.thumbnail %}
+                        <img src="{{ fav.exercise.thumbnail.url }}" alt="{{ fav.exercise.name }}" class="favorite-thumbnail">
+                    {% else %}
+                        <div class="favorite-thumbnail" style="display:flex;align-items:center;justify-content:center;font-size:24px;">💪</div>
+                    {% endif %}
+                    <div>
+                        <div class="favorite-title">{{ fav.exercise.name }}</div>
+                        <div class="favorite-meta">{{ fav.exercise.primary_body_part }}</div>
+                    </div>
+                </a>
+                <button class="unfavorite-btn" data-exercise-id="{{ fav.exercise.id }}">⭐</button>
+            </div>
+            {% empty %}
+            <div class="empty-state" id="emptyExercises">
+                <div class="empty-state-icon">⭐</div>
+                <h3>{% trans "No favorites yet" %}</h3>
+                <p>{% trans "Add exercises to your favorites!" %}</p>
+            </div>
+            {% endfor %}
         </div>
-        {% empty %}
-        <div class="empty-state">
-            <div class="empty-state-icon">⭐</div>
-            <h3>{% trans "No favorites yet" %}</h3>
-            <p>{% trans "Add exercises to your favorites!" %}</p>
-        </div>
-        {% endfor %}
     </div>
 
 </div>
@@ -352,6 +227,10 @@ body {
 const CSRF = document.querySelector('[name=csrfmiddlewaretoken]').value;
 const LANG = window.location.pathname.match(/^\/(en|ru|uz)\//)?.[1] || 'en';
 
+// Already favorited IDs
+const favoriteIds = new Set([{% for id in favorite_exercise_ids %}{{ id }},{% endfor %}]);
+let selectedExercises = new Set();
+
 // TABS
 document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', function() {
@@ -359,44 +238,164 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
         this.classList.add('active');
         document.getElementById('tabPrograms').style.display = 'none';
         document.getElementById('tabExercises').style.display = 'none';
-        if (this.dataset.tab === 'programs') {
-            document.getElementById('tabPrograms').style.display = 'block';
-        } else {
-            document.getElementById('tabExercises').style.display = 'block';
-        }
+        document.getElementById(this.dataset.tab === 'programs' ? 'tabPrograms' : 'tabExercises').style.display = 'block';
     });
 });
 
-// DELETE PROGRAM
-function deleteProgram(programId) {
+// PROGRAM CARD
+function openProgram(e, url) {
+    if (e.target.closest('.program-menu-btn') || e.target.closest('.program-dropdown')) return;
+    window.location.href = url;
+}
+
+function toggleMenu(e, id) {
+    e.stopPropagation();
+    document.querySelectorAll('.program-dropdown').forEach(d => { if (d.id !== `menu${id}`) d.classList.remove('open'); });
+    document.getElementById(`menu${id}`).classList.toggle('open');
+}
+
+document.addEventListener('click', () => {
+    document.querySelectorAll('.program-dropdown').forEach(d => d.classList.remove('open'));
+});
+
+function editProgram(e, id) {
+    e.stopPropagation();
+    window.location.href = `/${LANG}/favorites/custom-program/${id}/edit/`;
+}
+
+function deleteProgram(e, id) {
+    e.stopPropagation();
     if (!confirm('{% trans "Delete this program?" %}')) return;
-    fetch(`/${LANG}/favorites/custom-program/${programId}/delete/`, {
-        method: 'POST',
-        headers: {'X-CSRFToken': CSRF}
-    })
-    .then(r => r.json())
-    .then(data => {
+    fetch(`/${LANG}/favorites/custom-program/${id}/delete/`, {
+        method: 'POST', headers: { 'X-CSRFToken': CSRF }
+    }).then(r => r.json()).then(data => {
         if (data.success) {
-            const card = document.getElementById(`programCard${programId}`);
-            if (card) card.remove();
+            const card = document.getElementById(`programCard${id}`);
+            if (card) { card.style.opacity = '0'; card.style.transform = 'scale(0.95)'; setTimeout(() => card.remove(), 250); }
         }
-    })
-    .catch(() => alert('Error'));
+    });
+}
+
+// EXERCISE PICKER
+function openExPicker() {
+    selectedExercises = new Set();
+    document.getElementById('exPickerModal').classList.add('visible');
+    document.getElementById('exSearchInput').value = '';
+    filterExercises('');
+    updateDoneBtn();
+}
+
+function closeExPicker() {
+    document.getElementById('exPickerModal').classList.remove('visible');
+    selectedExercises = new Set();
+}
+
+function filterExercises(q) {
+    q = q.toLowerCase();
+    document.querySelectorAll('.ex-picker-item').forEach(item => {
+        const match = item.dataset.name.toLowerCase().includes(q) || item.dataset.muscle.toLowerCase().includes(q);
+        item.style.display = match ? 'flex' : 'none';
+    });
+}
+
+function toggleExercise(exId) {
+    const item = document.getElementById(`pickerItem${exId}`);
+    if (!item || item.classList.contains('already-added')) return;
+    if (selectedExercises.has(exId)) {
+        selectedExercises.delete(exId);
+        item.classList.remove('selected-in-picker');
+    } else {
+        selectedExercises.add(exId);
+        item.classList.add('selected-in-picker');
+    }
+    updateDoneBtn();
+}
+
+function updateDoneBtn() {
+    const btn = document.getElementById('pickerDoneBtn');
+    const n = selectedExercises.size;
+    btn.disabled = n === 0;
+    btn.textContent = n > 0 ? `Add ${n} Exercise${n > 1 ? 's' : ''} ⭐` : 'Select exercises';
+}
+
+async function confirmAddFavorites() {
+    const btn = document.getElementById('pickerDoneBtn');
+    btn.disabled = true;
+    btn.textContent = 'Adding...';
+
+    const promises = Array.from(selectedExercises).map(exId =>
+        fetch(`/${LANG}/exercises/favorite/toggle/${exId}/`, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': CSRF }
+        }).then(r => r.json()).then(data => ({ exId, data }))
+    );
+
+    const results = await Promise.all(promises);
+
+    results.forEach(({ exId, data }) => {
+        if (data.success && data.status === 'added') {
+            // already-added state
+            const pickerItem = document.getElementById(`pickerItem${exId}`);
+            if (pickerItem) pickerItem.classList.add('already-added');
+            favoriteIds.add(exId);
+
+            // Add to favorites list
+            const item = document.getElementById(`pickerItem${exId}`);
+            if (!item) return;
+            const thumb = item.dataset.thumb;
+            const name = item.dataset.name;
+            const muscle = item.dataset.muscle;
+
+            // Remove empty state
+            const emptyEl = document.getElementById('emptyExercises');
+            if (emptyEl) emptyEl.remove();
+
+            const favEl = document.createElement('div');
+            favEl.className = 'favorite-item';
+            favEl.id = `favItem${exId}`;
+            favEl.innerHTML = `
+                <a href="/${LANG}/exercises/detail/${exId}/" class="item-link-wrapper">
+                    ${thumb
+                        ? `<img src="${thumb}" alt="${name}" class="favorite-thumbnail">`
+                        : `<div class="favorite-thumbnail" style="display:flex;align-items:center;justify-content:center;font-size:24px;">💪</div>`
+                    }
+                    <div>
+                        <div class="favorite-title">${name}</div>
+                        <div class="favorite-meta">${muscle}</div>
+                    </div>
+                </a>
+                <button class="unfavorite-btn" data-exercise-id="${exId}">⭐</button>
+            `;
+            document.getElementById('favoritesList').appendChild(favEl);
+
+            // Bind unfavorite
+            favEl.querySelector('.unfavorite-btn').addEventListener('click', function() {
+                unfavoriteExercise(exId);
+            });
+        }
+    });
+
+    closeExPicker();
 }
 
 // UNFAVORITE
+function unfavoriteExercise(exId) {
+    if (!confirm('{% trans "Remove from favorites?" %}')) return;
+    fetch(`/${LANG}/exercises/favorite/toggle/${exId}/`, {
+        method: 'POST', headers: { 'X-CSRFToken': CSRF }
+    }).then(() => {
+        const el = document.getElementById(`favItem${exId}`);
+        if (el) el.remove();
+        favoriteIds.delete(exId);
+        // picker'da already-added olib tashlash
+        const pickerItem = document.getElementById(`pickerItem${exId}`);
+        if (pickerItem) pickerItem.classList.remove('already-added');
+    });
+}
+
 document.querySelectorAll('.unfavorite-btn').forEach(btn => {
-    btn.addEventListener('click', function(e) {
-        e.preventDefault();
-        const exerciseId = this.dataset.exerciseId;
-        if (!confirm('{% trans "Remove from favorites?" %}')) return;
-        fetch(`/${LANG}/exercises/favorite/toggle/${exerciseId}/`, {
-            method: 'POST',
-            headers: {'X-CSRFToken': CSRF}
-        })
-        .then(() => {
-            this.closest('.favorite-item').remove();
-        });
+    btn.addEventListener('click', function() {
+        unfavoriteExercise(parseInt(this.dataset.exerciseId));
     });
 });
 </script>

@@ -38,7 +38,7 @@ from apps.views.favorite import (
 	UserCustomProgramListView,
 	CreateCustomProgramView as FavoritesCreateCustomProgramView,
 	CustomProgramStartView,
-	CustomProgramCompleteView,
+	CustomProgramCompleteView, CustomProgramEditView, CustomProgramEditSaveView,
 )
 from apps.views.users import (
 	AdminAnalyticsView,
@@ -164,6 +164,10 @@ urlpatterns = [
 	path('favorites/custom-program/create/', CustomProgramCreateView.as_view(), name='custom_program_create'),
 	path('favorites/custom-program/<int:pk>/delete/', CustomProgramDeleteView.as_view(), name='custom_program_delete'),
 	path('favorites/custom-program/<int:pk>/', CustomProgramDetailView.as_view(), name='custom_program_detail'),
-	path('favorites/plan/<int:pk>/weeks/', PlanWeeksView.as_view(forced_workout_type=WorkoutType.GYM), name='custom_plan_weeks'),
+	path('favorites/plan/<int:pk>/weeks/', PlanWeeksView.as_view(forced_workout_type=WorkoutType.GYM),
+	     name='custom_plan_weeks'),
+	path('favorites/custom-program/<int:pk>/edit/', CustomProgramEditView.as_view(), name='custom_program_edit'),
+	path('favorites/custom-program/<int:pk>/edit/save/', CustomProgramEditSaveView.as_view(),
+	     name='custom_program_edit_save'),
 
 ]

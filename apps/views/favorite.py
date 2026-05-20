@@ -51,16 +51,25 @@ class FavoritesListView(LoginRequiredMixin, ListView):
 			created_by=user_profile,
 			is_active=True,
 		).prefetch_related('plans')
-		favorites = Favorite.objects.filter(user=user_profile, collection__isnull=True).select_related('exercise')
-		context['all_exercises'] = [fav.exercise for fav in favorites]
+		
+		# Favorite exercise ID'lari (⭐ state uchun)
+		favorite_ids = set(
+			Favorite.objects.filter(user=user_profile)
+			.values_list('exercise_id', flat=True)
+		)
+		context['favorite_exercise_ids'] = favorite_ids
+		
+		# Barcha gym exercises (picker uchun)
+		context['all_exercises'] = Exercise.objects.filter(
+			workout_type='gym'
+		).order_by('name')
+		
 		return context
 	
 	def get_queryset(self):
-		qs = super().get_queryset()
-		user = self.request.user
-		qs = qs.filter(user=user.profile, collection__isnull=True).select_related('exercise')
-		return qs
-
+		return Favorite.objects.filter(
+			user=self.request.user.profile,
+		).select_related('exercise')
 
 class ToggleFavoriteView(APIView):
 	permission_classes = [IsAuthenticated]
@@ -608,3 +617,118 @@ class CustomProgramDetailView(LoginRequiredMixin, DetailView):
 		
 		context['is_custom'] = True
 		return context
+
+
+class CustomProgramEditView(LoginRequiredMixin, View):
+	template_name = "exercises/custom_program_create.html"
+	
+	def get(self, request, pk):
+		program = get_object_or_404(
+			Program, pk=pk,
+			type=Program.ProgramType.CUSTOM,
+			created_by=request.user.profile,
+		)
+		exercises = Exercise.objects.filter(workout_type='gym').order_by('name')
+		
+		# Week 1 dan mavjud data olish
+		plan = program.plans.first()
+		existing_days = []
+		if plan:
+			week_one = plan.weeks.filter(week_number=1).first()
+			if week_one:
+				for workout in week_one.workouts.order_by('day_number'):
+					day_exercises = []
+					for we in workout.workout_exercises.select_related('exercise').order_by('order'):
+						day_exercises.append({
+							'id': we.exercise.id,
+							'name': we.exercise.name,
+							'muscle': str(we.exercise.primary_body_part),
+							'thumb': we.exercise.thumbnail.url if we.exercise.thumbnail else '',
+							'sets': we.sets,
+							'reps': we.reps,
+							'weight': we.recommended_weight or 0,
+						})
+					existing_days.append({
+						'day_number': workout.day_number,
+						'exercises': day_exercises,
+					})
+		
+		import json
+		return render(request, self.template_name, {
+			'exercises': exercises,
+			'program': program,
+			'is_edit': True,
+			'existing_days_json': json.dumps(existing_days),
+			'existing_name': program.name,
+			'existing_goal': program.goal,
+			'existing_days_count': len(existing_days),
+		})
+
+
+class CustomProgramEditSaveView(LoginRequiredMixin, View):
+	def post(self, request, pk):
+		import json
+		from django.db import transaction
+		
+		program = get_object_or_404(
+			Program, pk=pk,
+			type=Program.ProgramType.CUSTOM,
+			created_by=request.user.profile,
+		)
+		
+		try:
+			data = json.loads(request.body)
+		except Exception:
+			return JsonResponse({"success": False, "error": "Invalid JSON"}, status=400)
+		
+		name = (data.get("name") or "").strip()
+		goal = (data.get("goal") or "").strip()
+		days = data.get("days", [])
+		
+		if not name:
+			return JsonResponse({"success": False, "error": "Name required"}, status=400)
+		
+		with transaction.atomic():
+			# Program update
+			program.name = name
+			program.goal = goal
+			program.save(update_fields=['name', 'goal'])
+			
+			# Plan va weeks tozalash, qayta yaratish
+			plan = program.plans.first()
+			if plan:
+				# Week 1 workouts o'chirish
+				week_one = plan.weeks.filter(week_number=1).first()
+				if week_one:
+					week_one.workouts.all().delete()
+				
+				# W2-W6 workouts o'chirish
+				plan.weeks.exclude(week_number=1).delete()
+				ProgramGenerationService.ensure_plan_weeks(plan)
+				week_one = plan.weeks.get(plan=plan, week_number=1)
+				
+				for day_data in days:
+					workout = Workout.objects.create(
+						week=week_one,
+						day_number=day_data["day_number"],
+						title=f"Day {day_data['day_number']}",
+						apply_to_all_weeks=True,
+					)
+					for ex_data in day_data.get("exercises", []):
+						exercise = Exercise.objects.filter(id=ex_data["exercise_id"]).first()
+						if not exercise:
+							continue
+						we = WorkoutExercise.objects.create(
+							workout=workout,
+							exercise=exercise,
+							sets=ex_data.get("sets", 3),
+							reps=ex_data.get("reps", 10),
+							recommended_weight=ex_data.get("weight", 0),
+							order=ex_data.get("order", 1),
+						)
+						ProgramGenerationService.generate_progression_from_week_one(we)
+		
+		return JsonResponse({
+			"success": True,
+			"redirect_url": f"/{request.LANGUAGE_CODE}/favorites/custom-program/{program.id}/"
+		})
