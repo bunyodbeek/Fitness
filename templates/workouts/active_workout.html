@@ -71,9 +71,16 @@ body {
 
 /* ── MEDIA ── */
 .exercise-media-container {
-    width: 100%; aspect-ratio: 16/10; border-radius: 16px; overflow: hidden;
-    border: 1.5px solid rgba(255,215,0,0.15); background: rgba(0,0,0,0.4);
-    box-shadow: 0 12px 36px rgba(0,0,0,0.5); cursor: pointer; flex-shrink: 0;
+    width: calc(100% + 28px);
+    margin: 0 -14px;
+    aspect-ratio: 16/10;
+    border-radius: 0;
+    overflow: hidden;
+    border: none;
+    background: #000;
+    box-shadow: none;
+    cursor: pointer;
+    flex-shrink: 0;
 }
 .exercise-image { width:100%; height:100%; object-fit:cover; display:block; }
 .exercise-video { width:100%; height:100%; object-fit:cover; display:none; pointer-events:none; }
