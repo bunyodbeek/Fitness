@@ -426,8 +426,12 @@ background: rgba(13,15,24,0.98);
         }
 
         .container {
-            padding: 10px 10px 90px;
-        }
+    position: relative;
+    z-index: 1;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0 0 100px;  /* ← padding olib tashlandi */
+}
 
         .media-container {
             margin-bottom: 12px;
@@ -443,9 +447,10 @@ background: rgba(13,15,24,0.98);
             font-size: 40px;
         }
 
-        .description-card {
-            padding: 14px;
-        }
+      .description-card {
+    padding: 12px 12px 0;  /* ← padding bu yerga ko'chdi */
+    margin-top: 14px;
+}
 
         .description-title {
             font-size: 12px;
@@ -482,11 +487,17 @@ background: rgba(13,15,24,0.98);
         padding: 0;
     }
 
-    .media-container {
-        margin: 0;
-        border-radius: 0;
-        height: 100vh;
-    }
+  .media-container {
+    margin: 0 0 14px;
+    border-radius: 0;
+    overflow: hidden;
+    background: #000;
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16/9;
+    box-shadow: none;
+    border: none;
+}
 
     .exercise-image {
         height: 100vh;
