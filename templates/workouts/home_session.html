@@ -16,7 +16,7 @@ body {
     overflow-x: hidden;
 }
 
-/* ── HEADER ── */
+/* HEADER */
 .session-header {
     position: sticky;
     top: 0;
@@ -53,19 +53,19 @@ body {
     color: #ffd700;
 }
 
-/* ── MAIN ── */
+/* MAIN */
 .container {
     max-width: 540px;
     margin: 0 auto;
     padding: 16px 16px 120px;
 }
 
-/* ── EXERCISE IMAGE ── */
+/* EXERCISE IMAGE */
 .exercise-image-wrap {
     position: relative;
     border-radius: 20px;
     overflow: hidden;
-    height: 240px;
+    aspect-ratio: 16 / 9;
     background: #1a1a1a;
     margin-bottom: 16px;
 }
@@ -74,30 +74,6 @@ body {
     width: 100%;
     height: 100%;
     object-fit: cover;
-}
-
-.exercise-image-placeholder {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 72px;
-    opacity: 0.3;
-}
-
-.order-badge {
-    position: absolute;
-    top: 12px;
-    left: 12px;
-    background: rgba(10,10,10,0.75);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 8px;
-    padding: 4px 10px;
-    font-size: 12px;
-    font-weight: 700;
-    color: #fff;
 }
 
 .fullscreen-btn {
@@ -115,10 +91,10 @@ body {
     justify-content: center;
     cursor: pointer;
     color: #fff;
-    font-size: 16px;
+    z-index: 2;
 }
 
-/* ── EXERCISE NAME (video ustida, gold) ── */
+/* EXERCISE NAME */
 .exercise-name {
     font-size: clamp(20px, 6vw, 28px);
     font-weight: 900;
@@ -129,20 +105,22 @@ body {
     text-align: center;
 }
 
-/* ── DESCRIPTION ── */
+/* DESCRIPTION BLOCK */
 .description-block {
     background: rgba(255,255,255,0.04);
     border: 1px solid rgba(255,255,255,0.08);
     border-radius: 14px;
     padding: 14px 16px;
     margin-bottom: 20px;
+    cursor: pointer;
+    transition: background 0.2s;
 }
+.description-block:hover { background: rgba(255,255,255,0.07); }
 
 .description-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 8px;
 }
 
 .description-label {
@@ -153,15 +131,58 @@ body {
     text-transform: uppercase;
 }
 
-.description-chevron { display: none; }
+/* DESC MODAL */
+.desc-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(8px);
+    z-index: 500;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+.desc-modal.visible { display: flex; }
 
-.description-text {
-    font-size: 13px;
-    color: rgba(255,255,255,0.6);
-    line-height: 1.6;
+.desc-modal-box {
+    background: #1a1a1a;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 24px;
+    max-width: 480px;
+    width: 100%;
 }
 
-/* ── TIMER ── */
+.desc-modal-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: rgba(255,255,255,0.4);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+}
+
+.desc-modal-text {
+    font-size: 14px;
+    color: rgba(255,255,255,0.75);
+    line-height: 1.7;
+}
+
+.desc-modal-close {
+    margin-top: 20px;
+    width: 100%;
+    padding: 12px;
+    background: #ffd700;
+    border: none;
+    border-radius: 12px;
+    font-weight: 800;
+    font-size: 13px;
+    cursor: pointer;
+    color: #0a0a0a;
+}
+
+/* TIMER */
 .timer-wrap {
     display: flex;
     justify-content: center;
@@ -222,7 +243,7 @@ body {
     margin-top: 4px;
 }
 
-/* ── REST PANEL ── */
+/* REST PANEL */
 .rest-panel {
     display: none;
     background: rgba(78,205,196,0.08);
@@ -267,7 +288,7 @@ body {
 }
 .btn-skip-rest:hover { background: rgba(78,205,196,0.22); }
 
-/* ── CONTROLS ── */
+/* CONTROLS */
 .controls {
     display: flex;
     gap: 12px;
@@ -311,16 +332,11 @@ body {
     transition: all 0.2s;
     box-shadow: 0 4px 20px rgba(255,215,0,0.3);
 }
-.btn-next:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 8px 28px rgba(255,215,0,0.45);
-}
+.btn-next:hover { transform: translateY(-1px); box-shadow: 0 8px 28px rgba(255,215,0,0.45); }
 .btn-next:active { transform: translateY(0); }
 
-/* ── NEXT UP ── */
-.next-up-section {
-    margin-bottom: 16px;
-}
+/* NEXT UP */
+.next-up-section { margin-bottom: 16px; }
 
 .next-up-label {
     font-size: 11px;
@@ -341,7 +357,6 @@ body {
     padding: 10px 12px;
     cursor: pointer;
     transition: background 0.2s;
-    text-decoration: none;
 }
 .next-up-card:hover { background: rgba(255,255,255,0.08); }
 
@@ -350,7 +365,6 @@ body {
     height: 56px;
     border-radius: 10px;
     object-fit: cover;
-    background: #1a1a1a;
     flex-shrink: 0;
 }
 .next-up-thumb-placeholder {
@@ -365,24 +379,12 @@ body {
     flex-shrink: 0;
 }
 
-.next-up-info {
-    flex: 1;
-}
-.next-up-name {
-    font-size: 14px;
-    font-weight: 700;
-    color: #fff;
-    margin-bottom: 2px;
-}
-.next-up-dur {
-    font-size: 12px;
-    color: rgba(255,255,255,0.4);
-}
+.next-up-info { flex: 1; }
+.next-up-name { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 2px; }
+.next-up-dur { font-size: 12px; color: rgba(255,255,255,0.4); }
 
-/* ── EXERCISE LIST ── */
-.exercises-section {
-    margin-top: 8px;
-}
+/* EXERCISE LIST */
+.exercises-section { margin-top: 8px; }
 
 .exercises-label {
     font-size: 11px;
@@ -406,89 +408,51 @@ body {
     transition: background 0.2s;
 }
 .exercise-item:hover { background: rgba(255,255,255,0.06); }
-.exercise-item.current {
-    background: rgba(255,215,0,0.07);
-    border-color: rgba(255,215,0,0.2);
-}
+.exercise-item.current { background: rgba(255,215,0,0.07); border-color: rgba(255,215,0,0.2); }
 .exercise-item.done { opacity: 0.4; }
 
 .ex-play-btn {
-    width: 28px;
-    height: 28px;
+    width: 28px; height: 28px;
     border-radius: 8px;
     background: rgba(255,215,0,0.15);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
     flex-shrink: 0;
 }
-.ex-play-btn svg {
-    width: 12px;
-    height: 12px;
-    fill: #ffd700;
-}
-.exercise-item.done .ex-play-btn {
-    background: rgba(78,205,196,0.15);
-}
+.ex-play-btn svg { width: 12px; height: 12px; fill: #ffd700; }
+.exercise-item.done .ex-play-btn { background: rgba(78,205,196,0.15); }
 .exercise-item.done .ex-play-btn svg { fill: #4ecdc4; }
 
-.ex-name {
-    flex: 1;
-    font-size: 13px;
-    font-weight: 600;
-    color: rgba(255,255,255,0.7);
-}
+.ex-name { flex: 1; font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.7); }
 .exercise-item.current .ex-name { color: #fff; font-weight: 700; }
+.ex-dur { font-size: 12px; color: rgba(255,255,255,0.3); font-weight: 600; }
 
-.ex-dur {
-    font-size: 12px;
-    color: rgba(255,255,255,0.3);
-    font-weight: 600;
-}
-
-/* ── EXIT MODAL ── */
+/* EXIT MODAL */
 .exit-modal {
-    position: fixed;
-    inset: 0;
+    position: fixed; inset: 0;
     background: rgba(5,5,5,0.9);
     backdrop-filter: blur(12px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
     z-index: 1000;
-    opacity: 0;
-    pointer-events: none;
+    opacity: 0; pointer-events: none;
     transition: opacity 0.25s;
     padding: 20px;
 }
 .exit-modal.active { opacity: 1; pointer-events: all; }
 
 .exit-modal-box {
-    width: 100%;
-    max-width: 340px;
+    width: 100%; max-width: 340px;
     background: #141414;
     border: 1px solid rgba(255,215,0,0.15);
     border-radius: 24px;
     padding: 28px 24px;
     text-align: center;
 }
-.exit-modal-box h3 {
-    font-size: 22px;
-    font-weight: 900;
-    color: #ffd700;
-    margin-bottom: 8px;
-}
-.exit-modal-box p {
-    font-size: 13px;
-    color: rgba(255,255,255,0.4);
-    margin-bottom: 22px;
-    line-height: 1.5;
-}
+.exit-modal-box h3 { font-size: 22px; font-weight: 900; color: #ffd700; margin-bottom: 8px; }
+.exit-modal-box p { font-size: 13px; color: rgba(255,255,255,0.4); margin-bottom: 22px; line-height: 1.5; }
 .exit-modal-buttons { display: flex; flex-direction: column; gap: 10px; }
 .btn-exit-confirm {
     width: 100%; padding: 13px; border-radius: 12px;
-    background: rgba(255,71,87,0.1);
-    border: 1.5px solid rgba(255,71,87,0.3);
+    background: rgba(255,71,87,0.1); border: 1.5px solid rgba(255,71,87,0.3);
     color: #ff4757; font-size: 13px; font-weight: 700; cursor: pointer;
     transition: background 0.2s;
 }
@@ -497,7 +461,6 @@ body {
     width: 100%; padding: 13px; border-radius: 12px;
     background: #ffd700; border: none;
     color: #0a0a0a; font-size: 13px; font-weight: 800; cursor: pointer;
-    transition: opacity 0.2s;
 }
 .btn-return:hover { opacity: 0.9; }
 </style>
@@ -517,6 +480,15 @@ body {
     </div>
 </div>
 
+<!-- DESC MODAL -->
+<div class="desc-modal" id="descModal" onclick="closeDescModal()">
+    <div class="desc-modal-box" onclick="event.stopPropagation()">
+        <div class="desc-modal-label">DESCRIPTION</div>
+        <div class="desc-modal-text" id="descModalText"></div>
+        <button class="desc-modal-close" onclick="closeDescModal()">Close</button>
+    </div>
+</div>
+
 <!-- HEADER -->
 <div class="session-header">
     <button class="exit-btn" onclick="showExitModal()">EXIT</button>
@@ -526,31 +498,31 @@ body {
 
 <div class="container">
 
-    <!-- EXERCISE NAME (video ustida, gold) -->
+    <!-- EXERCISE NAME -->
     <div class="exercise-name" id="exName">{{ exercises.0.name }}</div>
 
-    <!-- EXERCISE IMAGE -->
+    <!-- EXERCISE IMAGE (video autoplay - gif effect) -->
     <div class="exercise-image-wrap">
-        <div class="order-badge" id="orderBadge">1 / {{ exercises|length }}</div>
         <div class="fullscreen-btn" onclick="toggleFullscreen()">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
             </svg>
         </div>
         {% if exercises.0.image %}
-            <img src="{{ exercises.0.image.url }}" alt="" class="exercise-image" id="exImage">
+            <video autoplay loop muted playsinline class="exercise-image" id="exImage">
+                <source src="{{ exercises.0.image.url }}">
+            </video>
         {% else %}
             <div class="exercise-image-placeholder" id="exImage">💪</div>
         {% endif %}
     </div>
 
-    <!-- DESCRIPTION (always visible, 3-rasmdek) -->
-    <div class="description-block" id="descBlock">
+    <!-- DESCRIPTION (click = modal) -->
+    <div class="description-block" onclick="openDescModal()">
         <div class="description-header">
             <span class="description-label">DESCRIPTION</span>
-            <span class="description-chevron" id="descChevron">▾</span>
+            <span style="color:rgba(255,255,255,0.4);font-size:14px;">▾</span>
         </div>
-        <div class="description-text visible" id="descText">{{ exercises.0.description|default:"No description available." }}</div>
     </div>
 
     <!-- TIMER -->
@@ -565,9 +537,7 @@ body {
                 </defs>
                 <circle class="timer-bg-circle" cx="100" cy="100" r="90"/>
                 <circle class="timer-progress-circle" cx="100" cy="100" r="90"
-                    id="timerCircle"
-                    stroke-dasharray="565"
-                    stroke-dashoffset="0"/>
+                    id="timerCircle" stroke-dasharray="565" stroke-dashoffset="0"/>
             </svg>
             <div class="timer-inner">
                 <div class="timer-display" id="timerDisplay">00:00</div>
@@ -595,8 +565,8 @@ body {
         </button>
     </div>
 
-    <!-- NEXT UP -->
-    <div class="next-up-section" id="nextUpSection">
+    <!-- NEXT UP (faqat 2+ exercise bo'lsa ko'rinadi) -->
+    <div class="next-up-section" id="nextUpSection" style="display:none;">
         <div class="next-up-label">NEXT UP</div>
         <div class="next-up-card" id="nextUpCard" onclick="goToNextUp()">
             <div class="next-up-thumb-placeholder" id="nextUpThumb">💪</div>
@@ -607,11 +577,12 @@ body {
         </div>
     </div>
 
+    <!-- EXERCISE LIST -->
+
 
 </div>
 
 <script>
-// ── DATA ──
 const EXERCISES = [
     {% for e in exercises %}
     {
@@ -627,9 +598,8 @@ const EXERCISES = [
 const TOTAL_ROUNDS = {{ rounds }};
 const REST_SECONDS = {{ rest_seconds }};
 const TOTAL_EXERCISES = EXERCISES.length;
-const CIRCUMFERENCE = 2 * Math.PI * 90; // r=90
+const CIRCUMFERENCE = 2 * Math.PI * 90;
 
-// ── STATE ──
 let currentRound = {{ current_round }};
 let currentExIndex = Math.max({{ current_order|default:1 }} - 1, 0);
 let timeLeft = 0;
@@ -640,58 +610,46 @@ let restLeft = REST_SECONDS;
 let timer = null;
 let sessionStartTime = Date.now();
 
-// ── FORMAT TIME ──
 function formatTime(s) {
     const m = Math.floor(s / 60);
     const sec = s % 60;
     return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
 }
 
-// ── INIT ──
 function init() {
     updateUI();
     startTimer();
 }
 
-// ── UI ──
 function updateUI() {
     const ex = EXERCISES[currentExIndex];
     if (!ex) return;
 
-    // Header
     document.getElementById('roundLabel').textContent = `ROUND ${currentRound} OF ${TOTAL_ROUNDS}`;
     document.getElementById('exCounterHeader').textContent = `${currentExIndex + 1} / ${TOTAL_EXERCISES}`;
-    document.getElementById('orderBadge').textContent = `${currentExIndex + 1} / ${TOTAL_EXERCISES}`;
-
-    // Name (video ustida, gold)
     document.getElementById('exName').textContent = ex.name;
 
-    // Description (always visible)
-    document.getElementById('descText').textContent = ex.description || 'No description available.';
-
-    // Image
+    // Video update (gif effekti)
     const imgWrap = document.getElementById('exImage');
     if (ex.image) {
-        if (imgWrap.tagName === 'IMG') {
-            imgWrap.src = ex.image;
+        if (imgWrap && imgWrap.tagName === 'VIDEO') {
+            const source = imgWrap.querySelector('source');
+            if (source) source.src = ex.image;
+            imgWrap.load();
         } else {
-            imgWrap.outerHTML = `<img src="${ex.image}" alt="" class="exercise-image" id="exImage">`;
+            imgWrap.outerHTML = `<video autoplay loop muted playsinline class="exercise-image" id="exImage"><source src="${ex.image}"></video>`;
         }
     } else {
-        if (imgWrap.tagName === 'IMG') {
+        if (imgWrap && imgWrap.tagName !== 'DIV') {
             imgWrap.outerHTML = `<div class="exercise-image-placeholder" id="exImage">💪</div>`;
         }
     }
 
-    // Timer
     timeLeft = ex.duration;
     totalDuration = ex.duration;
     updateTimerDisplay();
-
-    // Next up
     updateNextUp();
 
-    // Exercise list
     EXERCISES.forEach((_, i) => {
         const item = document.getElementById(`exItem${i}`);
         if (!item) return;
@@ -709,11 +667,17 @@ function updateTimerDisplay() {
 }
 
 function updateNextUp() {
-    const nextIndex = currentExIndex + 1;
     const section = document.getElementById('nextUpSection');
 
+    // Faqat 1 ta exercise bo'lsa - ko'rsatma
+    if (TOTAL_EXERCISES <= 1) {
+        section.style.display = 'none';
+        return;
+    }
+
+    const nextIndex = currentExIndex + 1;
+
     if (nextIndex >= TOTAL_EXERCISES) {
-        // Last exercise — show "Last Round" or hide
         if (currentRound < TOTAL_ROUNDS) {
             section.style.display = 'block';
             document.getElementById('nextUpName').textContent = EXERCISES[0].name + ' (Round ' + (currentRound + 1) + ')';
@@ -734,6 +698,7 @@ function updateNextUp() {
 
 function updateNextUpThumb(imageUrl) {
     const thumbEl = document.getElementById('nextUpThumb');
+    if (!thumbEl) return;
     if (imageUrl) {
         thumbEl.outerHTML = `<img src="${imageUrl}" alt="" class="next-up-thumb" id="nextUpThumb">`;
     } else {
@@ -743,7 +708,6 @@ function updateNextUpThumb(imageUrl) {
     }
 }
 
-// ── TIMER ──
 function startTimer() {
     clearInterval(timer);
     timer = setInterval(tick, 1000);
@@ -764,11 +728,9 @@ function tick() {
     if (timeLeft <= 0) nextExercise();
 }
 
-// ── NEXT ──
 function nextExercise() {
     if (isResting) return;
     currentExIndex++;
-
     if (currentExIndex >= TOTAL_EXERCISES) {
         if (currentRound >= TOTAL_ROUNDS) {
             clearInterval(timer);
@@ -778,13 +740,12 @@ function nextExercise() {
         startRest();
         return;
     }
-
     updateUI();
     startTimer();
 }
 
 function jumpToExercise(index) {
-    if (index <= currentExIndex) return; // faqat keyingilariga o'tish
+    if (index <= currentExIndex) return;
     currentExIndex = index;
     isResting = false;
     document.getElementById('restPanel').classList.remove('visible');
@@ -792,7 +753,6 @@ function jumpToExercise(index) {
     startTimer();
 }
 
-// ── REST ──
 function startRest() {
     isResting = true;
     restLeft = REST_SECONDS;
@@ -811,14 +771,12 @@ function endRest() {
 
 function skipRest() { endRest(); }
 
-// ── PAUSE ──
 function togglePause() {
     isPaused = !isPaused;
     document.getElementById('pauseIcon').textContent = isPaused ? '▶' : '⏸';
     document.getElementById('pauseText').textContent = isPaused ? 'Resume' : 'Pause';
 }
 
-// ── NEXT UP CLICK ──
 function goToNextUp() {
     const nextIndex = currentExIndex + 1;
     if (nextIndex < TOTAL_EXERCISES) {
@@ -830,7 +788,16 @@ function goToNextUp() {
     }
 }
 
-// ── EXIT ──
+function openDescModal() {
+    const ex = EXERCISES[currentExIndex];
+    document.getElementById('descModalText').textContent = ex.description || 'No description available.';
+    document.getElementById('descModal').classList.add('visible');
+}
+
+function closeDescModal() {
+    document.getElementById('descModal').classList.remove('visible');
+}
+
 function toggleFullscreen() {
     const el = document.querySelector('.exercise-image-wrap');
     if (!document.fullscreenElement) {
@@ -840,7 +807,6 @@ function toggleFullscreen() {
     }
 }
 
-// ── EXIT ──
 function showExitModal() {
     isPaused = true;
     document.getElementById('exitModal').classList.add('active');
@@ -853,7 +819,6 @@ function exitWithoutSaving() {
     window.location.href = '{% url "home_workout_detail" workout.id %}';
 }
 
-// ── COMPLETE ──
 function submitComplete() {
     const durationSeconds = Math.floor((Date.now() - sessionStartTime) / 1000);
     const form = document.createElement('form');
