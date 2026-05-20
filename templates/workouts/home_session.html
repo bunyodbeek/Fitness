@@ -65,8 +65,7 @@ body {
     position: relative;
     border-radius: 20px;
     overflow: hidden;
-    height: auto;
-    aspect-ratio: 16 / 9;
+    height: 240px;
     background: #1a1a1a;
     margin-bottom: 16px;
 }
@@ -137,7 +136,6 @@ body {
     border-radius: 14px;
     padding: 14px 16px;
     margin-bottom: 20px;
-    cursor: pointer;
 }
 
 .description-header {
@@ -161,7 +159,6 @@ body {
     font-size: 13px;
     color: rgba(255,255,255,0.6);
     line-height: 1.6;
-    display: none;
 }
 
 /* ── TIMER ── */
@@ -548,22 +545,13 @@ body {
     </div>
 
     <!-- DESCRIPTION (always visible, 3-rasmdek) -->
-  <!-- Description (click = modal) -->
-<div class="description-block" onclick="openDescModal()">
-    <div class="description-header">
-        <span class="description-label">DESCRIPTION</span>
-        <span style="color:rgba(255,255,255,0.4);font-size:14px;">▾</span>
+    <div class="description-block" id="descBlock">
+        <div class="description-header">
+            <span class="description-label">DESCRIPTION</span>
+            <span class="description-chevron" id="descChevron">▾</span>
+        </div>
+        <div class="description-text visible" id="descText">{{ exercises.0.description|default:"No description available." }}</div>
     </div>
-</div>
-
-<!-- Modal -->
-<div id="descModal" onclick="closeDescModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);z-index:500;align-items:center;justify-content:center;padding:24px;">
-    <div style="background:#1a1a1a;border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:24px;max-width:480px;width:100%;" onclick="event.stopPropagation()">
-        <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:12px;">DESCRIPTION</div>
-        <div style="font-size:14px;color:rgba(255,255,255,0.75);line-height:1.7;" id="descModalText"></div>
-        <button onclick="closeDescModal()" style="margin-top:20px;width:100%;padding:12px;background:#ffd700;border:none;border-radius:12px;font-weight:800;font-size:13px;cursor:pointer;">Close</button>
-    </div>
-</div>
 
     <!-- TIMER -->
     <div class="timer-wrap">
@@ -694,15 +682,7 @@ function updateUI() {
             imgWrap.outerHTML = `<div class="exercise-image-placeholder" id="exImage">💪</div>`;
         }
     }
-function openDescModal() {
-    const ex = EXERCISES[currentExIndex];
-    document.getElementById('descModalText').textContent = ex.description || 'No description available.';
-    const modal = document.getElementById('descModal');
-    modal.style.display = 'flex';
-}
-function closeDescModal() {
-    document.getElementById('descModal').style.display = 'none';
-}
+
     // Timer
     timeLeft = ex.duration;
     totalDuration = ex.duration;
