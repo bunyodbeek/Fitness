@@ -34,11 +34,11 @@ from apps.views.favorite import (
 	CreateCollectionView,
 	FavoriteToggleAPIView,
 	ExerciseRemoveFromCollection,
-    UserCollectionsAPIView,
-    UserCustomProgramListView,
-    CreateCustomProgramView as FavoritesCreateCustomProgramView,
-    CustomProgramStartView,
-    CustomProgramCompleteView,
+	UserCollectionsAPIView,
+	UserCustomProgramListView,
+	CreateCustomProgramView as FavoritesCreateCustomProgramView,
+	CustomProgramStartView,
+	CustomProgramCompleteView,
 )
 from apps.views.users import (
 	AdminAnalyticsView,
@@ -62,6 +62,7 @@ from apps.views.handbook import (
 	HandbookByCategoryView,
 )
 from apps.views.workouts import WeekDetailView
+from apps.views.favorite import CustomProgramCreateView, CustomProgramDeleteView, CustomProgramDetailView
 
 urlpatterns = [
 	path('', AnimationView.as_view(), name='animation'),
@@ -117,11 +118,14 @@ urlpatterns = [
 	# Home mode
 	path('mode/<str:workout_type>/', WorkoutModeSwitchView.as_view(), name='workout_mode_switch'),
 	path('home/programs/', HomeProgramListView.as_view(), name='home_program_list'),
-	path('home/program/<int:pk>/', ProgramDetailView.as_view(forced_workout_type=WorkoutType.HOME), name='home_program_detail'),
+	path('home/program/<int:pk>/', ProgramDetailView.as_view(forced_workout_type=WorkoutType.HOME),
+	     name='home_program_detail'),
 	path('home/plan/<int:pk>/', PlanWeeksView.as_view(forced_workout_type=WorkoutType.HOME), name='home_plan_weeks'),
 	path('home/week/<int:pk>/', HomeWeekDetailView.as_view(), name='home_week_detail'),
-	path('home/workout/<int:pk>/', WorkoutDetailView.as_view(forced_workout_type=WorkoutType.HOME), name='home_workout_detail'),
-	path('home/workouts/<int:pk>/', WorkoutDetailView.as_view(forced_workout_type=WorkoutType.HOME), name='home_workout_detail_legacy'),
+	path('home/workout/<int:pk>/', WorkoutDetailView.as_view(forced_workout_type=WorkoutType.HOME),
+	     name='home_workout_detail'),
+	path('home/workouts/<int:pk>/', WorkoutDetailView.as_view(forced_workout_type=WorkoutType.HOME),
+	     name='home_workout_detail_legacy'),
 	path('home/workout/<int:pk>/done/', HomeWorkoutDoneView.as_view(), name='home_workout_done'),
 	path('home/workout/<int:pk>/session/', HomeSessionView.as_view(), name='home_workout_session'),
 	path('home/workout/<int:pk>/complete/', HomeWorkoutCompleteView.as_view(), name='home_workout_complete'),
@@ -145,15 +149,21 @@ urlpatterns = [
 	
 	path('favorites/', FavoritesListView.as_view(), name='favorite_list_page'),
 	path('favorites/collection/<int:collection_id>/toggle/', FavoriteToggleAPIView.as_view(), name='favorite-toggle'),
-    path('api/collections/', UserCollectionsAPIView.as_view(), name='user_collections_api'),
+	path('api/collections/', UserCollectionsAPIView.as_view(), name='user_collections_api'),
 	path("create/collection/", CreateCollectionView.as_view(), name="favorites"),
 	path('collection/delete/<int:collection_id>/', CollectionDeleteView.as_view(), name="collection_delete"),
 	path('collection/update/<int:collection_id>/', CollectionUpdateView.as_view(), name="collection_update"),
 	path('collection/remove-exercise/<int:collection_id>/<int:favorited_id>/', ExerciseRemoveFromCollection.as_view(),
 	     name="exercise_remove"),
-    path('favorites/programs/', UserCustomProgramListView.as_view(), name='user_custom_program_list'),
-    path('favorites/programs/create/', FavoritesCreateCustomProgramView.as_view(), name='favorites_create_custom_program'),
-    path('favorites/programs/<int:pk>/start/', CustomProgramStartView.as_view(), name='custom_program_start'),
-    path('favorites/programs/<int:pk>/complete/', CustomProgramCompleteView.as_view(), name='custom_program_complete'),
+	path('favorites/programs/', UserCustomProgramListView.as_view(), name='user_custom_program_list'),
+	path('favorites/programs/create/', FavoritesCreateCustomProgramView.as_view(),
+	     name='favorites_create_custom_program'),
+	path('favorites/programs/<int:pk>/start/', CustomProgramStartView.as_view(), name='custom_program_start'),
+	path('favorites/programs/<int:pk>/complete/', CustomProgramCompleteView.as_view(), name='custom_program_complete'),
+	
+	path('favorites/custom-program/create/', CustomProgramCreateView.as_view(), name='custom_program_create'),
+	path('favorites/custom-program/<int:pk>/delete/', CustomProgramDeleteView.as_view(), name='custom_program_delete'),
+	path('favorites/custom-program/<int:pk>/', CustomProgramDetailView.as_view(), name='custom_program_detail'),
+	path('favorites/plan/<int:pk>/weeks/', PlanWeeksView.as_view(forced_workout_type=WorkoutType.GYM), name='custom_plan_weeks'),
 
 ]

@@ -48,10 +48,13 @@ class ProgramListView(ListView):
 	
 	def get_queryset(self):
 		workout_type = self.active_workout_type()
-		qs = Program.objects.filter(is_active=True, workout_type=workout_type).prefetch_related('plans__weeks__workouts')
+		qs = Program.objects.filter(
+			is_active=True,
+			workout_type=workout_type,
+			type=Program.ProgramType.ADMIN,  # ← shu qatorni qo'shing
+		).prefetch_related('plans__weeks__workouts')
 		if not self.request.user.is_authenticated or not hasattr(self.request.user, "profile"):
 			return qs
-
 		profile = self.request.user.profile
 		completed_workout_ids = set(
 			WorkoutProgress.objects.filter(

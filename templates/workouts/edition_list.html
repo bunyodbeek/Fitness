@@ -788,13 +788,8 @@
     <div class="program-info">
         <h2 class="info-title">{% trans "About this program" %}</h2>
         <p class="info-text">
-            {# description — Plan modelidagi to'g'ri field nomi #}
             {{ program.description|default:"Transform your body with this comprehensive workout program designed for all fitness levels."|truncatewords:25 }}
         </p>
-{#        <div class="info-highlight">#}
-{#            &#128161; <strong>{% trans 'Tip:' %}</strong>#}
-{#            {% trans 'Complete each plan for 4-6 weeks before moving to the next' %}#}
-{#        </div>#}
     </div>
 
     <div class="section-title">{% trans 'Choose Your Plan' %}</div>
@@ -802,8 +797,7 @@
     <div class="editions-list">
         {% for plan in plans %}
             {# URL: gym yoki home ga qarab tanlang #}
-            <a href="{% if is_home_mode %}{% url 'home_plan_weeks' plan.id %}{% else %}{% url 'plan_weeks' plan.id %}{% endif %}" class="edition-card">
-                <div class="edition-number edition-{{ forloop.counter }}">
+<a href="{% if is_custom %}{% url 'custom_plan_weeks' plan.id %}{% elif is_home_mode %}{% url 'home_plan_weeks' plan.id %}{% else %}{% url 'plan_weeks' plan.id %}{% endif %}" class="edition-card">                <div class="edition-number edition-{{ forloop.counter }}">
                     {{ forloop.counter }}
                 </div>
                 <div class="edition-content">
@@ -832,8 +826,15 @@
 
 {% block extra_js %}
 <script>
-    function goBack() { window.location.href = '{% if is_home_mode %}{% url "home_program_list" %}{% else %}{% url "gym_program_list" %}{% endif %}'; }
-    document.querySelectorAll('.edition-card').forEach(card => {
+function goBack() {
+    {% if is_custom %}
+        window.location.href = '{% url "favorite_list_page" %}';
+    {% elif is_home_mode %}
+        window.location.href = '{% url "home_program_list" %}';
+    {% else %}
+        window.location.href = '{% url "gym_program_list" %}';
+    {% endif %}
+}    document.querySelectorAll('.edition-card').forEach(card => {
         card.addEventListener('touchstart', function () {
             this.style.transform = 'scale(0.98)';
         });

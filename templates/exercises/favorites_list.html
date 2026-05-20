@@ -5,361 +5,400 @@
 {% block title %}{% trans "My favorites" %}{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/favorites.css' %}"> 
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    background: #0a0a0a;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    min-height: 100vh;
+    color: #fff;
+}
+
+.page-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(10,10,10,0.97);
+    backdrop-filter: blur(12px);
+    padding: 14px 16px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.page-title {
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #ffd700;
+}
+
+.favorites-content {
+    max-width: 540px;
+    margin: 0 auto;
+    padding: 16px 16px 100px;
+}
+
+/* TABS */
+.favorites-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 10px 16px;
+    background: rgba(255,255,255,0.05);
+    border: 1.5px solid rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.5);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    border-radius: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+}
+
+.tab-btn.active {
+    background: #ffd700;
+    border-color: #ffd700;
+    color: #0a0a0a;
+}
+
+/* CREATE PROGRAM BTN */
+.create-program-btn {
+    width: 100%;
+    padding: 14px;
+    background: rgba(255,215,0,0.1);
+    border: 1.5px dashed rgba(255,215,0,0.4);
+    border-radius: 14px;
+    color: #ffd700;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    transition: all 0.2s;
+    text-decoration: none;
+}
+.create-program-btn:hover {
+    background: rgba(255,215,0,0.15);
+    border-color: #ffd700;
+}
+
+/* PROGRAM CARD */
+.program-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,215,0,0.15);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 12px;
+    transition: all 0.2s;
+}
+.program-card:hover {
+    border-color: rgba(255,215,0,0.35);
+    transform: translateY(-2px);
+}
+
+.program-card-image {
+    width: 100%;
+    height: 120px;
+    background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    position: relative;
+}
+
+.program-card-body {
+    padding: 14px;
+}
+
+.program-card-name {
+    font-size: 16px;
+    font-weight: 900;
+    color: #fff;
+    margin-bottom: 8px;
+}
+
+.program-card-meta {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+
+.program-meta-tag {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: rgba(255,215,0,0.1);
+    border: 1px solid rgba(255,215,0,0.2);
+    color: #ffd700;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.program-card-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-view-program {
+    flex: 1;
+    padding: 12px;
+    background: #ffd700;
+    border: none;
+    border-radius: 12px;
+    color: #0a0a0a;
+    font-size: 13px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.2s;
+}
+.btn-view-program:hover { opacity: 0.9; }
+
+.btn-delete-program {
+    width: 44px;
+    height: 44px;
+    background: rgba(255,71,87,0.1);
+    border: 1.5px solid rgba(255,71,87,0.3);
+    border-radius: 12px;
+    color: #ff4757;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+.btn-delete-program:hover { background: rgba(255,71,87,0.2); }
+
+/* FAVORITES LIST */
+.favorite-item {
+    display: flex;
+    align-items: center;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 14px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    transition: all 0.2s;
+}
+.favorite-item:hover { border-color: rgba(255,215,0,0.25); }
+
+.item-link-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    flex: 1;
+    text-decoration: none;
+    color: white;
+    min-width: 0;
+}
+
+.favorite-thumbnail {
+    width: 60px;
+    height: 60px;
+    border-radius: 10px;
+    object-fit: cover;
+    background: #1a1a1a;
+    flex-shrink: 0;
+}
+
+.favorite-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #ffd700;
+    margin-bottom: 4px;
+}
+
+.favorite-meta {
+    font-size: 11px;
+    color: rgba(255,255,255,0.5);
+}
+
+.unfavorite-btn {
+    width: 44px;
+    height: 44px;
+    background: transparent;
+    border: none;
+    color: #ffd700;
+    font-size: 20px;
+    cursor: pointer;
+    flex-shrink: 0;
+    margin-right: 8px;
+    transition: transform 0.2s;
+}
+.unfavorite-btn:hover { transform: scale(1.2); }
+
+/* EMPTY STATE */
+.empty-state {
+    text-align: center;
+    padding: 50px 20px;
+    color: rgba(255,255,255,0.4);
+}
+.empty-state-icon { font-size: 48px; margin-bottom: 12px; }
+.empty-state h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #ffd700;
+    margin-bottom: 6px;
+}
+.empty-state p { font-size: 13px; }
+</style>
 {% endblock %}
 
 {% block content %}
-    <div class="page-header">
-        <h1 class="page-title">⭐ {% trans "MY FAVORITES" %}</h1>
-        <button class="add-collection-btn" id="addCollectionBtn">+</button>
+
+<div class="page-header">
+    <h1 class="page-title">⭐ {% trans "MY FAVORITES" %}</h1>
+</div>
+
+<div class="favorites-content">
+
+    <!-- TABS -->
+    <div class="favorites-tabs">
+        <button class="tab-btn active" data-tab="programs">{% trans "PROGRAMS" %}</button>
+        <button class="tab-btn" data-tab="exercises">{% trans "EXERCISES" %}</button>
     </div>
 
-    <div class="favorites-content">
-        <div class="favorite-stats">
-            <i class="fas fa-heart" style="color: #ffd700;"></i>
-            {% trans "All favorite:" %} <span id="total-favorites-count">{{ total_count }}</span>
-        </div>
+    <!-- PROGRAMS TAB -->
+    <div id="tabPrograms">
+        <a href="{% url 'custom_program_create' %}" class="create-program-btn">
+            + {% trans "Create Program" %}
+        </a>
 
-        <div class="favorites-tabs">
-            <button class="tab-btn active" data-tab="programs">
-                <i class="fas fa-layer-group"></i> {% trans "PROGRAMS" %}
-            </button>
-            <button class="tab-btn" data-tab="exercise">
-                <i class="fas fa-dumbbell"></i> {% trans "EXERCISES" %}
-            </button>
-            <button class="tab-btn" data-tab="collections">
-                <i class="fas fa-folder"></i> {% trans "COLLECTIONS" %}
-                <span>{{ collections_count|default:0 }}</span>
-            </button>
-            <button class="tab-btn" data-tab="editions">
-                <i class="fas fa-crown"></i> {% trans "PREMIUM" %}
-            </button>
-        </div>
-
-        <!-- PROGRAMS -->
-        <div class="programs-container" id="programsContainer">
-            <div class="program-filters">
-                <select class="program-select" id="goalFilter">
-                    <option value="">{% trans "Goal: All" %}</option>
-                    <option value="mg">{% trans "MG (Muscle Gain)" %}</option>
-                    <option value="ft">{% trans "FT (Fat Loss)" %}</option>
-                    <option value="rc">{% trans "RC (Recovery)" %}</option>
-                </select>
-                <select class="program-select" id="collectionFilter">
-                    <option value="">{% trans "Collection: All" %}</option>
-                    {% for collection in favorite_collections %}
-                        <option value="{{ collection.id }}">{{ collection.name }}</option>
-                    {% endfor %}
-                </select>
+        <div id="programCardsWrap">
+            {% for program in custom_programs %}
+            <div class="program-card" id="programCard{{ program.id }}">
+                <div class="program-card-image">💪</div>
+                <div class="program-card-body">
+                    <div class="program-card-name">{{ program.name }}</div>
+                    <div class="program-card-meta">
+                        <span class="program-meta-tag">🎯 {{ program.get_goal_display }}</span>
+                        <span class="program-meta-tag">📅 6 {% trans "weeks" %}</span>
+                        <span class="program-meta-tag">📋 {{ program.plans.count }} {% trans "plan" %}</span>
+                    </div>
+                    <div class="program-card-actions">
+                        <a href="{% url 'custom_program_detail' program.id %}" class="btn-view-program">
+                            {% trans "VIEW PROGRAM" %} →
+                        </a>
+                        <button class="btn-delete-program"
+                                onclick="deleteProgram({{ program.id }})"
+                                title="{% trans 'Delete' %}">🗑</button>
+                    </div>
+                </div>
             </div>
-            <button class="create-program-btn" id="openProgramModalBtn">
-                <i class="fas fa-plus"></i> {% trans "Create Program" %}
-            </button>
-            <div id="programCardsWrap">
-                {% for program in custom_programs %}
-                    <div class="program-card" data-goal="{{ program.goal }}"
-                         data-collection-id="{{ program.collection_id|default:'' }}">
-                        <h4>{{ program.name }}</h4>
-                        <div>🎯 {{ program.get_goal_display }}</div>
-                        <div>🏋️ {% trans "Total exercises" %}: {{ program.total_exercises }}</div>
-                        <div>📅 {% trans "Estimated weeks" %}: {{ program.weeks }}</div>
-                        <button class="start-program-btn" data-start-url="{% url 'custom_program_start' program.id %}">
-                            {% trans "START WORKOUT" %}
-                        </button>
-                    </div>
-                {% empty %}
-                    <div class="empty-state">
-                        <div class="empty-state-icon">🧩</div>
-                        <h3>{% trans "No custom programs yet" %}</h3>
-                        <p>{% trans "Create your first program from a favorite collection." %}</p>
-                    </div>
-                {% endfor %}
+            {% empty %}
+            <div class="empty-state">
+                <div class="empty-state-icon">💪</div>
+                <h3>{% trans "No custom programs yet" %}</h3>
+                <p>{% trans "Create your first program!" %}</p>
             </div>
-        </div>
-
-        <!-- EXERCISES -->
-        <div class="favorites-list" id="favoritesList" style="display:none;">
-            {% for fav in favorites %}
-                <div class="favorite-item" data-id="{{ fav.id }}">
-                    <a href="{% url 'exercise_detail' fav.exercise_id %}" class="item-link-wrapper">
-                        <img src="{{ fav.exercise.thumbnail.url|default_if_none:'/static/img/default-thumb.jpg' }}"
-                             alt="{{ fav.title }}" class="favorite-thumbnail">
-                        <div class="favorite-info">
-                            <div class="favorite-title">{{ fav.exercise.name }}</div>
-                            <div class="favorite-meta">
-                                <i class="fas fa-dumbbell"></i> {{ fav.exercise.primary_body_part }}
-                            </div>
-                            <div class="favorite-tags">
-                                <span class="favorite-tag">{{ fav.exercise.difficulty }}</span>
-                            </div>
-                        </div>
-                    </a>
-                    <button class="unfavorite-btn" data-exercise-id="{{ fav.exercise.id }}">⭐</button>
-                </div>
-            {% empty %}
-                <div class="empty-state">
-                    <div class="empty-state-icon">⭐</div>
-                    <h3>{% trans "Favorite collection is empty" %}</h3>
-                    <p>{% trans "Start adding your favorite exercises!" %}</p>
-                </div>
-            {% endfor %}
-        </div>
-
-        <!-- COLLECTIONS -->
-        <div class="collections-container" id="collectionsContainer">
-            {% for collection in favorite_collections %}
-                <div class="collection-card" data-collection-id="{{ collection.id }}">
-                    <div class="collection-header">
-                        <div class="collection-title-section">
-                            <h3 class="collection-title">📁 {{ collection.name }}</h3>
-                            <div class="collection-meta">
-                                <span><i class="fas fa-dumbbell"></i> {{ collection.exercise_count }} {% trans "exercise" %}</span>
-                                <span>•</span>
-                                <span><i class="fas fa-clock"></i> {{ collection.created_at|date:"d M, Y" }}</span>
-                            </div>
-                        </div>
-                        <div class="collection-actions">
-                            <button class="collection-action-btn edit-collection-btn"
-                                    data-collection-id="{{ collection.id }}">✏️
-                            </button>
-                            <button class="collection-action-btn delete-btn delete-collection-btn"
-                                    data-collection-id="{{ collection.id }}"
-                                    data-collection-name="{{ collection.name }}">🗑️
-                            </button>
-                        </div>
-                    </div>
-                    <div class="collection-exercises">
-                        {% for favorite in collection.favorites.all %}
-                            <a href="{% url 'exercise_detail' favorite.exercise.id %}"
-                               class="collection-exercise-item">
-                                <img src="{{ favorite.exercise.thumbnail.url|default_if_none:'/static/img/default-thumb.jpg' }}"
-                                     alt="{{ favorite.exercise.name }}" class="collection-exercise-thumb">
-                                <div class="collection-exercise-info">
-                                    <div class="collection-exercise-name">{{ favorite.exercise.name }}</div>
-                                </div>
-                                <button type="button" class="collection-remove-btn"
-                                        data-url="{% url 'exercise_remove' collection.id favorite.exercise.id %}"
-                                        data-collection-id="{{ collection.id }}"
-                                        data-exercise-id="{{ favorite.exercise.id }}">✕
-                                </button>
-                            </a>
-                        {% empty %}
-                            <div
-                                    style="grid-column: 1/-1; text-align: center; color: rgba(255,255,255,0.5); padding: 20px; font-size: 12px;">
-                                {% trans "No exercises in this collection yet" %}
-                            </div>
-                        {% endfor %}
-                    </div>
-                </div>
-            {% empty %}
-                <div class="empty-state">
-                    <div class="empty-state-icon">📁</div>
-                    <h3>{% trans "No Collections" %}</h3>
-                    <p>{% trans "Click the '+' button to create your first collection" %}</p>
-                </div>
-            {% endfor %}
-        </div>
-
-        <!-- PREMIUM EDITIONS -->
-        <div class="editions-container" id="editionsContainer">
-            {% for edition in premium_editions %}
-                <div class="edition-card {% if not edition.is_purchased %}locked{% endif %}">
-                    <div class="edition-badge">
-                        <i class="fas fa-gem"></i>
-                        <span>{% trans "ONE-TIME" %}</span>
-                    </div>
-                    <div class="edition-header">
-                        <img src="{{ edition.thumbnail.url|default_if_none:'/static/img/default-program.jpg' }}"
-                             alt="{{ edition.name }}" class="edition-thumbnail">
-                        <div class="edition-header-overlay">
-                            <div></div>
-                            <h2 class="edition-thumbnail-title">{{ edition.name }}</h2>
-                        </div>
-                    </div>
-                    <div class="edition-body">
-                        <div class="edition-info-row">
-                            <div class="edition-info-item">
-                                <div class="edition-info-label">{% trans "Weeks" %}</div>
-                                <div class="edition-info-value">{{ edition.duration_weeks }}</div>
-                            </div>
-                            <div class="edition-info-item">
-                                <div class="edition-info-label">{% trans "Exercises" %}</div>
-                                <div class="edition-info-value">{{ edition.total_exercises }}</div>
-                            </div>
-                            <div class="edition-info-item">
-                                <div class="edition-info-label">{% trans "Level" %}</div>
-                                <div class="edition-info-value">{{ edition.difficulty|upper }}</div>
-                            </div>
-                        </div>
-                        <p class="edition-description">
-                            {{ edition.description|default:"Achieve your goals with this professional program!" }}
-                        </p>
-                        <div class="edition-actions">
-                            {% if edition.is_purchased %}
-                                <button class="start-workout-btn" data-edition-id="{{ edition.id }}">
-                                    <i class="fas fa-play"></i>
-                                    <span>{% trans "START" %}</span>
-                                </button>
-                            {% else %}
-                                <button class="start-workout-btn purchase-edition-btn"
-                                        data-edition-id="{{ edition.id }}">
-                                    <i class="fas fa-lock"></i>
-                                    <span>{% trans "BUY" %}</span>
-                                </button>
-                            {% endif %}
-                            <button class="view-details-btn" data-edition-id="{{ edition.id }}">{% trans "Details" %}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            {% empty %}
-                <div class="empty-state">
-                    <div class="empty-state-icon">👑</div>
-                    <h3>{% trans "No Premium Editions" %}</h3>
-                    <p>{% trans "Coming soon!" %}</p>
-                </div>
             {% endfor %}
         </div>
     </div>
 
-    <!-- CREATE MODAL -->
-    <div class="collection-modal" id="collectionModal">
-        <div class="collection-modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">📁 {% trans "NEW COLLECTION" %}</h3>
-                <button class="modal-close-btn" id="closeCollectionModalBtn">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="collection-name-group">
-                    <label class="collection-name-label"
-                           for="collectionName">{% trans "Collection Name" %}</label>
-                    <input type="text" id="collectionName" class="collection-name-input"
-                           placeholder="{% trans 'e.g., Legs & Glutes' %}">
+    <!-- EXERCISES TAB -->
+    <div id="tabExercises" style="display:none;">
+        {% for fav in favorites %}
+        <div class="favorite-item" data-id="{{ fav.id }}">
+            <a href="{% url 'exercise_detail' fav.exercise_id %}" class="item-link-wrapper">
+                {% if fav.exercise.thumbnail %}
+                    <img src="{{ fav.exercise.thumbnail.url }}" alt="{{ fav.exercise.name }}" class="favorite-thumbnail">
+                {% else %}
+                    <div class="favorite-thumbnail" style="display:flex;align-items:center;justify-content:center;font-size:24px;">💪</div>
+                {% endif %}
+                <div>
+                    <div class="favorite-title">{{ fav.exercise.name }}</div>
+                    <div class="favorite-meta">{{ fav.exercise.primary_body_part }}</div>
                 </div>
-                <div class="exercise-select-section">
-                    <div class="exercise-select-header">{% trans "Select Exercises" %}</div>
-                    <div class="exercise-list" id="exerciseSelectList">
-                        {% for exercise in all_exercises %}
-                            <div class="exercise-select-item" data-exercise-id="{{ exercise.id }}">
-                                <div class="exercise-checkbox">
-                                    <span class="exercise-checkbox-icon">✓</span>
-                                </div>
-                                <img src="{{ exercise.thumbnail.url|default:'/static/img/default-thumb.jpg' }}"
-                                     alt="{{ exercise.name }}" class="exercise-select-thumbnail">
-                                <div class="exercise-select-info">
-                                    <div class="exercise-select-name">{{ exercise.name }}</div>
-                                    <div class="exercise-select-meta">{{ exercise.primary_body_part }}
-                                        • {{ exercise.difficulty }}</div>
-                                </div>
-                            </div>
-                        {% empty %}
-                            <p style="color: rgba(255,255,255,0.5); text-align: center; font-size: 12px;">
-                                {% trans "No exercises to add." %}</p>
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="modal-btn modal-btn-cancel" id="cancelCollectionBtn">{% trans "Cancel" %}</button>
-                <button class="modal-btn modal-btn-save" id="saveCollectionBtn">{% trans "Save" %}</button>
-            </div>
+            </a>
+            <button class="unfavorite-btn" data-exercise-id="{{ fav.exercise.id }}">⭐</button>
         </div>
+        {% empty %}
+        <div class="empty-state">
+            <div class="empty-state-icon">⭐</div>
+            <h3>{% trans "No favorites yet" %}</h3>
+            <p>{% trans "Add exercises to your favorites!" %}</p>
+        </div>
+        {% endfor %}
     </div>
 
-    <!-- EDIT MODAL -->
-    <div class="edit-modal" id="editModal">
-        <div class="edit-modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">✏️ {% trans "EDIT COLLECTION" %}</h3>
-                <button class="modal-close-btn" id="closeEditModalBtn">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="collection-name-group">
-                    <label class="collection-name-label"
-                           for="editCollectionName">{% trans "Collection Name" %}</label>
-                    <input type="text" id="editCollectionName" class="collection-name-input"
-                           placeholder="{% trans 'e.g., Legs & Glutes' %}">
-                </div>
-                <div class="exercise-select-section">
-                    <div class="exercise-select-header">{% trans "Select Exercises" %}</div>
-                    <div class="exercise-list" id="editExerciseList">
-                        {% for exercise in all_exercises %}
-                            <div class="exercise-select-item" data-exercise-id="{{ exercise.id }}">
-                                <div class="exercise-checkbox">
-                                    <span class="exercise-checkbox-icon">✓</span>
-                                </div>
-                                <img src="{{ exercise.thumbnail.url|default:'/static/img/default-thumb.jpg' }}"
-                                     alt="{{ exercise.name }}" class="exercise-select-thumbnail">
-                                <div class="exercise-select-info">
-                                    <div class="exercise-select-name">{{ exercise.name }}</div>
-                                    <div class="exercise-select-meta">{{ exercise.primary_body_part }}
-                                        • {{ exercise.difficulty }}</div>
-                                </div>
-                            </div>
-                        {% empty %}
-                            <p style="color: rgba(255,255,255,0.5); text-align: center; font-size: 12px;">
-                                {% trans "No exercises to add." %}</p>
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="modal-btn modal-btn-cancel" id="cancelEditBtn">{% trans "Cancel" %}</button>
-                <button class="modal-btn modal-btn-save" id="updateCollectionBtn">{% trans "Update" %}</button>
-            </div>
-        </div>
-    </div>
+</div>
 
-    <div class="collection-modal" id="programModal">
-        <div class="collection-modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">🧩 {% trans "CREATE PROGRAM" %}</h3>
-                <button class="modal-close-btn" id="closeProgramModalBtn">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="collection-name-group">
-                    <label class="collection-name-label">{% trans "Program Name" %}</label>
-                    <input type="text" class="collection-name-input" id="programName"
-                           placeholder="{% trans 'Enter program name' %}">
-                </div>
-                <div class="collection-name-group">
-                    <label class="collection-name-label">{% trans "Goal" %}</label>
-                    <select class="program-select" id="programGoal">
-                        <option value="mg">{% trans "MG (Muscle Gain)" %}</option>
-                        <option value="ft">{% trans "FT (Fat Loss)" %}</option>
-                        <option value="rc">{% trans "RC (Recovery)" %}</option>
-                    </select>
-                </div>
-                <div class="collection-name-group">
-                    <label class="collection-name-label">{% trans "Collection" %}</label>
-                    <select class="program-select" id="programCollection">
-                        {% for collection in favorite_collections %}
-                            <option value="{{ collection.id }}">{{ collection.name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="modal-btn modal-btn-cancel" id="cancelProgramBtn">{% trans "Cancel" %}</button>
-                <button class="modal-btn modal-btn-save" id="createProgramBtn">{% trans "Create Program" %}</button>
-            </div>
-        </div>
-    </div>
+{% csrf_token %}
 
-    {% csrf_token %}
-{% endblock %}
-
-{% block extra_js %}
 <script>
-    window.FAVORITES_CONFIG = {
-        strings: {
-            enterProgramName: "{% trans 'Please enter program name' %}",
-            failedCreateProgram: "{% trans 'Failed to create program' %}",
-            totalExercises: "{% trans 'Total exercises' %}",
-            estimatedWeeks: "{% trans 'Estimated weeks' %}",
-            startWorkout: "{% trans 'START WORKOUT' %}",
+const CSRF = document.querySelector('[name=csrfmiddlewaretoken]').value;
+const LANG = window.location.pathname.match(/^\/(en|ru|uz)\//)?.[1] || 'en';
+
+// TABS
+document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        document.getElementById('tabPrograms').style.display = 'none';
+        document.getElementById('tabExercises').style.display = 'none';
+        if (this.dataset.tab === 'programs') {
+            document.getElementById('tabPrograms').style.display = 'block';
+        } else {
+            document.getElementById('tabExercises').style.display = 'block';
         }
-    };
+    });
+});
+
+// DELETE PROGRAM
+function deleteProgram(programId) {
+    if (!confirm('{% trans "Delete this program?" %}')) return;
+    fetch(`/${LANG}/favorites/custom-program/${programId}/delete/`, {
+        method: 'POST',
+        headers: {'X-CSRFToken': CSRF}
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            const card = document.getElementById(`programCard${programId}`);
+            if (card) card.remove();
+        }
+    })
+    .catch(() => alert('Error'));
+}
+
+// UNFAVORITE
+document.querySelectorAll('.unfavorite-btn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const exerciseId = this.dataset.exerciseId;
+        if (!confirm('{% trans "Remove from favorites?" %}')) return;
+        fetch(`/${LANG}/exercises/favorite/toggle/${exerciseId}/`, {
+            method: 'POST',
+            headers: {'X-CSRFToken': CSRF}
+        })
+        .then(() => {
+            this.closest('.favorite-item').remove();
+        });
+    });
+});
 </script>
-<script src="{% static 'js/favorites.js' %}"></script>
+
 {% endblock %}

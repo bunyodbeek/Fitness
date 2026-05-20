@@ -1,0 +1,1045 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Create Program" %}{% endblock %}
+{% block bottom_nav %}{% endblock %}
+
+{% block extra_css %}
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    background: #0a0a0a;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    min-height: 100vh;
+    color: #fff;
+    overflow-x: hidden;
+}
+
+/* HEADER */
+.cp-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(10,10,10,0.97);
+    backdrop-filter: blur(12px);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.cp-back-btn {
+    background: transparent;
+    border: none;
+    color: #ffd700;
+    font-size: 22px;
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cp-title {
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #fff;
+}
+
+.cp-step-indicator {
+    font-size: 12px;
+    color: rgba(255,255,255,0.4);
+    font-weight: 600;
+}
+
+/* PROGRESS BAR */
+.cp-progress-bar {
+    height: 3px;
+    background: rgba(255,255,255,0.08);
+    position: sticky;
+    top: 57px;
+    z-index: 99;
+}
+
+.cp-progress-fill {
+    height: 100%;
+    background: #ffd700;
+    transition: width 0.4s ease;
+}
+
+/* CONTAINER */
+.cp-container {
+    max-width: 540px;
+    margin: 0 auto;
+    padding: 24px 16px 100px;
+}
+
+/* STEP */
+.cp-step { display: none; }
+.cp-step.active { display: block; }
+
+.step-title {
+    font-size: 22px;
+    font-weight: 900;
+    color: #fff;
+    margin-bottom: 6px;
+}
+
+.step-sub {
+    font-size: 13px;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 24px;
+}
+
+/* INPUT */
+.cp-input {
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    border: 1.5px solid rgba(255,255,255,0.1);
+    border-radius: 14px;
+    padding: 16px;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    outline: none;
+    transition: border-color 0.2s;
+}
+.cp-input:focus { border-color: #ffd700; }
+.cp-input::placeholder { color: rgba(255,255,255,0.25); }
+
+/* GOAL CARDS */
+.goal-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.goal-card {
+    background: rgba(255,255,255,0.04);
+    border: 1.5px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 18px 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+}
+.goal-card:hover { border-color: rgba(255,215,0,0.3); }
+.goal-card.selected {
+    background: rgba(255,215,0,0.1);
+    border-color: #ffd700;
+}
+
+.goal-icon { font-size: 28px; margin-bottom: 8px; }
+.goal-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 3px;
+}
+.goal-desc {
+    font-size: 10px;
+    color: rgba(255,255,255,0.4);
+}
+.goal-card.selected .goal-name { color: #ffd700; }
+
+/* DAYS PER WEEK */
+.days-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+}
+
+.days-card {
+    background: rgba(255,255,255,0.04);
+    border: 1.5px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 20px 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+}
+.days-card:hover { border-color: rgba(255,215,0,0.3); }
+.days-card.selected {
+    background: rgba(255,215,0,0.1);
+    border-color: #ffd700;
+}
+
+.days-num {
+    font-size: 32px;
+    font-weight: 900;
+    color: #ffd700;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+.days-label {
+    font-size: 10px;
+    color: rgba(255,255,255,0.4);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* DAY TABS */
+.day-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+}
+.day-tabs::-webkit-scrollbar { display: none; }
+
+.day-tab {
+    flex-shrink: 0;
+    padding: 8px 16px;
+    background: rgba(255,255,255,0.05);
+    border: 1.5px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    color: rgba(255,255,255,0.5);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    position: relative;
+}
+.day-tab.active {
+    background: #ffd700;
+    border-color: #ffd700;
+    color: #0a0a0a;
+}
+.day-tab .ex-count {
+    display: inline-block;
+    background: rgba(0,0,0,0.2);
+    border-radius: 10px;
+    padding: 1px 6px;
+    font-size: 10px;
+    margin-left: 4px;
+}
+.day-tab:not(.active) .ex-count {
+    background: rgba(255,215,0,0.15);
+    color: #ffd700;
+}
+
+/* EXERCISE LIST IN DAY */
+.day-exercises {
+    display: none;
+}
+.day-exercises.active { display: block; }
+
+.added-exercise-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 14px;
+    padding: 12px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.added-ex-thumb {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    object-fit: cover;
+    background: #1a1a1a;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    overflow: hidden;
+}
+.added-ex-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.added-ex-info { flex: 1; min-width: 0; }
+.added-ex-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.added-ex-params {
+    display: flex;
+    gap: 6px;
+}
+
+.ex-param-input {
+    width: 60px;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 8px;
+    padding: 4px 8px;
+    color: #ffd700;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: center;
+    outline: none;
+}
+.ex-param-input:focus { border-color: #ffd700; }
+
+.ex-param-label {
+    font-size: 9px;
+    color: rgba(255,255,255,0.3);
+    text-align: center;
+    margin-top: 2px;
+    text-transform: uppercase;
+}
+
+.btn-remove-ex {
+    width: 30px;
+    height: 30px;
+    background: rgba(255,71,87,0.1);
+    border: 1px solid rgba(255,71,87,0.2);
+    border-radius: 8px;
+    color: #ff4757;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.2s;
+}
+.btn-remove-ex:hover { background: rgba(255,71,87,0.2); }
+
+.btn-add-exercise {
+    width: 100%;
+    padding: 13px;
+    background: rgba(255,215,0,0.07);
+    border: 1.5px dashed rgba(255,215,0,0.3);
+    border-radius: 14px;
+    color: #ffd700;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s;
+    margin-top: 4px;
+}
+.btn-add-exercise:hover {
+    background: rgba(255,215,0,0.12);
+    border-color: #ffd700;
+}
+
+/* EXERCISE PICKER MODAL */
+.ex-picker-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.9);
+    backdrop-filter: blur(8px);
+    z-index: 500;
+    display: none;
+    flex-direction: column;
+}
+.ex-picker-modal.visible { display: flex; }
+
+.ex-picker-header {
+    padding: 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #111;
+}
+
+.ex-picker-search {
+    flex: 1;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 10px 14px;
+    color: #fff;
+    font-size: 14px;
+    outline: none;
+}
+.ex-picker-search:focus { border-color: #ffd700; }
+.ex-picker-search::placeholder { color: rgba(255,255,255,0.3); }
+
+.ex-picker-close {
+    width: 36px;
+    height: 36px;
+    background: rgba(255,255,255,0.07);
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.ex-picker-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 16px;
+}
+
+.ex-picker-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.15s;
+    border: 1px solid transparent;
+    margin-bottom: 6px;
+}
+.ex-picker-item:hover { background: rgba(255,255,255,0.05); }
+.ex-picker-item.already-added {
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+.ex-picker-thumb {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: #1a1a1a;
+    flex-shrink: 0;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+.ex-picker-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.ex-picker-info { flex: 1; min-width: 0; }
+.ex-picker-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 2px;
+}
+.ex-picker-meta {
+    font-size: 11px;
+    color: rgba(255,255,255,0.4);
+}
+
+.ex-picker-add-btn {
+    width: 32px;
+    height: 32px;
+    background: rgba(255,215,0,0.15);
+    border: 1px solid rgba(255,215,0,0.3);
+    border-radius: 8px;
+    color: #ffd700;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.2s;
+}
+.ex-picker-add-btn:hover { background: rgba(255,215,0,0.25); }
+
+/* SUMMARY */
+.summary-section {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 16px;
+}
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.summary-row:last-child { border-bottom: none; }
+.summary-label { font-size: 12px; color: rgba(255,255,255,0.4); }
+.summary-value { font-size: 13px; font-weight: 700; color: #ffd700; }
+
+.day-summary-item {
+    background: rgba(255,215,0,0.05);
+    border: 1px solid rgba(255,215,0,0.1);
+    border-radius: 12px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.day-summary-name { font-size: 13px; font-weight: 700; color: #fff; }
+.day-summary-count { font-size: 12px; color: rgba(255,255,255,0.4); }
+
+/* BOTTOM BUTTON */
+.cp-bottom {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 16px;
+    background: rgba(10,10,10,0.97);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid rgba(255,255,255,0.06);
+    z-index: 50;
+}
+
+.btn-next-step {
+    width: 100%;
+    padding: 16px;
+    background: #ffd700;
+    border: none;
+    border-radius: 16px;
+    color: #0a0a0a;
+    font-size: 15px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 20px rgba(255,215,0,0.3);
+}
+.btn-next-step:hover { opacity: 0.9; transform: translateY(-1px); }
+.btn-next-step:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+.btn-saving {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+/* SPINNER */
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(0,0,0,0.2);
+    border-top-color: #0a0a0a;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- EXERCISE PICKER MODAL -->
+<div class="ex-picker-modal" id="exPickerModal">
+    <div class="ex-picker-header">
+        <input type="text" class="ex-picker-search" id="exSearchInput"
+               placeholder="Search exercises..." oninput="filterExercises(this.value)">
+        <button class="ex-picker-close" onclick="closeExPicker()">✕</button>
+    </div>
+    <div class="ex-picker-list" id="exPickerList">
+        {% for ex in exercises %}
+        <div class="ex-picker-item" id="pickerItem{{ ex.id }}"
+             data-id="{{ ex.id }}"
+             data-name="{{ ex.name|escapejs }}"
+             data-muscle="{{ ex.primary_body_part }}"
+             data-thumb="{% if ex.thumbnail %}{{ ex.thumbnail.url }}{% endif %}"
+             onclick="selectExercise({{ ex.id }})">
+            <div class="ex-picker-thumb">
+                {% if ex.thumbnail %}
+                    <img src="{{ ex.thumbnail.url }}" alt="{{ ex.name }}">
+                {% else %}
+                    💪
+                {% endif %}
+            </div>
+            <div class="ex-picker-info">
+                <div class="ex-picker-name">{{ ex.name }}</div>
+                <div class="ex-picker-meta">{{ ex.primary_body_part }}</div>
+            </div>
+            <div class="ex-picker-add-btn">+</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- HEADER -->
+<div class="cp-header">
+    <button class="cp-back-btn" onclick="goBack()">←</button>
+    <div class="cp-title" id="headerTitle">Create Program</div>
+    <div class="cp-step-indicator" id="stepIndicator">1 / 4</div>
+</div>
+<div class="cp-progress-bar">
+    <div class="cp-progress-fill" id="progressFill" style="width:25%"></div>
+</div>
+
+<div class="cp-container">
+
+    <!-- STEP 1: NAME -->
+    <div class="cp-step active" id="step1">
+        <div class="step-title">Program Name</div>
+        <div class="step-sub">Give your program a name</div>
+        <input type="text" class="cp-input" id="programName"
+               placeholder="e.g. My Strength Program"
+               oninput="validateStep1()">
+    </div>
+
+    <!-- STEP 2: GOAL -->
+    <div class="cp-step" id="step2">
+        <div class="step-title">Your Goal</div>
+        <div class="step-sub">What do you want to achieve?</div>
+        <div class="goal-grid">
+            <div class="goal-card" data-goal="fat_loss" onclick="selectGoal(this)">
+                <div class="goal-icon">🔥</div>
+                <div class="goal-name">Fat Loss</div>
+                <div class="goal-desc">Burn calories & slim down</div>
+            </div>
+            <div class="goal-card" data-goal="muscle_gain" onclick="selectGoal(this)">
+                <div class="goal-icon">💪</div>
+                <div class="goal-name">Muscle Gain</div>
+                <div class="goal-desc">Build size & strength</div>
+            </div>
+            <div class="goal-card" data-goal="recomposition" onclick="selectGoal(this)">
+                <div class="goal-icon">⚡</div>
+                <div class="goal-name">Recomposition</div>
+                <div class="goal-desc">Lose fat, gain muscle</div>
+            </div>
+            <div class="goal-card" data-goal="general" onclick="selectGoal(this)">
+                <div class="goal-icon">🎯</div>
+                <div class="goal-name">General Fitness</div>
+                <div class="goal-desc">Overall health & fitness</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- STEP 3: DAYS PER WEEK + EXERCISES -->
+    <div class="cp-step" id="step3">
+        <div class="step-title">Build Your Days</div>
+        <div class="step-sub">Choose workouts per week, then add exercises to each day</div>
+
+        <div class="days-grid" id="daysGrid" style="margin-bottom:20px;">
+            <div class="days-card" data-days="2" onclick="selectDays(this)">
+                <div class="days-num">2</div>
+                <div class="days-label">days/week</div>
+            </div>
+            <div class="days-card" data-days="3" onclick="selectDays(this)">
+                <div class="days-num">3</div>
+                <div class="days-label">days/week</div>
+            </div>
+            <div class="days-card" data-days="4" onclick="selectDays(this)">
+                <div class="days-num">4</div>
+                <div class="days-label">days/week</div>
+            </div>
+        </div>
+
+        <!-- DAY TABS (shown after days selected) -->
+        <div id="dayTabsSection" style="display:none;">
+            <div class="day-tabs" id="dayTabs"></div>
+            <div id="dayExerciseSections"></div>
+        </div>
+    </div>
+
+    <!-- STEP 4: SUMMARY -->
+    <div class="cp-step" id="step4">
+        <div class="step-title">Review & Save</div>
+        <div class="step-sub">Check your program before saving</div>
+
+        <div class="summary-section">
+            <div class="summary-row">
+                <span class="summary-label">Program Name</span>
+                <span class="summary-value" id="summaryName">—</span>
+            </div>
+            <div class="summary-row">
+                <span class="summary-label">Goal</span>
+                <span class="summary-value" id="summaryGoal">—</span>
+            </div>
+            <div class="summary-row">
+                <span class="summary-label">Weeks</span>
+                <span class="summary-value">6 weeks</span>
+            </div>
+            <div class="summary-row">
+                <span class="summary-label">Days/week</span>
+                <span class="summary-value" id="summaryDays">—</span>
+            </div>
+        </div>
+
+        <div id="summaryDaysList"></div>
+    </div>
+
+</div>
+
+<!-- BOTTOM BUTTON -->
+<div class="cp-bottom">
+    <button class="btn-next-step" id="nextBtn" onclick="nextStep()">
+        Continue →
+    </button>
+</div>
+
+<script>
+// STATE
+let currentStep = 1;
+const totalSteps = 4;
+let selectedGoal = '';
+let selectedDays = 0;
+let activeDayTab = 1;
+let currentPickerDay = 1;
+
+// dayData: { dayNumber: [ { id, name, thumb, muscle, sets, reps, weight } ] }
+let dayData = {};
+
+const GOAL_LABELS = {
+    'fat_loss': 'Fat Loss',
+    'muscle_gain': 'Muscle Gain',
+    'recomposition': 'Recomposition',
+    'general': 'General Fitness',
+};
+
+const LANG = window.location.pathname.match(/^\/(en|ru|uz)\//)?.[1] || 'en';
+const CSRF = '{{ csrf_token }}';
+
+// NAVIGATION
+function goBack() {
+    if (currentStep === 1) {
+        window.location.href = `/${LANG}/favorites/`;
+    } else {
+        currentStep--;
+        showStep(currentStep);
+    }
+}
+
+function nextStep() {
+    if (currentStep === 1) {
+        const name = document.getElementById('programName').value.trim();
+        if (!name) { alert('Please enter a program name'); return; }
+        currentStep = 2;
+    } else if (currentStep === 2) {
+        if (!selectedGoal) { alert('Please select a goal'); return; }
+        currentStep = 3;
+    } else if (currentStep === 3) {
+        if (!selectedDays) { alert('Please select days per week'); return; }
+        const totalEx = Object.values(dayData).reduce((s, arr) => s + arr.length, 0);
+        if (totalEx === 0) { alert('Please add at least 1 exercise'); return; }
+        buildSummary();
+        currentStep = 4;
+    } else if (currentStep === 4) {
+        saveProgram();
+        return;
+    }
+    showStep(currentStep);
+}
+
+function showStep(step) {
+    document.querySelectorAll('.cp-step').forEach(s => s.classList.remove('active'));
+    document.getElementById(`step${step}`).classList.add('active');
+    document.getElementById('progressFill').style.width = `${(step / totalSteps) * 100}%`;
+    document.getElementById('stepIndicator').textContent = `${step} / ${totalSteps}`;
+
+    const titles = ['Name', 'Goal', 'Exercises', 'Review'];
+    document.getElementById('headerTitle').textContent = titles[step - 1];
+
+    const btn = document.getElementById('nextBtn');
+    if (step === 4) {
+        btn.textContent = 'Save Program 💪';
+    } else {
+        btn.textContent = 'Continue →';
+    }
+
+    validateCurrentStep();
+}
+
+function validateStep1() { validateCurrentStep(); }
+
+function validateCurrentStep() {
+    const btn = document.getElementById('nextBtn');
+    if (currentStep === 1) {
+        btn.disabled = !document.getElementById('programName').value.trim();
+    } else if (currentStep === 2) {
+        btn.disabled = !selectedGoal;
+    } else if (currentStep === 3) {
+        btn.disabled = !selectedDays;
+    } else {
+        btn.disabled = false;
+    }
+}
+
+// GOAL SELECTION
+function selectGoal(el) {
+    document.querySelectorAll('.goal-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedGoal = el.dataset.goal;
+    validateCurrentStep();
+}
+
+// DAYS SELECTION
+function selectDays(el) {
+    document.querySelectorAll('.days-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    const days = parseInt(el.dataset.days);
+    if (days !== selectedDays) {
+        selectedDays = days;
+        buildDayTabs();
+    }
+    document.getElementById('dayTabsSection').style.display = 'block';
+    validateCurrentStep();
+}
+
+function buildDayTabs() {
+    // Reset dayData for new day count
+    const newDayData = {};
+    for (let i = 1; i <= selectedDays; i++) {
+        newDayData[i] = dayData[i] || [];
+    }
+    dayData = newDayData;
+
+    const tabsEl = document.getElementById('dayTabs');
+    const sectionsEl = document.getElementById('dayExerciseSections');
+    tabsEl.innerHTML = '';
+    sectionsEl.innerHTML = '';
+
+    for (let i = 1; i <= selectedDays; i++) {
+        // Tab
+        const tab = document.createElement('div');
+        tab.className = `day-tab${i === 1 ? ' active' : ''}`;
+        tab.id = `dayTab${i}`;
+        tab.dataset.day = i;
+        tab.innerHTML = `Day ${i} <span class="ex-count" id="tabCount${i}">0</span>`;
+        tab.onclick = () => switchDayTab(i);
+        tabsEl.appendChild(tab);
+
+        // Section
+        const section = document.createElement('div');
+        section.className = `day-exercises${i === 1 ? ' active' : ''}`;
+        section.id = `daySection${i}`;
+        section.innerHTML = `
+            <div id="exList${i}"></div>
+            <button class="btn-add-exercise" onclick="openExPicker(${i})">
+                + Add Exercise
+            </button>
+        `;
+        sectionsEl.appendChild(section);
+    }
+
+    activeDayTab = 1;
+    refreshAllDays();
+}
+
+function switchDayTab(day) {
+    activeDayTab = day;
+    document.querySelectorAll('.day-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.day-exercises').forEach(s => s.classList.remove('active'));
+    document.getElementById(`dayTab${day}`).classList.add('active');
+    document.getElementById(`daySection${day}`).classList.add('active');
+}
+
+// EXERCISE PICKER
+function openExPicker(day) {
+    currentPickerDay = day;
+    document.getElementById('exPickerModal').classList.add('visible');
+    document.getElementById('exSearchInput').value = '';
+    filterExercises('');
+    refreshPickerAddedState();
+}
+
+function closeExPicker() {
+    document.getElementById('exPickerModal').classList.remove('visible');
+}
+
+function filterExercises(query) {
+    const q = query.toLowerCase();
+    document.querySelectorAll('.ex-picker-item').forEach(item => {
+        const name = item.dataset.name.toLowerCase();
+        const muscle = item.dataset.muscle.toLowerCase();
+        item.style.display = (name.includes(q) || muscle.includes(q)) ? 'flex' : 'none';
+    });
+}
+
+function refreshPickerAddedState() {
+    const addedIds = new Set((dayData[currentPickerDay] || []).map(e => e.id));
+    document.querySelectorAll('.ex-picker-item').forEach(item => {
+        const id = parseInt(item.dataset.id);
+        item.classList.toggle('already-added', addedIds.has(id));
+    });
+}
+
+function selectExercise(exId) {
+    const item = document.getElementById(`pickerItem${exId}`);
+    if (!item) return;
+
+    const ex = {
+        id: exId,
+        name: item.dataset.name,
+        muscle: item.dataset.muscle,
+        thumb: item.dataset.thumb,
+        sets: 3,
+        reps: 10,
+        weight: 0,
+    };
+
+    if (!dayData[currentPickerDay]) dayData[currentPickerDay] = [];
+
+    // Check already added
+    if (dayData[currentPickerDay].find(e => e.id === exId)) return;
+
+    dayData[currentPickerDay].push(ex);
+    refreshDayExercises(currentPickerDay);
+    refreshPickerAddedState();
+    closeExPicker();
+}
+
+function removeExercise(day, exId) {
+    dayData[day] = (dayData[day] || []).filter(e => e.id !== exId);
+    refreshDayExercises(day);
+}
+
+function refreshDayExercises(day) {
+    const listEl = document.getElementById(`exList${day}`);
+    if (!listEl) return;
+
+    const exercises = dayData[day] || [];
+    listEl.innerHTML = '';
+
+    exercises.forEach(ex => {
+        const card = document.createElement('div');
+        card.className = 'added-exercise-card';
+        card.innerHTML = `
+            <div class="added-ex-thumb">
+                ${ex.thumb ? `<img src="${ex.thumb}" alt="${ex.name}">` : '💪'}
+            </div>
+            <div class="added-ex-info">
+                <div class="added-ex-name">${ex.name}</div>
+                <div class="added-ex-params">
+                    <div>
+                        <input type="number" class="ex-param-input" value="${ex.sets}" min="1" max="10"
+                            onchange="updateExParam(${day}, ${ex.id}, 'sets', this.value)"
+                            placeholder="Sets">
+                        <div class="ex-param-label">Sets</div>
+                    </div>
+                    <div>
+                        <input type="number" class="ex-param-input" value="${ex.reps}" min="1" max="50"
+                            onchange="updateExParam(${day}, ${ex.id}, 'reps', this.value)"
+                            placeholder="Reps">
+                        <div class="ex-param-label">Reps</div>
+                    </div>
+                    <div>
+                        <input type="number" class="ex-param-input" value="${ex.weight}" min="0" step="2.5"
+                            onchange="updateExParam(${day}, ${ex.id}, 'weight', this.value)"
+                            placeholder="kg">
+                        <div class="ex-param-label">kg</div>
+                    </div>
+                </div>
+            </div>
+            <button class="btn-remove-ex" onclick="removeExercise(${day}, ${ex.id})">✕</button>
+        `;
+        listEl.appendChild(card);
+    });
+
+    // Update tab count
+    const countEl = document.getElementById(`tabCount${day}`);
+    if (countEl) countEl.textContent = exercises.length;
+}
+
+function refreshAllDays() {
+    for (let i = 1; i <= selectedDays; i++) {
+        refreshDayExercises(i);
+    }
+}
+
+function updateExParam(day, exId, param, value) {
+    const ex = (dayData[day] || []).find(e => e.id === exId);
+    if (ex) ex[param] = parseFloat(value) || 0;
+}
+
+// SUMMARY
+function buildSummary() {
+    document.getElementById('summaryName').textContent = document.getElementById('programName').value.trim();
+    document.getElementById('summaryGoal').textContent = GOAL_LABELS[selectedGoal] || selectedGoal;
+    document.getElementById('summaryDays').textContent = `${selectedDays} days/week`;
+
+    const listEl = document.getElementById('summaryDaysList');
+    listEl.innerHTML = '';
+    for (let i = 1; i <= selectedDays; i++) {
+        const exCount = (dayData[i] || []).length;
+        const item = document.createElement('div');
+        item.className = 'day-summary-item';
+        item.innerHTML = `
+            <div class="day-summary-name">Day ${i}</div>
+            <div class="day-summary-count">${exCount} exercise${exCount !== 1 ? 's' : ''}</div>
+        `;
+        listEl.appendChild(item);
+    }
+}
+
+// SAVE
+async function saveProgram() {
+    const btn = document.getElementById('nextBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<div class="btn-saving"><div class="spinner"></div> Saving...</div>';
+
+    const days = [];
+    for (let i = 1; i <= selectedDays; i++) {
+        days.push({
+            day_number: i,
+            title: `Day ${i}`,
+            exercises: (dayData[i] || []).map((ex, idx) => ({
+                exercise_id: ex.id,
+                sets: parseInt(ex.sets) || 3,
+                reps: parseInt(ex.reps) || 10,
+                weight: parseFloat(ex.weight) || 0,
+                order: idx + 1,
+            }))
+        });
+    }
+
+    const payload = {
+        name: document.getElementById('programName').value.trim(),
+        goal: selectedGoal,
+        workouts_per_week: selectedDays,
+        days: days,
+    };
+
+    try {
+        const res = await fetch(`/${LANG}/favorites/custom-program/create/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': CSRF,
+            },
+            body: JSON.stringify(payload),
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+            window.location.href = data.redirect_url || `/${LANG}/favorites/`;
+        } else {
+            alert(data.error || 'Error saving program');
+            btn.disabled = false;
+            btn.textContent = 'Save Program 💪';
+        }
+    } catch (err) {
+        alert('Network error. Please try again.');
+        btn.disabled = false;
+        btn.textContent = 'Save Program 💪';
+    }
+}
+
+// INIT
+validateCurrentStep();
+</script>
+
+{% csrf_token %}
+{% endblock %}
