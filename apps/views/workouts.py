@@ -144,7 +144,6 @@ class PlanWeeksView(DetailView):
 		return context
 
 
-# --- 4. Hafta ichidagi KUNLAR (Day List) ---
 class WeekDetailView(DetailView):
 	forced_workout_type = None
 	

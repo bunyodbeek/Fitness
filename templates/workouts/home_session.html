@@ -1,49 +1,38 @@
 {% extends 'base.html' %}
 {% load i18n %}
 
-{% block title %}{% trans "Workout Session" %}
-{% endblock %}
-{% block bottom_nav %}
-{% endblock %}
+{% block title %}{% trans "Workout Session" %}{% endblock %}
+{% block bottom_nav %}{% endblock %}
 
 {% block extra_css %}
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-    background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+    background: #0a0a0a;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     min-height: 100vh;
     color: #fff;
     overflow-x: hidden;
 }
 
-body::before {
-    content: "";
-    position: fixed; inset: 0;
-    background: radial-gradient(circle at 20% 50%, rgba(255,215,0,0.05) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(255,107,107,0.05) 0%, transparent 50%);
-    pointer-events: none; z-index: 0;
-}
-
 /* ── HEADER ── */
 .session-header {
     position: sticky;
-    background: rgba(13,15,24,0.98);
+    top: 0;
+    z-index: 100;
+    background: rgba(10,10,10,0.97);
     backdrop-filter: blur(12px);
     padding: 12px 16px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    border-bottom: 1px solid rgba(255,215,0,0.1);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
 }
 
 .exit-btn {
     background: transparent;
-    border: 1.5px solid rgba(255,71,87,0.4);
+    border: 1.5px solid rgba(255,71,87,0.5);
     color: #ff4757;
     padding: 7px 16px;
     border-radius: 10px;
@@ -52,86 +41,33 @@ body::before {
     letter-spacing: 1.5px;
     text-transform: uppercase;
     cursor: pointer;
+    transition: background 0.2s;
 }
-
-.back-btn {
-    background: none;
-    border: none;
-    color: #ffd700;
-    font-size: 22px;
-    cursor: pointer;
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 10px;
-}
+.exit-btn:hover { background: rgba(255,71,87,0.1); }
 
 .round-indicator {
     font-size: 13px;
     font-weight: 800;
     letter-spacing: 2px;
     text-transform: uppercase;
-    background: linear-gradient(135deg, #ffd700, #ff6b6b);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: #ffd700;
 }
 
-.exercise-counter {
-    font-size: 12px;
-    color: rgba(255,255,255,0.5);
-    font-weight: 600;
-}
-
-/* ── ROUND PROGRESS ── */
-.round-dots {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    padding: 14px 0 0;
-}
-
-.round-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.15);
-    transition: all 0.3s ease;
-}
-
-.round-dot.active {
-    background: #ffd700;
-    box-shadow: 0 0 8px rgba(255,215,0,0.6);
-    width: 24px;
-    border-radius: 4px;
-}
-
-.round-dot.done {
-    background: rgba(255,215,0,0.4);
-}
-
-/* ── MAIN CONTAINER ── */
+/* ── MAIN ── */
 .container {
-    position: relative;
-    z-index: 1;
-    max-width: 500px;
+    max-width: 540px;
     margin: 0 auto;
-    padding: 0 16px 100px;
+    padding: 16px 16px 120px;
 }
 
 /* ── EXERCISE IMAGE ── */
 .exercise-image-wrap {
     position: relative;
-    margin: 16px 0;
     border-radius: 20px;
     overflow: hidden;
-    height: 200px;
-    background: linear-gradient(135deg, rgba(255,215,0,0.08), rgba(255,107,107,0.05));
-    border: 1.5px solid rgba(255,215,0,0.15);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    height: 240px;
+    background: #1a1a1a;
+    margin-bottom: 16px;
 }
 
 .exercise-image {
@@ -141,47 +77,101 @@ body::before {
 }
 
 .exercise-image-placeholder {
-    font-size: 64px;
-    opacity: 0.6;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 72px;
+    opacity: 0.3;
 }
 
-.exercise-order-badge {
+.order-badge {
     position: absolute;
     top: 12px;
     left: 12px;
-    background: rgba(13,15,24,0.85);
+    background: rgba(10,10,10,0.75);
     backdrop-filter: blur(8px);
-    border: 1px solid rgba(255,215,0,0.3);
-    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
     padding: 4px 10px;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 700;
-    color: #ffd700;
+    color: #fff;
 }
 
-/* ── EXERCISE NAME ── */
+.fullscreen-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(10,10,10,0.75);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #fff;
+    font-size: 16px;
+}
+
+/* ── EXERCISE NAME (video ustida, gold) ── */
 .exercise-name {
-    font-family: "Bebas Neue", sans-serif;
-    font-size: clamp(22px, 7vw, 30px);
-    letter-spacing: 2px;
+    font-size: clamp(20px, 6vw, 28px);
     font-weight: 900;
     color: #ffd700;
-    text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 12px;
     line-height: 1.2;
+    letter-spacing: 0.5px;
+    text-align: center;
 }
 
-/* ── TIMER CIRCLE ── */
+/* ── DESCRIPTION ── */
+.description-block {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+}
+
+.description-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.description-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: rgba(255,255,255,0.4);
+    text-transform: uppercase;
+}
+
+.description-chevron { display: none; }
+
+.description-text {
+    font-size: 13px;
+    color: rgba(255,255,255,0.6);
+    line-height: 1.6;
+}
+
+/* ── TIMER ── */
 .timer-wrap {
     display: flex;
     justify-content: center;
-    margin: 0 0 20px;
+    margin-bottom: 24px;
 }
 
 .timer-circle-container {
     position: relative;
-    width: 180px;
-    height: 180px;
+    width: 200px;
+    height: 200px;
 }
 
 .timer-svg {
@@ -193,14 +183,14 @@ body::before {
 
 .timer-bg-circle {
     fill: none;
-    stroke: rgba(255,255,255,0.08);
-    stroke-width: 6;
+    stroke: rgba(255,255,255,0.06);
+    stroke-width: 5;
 }
 
 .timer-progress-circle {
     fill: none;
     stroke: url(#timerGrad);
-    stroke-width: 6;
+    stroke-width: 5;
     stroke-linecap: round;
     transition: stroke-dashoffset 1s linear;
 }
@@ -214,329 +204,339 @@ body::before {
     justify-content: center;
 }
 
-.timer-seconds {
-    font-size: 42px;
+.timer-display {
+    font-size: 52px;
     font-weight: 900;
-    background: linear-gradient(135deg, #ffd700, #ffed4e);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: #ffd700;
     line-height: 1;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -1px;
 }
 
 .timer-label {
     font-size: 11px;
-    color: rgba(255,255,255,0.4);
+    color: rgba(255,255,255,0.35);
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 2px;
     margin-top: 4px;
 }
 
-/* ── CONTROLS ── */
-.controls {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 16px;
-}
-
-.btn-pause {
-    flex: 1;
-    background: rgba(255,255,255,0.07);
-    border: 1.5px solid rgba(255,255,255,0.12);
-    border-radius: 14px;
-    padding: 14px;
-    color: #fff;
-    font-size: 15px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-
-.btn-pause:hover { background: rgba(255,255,255,0.12); }
-
-.btn-next {
-    flex: 2;
-    background: linear-gradient(135deg, #ffd700, #ffb300);
-    border: none;
-    border-radius: 14px;
-    padding: 14px;
-    color: #0d0f18;
-    font-size: 15px;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    cursor: pointer;
-    transition: all 0.3s;
-    box-shadow: 0 6px 24px rgba(255,215,0,0.35);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-
-.btn-next:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 32px rgba(255,215,0,0.5);
-}
-
-.btn-next:active { transform: translateY(0); }
-.btn-next.hidden { display: none; }
-
-/* ── REST STATE ── */
+/* ── REST PANEL ── */
 .rest-panel {
     display: none;
-    background: linear-gradient(135deg, rgba(78,205,196,0.1), rgba(78,205,196,0.04));
-    border: 1.5px solid rgba(78,205,196,0.25);
+    background: rgba(78,205,196,0.08);
+    border: 1.5px solid rgba(78,205,196,0.2);
     border-radius: 20px;
     padding: 20px;
     text-align: center;
     margin-bottom: 16px;
 }
-
 .rest-panel.visible { display: block; }
 
 .rest-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: rgba(78,205,196,0.7);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+}
+.rest-timer {
+    font-size: 52px;
+    font-weight: 900;
+    color: #4ecdc4;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+.rest-sub {
+    font-size: 12px;
+    color: rgba(255,255,255,0.35);
+    margin-bottom: 14px;
+}
+.btn-skip-rest {
+    background: rgba(78,205,196,0.12);
+    border: 1px solid rgba(78,205,196,0.25);
+    border-radius: 10px;
+    padding: 9px 22px;
+    color: #4ecdc4;
     font-size: 13px;
     font-weight: 700;
-    color: rgba(78,205,196,0.8);
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.btn-skip-rest:hover { background: rgba(78,205,196,0.22); }
+
+/* ── CONTROLS ── */
+.controls {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.btn-pause {
+    flex: 1;
+    background: rgba(255,255,255,0.07);
+    border: 1.5px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 16px;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background 0.2s;
+}
+.btn-pause:hover { background: rgba(255,255,255,0.11); }
+
+.btn-next {
+    flex: 2;
+    background: #ffd700;
+    border: none;
+    border-radius: 16px;
+    padding: 16px;
+    color: #0a0a0a;
+    font-size: 15px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s;
+    box-shadow: 0 4px 20px rgba(255,215,0,0.3);
+}
+.btn-next:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 28px rgba(255,215,0,0.45);
+}
+.btn-next:active { transform: translateY(0); }
+
+/* ── NEXT UP ── */
+.next-up-section {
+    margin-bottom: 16px;
+}
+
+.next-up-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #ffd700;
     text-transform: uppercase;
     letter-spacing: 2px;
     margin-bottom: 8px;
 }
 
-.rest-timer {
-    font-size: 48px;
-    font-weight: 900;
-    color: #4ecdc4;
-    line-height: 1;
+.next-up-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 14px;
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+    text-decoration: none;
+}
+.next-up-card:hover { background: rgba(255,255,255,0.08); }
+
+.next-up-thumb {
+    width: 56px;
+    height: 56px;
+    border-radius: 10px;
+    object-fit: cover;
+    background: #1a1a1a;
+    flex-shrink: 0;
+}
+.next-up-thumb-placeholder {
+    width: 56px;
+    height: 56px;
+    border-radius: 10px;
+    background: #1a1a1a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.next-up-info {
+    flex: 1;
+}
+.next-up-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 2px;
+}
+.next-up-dur {
+    font-size: 12px;
+    color: rgba(255,255,255,0.4);
+}
+
+/* ── EXERCISE LIST ── */
+.exercises-section {
+    margin-top: 8px;
+}
+
+.exercises-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.3);
+    text-transform: uppercase;
+    letter-spacing: 2px;
     margin-bottom: 8px;
 }
 
-.rest-label {
-    font-size: 12px;
-    color: rgba(255,255,255,0.4);
-    margin-bottom: 14px;
-}
-
-.btn-skip-rest {
-    background: rgba(78,205,196,0.15);
-    border: 1px solid rgba(78,205,196,0.3);
-    border-radius: 12px;
-    padding: 10px 24px;
-    color: #4ecdc4;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.btn-skip-rest:hover { background: rgba(78,205,196,0.25); }
-
-/* ── EXERCISE LIST (mini) ── */
-.mini-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.mini-item {
+.exercise-item {
     display: flex;
     align-items: center;
     gap: 10px;
     padding: 10px 12px;
     border-radius: 12px;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.06);
-    transition: all 0.3s;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.05);
+    margin-bottom: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
 }
-
-.mini-item.current {
-    background: rgba(255,215,0,0.08);
-    border-color: rgba(255,215,0,0.25);
+.exercise-item:hover { background: rgba(255,255,255,0.06); }
+.exercise-item.current {
+    background: rgba(255,215,0,0.07);
+    border-color: rgba(255,215,0,0.2);
 }
+.exercise-item.done { opacity: 0.4; }
 
-.mini-item.done {
-    opacity: 0.4;
-}
-
-.mini-num {
-    width: 26px;
-    height: 26px;
+.ex-play-btn {
+    width: 28px;
+    height: 28px;
     border-radius: 8px;
-    background: rgba(255,255,255,0.07);
+    background: rgba(255,215,0,0.15);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 11px;
-    font-weight: 800;
-    color: rgba(255,255,255,0.5);
     flex-shrink: 0;
 }
-
-.mini-item.current .mini-num {
-    background: rgba(255,215,0,0.2);
-    color: #ffd700;
+.ex-play-btn svg {
+    width: 12px;
+    height: 12px;
+    fill: #ffd700;
 }
-
-.mini-item.done .mini-num {
+.exercise-item.done .ex-play-btn {
     background: rgba(78,205,196,0.15);
-    color: #4ecdc4;
 }
+.exercise-item.done .ex-play-btn svg { fill: #4ecdc4; }
 
-.mini-name {
+.ex-name {
+    flex: 1;
     font-size: 13px;
     font-weight: 600;
     color: rgba(255,255,255,0.7);
-    flex: 1;
 }
+.exercise-item.current .ex-name { color: #fff; font-weight: 700; }
 
-.mini-item.current .mini-name { color: #fff; font-weight: 700; }
-
-.mini-dur {
-    font-size: 11px;
-    color: rgba(255,255,255,0.35);
+.ex-dur {
+    font-size: 12px;
+    color: rgba(255,255,255,0.3);
     font-weight: 600;
 }
 
-/* ── COMPLETE OVERLAY ── */
-.complete-overlay {
-    display: none;
+/* ── EXIT MODAL ── */
+.exit-modal {
     position: fixed;
     inset: 0;
-    background: rgba(13,15,24,0.97);
-    z-index: 200;
-    flex-direction: column;
+    background: rgba(5,5,5,0.9);
+    backdrop-filter: blur(12px);
+    display: flex;
     align-items: center;
     justify-content: center;
-    text-align: center;
-    padding: 32px;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s;
+    padding: 20px;
 }
+.exit-modal.active { opacity: 1; pointer-events: all; }
 
-.complete-overlay.visible { display: flex; }
-
-.complete-emoji { font-size: 72px; margin-bottom: 20px; animation: bounce 0.6s ease; }
-
-@keyframes bounce {
-    0% { transform: scale(0); }
-    70% { transform: scale(1.2); }
-    100% { transform: scale(1); }
-}
-
-.complete-title {
-    font-size: 28px;
-    font-weight: 900;
-    background: linear-gradient(135deg, #ffd700, #ff6b6b);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-bottom: 8px;
-}
-
-.complete-sub {
-    font-size: 14px;
-    color: rgba(255,255,255,0.5);
-    margin-bottom: 32px;
-}
-
-.complete-stats {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
+.exit-modal-box {
     width: 100%;
-    max-width: 300px;
-    margin-bottom: 32px;
+    max-width: 340px;
+    background: #141414;
+    border: 1px solid rgba(255,215,0,0.15);
+    border-radius: 24px;
+    padding: 28px 24px;
+    text-align: center;
 }
-
-.complete-stat {
-    background: rgba(255,255,255,0.05);
-    border-radius: 14px;
-    padding: 14px;
-}
-
-.complete-stat-val {
+.exit-modal-box h3 {
     font-size: 22px;
     font-weight: 900;
     color: #ffd700;
+    margin-bottom: 8px;
 }
-
-.complete-stat-label {
-    font-size: 10px;
+.exit-modal-box p {
+    font-size: 13px;
     color: rgba(255,255,255,0.4);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-top: 4px;
+    margin-bottom: 22px;
+    line-height: 1.5;
 }
-
-.btn-done {
-    background: linear-gradient(135deg, #ffd700, #ffed4e);
-    border: none;
-    border-radius: 16px;
-    padding: 16px 48px;
-    color: #0d0f18;
-    font-size: 16px;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    cursor: pointer;
-    box-shadow: 0 8px 32px rgba(255,215,0,0.35);
-    text-decoration: none;
-    display: inline-block;
+.exit-modal-buttons { display: flex; flex-direction: column; gap: 10px; }
+.btn-exit-confirm {
+    width: 100%; padding: 13px; border-radius: 12px;
+    background: rgba(255,71,87,0.1);
+    border: 1.5px solid rgba(255,71,87,0.3);
+    color: #ff4757; font-size: 13px; font-weight: 700; cursor: pointer;
+    transition: background 0.2s;
 }
-
-.section-label {
-    font-size: 10px;
-    font-weight: 700;
-    color: rgba(255,255,255,0.3);
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    margin: 16px 0 8px;
+.btn-exit-confirm:hover { background: rgba(255,71,87,0.18); }
+.btn-return {
+    width: 100%; padding: 13px; border-radius: 12px;
+    background: #ffd700; border: none;
+    color: #0a0a0a; font-size: 13px; font-weight: 800; cursor: pointer;
+    transition: opacity 0.2s;
 }
+.btn-return:hover { opacity: 0.9; }
 </style>
-
 {% endblock %}
 
 {% block content %}
 
-<!-- Complete overlay -->
-<div class="complete-overlay" id="completeOverlay">
-    <div class="complete-emoji">🏆</div>
-    <div class="complete-title">{% trans "Workout Complete!" %}</div>
-    <div class="complete-sub">{% trans "Amazing work! You crushed it!" %}</div>
-    <div class="complete-stats">
-        <div class="complete-stat">
-            <div class="complete-stat-val" id="finalRounds">{{ rounds }}</div>
-            <div class="complete-stat-label">{% trans "Rounds" %}</div>
-        </div>
-        <div class="complete-stat">
-            <div class="complete-stat-val" id="finalExercises">{{ exercises|length }}</div>
-            <div class="complete-stat-label">{% trans "Exercises" %}</div>
+<!-- EXIT MODAL -->
+<div class="exit-modal" id="exitModal">
+    <div class="exit-modal-box">
+        <h3>Exit Workout?</h3>
+        <p>Your progress will be lost.</p>
+        <div class="exit-modal-buttons">
+            <button onclick="exitWithoutSaving()" class="btn-exit-confirm">Exit</button>
+            <button onclick="returnToWorkout()" class="btn-return">Continue Workout</button>
         </div>
     </div>
-    <form method="post" action="{% url 'home_workout_done' workout.id %}" style="display:inline;">{% csrf_token %}<button type="submit" class="btn-done">{% trans "Done" %} ✓</button></form>
 </div>
 
-<!-- Header -->
+<!-- HEADER -->
 <div class="session-header">
     <button class="exit-btn" onclick="showExitModal()">EXIT</button>
-    <div class="round-indicator" id="roundLabel">{% trans "Round" %} {{ current_round }} {% trans "of" %} {{ rounds }}</div>
-    <div class="exercise-counter" id="exerciseCounter">1 / {{ exercises|length }}</div>
-</div>
-
-<!-- Round dots -->
-<div class="round-dots" id="roundDots">
-    {% for i in rounds_range %}
-    <div class="round-dot {% if forloop.first %}active{% endif %}" id="dot{{ forloop.counter }}"></div>
-    {% endfor %}
+    <div class="round-indicator" id="roundLabel">ROUND {{ current_round }} OF {{ rounds }}</div>
+    <div style="width:60px;text-align:right;font-size:12px;color:rgba(255,255,255,0.4);font-weight:600;" id="exCounterHeader">1 / {{ exercises|length }}</div>
 </div>
 
 <div class="container">
 
-    <!-- Exercise image -->
+    <!-- EXERCISE NAME (video ustida, gold) -->
+    <div class="exercise-name" id="exName">{{ exercises.0.name }}</div>
+
+    <!-- EXERCISE IMAGE -->
     <div class="exercise-image-wrap">
-        <div class="exercise-order-badge" id="exOrderBadge">1 / {{ exercises|length }}</div>
+        <div class="order-badge" id="orderBadge">1 / {{ exercises|length }}</div>
+        <div class="fullscreen-btn" onclick="toggleFullscreen()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+            </svg>
+        </div>
         {% if exercises.0.image %}
             <img src="{{ exercises.0.image.url }}" alt="" class="exercise-image" id="exImage">
         {% else %}
@@ -544,63 +544,69 @@ body::before {
         {% endif %}
     </div>
 
-    <!-- Exercise name -->
-    <div class="exercise-name" id="exName">{{ exercises.0.name }}</div>
+    <!-- DESCRIPTION (always visible, 3-rasmdek) -->
+    <div class="description-block" id="descBlock">
+        <div class="description-header">
+            <span class="description-label">DESCRIPTION</span>
+            <span class="description-chevron" id="descChevron">▾</span>
+        </div>
+        <div class="description-text visible" id="descText">{{ exercises.0.description|default:"No description available." }}</div>
+    </div>
 
-    <!-- Timer -->
+    <!-- TIMER -->
     <div class="timer-wrap">
         <div class="timer-circle-container">
-            <svg class="timer-svg" viewBox="0 0 180 180">
+            <svg class="timer-svg" viewBox="0 0 200 200">
                 <defs>
-                    <linearGradient id="timerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <linearGradient id="timerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                         <stop offset="0%" style="stop-color:#ffd700"/>
                         <stop offset="100%" style="stop-color:#ff6b6b"/>
                     </linearGradient>
                 </defs>
-                <circle class="timer-bg-circle" cx="90" cy="90" r="82"/>
-                <circle class="timer-progress-circle" cx="90" cy="90" r="82"
+                <circle class="timer-bg-circle" cx="100" cy="100" r="90"/>
+                <circle class="timer-progress-circle" cx="100" cy="100" r="90"
                     id="timerCircle"
-                    stroke-dasharray="515"
+                    stroke-dasharray="565"
                     stroke-dashoffset="0"/>
             </svg>
             <div class="timer-inner">
-                <div class="timer-seconds" id="timerDisplay">{{ exercises.0.duration_seconds }}</div>
-                <div class="timer-label">{% trans "sec" %}</div>
+                <div class="timer-display" id="timerDisplay">00:00</div>
+                <div class="timer-label">SEC</div>
             </div>
         </div>
     </div>
 
-    <!-- Rest panel -->
+    <!-- REST PANEL -->
     <div class="rest-panel" id="restPanel">
-        <div class="rest-title">💤 {% trans "Rest" %}</div>
+        <div class="rest-title">💤 REST</div>
         <div class="rest-timer" id="restDisplay">{{ rest_seconds }}</div>
-        <div class="rest-label">{% trans "Next round starting soon..." %}</div>
-        <button class="btn-skip-rest" onclick="skipRest()">{% trans "Skip Rest" %} ⚡</button>
+        <div class="rest-sub">Next round starting soon...</div>
+        <button class="btn-skip-rest" onclick="skipRest()">Skip Rest ›</button>
     </div>
 
-    <!-- Controls -->
+    <!-- CONTROLS -->
     <div class="controls">
         <button class="btn-pause" id="pauseBtn" onclick="togglePause()">
-            <span id="pauseIcon">⏸</span> <span id="pauseText">{% trans "Pause" %}</span>
+            <span id="pauseIcon">⏸</span>
+            <span id="pauseText">Pause</span>
         </button>
         <button class="btn-next" id="nextBtn" onclick="nextExercise()">
-            {% trans "Next" %} ›
+            NEXT ›
         </button>
     </div>
 
-    <!-- Mini exercise list -->
-    <div class="section-label">{% trans "Exercises" %}</div>
-    <div class="mini-list" id="miniList">
-        {% for e in exercises %}
-        <div class="mini-item {% if forloop.first %}current{% endif %}" id="mini{{ forloop.counter0 }}">
-            <div class="mini-num">
-                {% if not forloop.first %}{{ forloop.counter }}{% else %}▶{% endif %}
+    <!-- NEXT UP -->
+    <div class="next-up-section" id="nextUpSection">
+        <div class="next-up-label">NEXT UP</div>
+        <div class="next-up-card" id="nextUpCard" onclick="goToNextUp()">
+            <div class="next-up-thumb-placeholder" id="nextUpThumb">💪</div>
+            <div class="next-up-info">
+                <div class="next-up-name" id="nextUpName">—</div>
+                <div class="next-up-dur" id="nextUpDur">—</div>
             </div>
-            <div class="mini-name">{{ e.name }}</div>
-            <div class="mini-dur">{{ e.duration_seconds }}s</div>
         </div>
-        {% endfor %}
     </div>
+
 
 </div>
 
@@ -610,6 +616,7 @@ const EXERCISES = [
     {% for e in exercises %}
     {
         name: "{{ e.name|escapejs }}",
+        description: "{{ e.description|default:''|escapejs }}",
         duration: {{ e.duration_seconds }},
         image: "{% if e.image %}{{ e.image.url }}{% endif %}",
         order: {{ forloop.counter }}
@@ -620,18 +627,25 @@ const EXERCISES = [
 const TOTAL_ROUNDS = {{ rounds }};
 const REST_SECONDS = {{ rest_seconds }};
 const TOTAL_EXERCISES = EXERCISES.length;
+const CIRCUMFERENCE = 2 * Math.PI * 90; // r=90
 
 // ── STATE ──
 let currentRound = {{ current_round }};
-let currentExIndex = {{ current_order|default:1 }} - 1;
-let timeLeft = EXERCISES[currentExIndex]?.duration || 30;
-let totalDuration = timeLeft;
+let currentExIndex = Math.max({{ current_order|default:1 }} - 1, 0);
+let timeLeft = 0;
+let totalDuration = 0;
 let isPaused = false;
 let isResting = false;
 let restLeft = REST_SECONDS;
 let timer = null;
+let sessionStartTime = Date.now();
 
-const CIRCUMFERENCE = 2 * Math.PI * 82; // r=82
+// ── FORMAT TIME ──
+function formatTime(s) {
+    const m = Math.floor(s / 60);
+    const sec = s % 60;
+    return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+}
 
 // ── INIT ──
 function init() {
@@ -639,29 +653,33 @@ function init() {
     startTimer();
 }
 
-// ── UI UPDATE ──
+// ── UI ──
 function updateUI() {
     const ex = EXERCISES[currentExIndex];
     if (!ex) return;
 
     // Header
-    document.getElementById('roundLabel').textContent =
-        `{% trans "Round" %} ${currentRound} {% trans "of" %} ${TOTAL_ROUNDS}`;
-    document.getElementById('exerciseCounter').textContent =
-        `${currentExIndex + 1} / ${TOTAL_EXERCISES}`;
-    document.getElementById('exOrderBadge').textContent =
-        `${currentExIndex + 1} / ${TOTAL_EXERCISES}`;
+    document.getElementById('roundLabel').textContent = `ROUND ${currentRound} OF ${TOTAL_ROUNDS}`;
+    document.getElementById('exCounterHeader').textContent = `${currentExIndex + 1} / ${TOTAL_EXERCISES}`;
+    document.getElementById('orderBadge').textContent = `${currentExIndex + 1} / ${TOTAL_EXERCISES}`;
 
-    // Exercise info
+    // Name (video ustida, gold)
     document.getElementById('exName').textContent = ex.name;
 
+    // Description (always visible)
+    document.getElementById('descText').textContent = ex.description || 'No description available.';
+
     // Image
-    const imgEl = document.getElementById('exImage');
+    const imgWrap = document.getElementById('exImage');
     if (ex.image) {
-        imgEl.outerHTML = `<img src="${ex.image}" alt="" class="exercise-image" id="exImage">`;
+        if (imgWrap.tagName === 'IMG') {
+            imgWrap.src = ex.image;
+        } else {
+            imgWrap.outerHTML = `<img src="${ex.image}" alt="" class="exercise-image" id="exImage">`;
+        }
     } else {
-        if (imgEl.tagName === 'IMG') {
-            imgEl.outerHTML = `<div class="exercise-image-placeholder" id="exImage">💪</div>`;
+        if (imgWrap.tagName === 'IMG') {
+            imgWrap.outerHTML = `<div class="exercise-image-placeholder" id="exImage">💪</div>`;
         }
     }
 
@@ -670,38 +688,59 @@ function updateUI() {
     totalDuration = ex.duration;
     updateTimerDisplay();
 
-    // Mini list
-    EXERCISES.forEach((_, i) => {
-        const item = document.getElementById(`mini${i}`);
-        if (!item) return;
-        item.className = 'mini-item';
-        const num = item.querySelector('.mini-num');
-        if (i < currentExIndex) {
-            item.classList.add('done');
-            num.textContent = '✓';
-        } else if (i === currentExIndex) {
-            item.classList.add('current');
-            num.textContent = '▶';
-        } else {
-            num.textContent = i + 1;
-        }
-    });
+    // Next up
+    updateNextUp();
 
-    // Round dots
-    for (let i = 1; i <= TOTAL_ROUNDS; i++) {
-        const dot = document.getElementById(`dot${i}`);
-        if (!dot) continue;
-        dot.className = 'round-dot';
-        if (i < currentRound) dot.classList.add('done');
-        else if (i === currentRound) dot.classList.add('active');
-    }
+    // Exercise list
+    EXERCISES.forEach((_, i) => {
+        const item = document.getElementById(`exItem${i}`);
+        if (!item) return;
+        item.className = 'exercise-item';
+        if (i < currentExIndex) item.classList.add('done');
+        else if (i === currentExIndex) item.classList.add('current');
+    });
 }
 
 function updateTimerDisplay() {
-    document.getElementById('timerDisplay').textContent = timeLeft;
+    document.getElementById('timerDisplay').textContent = formatTime(timeLeft);
     const circle = document.getElementById('timerCircle');
     const pct = totalDuration > 0 ? timeLeft / totalDuration : 0;
     circle.style.strokeDashoffset = CIRCUMFERENCE * (1 - pct);
+}
+
+function updateNextUp() {
+    const nextIndex = currentExIndex + 1;
+    const section = document.getElementById('nextUpSection');
+
+    if (nextIndex >= TOTAL_EXERCISES) {
+        // Last exercise — show "Last Round" or hide
+        if (currentRound < TOTAL_ROUNDS) {
+            section.style.display = 'block';
+            document.getElementById('nextUpName').textContent = EXERCISES[0].name + ' (Round ' + (currentRound + 1) + ')';
+            document.getElementById('nextUpDur').textContent = formatTime(EXERCISES[0].duration);
+            updateNextUpThumb(EXERCISES[0].image);
+        } else {
+            section.style.display = 'none';
+        }
+        return;
+    }
+
+    section.style.display = 'block';
+    const next = EXERCISES[nextIndex];
+    document.getElementById('nextUpName').textContent = next.name;
+    document.getElementById('nextUpDur').textContent = formatTime(next.duration);
+    updateNextUpThumb(next.image);
+}
+
+function updateNextUpThumb(imageUrl) {
+    const thumbEl = document.getElementById('nextUpThumb');
+    if (imageUrl) {
+        thumbEl.outerHTML = `<img src="${imageUrl}" alt="" class="next-up-thumb" id="nextUpThumb">`;
+    } else {
+        if (thumbEl.tagName === 'IMG') {
+            thumbEl.outerHTML = `<div class="next-up-thumb-placeholder" id="nextUpThumb">💪</div>`;
+        }
+    }
 }
 
 // ── TIMER ──
@@ -712,45 +751,43 @@ function startTimer() {
 
 function tick() {
     if (isPaused) return;
-
     if (isResting) {
         restLeft--;
         document.getElementById('restDisplay').textContent = restLeft;
         if (restLeft <= 0) endRest();
         return;
     }
-
-    timeLeft--;
-    updateTimerDisplay();
-
-    if (timeLeft <= 0) {
-        autoNext();
+    if (timeLeft > 0) {
+        timeLeft--;
+        updateTimerDisplay();
     }
+    if (timeLeft <= 0) nextExercise();
 }
 
-function autoNext() {
-    if (isResting) return;
-    nextExercise();
-}
-
-// ── NEXT EXERCISE ──
+// ── NEXT ──
 function nextExercise() {
     if (isResting) return;
     currentExIndex++;
 
     if (currentExIndex >= TOTAL_EXERCISES) {
-        // Round tugadi
         if (currentRound >= TOTAL_ROUNDS) {
-            // Workout tugadi!
             clearInterval(timer);
-            submitWorkoutComplete();
+            submitComplete();
             return;
         }
-        // Rest boshlash
         startRest();
         return;
     }
 
+    updateUI();
+    startTimer();
+}
+
+function jumpToExercise(index) {
+    if (index <= currentExIndex) return; // faqat keyingilariga o'tish
+    currentExIndex = index;
+    isResting = false;
+    document.getElementById('restPanel').classList.remove('visible');
     updateUI();
     startTimer();
 }
@@ -761,7 +798,6 @@ function startRest() {
     restLeft = REST_SECONDS;
     document.getElementById('restPanel').classList.add('visible');
     document.getElementById('restDisplay').textContent = restLeft;
-    document.getElementById('nextBtn').classList.add('hidden');
 }
 
 function endRest() {
@@ -769,42 +805,56 @@ function endRest() {
     currentRound++;
     currentExIndex = 0;
     document.getElementById('restPanel').classList.remove('visible');
-    document.getElementById('nextBtn').classList.remove('hidden');
     updateUI();
     startTimer();
 }
 
-function skipRest() {
-    endRest();
-}
+function skipRest() { endRest(); }
 
 // ── PAUSE ──
 function togglePause() {
     isPaused = !isPaused;
     document.getElementById('pauseIcon').textContent = isPaused ? '▶' : '⏸';
-    document.getElementById('pauseText').textContent = isPaused ? '{% trans "Resume" %}' : '{% trans "Pause" %}';
+    document.getElementById('pauseText').textContent = isPaused ? 'Resume' : 'Pause';
 }
 
-// ── EXIT MODAL ──
-let sessionStartTime = Date.now();
+// ── NEXT UP CLICK ──
+function goToNextUp() {
+    const nextIndex = currentExIndex + 1;
+    if (nextIndex < TOTAL_EXERCISES) {
+        currentExIndex = nextIndex;
+        isResting = false;
+        document.getElementById('restPanel').classList.remove('visible');
+        updateUI();
+        startTimer();
+    }
+}
 
+// ── EXIT ──
+function toggleFullscreen() {
+    const el = document.querySelector('.exercise-image-wrap');
+    if (!document.fullscreenElement) {
+        el.requestFullscreen && el.requestFullscreen();
+    } else {
+        document.exitFullscreen && document.exitFullscreen();
+    }
+}
+
+// ── EXIT ──
 function showExitModal() {
     isPaused = true;
-    clearInterval(timer);
     document.getElementById('exitModal').classList.add('active');
 }
-
 function returnToWorkout() {
     document.getElementById('exitModal').classList.remove('active');
     isPaused = false;
-    startTimer();
 }
-
 function exitWithoutSaving() {
     window.location.href = '{% url "home_workout_detail" workout.id %}';
 }
 
-function submitWorkoutComplete() {
+// ── COMPLETE ──
+function submitComplete() {
     const durationSeconds = Math.floor((Date.now() - sessionStartTime) / 1000);
     const form = document.createElement('form');
     form.method = 'POST';
@@ -828,82 +878,7 @@ function submitWorkoutComplete() {
     form.submit();
 }
 
-// ── START ──
 init();
 </script>
 
-
-<div class="exit-modal" id="exitModal">
-    <div class="exit-modal-content">
-        <h3>Exit Workout?</h3>
-        <p>Your progress will be lost.</p>
-        <div class="exit-modal-buttons">
-            <button onclick="exitWithoutSaving()" class="btn-exit-confirm">Exit</button>
-            <button onclick="returnToWorkout()" class="btn-return">Continue Workout</button>
-        </div>
-    </div>
-</div>
-
-<style>
-.exit-modal {
-    position: fixed;
-    inset: 0;
-    background: rgba(5,7,18,0.88);
-    backdrop-filter: blur(12px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.25s ease;
-    padding: 20px;
-}
-.exit-modal.active { opacity: 1; pointer-events: all; }
-.exit-modal-content {
-    width: 100%;
-    max-width: 340px;
-    background: #0d1025;
-    border: 1px solid rgba(255,215,0,0.2);
-    border-radius: 24px;
-    padding: 32px 24px;
-    text-align: center;
-    box-shadow: 0 24px 60px rgba(0,0,0,0.7);
-}
-.exit-modal-content h3 {
-    font-size: 26px;
-    font-weight: 900;
-    color: #ffd700;
-    margin-bottom: 8px;
-}
-.exit-modal-content p {
-    font-size: 13px;
-    color: rgba(255,255,255,0.45);
-    margin-bottom: 24px;
-    line-height: 1.5;
-}
-.exit-modal-buttons { display: flex; flex-direction: column; gap: 10px; }
-.btn-exit-confirm {
-    width: 100%;
-    padding: 13px;
-    border-radius: 14px;
-    background: rgba(255,71,87,0.12);
-    border: 1.5px solid rgba(255,71,87,0.35);
-    color: #ff4757;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-}
-.btn-return {
-    width: 100%;
-    padding: 13px;
-    border-radius: 14px;
-    background: linear-gradient(135deg, #ffd700, #ffb300);
-    border: none;
-    color: #0a0d1a;
-    font-size: 13px;
-    font-weight: 800;
-    cursor: pointer;
-}
-</style>
 {% endblock %}
