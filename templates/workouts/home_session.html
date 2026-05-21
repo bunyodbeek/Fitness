@@ -19,9 +19,12 @@ body {
 :root {
     --gold: #ffd700;
     --gold2: #ffb300;
-    --bg: #0d0f18;
+    --red: #ff4757;
+    --bg: #0a0a0a;        /* ← qora */
+    --bg2: #111111;       /* ← card background */
     --border: rgba(255,215,0,0.12);
     --muted: rgba(255,255,255,0.45);
+    --card-bg: rgba(255,255,255,0.04);
 }
 
 /* ── HEADER ── */
@@ -29,7 +32,7 @@ body {
     position: fixed;
     top: 0; left: 0; right: 0;
     z-index: 100;
-    background: rgba(13,15,24,0.98);
+background: rgba(10,10,10,0.98);
     backdrop-filter: blur(16px);
     padding: 0 14px;
     display: flex;
@@ -63,14 +66,9 @@ body {
 }
 
 .overall-timer {
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--gold);
-    letter-spacing: 1px;
-    font-variant-numeric: tabular-nums;
-    flex-shrink: 0;
-    min-width: 52px;
-    text-align: right;
+   font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px; letter-spacing: 2px; color: var(--gold);
+    line-height: 1; flex-shrink: 0; transition: opacity 0.3s;
 }
 
 /* ── PROGRESS ── */
@@ -78,7 +76,7 @@ body {
     position: fixed;
     top: 52px; left: 0; right: 0;
     z-index: 99;
-    background: rgba(13,15,24,0.98);
+background: rgba(10,10,10,0.98);
     padding: 8px 14px;
     border-bottom: 1px solid rgba(255,255,255,0.04);
 }
@@ -190,7 +188,7 @@ body {
 /* ── DESC MODAL (gym style) ── */
 .desc-overlay {
     position: fixed; inset: 0;
-    background: rgba(5,7,18,0.8);
+   background: rgba(0,0,0,0.85);
     backdrop-filter: blur(12px);
     z-index: 700;
     display: flex;
@@ -204,7 +202,7 @@ body {
 
 .desc-panel {
     width: 100%; max-width: 500px;
-    background: #0d1025;
+background: rgba(0,0,0,0.85);
     border: 1px solid var(--border);
     border-top: none;
     border-radius: 0 0 24px 24px;
@@ -310,7 +308,7 @@ body {
 /* ── REST OVERLAY (gym style) ── */
 .rest-overlay {
     position: fixed; inset: 0;
-    background: rgba(5,7,18,0.78);
+background: rgba(0,0,0,0.85);
     backdrop-filter: blur(12px);
     display: flex; align-items: flex-end;
     justify-content: center;
@@ -322,7 +320,7 @@ body {
 
 .rest-panel {
     width: 100%; max-width: 500px;
-    background: linear-gradient(180deg, #0d1025, #0d0f18);
+    background: #111111;
     border: 1px solid var(--border);
     border-bottom: none;
     border-radius: 28px 28px 0 0;
@@ -393,7 +391,7 @@ body {
     position: fixed;
     bottom: 0; left: 0; right: 0;
     z-index: 200;
-    background: rgba(13,15,24,0.98);
+    background: rgba(10,10,10,0.98);
     backdrop-filter: blur(16px);
     border-top: 1px solid var(--border);
     padding: 12px 14px 20px;

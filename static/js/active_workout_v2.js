@@ -185,7 +185,7 @@ const renderSetCards = () => {
         }
 
         const unitLbl=document.createElement('span');
-        unitLbl.className='w-unit'; unitLbl.textContent='kg';
+        unitLbl.className='w-unit'; unitLbl.textContent='KG';
         wZone.appendChild(unitLbl);
 
         // Divider

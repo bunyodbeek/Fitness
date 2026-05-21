@@ -7,6 +7,13 @@
     <title>Active Workout - {{ workout.title }}</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
+{#    body {#}
+{#    background: var(--bg) !important;#}
+{#    color: #fff;#}
+{#    font-family: 'DM Sans', sans-serif;#}
+{#    min-height: 100vh;#}
+{#    overflow-x: hidden;#}
+{#}#}
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700;900&display=swap');
 
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -15,7 +22,8 @@
     --gold: #ffd700;
     --gold2: #ffb300;
     --red: #ff4757;
-    --bg: #0d0f18;
+    --bg: #0a0a0a;        /* ← qora */
+    --bg2: #111111;       /* ← card background */
     --border: rgba(255,215,0,0.12);
     --muted: rgba(255,255,255,0.45);
     --card-bg: rgba(255,255,255,0.04);
@@ -23,7 +31,6 @@
 
 body {
     background: var(--bg);
-    color: #fff;
     font-family: 'DM Sans', sans-serif;
     min-height: 100vh;
     overflow-x: hidden;
@@ -34,14 +41,21 @@ body {
     position: sticky; top: 0; z-index: 200;
     height: 52px; display: flex; align-items: center;
     justify-content: space-between; padding: 0 14px; gap: 8px;
-    background: rgba(13,15,24,0.98); backdrop-filter: blur(16px);
+     background: rgba(10,10,10,0.98); backdrop-filter: blur(16px);
     border-bottom: 1px solid var(--border);
 }
 .exit-btn {
-    background: rgba(255,71,87,0.1); border: 1.5px solid rgba(255,71,87,0.35);
-    color: var(--red); padding: 6px 14px; border-radius: 10px;
-    font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
-    text-transform: uppercase; cursor: pointer; flex-shrink: 0;
+    background: rgba(255,255,255,0.07);
+    border: 1.5px solid rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.7);
+    padding: 6px 14px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    flex-shrink: 0;
 }
 .progress-counter {
     flex: 1; text-align: center;
@@ -120,7 +134,7 @@ body {
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
-.desc-trigger-text { font-size:12px; color:rgba(255,255,255,0.6); flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.desc-trigger-text { font-size:12px; color:rgb(12 12 12 / 0.95); flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .desc-trigger-btn { font-size:10px; font-weight:700; color:var(--gold); text-transform:uppercase; letter-spacing:1px; flex-shrink:0; }
 
 /* ── SETS ── */
@@ -154,11 +168,14 @@ body {
     box-shadow: none;
 }
 
-/* Weight zone — input styled like display text */
+
 .set-weight-zone {
     flex: 0 0 42%;
-    display: flex; align-items: center;
-    padding: 0 6px 0 14px; gap: 3px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 8px 6px 8px 14px;
     position: relative;
 }
 
@@ -167,28 +184,19 @@ body {
   No opacity:0 tricks. The input IS what user sees & taps.
 */
 .w-inp {
-    /* look like big bold number */
-    width: 0; flex: 1;
-    min-width: 0;
-    font-size: 30px;
-    font-weight: 900;
+    width: 100%;
+    font-size: 22px;
+    font-weight: 700;
     color: #0a0d1a;
     line-height: 1;
-    font-family: 'DM Sans', sans-serif;
-    letter-spacing: -1px;
-    /* remove all default input styling */
+        text-align: center;
+
     background: transparent;
     border: none;
     outline: none;
-    -webkit-appearance: none;
-    -moz-appearance: textfield;
-    /* allow tap on mobile */
-    -webkit-user-select: text;
-    user-select: text;
-    cursor: text;
     padding: 0;
-    text-align: left;
-    transition: color 0.4s;
+        font-family: 'DM Sans', sans-serif; /* ← qo'shing */
+
 }
 .w-inp::-webkit-outer-spin-button,
 .w-inp::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
@@ -199,9 +207,8 @@ body {
 .set-card.done .w-inp:focus { border-bottom: none; }
 
 .w-unit {
-    font-size: 13px; font-weight: 700;
-    color: rgba(10,13,26,0.5); align-self: flex-end;
-    margin-bottom: 6px; flex-shrink: 0; pointer-events: none;
+ font-size: 10px; font-weight: 700;
+    color: rgba(10,13,26,0.4); text-transform: uppercase; letter-spacing: 1px;
     transition: color 0.4s;
 }
 .set-card.done .w-unit { color: rgba(255,215,0,0.4); }
@@ -221,7 +228,7 @@ body {
     padding: 8px; gap: 1px; min-width: 0;
 }
 .r-num {
-    font-size: 20px; font-weight: 900;
+    font-size: 22px; font-weight: 900;
     color: rgba(10,13,26,0.82); line-height: 1;
     font-family: 'DM Sans', sans-serif; transition: color 0.4s; white-space: nowrap;
 }
@@ -276,7 +283,7 @@ body {
     position: fixed; bottom: 0; left: 0; right: 0;
     height: 80px; display: flex; align-items: center;
     padding: 0 14px 14px;
-    background: rgba(13,15,24,0.98); backdrop-filter: blur(20px);
+    background: rgba(10,10,10,0.98);
     border-top: 1px solid var(--border); z-index: 300;
 }
 .pause-btn {
@@ -288,7 +295,7 @@ body {
 
 /* ── REST OVERLAY ── */
 .rest-overlay {
-    position: fixed; inset: 0; background: rgba(5,7,18,0.78);
+    position: fixed; inset: 0; background: rgba(0,0,0,0.85);
     backdrop-filter: blur(12px); display: flex; align-items: flex-end;
     justify-content: center; z-index: 500; opacity: 0; pointer-events: none;
     transition: opacity 0.35s;
@@ -296,7 +303,7 @@ body {
 .rest-overlay.active { opacity:1; pointer-events:all; }
 .rest-panel {
     width:100%; max-width:500px;
-    background:linear-gradient(180deg,#0d1025,#0d0f18);
+    background:linear-gradient(180deg, #111111, #0a0a0a);
     border:1px solid var(--border); border-bottom:none;
     border-radius:28px 28px 0 0; padding:28px 24px 40px;
     text-align:center; transform:translateY(40px);
@@ -313,9 +320,9 @@ body {
 .rest-next-name { font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:2px; color:#fff; }
 
 /* ── DESC MODAL ── */
-.desc-overlay { position:fixed; inset:0; background:rgba(5,7,18,0.8); backdrop-filter:blur(12px); z-index:700; display:flex; align-items:flex-start; justify-content:center; opacity:0; pointer-events:none; transition:opacity 0.25s; padding-top:52px; }
+.desc-overlay { position:fixed; inset:0; background: rgba(0,0,0,0.85); backdrop-filter:blur(12px); z-index:700; display:flex; align-items:flex-start; justify-content:center; opacity:0; pointer-events:none; transition:opacity 0.25s; padding-top:52px; }
 .desc-overlay.active { opacity:1; pointer-events:all; }
-.desc-panel { width:100%; max-width:500px; background:#0d1025; border:1px solid var(--border); border-top:none; border-radius:0 0 24px 24px; overflow:hidden; transform:translateY(-20px); transition:transform 0.3s cubic-bezier(0.34,1.4,0.64,1); max-height:calc(100vh - 52px); display:flex; flex-direction:column; }
+.desc-panel { width:100%; max-width:500px; background:#111111; border:1px solid var(--border); border-top:none; border-radius:0 0 24px 24px; overflow:hidden; transform:translateY(-20px); transition:transform 0.3s cubic-bezier(0.34,1.4,0.64,1); max-height:calc(100vh - 52px); display:flex; flex-direction:column; }
 .desc-overlay.active .desc-panel { transform:translateY(0); }
 .desc-video { width:100%; aspect-ratio:16/10; object-fit:cover; display:none; background:#000; pointer-events:none; }
 .desc-video.has-v { display:block; }
@@ -329,7 +336,7 @@ body {
 /* ── EXIT MODAL ── */
 .exit-modal { position:fixed; inset:0; background:rgba(5,7,18,0.88); backdrop-filter:blur(12px); display:flex; align-items:center; justify-content:center; z-index:1000; opacity:0; pointer-events:none; transition:opacity 0.25s; padding:20px; }
 .exit-modal.active { opacity:1; pointer-events:all; }
-.exit-content { width:100%; max-width:360px; background:#0d1025; border:1px solid rgba(255,215,0,0.18); border-radius:24px; padding:30px 22px; text-align:center; transform:scale(0.95); transition:transform 0.25s; }
+.exit-content { width:100%; max-width:360px; background:#111111; border:1px solid rgba(255,215,0,0.18); border-radius:24px; padding:30px 22px; text-align:center; transform:scale(0.95); transition:transform 0.25s; }
 .exit-modal.active .exit-content { transform:scale(1); }
 .exit-content h3 { font-family:'Bebas Neue',sans-serif; font-size:28px; letter-spacing:2px; color:var(--gold); margin-bottom:7px; }
 .exit-content p { font-size:13px; color:var(--muted); margin-bottom:22px; line-height:1.5; }
