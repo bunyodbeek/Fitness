@@ -499,19 +499,19 @@ background: rgba(0,0,0,0.85);
         <div class="rest-badge" id="restBadge">Round Complete 💪</div>
         <div class="rest-circle" onclick="skipRest()">
             <div class="rest-time" id="restTimerDisplay">01:00</div>
-            <div class="rest-skip-hint">Tap to skip</div>
+            <div class="rest-skip-hint">{% trans "Tap to skip" %}</div>
         </div>
-        <button class="rest-skip-btn" onclick="skipRest()">Skip Rest</button>
-        <div class="rest-next-lbl">Next Up</div>
+        <button class="rest-skip-btn" onclick="skipRest()">{% trans "Skip Rest" %}</button>
+        <div class="rest-next-lbl">{% trans "Next Up" %}</div>
         <div class="rest-next-name" id="restNextName">—</div>
     </div>
 </div>
 
 <!-- HEADER -->
 <div class="session-header">
-    <button class="exit-btn" onclick="showExitModal()">EXIT</button>
+    <button class="exit-btn" onclick="showExitModal()">{% trans "EXIT" %}</button>
     <div class="header-center">
-        <div class="header-day-name">{{ workout.title|default:"Workout" }}</div>
+        <div class="header-day-name">{{ workout.title|default:_("Workout") }}</div>
     </div>
     <div class="overall-timer" id="overallTimer">00:00</div>
 </div>
