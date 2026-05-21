@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Exercises - Body Parts{% endblock %}
+{% block title %}{% trans "Exercises - Body Parts" %}{% endblock %}
 {% load i18n %}
 
 {% block extra_css %}
@@ -374,7 +374,7 @@
 
                 <!-- Cardio -->
                 <a href="{% url 'exercises_by_muscle' 'cardio' %}" class="body-part-label label-right"
-                   style="top: 18%; right: 5%;">Cardio</a>
+                   style="top: 18%; right: 5%;">{% trans 'Cardio' %}</a>
 
                 <!-- Shoulders -->
                 <svg class="body-part-line" style="top:24%; left:12%; width:22%; height:2px;">
