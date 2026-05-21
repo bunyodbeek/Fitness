@@ -36,9 +36,15 @@
         }
 
         @keyframes particleFloat {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            33% { transform: translate(30px, -30px) scale(1.1); }
-            66% { transform: translate(-20px, 20px) scale(0.9); }
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+            }
+            33% {
+                transform: translate(30px, -30px) scale(1.1);
+            }
+            66% {
+                transform: translate(-20px, 20px) scale(0.9);
+            }
         }
 
         /* ===== HEADER ===== */
@@ -192,16 +198,39 @@
         }
 
         @keyframes slideInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to   { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        .program-card:nth-child(1) { animation-delay: 0.05s; }
-        .program-card:nth-child(2) { animation-delay: 0.1s; }
-        .program-card:nth-child(3) { animation-delay: 0.15s; }
-        .program-card:nth-child(4) { animation-delay: 0.2s; }
-        .program-card:nth-child(5) { animation-delay: 0.25s; }
-        .program-card:nth-child(6) { animation-delay: 0.3s; }
+        .program-card:nth-child(1) {
+            animation-delay: 0.05s;
+        }
+
+        .program-card:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        .program-card:nth-child(3) {
+            animation-delay: 0.15s;
+        }
+
+        .program-card:nth-child(4) {
+            animation-delay: 0.2s;
+        }
+
+        .program-card:nth-child(5) {
+            animation-delay: 0.25s;
+        }
+
+        .program-card:nth-child(6) {
+            animation-delay: 0.3s;
+        }
 
         /* ===== PROGRAM HEADER (rasm) ===== */
         .program-header {
@@ -310,8 +339,14 @@
         }
 
         @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to   { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .empty-state-icon {
@@ -323,8 +358,12 @@
         }
 
         @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-15px); }
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-15px);
+            }
         }
 
         .empty-state h3 {
@@ -343,20 +382,50 @@
 
         /* ===== RESPONSIVE - TABLET (500px+) ===== */
         @media (min-width: 500px) {
-            .page-header { padding: 14px 20px; }
-            .page-title { font-size: 18px; }
-            .mode-switch-wrapper { padding: 16px 16px 0; }
-            .container { padding: 14px 16px 90px; }
-            .program-header { height: 140px; }
-            .program-title-overlay h2 { font-size: 18px; }
-            .program-description { font-size: 13px; }
-            .meta-item { font-size: 11px; padding: 7px 12px; }
+            .page-header {
+                padding: 14px 20px;
+            }
+
+            .page-title {
+                font-size: 18px;
+            }
+
+            .mode-switch-wrapper {
+                padding: 16px 16px 0;
+            }
+
+            .container {
+                padding: 14px 16px 90px;
+            }
+
+            .program-header {
+                height: 140px;
+            }
+
+            .program-title-overlay h2 {
+                font-size: 18px;
+            }
+
+            .program-description {
+                font-size: 13px;
+            }
+
+            .meta-item {
+                font-size: 11px;
+                padding: 7px 12px;
+            }
         }
 
         /* ===== RESPONSIVE - DESKTOP (768px+) ===== */
         @media (min-width: 768px) {
-            .page-header { padding: 16px 24px; }
-            .page-title { font-size: 20px; letter-spacing: 4px; }
+            .page-header {
+                padding: 16px 24px;
+            }
+
+            .page-title {
+                font-size: 20px;
+                letter-spacing: 4px;
+            }
 
             /* mode-switch desktop - to'liq kenglkda, gridga tegmaydi */
             .mode-switch-wrapper {
@@ -371,13 +440,34 @@
                 padding: 16px 20px 90px;
             }
 
-        .program-card { margin-bottom: 0; }
-            .program-header { height: 160px; }
-            .program-title-overlay h2 { font-size: 20px; }
-            .program-info { padding: 16px 18px 18px; }
-            .program-description { font-size: 14px; }
-            .meta-item { font-size: 12px; padding: 8px 14px; }
-            .empty-state { grid-column: 1 / -1; }
+            .program-card {
+                margin-bottom: 0;
+            }
+
+            .program-header {
+                height: 160px;
+            }
+
+            .program-title-overlay h2 {
+                font-size: 20px;
+            }
+
+            .program-info {
+                padding: 16px 18px 18px;
+            }
+
+            .program-description {
+                font-size: 14px;
+            }
+
+            .meta-item {
+                font-size: 12px;
+                padding: 8px 14px;
+            }
+
+            .empty-state {
+                grid-column: 1 / -1;
+            }
         }
 
         .for-you-badge {
@@ -406,7 +496,9 @@
             backdrop-filter: blur(4px);
         }
 
-        .recommend-overlay.show { display: flex; }
+        .recommend-overlay.show {
+            display: flex;
+        }
 
         .recommend-card {
             width: min(560px, 94vw);
@@ -442,7 +534,11 @@
             line-height: 1.5;
         }
 
-        .recommend-actions { display: flex; gap: 10px; }
+        .recommend-actions {
+            display: flex;
+            gap: 10px;
+        }
+
         .recommend-btn {
             flex: 1;
             border: none;
@@ -452,16 +548,29 @@
             font-weight: 700;
             cursor: pointer;
         }
-        .recommend-btn.primary { background: #ffd700; color: #0d0f18; }
-        .recommend-btn.secondary { background: transparent; border: 1px solid #ffd700; color: #ffd700; }
+
+        .recommend-btn.primary {
+            background: #ffd700;
+            color: #0d0f18;
+        }
+
+        .recommend-btn.secondary {
+            background: transparent;
+            border: 1px solid #ffd700;
+            color: #ffd700;
+        }
 
         @keyframes recommendSlideUp {
-            to { transform: translateY(0); }
+            to {
+                transform: translateY(0);
+            }
         }
 
         /* ===== RESPONSIVE - LARGE DESKTOP (1024px+) ===== */
         @media (min-width: 1024px) {
-            .mode-switch-wrapper { padding: 24px 24px 0; }
+            .mode-switch-wrapper {
+                padding: 24px 24px 0;
+            }
 
             .container {
                 grid-template-columns: repeat(3, 1fr);
@@ -469,24 +578,68 @@
                 padding: 16px 24px 90px;
             }
 
-            .program-header { height: 180px; }
-            .program-title-overlay h2 { font-size: 22px; }
+            .program-header {
+                height: 180px;
+            }
+
+            .program-title-overlay h2 {
+                font-size: 22px;
+            }
         }
 
         /* ===== VERY SMALL PHONES (360px-) ===== */
         @media (max-width: 360px) {
-            .page-header { padding: 10px 12px; }
-            .page-title { font-size: 14px; letter-spacing: 2px; }
-            .mode-switch-wrapper { padding: 10px 10px 0; }
-            .container { padding: 10px 10px 90px; }
-            .program-header { height: 100px; }
-            .program-title-overlay { padding: 25px 12px 10px; }
-            .program-title-overlay h2 { font-size: 14px; }
-            .program-title-overlay p { font-size: 10px; }
-            .program-info { padding: 10px 12px 12px; }
-            .program-description { font-size: 11px; margin-bottom: 10px; }
-            .meta-item { font-size: 9px; padding: 5px 8px; gap: 3px; }
-            .meta-item span { font-size: 10px; }
+            .page-header {
+                padding: 10px 12px;
+            }
+
+            .page-title {
+                font-size: 14px;
+                letter-spacing: 2px;
+            }
+
+            .mode-switch-wrapper {
+                padding: 10px 10px 0;
+            }
+
+            .container {
+                padding: 10px 10px 90px;
+            }
+
+            .program-header {
+                height: 100px;
+            }
+
+            .program-title-overlay {
+                padding: 25px 12px 10px;
+            }
+
+            .program-title-overlay h2 {
+                font-size: 14px;
+            }
+
+            .program-title-overlay p {
+                font-size: 10px;
+            }
+
+            .program-info {
+                padding: 10px 12px 12px;
+            }
+
+            .program-description {
+                font-size: 11px;
+                margin-bottom: 10px;
+            }
+
+            .meta-item {
+                font-size: 9px;
+                padding: 5px 8px;
+                gap: 3px;
+            }
+
+            .meta-item span {
+                font-size: 10px;
+            }
         }
     </style>
 {% endblock %}
@@ -511,12 +664,15 @@
     <div class="container">
         {% if programs %}
             {% for program in programs %}
-                <a href="{% if is_home_mode %}{% url 'home_program_detail' program.id %}{% else %}{% url 'gym_program_detail' program.id %}{% endif %}" class="program-card">
+                <a href="
+                        {% if is_home_mode %}{% url 'home_program_detail' program.id %}{% else %}{% url 'gym_program_detail' program.id %}{% endif %}"
+                   class="program-card">
                     <div class="program-header">
                         {% if program.image %}
                             <img src="{{ program.image.url }}" alt="{{ program.title }}" class="program-image">
                         {% else %}
-                            <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&q=80" alt="{{ program.title }}" class="program-image">
+                            <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&q=80"
+                                 alt="{{ program.title }}" class="program-image">
                         {% endif %}
 
                         {% if program.has_premium %}
@@ -530,9 +686,11 @@
                             <p>
                                 🎯
                                 {% if is_home_mode %}
-                                    {% blocktrans count plan_count=program.plans.count %}{{ plan_count }} Plan{% plural %}{{ plan_count }} Plans{% endblocktrans %}
+                                    {% blocktrans count plan_count=program.plans.count %}{{ plan_count }} Plan
+                                        {% plural %}{{ plan_count }} Plans{% endblocktrans %}
                                 {% else %}
-                                    {% blocktrans count plan_count=program.plans.count %}{{ plan_count }} Plan{% plural %}{{ plan_count }} Plans{% endblocktrans %}
+                                    {% blocktrans count plan_count=program.plans.count %}{{ plan_count }} Plan
+                                        {% plural %}{{ plan_count }} Plans{% endblocktrans %}
                                 {% endif %}
                             </p>
                         </div>
@@ -543,18 +701,14 @@
                         <div class="program-meta">
                             <span class="meta-item">
                                 <span>📅</span>
-                                {{ program.editions.first.duration_weeks|default:"2" }}{% trans "w" %}
+
+                                {{ program.plans.first.weeks_count|default:"6" }}{% trans "w" %}
                             </span>
                             <span class="meta-item">
                                 <span>🏋️</span>
-                                {{ program.editions.first.days_per_week|default:"1" }}{% trans "d/week" %}
+                                {{ program.plans.first.days_per_week|default:"1" }}{% trans "d/week" %}
                             </span>
-                            {% if is_home_mode %}
-                            <span class="meta-item">
-                                <span>💪</span>
-                                {{ program.editions.first.workouts.first.rounds|default:"1" }}
-                            </span>
-                            {% endif %}
+                            
                         </div>
                     </div>
                 </a>
@@ -575,7 +729,8 @@
                 <div class="recommend-title">{{ recommended_program.title }}</div>
                 <p class="recommend-desc">{{ recommended_program.description|default:"Top match based on your profile."|truncatewords:28 }}</p>
                 <div class="recommend-actions">
-                    <button class="recommend-btn primary" id="startRecommendedBtn">{% trans "Start This Program" %}</button>
+                    <button class="recommend-btn primary"
+                            id="startRecommendedBtn">{% trans "Start This Program" %}</button>
                     <button class="recommend-btn secondary" id="dismissRecommendedBtn">{% trans "Browse All" %}</button>
                 </div>
             </div>
@@ -597,10 +752,10 @@
 
         // Smooth scroll behavior
         document.querySelectorAll('.program-card').forEach(card => {
-            card.addEventListener('touchstart', function() {
+            card.addEventListener('touchstart', function () {
                 this.style.transform = 'scale(0.98)';
             });
-            card.addEventListener('touchend', function() {
+            card.addEventListener('touchend', function () {
                 this.style.transform = '';
             });
         });
@@ -617,19 +772,20 @@
             const startBtn = document.getElementById('startRecommendedBtn');
             const dismissBtn = document.getElementById('dismissRecommendedBtn');
 
-            const targetUrl = "{% if is_home_mode %}/{{ LANGUAGE_CODE|default:'en' }}/home/program/{% else %}/{{ LANGUAGE_CODE|default:'en' }}/gym/program/{% endif %}" + programId + "/";
+            const targetUrl = "{% if is_home_mode %}/{{ LANGUAGE_CODE|default:'en' }}/home/program/{% else %}/
+                {{ LANGUAGE_CODE|default:'en' }}/gym/program/{% endif %}" + programId + "/";
 
             if (startBtn) {
-                startBtn.addEventListener('click', function() {
+                startBtn.addEventListener('click', function () {
                     window.location.href = targetUrl;
                 });
             }
             if (dismissBtn) {
-                dismissBtn.addEventListener('click', function() {
+                dismissBtn.addEventListener('click', function () {
                     overlay.classList.remove('show');
                 });
             }
-            overlay.addEventListener('click', function(e) {
+            overlay.addEventListener('click', function (e) {
                 if (e.target === overlay) {
                     overlay.classList.remove('show');
                 }

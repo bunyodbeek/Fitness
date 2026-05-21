@@ -75,42 +75,47 @@ const toggleExerciseMedia = () => { if(exercises[currentExIdx]?.description) ope
 
 // ── DESC MODAL ───────────────────────────────────────────────────────────────
 const renderDescTrigger = desc => {
-    const t=$('descTrigger'), tx=$('descTriggerText'); if(!t||!tx) return;
-    if(!desc?.trim()) { t.style.display='none'; return; }
-    tx.textContent=desc.trim(); t.style.display='flex';
+    const preview = $('descPreview'); if (!preview) return;
+    preview.textContent = desc?.trim() || 'No description available.';
 };
 
 const openDescModal = () => {
-    const ex=exercises[currentExIdx]; if(!ex) return;
-    const ov=$('descModal'), mv=$('descModalVideo'), mi=$('descModalImg'); if(!ov) return;
-    const n=$('descModalName'), tx=$('descModalText');
-    if(n) n.textContent=ex.name||'';
-    if(tx) tx.textContent=ex.description||'';
-    if(mv) {
-        if(ex.video) {
-            mv.src=ex.video; mv.muted=true; mv.autoplay=true; mv.loop=true;
-            mv.setAttribute('playsinline',''); mv.classList.add('has-v');
-            if(mi) mi.classList.add('hidden');
+    const ex = exercises[currentExIdx]; if (!ex) return;
+    const ov = $('descOverlay'); if (!ov) return;
+
+    // Description preview text
+    const tx = $('descModalText') || $('descText');
+    if (tx) tx.textContent = ex.description || '';
+
+    // Media
+    const media = $('descMedia');
+    if (media) {
+        if (ex.video) {
+            media.innerHTML = `<video autoplay loop muted playsinline style="width:100%;height:100%;object-fit:cover;display:block;"><source src="${ex.video}"></video>`;
+            media.style.display = 'block';
+        } else if (ex.image) {
+            media.innerHTML = `<img src="${ex.image}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">`;
+            media.style.display = 'block';
         } else {
-            mv.removeAttribute('src'); mv.load(); mv.classList.remove('has-v');
-            if(mi) { mi.src=ex.image||defaultImage; mi.classList.remove('hidden'); }
+            media.style.display = 'none';
         }
     }
+
     ov.classList.add('active');
-    if(!isPaused&&!isResting) { isPaused=true; pauseStart=Date.now(); }
+    if (!isPaused && !isResting) { isPaused = true; pauseStart = Date.now(); }
 };
 
 const closeDescModal = () => {
-    const ov=$('descModal'), mv=$('descModalVideo');
-    if(ov) ov.classList.remove('active');
-    if(mv) mv.pause();
-    if(isPaused&&pauseStart&&!isResting) {
-        isPaused=false; totalPaused+=(Date.now()-pauseStart); pauseStart=null;
-        const pi=$('pauseIcon'); if(pi) pi.innerHTML='<i class="fas fa-pause"></i>';
+    const ov = $('descOverlay');
+    if (ov) ov.classList.remove('active');
+    // Video to'xtatish
+    const video = document.querySelector('#descMedia video');
+    if (video) video.pause();
+    if (isPaused && pauseStart && !isResting) {
+        isPaused = false; totalPaused += (Date.now() - pauseStart); pauseStart = null;
+        const pi = $('pauseIcon'); if (pi) pi.innerHTML = '<i class="fas fa-pause"></i>';
     }
 };
-const closeDescModalOnBg = e => { if(e.target===$('descModal')) closeDescModal(); };
-
 // ── SET CARDS ────────────────────────────────────────────────────────────────
 const renderSetCards = () => {
     const ex=exercises[currentExIdx], wr=$('setsWrapper');

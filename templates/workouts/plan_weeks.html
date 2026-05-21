@@ -19,6 +19,7 @@
         min-height: 100vh;
         position: relative;
         overflow-x: hidden;
+        overflow: hidden;
     }
 
     body::before {
@@ -90,13 +91,20 @@
         width: 32px;
     }
 
-    .container {
-        position: relative;
-        z-index: 1;
-        max-width: 640px;
-        margin: 0 auto;
-        padding-bottom: 90px;
-    }
+   .container {
+    position: fixed;
+    top: 57px; /* header height */
+    bottom: 0;
+    left: 0; right: 0;
+    z-index: 1;
+    max-width: 640px;
+    margin: 0 auto;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 20px;
+}
+   .container::-webkit-scrollbar { display: none; }
+
 
     /* Plan header banner */
     .plan-header {
@@ -150,7 +158,7 @@
         backdrop-filter: blur(10px);
         padding: 12px;
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(2, 1fr);
         gap: 8px;
         border: 1.5px solid rgba(255, 215, 0, 0.15);
         margin: 12px;
@@ -301,10 +309,7 @@
             <div class="stat-value">{{ weeks|length }}</div>
             <div class="stat-label">{% trans "Weeks" %}</div>
         </div>
-{#        <div class="stat-item">#}
-{#            <div class="stat-value">{{ weeks|length }}</div>#}
-{#            <div class="stat-label">{% trans "Duration" %}</div>#}
-{#        </div>#}
+
         <div class="stat-item">
             <div class="stat-value">{{ plan.days_per_week }}</div>
             <div class="stat-label">{% trans "Days/Week" %}</div>
@@ -314,7 +319,6 @@
     <!-- Weeks list -->
     <div class="weeks-list">
         {% for week in weeks %}
-            {# URL nomini o'z url.py ga qarab moslashtiring #}
             <a href="{% if is_home_mode %}{% url 'home_week_detail' week.id %}{% else %}{% url 'week_detail' week.id %}{% endif %}" class="week-card">
                 <div class="week-number">{{ week.week_number }}</div>
                 <div class="week-content">
