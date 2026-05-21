@@ -55,11 +55,9 @@ from apps.views.home_workouts import (
 
 from apps.views.handbook import (
 	HandbookCategoryListView,
-	HandbookSubCategoryListView,
-	HandbookItemListView,
 	HandbookItemDetailView,
 	HandbookSearchView,
-	HandbookByCategoryView,
+	 HandbookCategoryDetailView, HandbookSubCategoryDetailView,
 )
 from apps.views.workouts import WeekDetailView
 from apps.views.favorite import CustomProgramCreateView, CustomProgramDeleteView, CustomProgramDetailView
@@ -134,13 +132,14 @@ urlpatterns = [
 	# HANDBOOK - yangi qo'shildi (My Trainer o'rniga)
 	path('handbook/', HandbookCategoryListView.as_view(), name='handbook_home'),
 	path('handbook/search/', HandbookSearchView.as_view(), name='handbook_search'),
-	path('handbook/category/<slug:category_slug>/all/', HandbookByCategoryView.as_view(), name='handbook_category_all'),
-	path('handbook/<slug:category_slug>/', HandbookSubCategoryListView.as_view(), name='handbook_subcategories'),
-	path('handbook/<slug:category_slug>/<slug:subcategory_slug>/', HandbookItemListView.as_view(),
+	path('handbook/<slug:category_slug>/', HandbookCategoryDetailView.as_view(), name='handbook_subcategories'),
+	path('handbook/<slug:category_slug>/<slug:subcategory_slug>/', HandbookSubCategoryDetailView.as_view(),
 	     name='handbook_items'),
 	path('handbook/<slug:category_slug>/<slug:subcategory_slug>/<slug:item_slug>/', HandbookItemDetailView.as_view(),
 	     name='handbook_item_detail'),
-	
+	# Direct item — subcategorysiz
+	path('handbook/<slug:category_slug>/item/<slug:item_slug>/', HandbookItemDetailView.as_view(),
+	     name='handbook_item_direct'),
 	# Bot webhook
 	path("bot/webhook/", TelegramWebhookView.as_view(), name="telegram_webhook"),
 	

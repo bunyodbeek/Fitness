@@ -1,1022 +1,319 @@
-<!-- templates/handbooks/item_detail.html -->
 {% extends 'base.html' %}
-{% load static %}
 {% load i18n %}
 
-{% block title %}{{ item.title }} - {% trans "Handbook" %}{% endblock %}
+{% block title %}{{ item.title }}{% endblock %}
 
 {% block extra_css %}
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
-            color: #EAEAEA;
-            margin: 0;
-            padding: 0;
-            line-height: 1.6;
-            min-height: 100vh;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        /* Animated particles background */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: radial-gradient(circle at 20% 50%, rgba(255, 215, 0, 0.05) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 80%, rgba(255, 107, 107, 0.05) 0%, transparent 50%),
-                        radial-gradient(circle at 40% 90%, rgba(78, 205, 196, 0.05) 0%, transparent 50%);
-            animation: particleFloat 15s ease-in-out infinite;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        @keyframes particleFloat {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            33% { transform: translate(30px, -30px) scale(1.1); }
-            66% { transform: translate(-20px, 20px) scale(0.9); }
-        }
-
-        /* ===== COMPACT HEADER ===== */
-        .page-header {
-            background: linear-gradient(135deg, rgba(15, 52, 96, 0.95) 0%, rgba(22, 33, 62, 0.95) 100%);
-            backdrop-filter: blur(10px);
-            padding: 12px 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            border-bottom: 1px solid rgba(255, 215, 0, 0.1);
-        }
-
-        .back-btn {
-            background: none;
-            border: none;
-            color: #ffd700;
-            font-size: 24px;
-            cursor: pointer;
-            padding: 0;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            font-weight: 700;
-        }
-
-        .back-btn:hover {
-            transform: translateX(-3px) scale(1.1);
-        }
-
-        .back-btn:active {
-            transform: translateX(-2px) scale(0.95);
-        }
-
-        .page-title {
-            color: white;
-            font-size: 15px;
-            font-weight: 800;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            flex: 1;
-            text-align: center;
-            background: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            line-height: 1.3;
-            padding: 0 10px;
-            max-width: calc(100% - 120px);
-            text-overflow: ellipsis;
-            overflow: hidden;
-            white-space: nowrap;
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        .header-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 10px;
-            border: 1.5px solid rgba(255, 215, 0, 0.3);
-            background: rgba(255, 215, 0, 0.12);
-            color: #ffd700;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .header-icon:hover {
-            background: rgba(255, 215, 0, 0.2);
-            border-color: #ffd700;
-            transform: scale(1.05);
-        }
-
-        .header-icon:active {
-            transform: scale(0.95);
-        }
-
-        .header-icon.active {
-            background: linear-gradient(135deg, #ffd700 0%, #f39c12 100%);
-            color: #1a1a2e;
-            border-color: #ffd700;
-            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
-        }
-
-        /* ===== CONTAINER ===== */
-        .container {
-            position: relative;
-            z-index: 1;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 12px 12px 100px;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Main Media Section */
-        .main-image-section {
-            margin: 20px 0;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            border: 1.5px solid rgba(255, 215, 0, 0.2);
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
-            backdrop-filter: blur(10px);
-            position: relative;
-            animation: fadeIn 0.6s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .main-image-wrapper {
-            width: 100%;
-            position: relative;
-        }
-
-        .main-video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .main-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .main-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        /* Title Section */
-        .title-section {
-            margin-bottom: 14px;
-        }
-
-        .item-title {
-            color: rgba(255, 255, 255, 0.95);
-            font-size: 22px;
-            font-weight: 700;
-            letter-spacing: -0.3px;
-            line-height: 1.3;
-            margin-bottom: 10px;
-        }
-
-        .item-meta-bar {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .meta-item {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            padding: 5px 10px;
-            background: rgba(255, 215, 0, 0.1);
-            border: 1px solid rgba(255, 215, 0, 0.2);
-            border-radius: 12px;
-            color: rgba(255, 215, 0, 0.9);
-            font-size: 11px;
-            font-weight: 600;
-        }
-
-        .meta-icon {
-            font-size: 12px;
-        }
-
-        /* Description Card */
-        .description-card {
-            margin-bottom: 14px;
-            padding: 16px;
-            background: linear-gradient(135deg, rgba(26, 31, 58, 0.95), rgba(15, 12, 41, 0.95));
-            border: 1.5px solid rgba(255, 215, 0, 0.2);
-            border-radius: 16px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .description-title {
-            font-size: 13px;
-            font-weight: 800;
-            margin-bottom: 10px;
-            background: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .description-text {
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.78);
-            line-height: 1.7;
-            white-space: pre-wrap;
-        }
-
-        .description-text p {
-            margin-bottom: 10px;
-        }
-
-        .description-text p:last-child {
-            margin-bottom: 0;
-        }
-
-        /* Additional Info Section */
-        .additional-info-section {
-            margin-bottom: 14px;
-        }
-
-        .info-card {
-            background: linear-gradient(135deg, rgba(26, 31, 58, 0.95), rgba(15, 12, 41, 0.95));
-            border: 1.5px solid rgba(255, 215, 0, 0.2);
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .info-label {
-            font-size: 12px;
-            font-weight: 800;
-            margin-bottom: 8px;
-            background: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .info-value {
-            color: rgba(255, 255, 255, 0.78);
-            font-size: 12px;
-            line-height: 1.6;
-        }
-
-        .info-list {
-            list-style: none;
-            padding: 0;
-        }
-
-        .info-list li {
-            padding: 6px 0;
-            border-bottom: 1px solid rgba(255, 215, 0, 0.1);
-            color: rgba(255, 255, 255, 0.78);
-            font-size: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .info-list li:last-child {
-            border-bottom: none;
-        }
-
-        .info-list li::before {
-            content: "▸";
-            color: #ffd700;
-            font-size: 14px;
-            flex-shrink: 0;
-        }
-
-        /* Image Gallery */
-        .gallery-section {
-            margin-bottom: 14px;
-        }
-
-        .section-title {
-            font-size: 13px;
-            font-weight: 800;
-            margin-bottom: 12px;
-            background: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .gallery-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-        }
-
-        .gallery-item {
-            aspect-ratio: 1;
-            border-radius: 12px;
-            overflow: hidden;
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 215, 0, 0.08));
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 1.5px solid rgba(255, 215, 0, 0.2);
-            position: relative;
-        }
-
-        .gallery-item:hover {
-            transform: scale(1.05);
-            border-color: rgba(255, 215, 0, 0.5);
-            box-shadow: 0 8px 20px rgba(255, 215, 0, 0.3);
-        }
-
-        .gallery-item:active {
-            transform: scale(0.98);
-        }
-
-        .gallery-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .gallery-placeholder {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 32px;
-            opacity: 0.3;
-        }
-
-        /* Tags Section */
-        .tags-section {
-            margin-bottom: 14px;
-        }
-
-        .tags-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .tag {
-            padding: 6px 12px;
-            background: rgba(255, 215, 0, 0.15);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            border-radius: 16px;
-            color: #ffd700;
-            font-size: 11px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .tag:hover {
-            background: rgba(255, 215, 0, 0.25);
-            border-color: #ffd700;
-        }
-
-        /* Related Items */
-        .related-section {
-            margin-bottom: 20px;
-        }
-
-        .related-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-        }
-
-        .related-item {
-            background: linear-gradient(135deg, rgba(26, 31, 58, 0.95), rgba(15, 12, 41, 0.95));
-            border: 1.5px solid rgba(255, 215, 0, 0.2);
-            border-radius: 14px;
-            padding: 12px;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            display: block;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .related-item:hover {
-            border-color: rgba(255, 215, 0, 0.5);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.2);
-        }
-
-        .related-item:active {
-            transform: translateY(-1px) scale(0.98);
-        }
-
-        .related-image-wrapper {
-            width: 100%;
-            aspect-ratio: 1;
-            border-radius: 10px;
-            overflow: hidden;
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.15) 0%, rgba(255, 215, 0, 0.08) 100%);
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid rgba(255, 215, 0, 0.2);
-        }
-
-        .related-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .related-placeholder {
-            font-size: 32px;
-            color: #ffd700;
-        }
-
-        .related-title {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 13px;
-            font-weight: 600;
-            line-height: 1.3;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        /* Empty State */
-        .empty-info {
-            text-align: center;
-            padding: 40px 20px;
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 13px;
-        }
-
-        /* ===== RESPONSIVE - TABLET ===== */
-        @media (min-width: 500px) {
-            .page-header {
-                padding: 14px 20px;
-            }
-
-            .page-title {
-                font-size: 16px;
-                letter-spacing: 2.5px;
-            }
-
-            .container {
-                padding: 14px 16px 110px;
-            }
-
-            .media-container {
-                margin-bottom: 16px;
-                border-radius: 18px;
-            }
-
-            .main-image,
-            .main-video,
-            .main-image-placeholder {
-                min-height: 280px;
-            }
-
-            .main-image-placeholder {
-                font-size: 56px;
-            }
-
-            .item-title {
-                font-size: 24px;
-            }
-
-            .description-card,
-            .info-card {
-                padding: 18px;
-            }
-
-            .description-title,
-            .section-title,
-            .info-label {
-                font-size: 15px;
-            }
-
-            .description-text,
-            .info-value {
-                font-size: 13px;
-            }
-
-            .gallery-grid {
-                gap: 10px;
-            }
-
-            .related-grid {
-                gap: 14px;
-            }
-        }
-
-        /* ===== RESPONSIVE - DESKTOP ===== */
-        @media (min-width: 768px) {
-            .page-header {
-                padding: 16px 24px;
-            }
-
-            .page-title {
-                font-size: 18px;
-                letter-spacing: 3px;
-            }
-
-            .back-btn {
-                width: 36px;
-                height: 36px;
-                font-size: 26px;
-            }
-
-            .header-icon {
-                width: 36px;
-                height: 36px;
-                font-size: 20px;
-            }
-
-            .container {
-                padding: 16px 20px 120px;
-            }
-
-            .media-container {
-                margin-bottom: 18px;
-                border-radius: 20px;
-            }
-
-            .main-image,
-            .main-video,
-            .main-image-placeholder {
-                min-height: 320px;
-            }
-
-            .main-image-placeholder {
-                font-size: 64px;
-            }
-
-            .item-title {
-                font-size: 26px;
-            }
-
-            .description-card,
-            .info-card {
-                padding: 20px;
-            }
-
-            .description-title,
-            .section-title,
-            .info-label {
-                font-size: 16px;
-            }
-
-            .description-text,
-            .info-value {
-                font-size: 14px;
-            }
-
-            .gallery-grid {
-                grid-template-columns: repeat(4, 1fr);
-                gap: 12px;
-            }
-
-            .related-grid {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 16px;
-            }
-        }
-
-        /* ===== VERY SMALL PHONES ===== */
-        @media (max-width: 360px) {
-            .page-header {
-                padding: 10px 12px;
-            }
-
-            .back-btn {
-                width: 28px;
-                height: 28px;
-                font-size: 20px;
-            }
-
-            .header-icon {
-                width: 28px;
-                height: 28px;
-                font-size: 16px;
-            }
-
-            .page-title {
-                font-size: 12px;
-                letter-spacing: 1.5px;
-            }
-
-            .container {
-                padding: 10px 10px 90px;
-            }
-
-            .media-container {
-                margin-bottom: 12px;
-                border-radius: 14px;
-            }
-
-            .main-image,
-            .main-video,
-            .main-image-placeholder {
-                min-height: 200px;
-            }
-
-            .main-image-placeholder {
-                font-size: 40px;
-            }
-
-            .item-title {
-                font-size: 18px;
-            }
-
-            .description-card,
-            .info-card {
-                padding: 14px;
-            }
-
-            .description-title,
-            .section-title,
-            .info-label {
-                font-size: 12px;
-                margin-bottom: 8px;
-            }
-
-            .description-text,
-            .info-value {
-                font-size: 11px;
-            }
-
-            .gallery-grid {
-                gap: 6px;
-            }
-
-            .related-grid {
-                gap: 10px;
-            }
-
-            .gallery-placeholder {
-                font-size: 24px;
-            }
-
-            .related-placeholder {
-                font-size: 28px;
-            }
-        }
-
-        /* GPU Acceleration */
-        .main-image,
-        .gallery-item,
-        .related-item {
-            will-change: transform;
-        }
-
-        /* Reduced motion */
-        @media (prefers-reduced-motion: reduce) {
-            *,
-            *::before,
-            *::after {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-            }
-        }
-    </style>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    background: #0a0a0a;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    min-height: 100vh;
+    color: #fff;
+    overflow-x: hidden;
+}
+
+.page-header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,10,10,0.97);
+    backdrop-filter: blur(12px);
+    padding: 0 16px;
+    display: flex; align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(255,215,0,0.1);
+    height: 52px; gap: 8px;
+}
+
+.back-btn {
+    background: none; border: none;
+    color: #ffd700; font-size: 22px;
+    cursor: pointer; width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+}
+
+.page-title {
+    flex: 1; text-align: center;
+    font-size: 14px; font-weight: 800;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    color: #fff;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.header-actions {
+    display: flex; gap: 6px; flex-shrink: 0;
+}
+
+.header-icon {
+    background: rgba(255,255,255,0.07);
+    border: 1.5px solid rgba(255,255,255,0.12);
+    color: #fff; width: 34px; height: 34px;
+    border-radius: 10px; font-size: 16px;
+    cursor: pointer; display: flex;
+    align-items: center; justify-content: center;
+    transition: all 0.2s;
+}
+.header-icon.active {
+    background: rgba(255,215,0,0.15);
+    border-color: rgba(255,215,0,0.4);
+    color: #ffd700;
+}
+
+.content-container {
+    max-width: 600px; margin: 0 auto;
+    padding: 0 0 100px;
+}
+
+/* MEDIA */
+.main-image-section { width: 100%; margin-bottom: 0; }
+.main-image-wrapper {
+    width: 100%; aspect-ratio: 1/1;
+    background: #111; overflow: hidden;
+    position: relative;
+}
+.main-video, .main-image {
+    width: 100%; height: 100%;
+    object-fit: cover; display: block;
+}
+.main-image-placeholder {
+    width: 100%; height: 100%;
+    display: flex; align-items: center;
+    justify-content: center; font-size: 80px;
+    opacity: 0.3;
+}
+
+/* TITLE */
+.title-section { padding: 16px 16px 0; }
+.item-title {
+    font-size: 20px; font-weight: 900;
+    color: #fff; margin-bottom: 10px; line-height: 1.3;
+}
+
+.item-meta-bar {
+    display: flex; gap: 12px; flex-wrap: wrap;
+}
+.meta-item {
+    display: flex; align-items: center; gap: 5px;
+    background: rgba(255,215,0,0.07);
+    border: 1px solid rgba(255,215,0,0.15);
+    border-radius: 20px; padding: 4px 12px;
+    font-size: 11px; font-weight: 600;
+    color: rgba(255,215,0,0.8);
+}
+
+/* DESCRIPTION */
+.description-card {
+    margin: 16px 16px 0;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,215,0,0.1);
+    border-radius: 16px; padding: 16px;
+}
+.description-title {
+    font-size: 11px; font-weight: 800;
+    color: #ffd700; text-transform: uppercase;
+    letter-spacing: 1.5px; margin-bottom: 10px;
+}
+.description-text {
+    font-size: 14px; color: rgba(255,255,255,0.78);
+    line-height: 1.7;
+}
+
+/* ADDITIONAL INFO */
+.additional-info-section { padding: 16px 16px 0; }
+.section-title {
+    font-size: 13px; font-weight: 800;
+    color: #ffd700; text-transform: uppercase;
+    letter-spacing: 1.5px; margin-bottom: 10px;
+}
+.info-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 12px; padding: 12px 14px;
+    margin-bottom: 8px;
+}
+.info-label {
+    font-size: 10px; font-weight: 700;
+    color: rgba(255,215,0,0.6);
+    text-transform: uppercase; letter-spacing: 1px;
+    margin-bottom: 4px;
+}
+.info-value {
+    font-size: 13px; color: rgba(255,255,255,0.8);
+}
+.info-list { padding-left: 16px; }
+.info-list li { margin-bottom: 2px; }
+
+/* TAGS */
+.tags-section { padding: 16px 16px 0; }
+.tags-container { display: flex; flex-wrap: wrap; gap: 8px; }
+.tag {
+    background: rgba(255,215,0,0.08);
+    border: 1px solid rgba(255,215,0,0.2);
+    color: rgba(255,215,0,0.8);
+    padding: 4px 12px; border-radius: 20px;
+    font-size: 11px; font-weight: 600;
+}
+
+/* RELATED */
+.related-section { padding: 16px 16px 0; }
+.related-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+.related-item {
+    text-decoration: none; color: inherit;
+    border-radius: 12px; overflow: hidden;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    transition: all 0.2s;
+}
+.related-item:hover { border-color: rgba(255,215,0,0.25); }
+.related-image-wrapper {
+    aspect-ratio: 1/1; background: #1a1a1a;
+    overflow: hidden;
+}
+.related-image { width: 100%; height: 100%; object-fit: cover; }
+.related-placeholder {
+    width: 100%; height: 100%;
+    display: flex; align-items: center;
+    justify-content: center; font-size: 28px; opacity: 0.4;
+}
+.related-title {
+    padding: 6px 8px;
+    font-size: 11px; font-weight: 600;
+    color: rgba(255,255,255,0.8);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+</style>
 {% endblock %}
 
 {% block content %}
-    <!-- Compact Header -->
-    <div class="page-header">
-        <button class="back-btn" onclick="goBack()">‹</button>
-        <h1 class="page-title">
-            {% if item.title_uz %}
-                {{ item.title_uz }}
+
+<div class="page-header">
+    <button class="back-btn" onclick="history.back()">←</button>
+    <h1 class="page-title">{{ item.title }}</h1>
+    <div class="header-actions">
+        <button class="header-icon" onclick="shareItem()">🔗</button>
+        <button class="header-icon {% if is_favorited %}active{% endif %}"
+                id="favoriteBtn" onclick="toggleFavorite({{ item.id }})">
+            <span id="favoriteIcon">{% if is_favorited %}⭐{% else %}☆{% endif %}</span>
+        </button>
+    </div>
+</div>
+
+<div class="content-container">
+
+    <!-- Media -->
+    <div class="main-image-section">
+        <div class="main-image-wrapper">
+            {% if item.video %}
+                <video class="main-video" controls autoplay muted loop playsinline
+                       poster="{% if item.main_image %}{{ item.main_image.url }}{% endif %}">
+                    <source src="{{ item.video.url }}">
+                </video>
+            {% elif item.main_image %}
+                <img src="{{ item.main_image.url }}" alt="{{ item.title }}" class="main-image"
+                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                <div class="main-image-placeholder" style="display:none;">💊</div>
             {% else %}
-                {{ item.title }}
+                <div class="main-image-placeholder">💊</div>
             {% endif %}
-        </h1>
-        <div class="header-actions">
-            <button class="header-icon" onclick="shareItem()">🔗</button>
-            <button class="header-icon {% if is_favorited %}active{% endif %}"
-                    id="favoriteBtn"
-                    onclick="toggleFavorite({{ item.id }})">
-                <span id="favoriteIcon">{% if is_favorited %}★{% else %}☆{% endif %}</span>
-            </button>
         </div>
     </div>
 
-    <!-- Content -->
-    <div class="content-container">
-        
-        <!-- Main Media -->
-        <div class="main-image-section">
-            <div class="main-image-wrapper">
-                {% if item.video %}
-                    <video class="main-video" controls autoplay muted loop playsinline poster="{{ item.main_image.url|default:'' }}">
-                        <source src="{{ item.video.url }}">
-                        {% trans "Your browser doesn't support video tag" %}
-                    </video>
-                {% elif item.main_image %}
-                    <img src="{{ item.main_image.url }}" 
-                         alt="{{ item.title }}" 
-                    <img src="{{ item.main_image.url }}"
-                         alt="{{ item.title }}"
-                         class="main-image"
-                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                    <div class="main-image-placeholder" style="display:none;">📦</div>
-                {% else %}
-                    <div class="main-image-placeholder">📦</div>
-                {% endif %}
-            </div>
+    <!-- Title -->
+    <div class="title-section">
+        <h2 class="item-title">{{ item.title }}</h2>
+        <div class="item-meta-bar">
+            <div class="meta-item">👁 {{ item.view_count }} {% trans "views" %}</div>
+            {% if subcategory %}
+                <div class="meta-item">📂 {{ subcategory.title }}</div>
+            {% elif category %}
+                <div class="meta-item">📂 {{ category.title }}</div>
+            {% endif %}
         </div>
+    </div>
 
-        <!-- Title Section -->
-        <div class="title-section">
-            <h2 class="item-title">
-                {% if item.title_uz %}
-                    {{ item.title_uz }}
-                {% else %}
-                    {{ item.title }}
-                {% endif %}
-            </h2>
+    <!-- Description -->
+    {% if item.description %}
+        <div class="description-card">
+            <div class="description-title">{% trans "Description" %}</div>
+            <div class="description-text">{{ item.description|safe }}</div>
+        </div>
+    {% endif %}
 
-            <div class="item-meta-bar">
-                <div class="meta-item">
-                    <span class="meta-icon">👁</span>
-                    <span>{{ item.view_count }} {% trans "views" %}</span>
-                </div>
-                <div class="meta-item">
-                    <span class="meta-icon">📁</span>
-                    <span>
-                        {% if subcategory.title_uz %}
-                            {{ subcategory.title_uz }}
+    <!-- Additional Info -->
+    {% if item.additional_info %}
+        <div class="additional-info-section">
+            <h2 class="section-title">{% trans "Additional Information" %}</h2>
+            {% for key, value in item.additional_info.items %}
+                <div class="info-card">
+                    <div class="info-label">{{ key|title }}</div>
+                    <div class="info-value">
+                        {% if value|length > 1 and value|first != value %}
+                            <ul class="info-list">
+                                {% for v in value %}<li>{{ v }}</li>{% endfor %}
+                            </ul>
                         {% else %}
-                            {{ subcategory.title }}
+                            {{ value }}
                         {% endif %}
-                    </span>
+                    </div>
                 </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Tags -->
+    {% if tags_list %}
+        <div class="tags-section">
+            <h2 class="section-title">{% trans "Tags" %}</h2>
+            <div class="tags-container">
+                {% for tag in tags_list %}<span class="tag">{{ tag }}</span>{% endfor %}
             </div>
         </div>
+    {% endif %}
 
-        <!-- Description -->
-        {% if item.description %}
-            <div class="description-card">
-                <div class="description-title">{% trans "Description" %}</div>
-                <div class="description-text">
-                    {{ item.description|safe }}
-                </div>
-            </div>
-        {% endif %}
-
-        <!-- Additional Info (JSON) -->
-        {% if item.additional_info %}
-            <div class="additional-info-section">
-                <h2 class="section-title">{% trans "Additional Information" %}</h2>
-
-                {% for key, value in item.additional_info.items %}
-                    <div class="info-card">
-                        <div class="info-label">{{ key|title }}</div>
-                        <div class="info-value">
-                            {% if value is iterable and value is not string %}
-                                <ul class="info-list">
-                                    {% for v in value %}
-                                        <li>{{ v }}</li>
-                                    {% endfor %}
-                                </ul>
+    <!-- Related -->
+    {% if related_items %}
+        <div class="related-section">
+            <h2 class="section-title">{% trans "Related Items" %}</h2>
+            <div class="related-grid">
+                {% for related in related_items %}
+                    <a href="{% if related.subcategory %}{% url 'handbook_item_detail' category.slug related.subcategory.slug related.slug %}{% else %}{% url 'handbook_item_direct' category.slug related.slug %}{% endif %}"
+                       class="related-item">
+                        <div class="related-image-wrapper">
+                            {% if related.main_image %}
+                                <img src="{{ related.main_image.url }}" alt="{{ related.title }}"
+                                     class="related-image" loading="lazy"
+                                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                                <div class="related-placeholder" style="display:none;">💊</div>
                             {% else %}
-                                {{ value }}
+                                <div class="related-placeholder">💊</div>
                             {% endif %}
                         </div>
-                    </div>
+                        <div class="related-title">{{ related.title }}</div>
+                    </a>
                 {% endfor %}
             </div>
-        {% endif %}
+        </div>
+    {% endif %}
 
-        <!-- Image Gallery -->
-        {% if item.images.all %}
-            <div class="gallery-section">
-                <h2 class="section-title">{% trans "Gallery" %}</h2>
-                <div class="gallery-grid">
-                    {% for image in item.images.all %}
-                        <div class="gallery-item" onclick="openGallery({{ forloop.counter0 }})">
-                            {% if image.image %}
-                                <img src="{{ image.image.url }}"
-                                     alt="{{ image.caption }}"
-                                     class="gallery-image"
-                                     loading="lazy"
-                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                <div class="gallery-placeholder" style="display:none;">🖼️</div>
-                            {% else %}
-                                <div class="gallery-placeholder">🖼️</div>
-                            {% endif %}
-                        </div>
-                    {% endfor %}
-                </div>
-            </div>
-        {% endif %}
+</div>
 
-        <!-- Tags -->
-	{% if tags_list %}
-	    <div class="tags-section">
-	        <h2 class="section-title">{% trans "Tags" %}</h2>
-	        <div class="tags-container">
-	            {% for tag in tags_list %}
-	                <span class="tag">{{ tag }}</span>
-	            {% endfor %}
-	        </div>
-	    </div>
-	{% endif %}
+<script>
+function shareItem() {
+    if (navigator.share) {
+        navigator.share({ title: '{{ item.title|escapejs }}', url: window.location.href });
+    } else {
+        navigator.clipboard?.writeText(window.location.href);
+    }
+}
 
+function toggleFavorite(itemId) {
+    // Implement if needed
+}
+</script>
 
-        <!-- Related Items -->
-        {% if related_items %}
-            <div class="related-section">
-                <h2 class="section-title">{% trans "Related Items" %}</h2>
-                <div class="related-grid">
-                    {% for related in related_items %}
-                        <a href="{% url 'handbook_item_detail' category.slug subcategory.slug related.slug %}"
-                           class="related-item">
-                            <div class="related-image-wrapper">
-                                {% if related.main_image %}
-                                    <img src="{{ related.main_image.url }}"
-                                         alt="{{ related.title }}"
-                                         class="related-image"
-                                         loading="lazy"
-                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                    <div class="related-placeholder" style="display:none;">📦</div>
-                                {% else %}
-                                    <div class="related-placeholder">📦</div>
-                                {% endif %}
-                            </div>
-                            <div class="related-title">
-                                {% if related.title_uz %}
-                                    {{ related.title_uz }}
-                                {% else %}
-                                    {{ related.title }}
-                                {% endif %}
-                            </div>
-                        </a>
-                    {% endfor %}
-                </div>
-            </div>
-        {% endif %}
-
-    </div>
-{% endblock %}
-
-{% block extra_js %}
-    <script>
-        // Telegram WebApp initialization
-        if (window.Telegram && window.Telegram.WebApp) {
-            const tg = window.Telegram.WebApp;
-            tg.ready();
-            tg.expand();
-
-            tg.BackButton.show();
-            tg.BackButton.onClick(() => {
-                window.history.back();
-            });
-        }
-
-        // Back button handler
-        function goBack() {
-            window.history.back();
-        }
-
-        // Share item
-        function shareItem() {
-            if (navigator.share) {
-                navigator.share({
-                    title: '{{ item.title }}',
-                    text: '{% if item.short_description %}{{ item.short_description }}{% endif %}',
-                    url: window.location.href
-                }).catch(err => console.log('Share cancelled'));
-            } else {
-                // Fallback: copy to clipboard
-                navigator.clipboard.writeText(window.location.href).then(() => {
-                    alert('{% trans "Link copied to clipboard!" %}');
-                });
-            }
-        }
-
-        // Toggle favorite
-        function toggleFavorite(itemId) {
-            const btn = document.getElementById('favoriteBtn');
-            const icon = document.getElementById('favoriteIcon');
-            const isActive = btn.classList.contains('active');
-
-            // Optimistic UI update
-            if (isActive) {
-                btn.classList.remove('active');
-                icon.textContent = '☆';
-            } else {
-                btn.classList.add('active');
-                icon.textContent = '★';
-            }
-
-            // Send AJAX request
-            fetch(`/handbook/favorites/toggle/${itemId}/`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': getCookie('csrftoken'),
-                    'Content-Type': 'application/json',
-                },
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data.message);
-
-                // Vibrate on success
-                if (navigator.vibrate) {
-                    navigator.vibrate(50);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                // Revert on error
-                if (isActive) {
-                    btn.classList.add('active');
-                    icon.textContent = '★';
-                } else {
-                    btn.classList.remove('active');
-                    icon.textContent = '☆';
-                }
-            });
-        }
-
-        // Open gallery
-        function openGallery(index) {
-            // TODO: Implement full-screen gallery viewer
-            console.log('Open gallery at index:', index);
-        }
-
-        // Get CSRF token
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
-            }
-            return cookieValue;
-        }
-
-        // Touch feedback for gallery and related items
-        document.querySelectorAll('.gallery-item, .related-item').forEach(item => {
-            item.addEventListener('touchstart', function() {
-                this.style.transform = this.classList.contains('gallery-item') ? 'scale(0.95)' : 'translateY(-1px) scale(0.98)';
-            });
-            item.addEventListener('touchend', function() {
-                this.style.transform = '';
-            });
-        });
-    </script>
 {% endblock %}
