@@ -1,4 +1,4 @@
-// ── CONFIG ───────────────────────────────────────────────────────────────────
+// 🔧 CONFIG ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 const CFG              = window.ACTIVE_WORKOUT_CONFIG || {};
 const exercises        = CFG.exercises        || [];
 const csrfToken        = CFG.csrfToken        || '';
@@ -15,7 +15,7 @@ try {
     }
 } catch(e) {}
 
-// ── STATE ────────────────────────────────────────────────────────────────────
+// 📊 STATE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 let currentExIdx   = initialExIdx;
 let isPaused       = false;
 let isResting      = false;
@@ -33,7 +33,7 @@ let totalWeight    = 0;
 const setWeights = {}; // { exIdx: { setIdx: kg } }
 const doneSets   = {}; // { exIdx: Set<setIdx> }
 
-// ── UTILS ────────────────────────────────────────────────────────────────────
+// 🔧 UTILS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 const toFin   = (v, fb=0) => { const n=Number(v); return isFinite(n)?n:fb; };
 const fmtTime = s => `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
 const $       = id => document.getElementById(id);
@@ -57,7 +57,7 @@ const updateExit = () => {
     b.disabled=totalCompleted<1; b.style.opacity=totalCompleted<1?'0.5':'1';
 };
 
-// ── MEDIA ────────────────────────────────────────────────────────────────────
+// 📹 MEDIA ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 const resetMedia = ex => {
     const v=$('exerciseVideo'), img=$('exerciseImage'); if(!v||!img) return;
     v.pause(); v.currentTime=0;
@@ -73,7 +73,7 @@ const resetMedia = ex => {
 };
 const toggleExerciseMedia = () => { if(exercises[currentExIdx]?.description) openDescModal(); };
 
-// ── DESC MODAL ───────────────────────────────────────────────────────────────
+// 📝 DESC MODAL ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 const renderDescTrigger = desc => {
     const preview = $('descPreview'); if (!preview) return;
     preview.textContent = desc?.trim() || 'No description available.';
@@ -83,11 +83,9 @@ const openDescModal = () => {
     const ex = exercises[currentExIdx]; if (!ex) return;
     const ov = $('descOverlay'); if (!ov) return;
 
-    // Description preview text
     const tx = $('descModalText') || $('descText');
     if (tx) tx.textContent = ex.description || '';
 
-    // Media
     const media = $('descMedia');
     if (media) {
         if (ex.video) {
@@ -108,7 +106,6 @@ const openDescModal = () => {
 const closeDescModal = () => {
     const ov = $('descOverlay');
     if (ov) ov.classList.remove('active');
-    // Video to'xtatish
     const video = document.querySelector('#descMedia video');
     if (video) video.pause();
     if (isPaused && pauseStart && !isResting) {
@@ -116,7 +113,10 @@ const closeDescModal = () => {
         const pi = $('pauseIcon'); if (pi) pi.innerHTML = '<i class="fas fa-pause"></i>';
     }
 };
-// ── SET CARDS ────────────────────────────────────────────────────────────────
+
+const closeDescModalOnBg = e => { if (e.target.id === 'descOverlay') closeDescModal(); };
+
+// 🏋️ SET CARDS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 const renderSetCards = () => {
     const ex=exercises[currentExIdx], wr=$('setsWrapper');
     const exType=(ex.type||'strength').toLowerCase(); if(!wr||!ex||exType!=='strength') return;
@@ -129,7 +129,6 @@ const renderSetCards = () => {
         const rStr = ex.reps_max && ex.reps_max!==ex.reps
             ? `${ex.reps}–${ex.reps_max}` : String(ex.reps);
 
-        // Label row
         const lr = document.createElement('div');
         lr.className='set-label-row';
         lr.innerHTML=`
@@ -138,17 +137,14 @@ const renderSetCards = () => {
         `;
         wr.appendChild(lr);
 
-        // Card — build with DOM, not innerHTML, so input events work reliably
         const card = document.createElement('div');
         card.className=`set-card${done?' done':''}`;
         card.id=`sc_${currentExIdx}_${i}`;
 
-        // Weight zone
         const wZone = document.createElement('div');
         wZone.className='set-weight-zone';
 
         if (!done) {
-            // VISIBLE input styled as large bold number
             const inp = document.createElement('input');
             inp.type='number';
             inp.className='w-inp';
@@ -160,24 +156,20 @@ const renderSetCards = () => {
             inp.setAttribute('pattern','[0-9.]*');
 
             const ei=currentExIdx, si=i;
-            // Save on every change
             inp.addEventListener('input', () => {
                 saveW(ei, si, parseFloat(inp.value)||0);
             });
-            // Restore formatted value on blur
             inp.addEventListener('blur', () => {
                 const val=Math.max(0,parseFloat(inp.value)||0);
                 saveW(ei,si,val);
                 inp.value = val%1===0 ? String(val) : val.toFixed(1);
             });
-            // Select all on focus for easy editing
             inp.addEventListener('focus', () => {
                 setTimeout(()=>inp.select(), 50);
             });
 
             wZone.appendChild(inp);
         } else {
-            // Done: show static text
             const sp=document.createElement('span');
             sp.className='w-inp';
             sp.textContent=wStr;
@@ -188,14 +180,11 @@ const renderSetCards = () => {
         unitLbl.className='w-unit'; unitLbl.textContent='KG';
         wZone.appendChild(unitLbl);
 
-        // Divider
         const div=document.createElement('div'); div.className='set-divider';
 
-        // Reps zone
         const rZone=document.createElement('div'); rZone.className='set-reps-zone';
-        rZone.innerHTML=`<span class="r-num">${rStr}</span><span class="r-lbl">reps</span>`;
+        rZone.innerHTML=`<span class="r-num">${rStr}</span><span class="r-lbl">REPS</span>`;
 
-        // Did It cell
         const diCell=document.createElement('div');
         diCell.className='did-it-cell';
         diCell.id=`di_${currentExIdx}_${i}`;
@@ -212,67 +201,75 @@ const renderSetCards = () => {
     }
 };
 
-// ── DID IT ───────────────────────────────────────────────────────────────────
+// ✅ DID IT ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 const didItSet = si => {
-    const ei=currentExIdx;
-    if(isDone(ei,si)) return;
+    const ei = currentExIdx;
 
-    // Save current weight
-    const inp=$(`wi_${ei}_${si}`);
-    if(inp&&inp.tagName==='INPUT') saveW(ei,si,parseFloat(inp.value)||0);
+    for (let i = 0; i <= si; i++) {
+        if (isDone(ei, i)) continue;
 
-    const w=getW(ei,si), ex=exercises[ei]; if(!ex) return;
+        const inp = $(`wi_${ei}_${i}`);
+        if (inp && inp.tagName === 'INPUT') saveW(ei, i, parseFloat(inp.value) || 0);
 
-    totalWeight    += w*ex.reps;
-    totalCompleted += 1;
-    updateExit();
-    markD(ei,si);
+        const w = getW(ei, i);
+        const ex = exercises[ei];
+        if (!ex) continue;
 
-    // Ripple on Did It cell
-    const di=$(`di_${ei}_${si}`);
-    if(di) {
-        const r=document.createElement('span'); r.className='ripple-c';
-        const sz=Math.max(di.offsetWidth,di.offsetHeight);
-        Object.assign(r.style,{
-            width:sz+'px',height:sz+'px',
-            left:(di.offsetWidth/2-sz/2)+'px',
-            top:(di.offsetHeight/2-sz/2)+'px'
-        });
-        di.appendChild(r);
-        setTimeout(()=>r.remove(),600);
+        totalWeight += w * ex.reps;
+        totalCompleted += 1;
+        markD(ei, i);
     }
 
-    // Transition card to done
-    setTimeout(()=>{
-        const card=$(`sc_${ei}_${si}`), dl=$(`dl_${ei}_${si}`);
-        if(card) {
-            card.classList.add('done','pulse');
-            setTimeout(()=>card.classList.remove('pulse'),700);
-        }
-        if(dl) dl.classList.add('show');
-        if(di) { di.textContent='✓'; di.style.pointerEvents='none'; }
+    updateExit();
 
-        // Replace input with static span so it looks the same but not editable
-        if(inp&&inp.tagName==='INPUT') {
-            const val=getW(ei,si);
-            const sp=document.createElement('span');
-            sp.className='w-inp';
-            sp.textContent=val%1===0?String(val):val.toFixed(1);
-            inp.parentNode.replaceChild(sp,inp);
-        }
-    },150);
+    const di = $(`di_${ei}_${si}`);
+    if (di) {
+        const r = document.createElement('span');
+        r.className = 'ripple-c';
+        const sz = Math.max(di.offsetWidth, di.offsetHeight);
+        Object.assign(r.style, {
+            width: sz + 'px', height: sz + 'px',
+            left: (di.offsetWidth / 2 - sz / 2) + 'px',
+            top: (di.offsetHeight / 2 - sz / 2) + 'px'
+        });
+        di.appendChild(r);
+        setTimeout(() => r.remove(), 600);
+    }
 
-    // Next action
-    const dn=doneN(ei);
-    if(dn < ex.sets) {
-        setTimeout(()=>startRest(toFin(ex.rest_seconds,60),si+1,ex.sets,si+2,ex),400);
+    setTimeout(() => {
+        for (let i = 0; i <= si; i++) {
+            const card = $(`sc_${ei}_${i}`);
+            const dl = $(`dl_${ei}_${i}`);
+            const diEl = $(`di_${ei}_${i}`);
+            const inp = $(`wi_${ei}_${i}`);
+
+            if (card) {
+                card.classList.add('done', 'pulse');
+                setTimeout(() => card.classList.remove('pulse'), 700);
+            }
+            if (dl) dl.classList.add('show');
+            if (diEl) { diEl.textContent = '✓'; diEl.style.pointerEvents = 'none'; }
+            if (inp && inp.tagName === 'INPUT') {
+                const val = getW(ei, i);
+                const sp = document.createElement('span');
+                sp.className = 'w-inp';
+                sp.textContent = val % 1 === 0 ? String(val) : val.toFixed(1);
+                inp.parentNode.replaceChild(sp, inp);
+            }
+        }
+    }, 150);
+
+    const dn = doneN(ei);
+    const ex = exercises[ei];
+    if (dn < ex.sets) {
+        setTimeout(() => startRest(toFin(ex.rest_seconds, 60), si + 1, ex.sets, si + 2, ex), 400);
     } else {
-        totalCalories+=toFin(ex.calories_per_minute,5)*toFin(ex.duration_minutes,0);
-        setTimeout(()=>loadExercise(ei+1),500);
+        totalCalories += toFin(ex.calories_per_minute, 5) * toFin(ex.duration_minutes, 0);
+        setTimeout(() => loadExercise(ei + 1), 500);
     }
 };
 
-// ── LOAD EXERCISE ─────────────────────────────────────────────────────────────
+// 🔄 LOAD EXERCISE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 const loadExercise = idx => {
     if(idx>=exercises.length) { finishWorkout(); return; }
     const ex=exercises[idx]; if(!ex) { finishWorkout(); return; }
@@ -299,7 +296,7 @@ const loadExercise = idx => {
     if(!sessionStart) { sessionStart=Date.now(); startTimer(); }
 };
 
-// ── TIMER ────────────────────────────────────────────────────────────────────
+// ⏱️ TIMER ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 const startTimer=()=>{
     clearInterval(timerInterval);
     timerInterval=setInterval(()=>{
@@ -309,21 +306,23 @@ const startTimer=()=>{
     },100);
 };
 
-// ── PAUSE ────────────────────────────────────────────────────────────────────
+// ⏸️ PAUSE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 const togglePause=()=>{
     if(isResting) return;
-    const pi=$('pauseIcon');
+    const pi=$('pauseIcon'), pt=$('pauseText');
     if(!isPaused){
         isPaused=true; pauseStart=Date.now();
         if(pi) pi.innerHTML='<i class="fas fa-play"></i>';
+        if(pt) pt.textContent='Resume';
     } else {
         isPaused=false;
         if(pauseStart){ totalPaused+=(Date.now()-pauseStart); pauseStart=null; }
         if(pi) pi.innerHTML='<i class="fas fa-pause"></i>';
+        if(pt) pt.textContent='Pause';
     }
 };
 
-// ── REST ─────────────────────────────────────────────────────────────────────
+// 🛌 REST ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 const startRest=(sec,completedN,totalSets,nextN,ex)=>{
     isResting=true;
     const ft=$('floatingTimer'), pb=$('pauseBtn');
@@ -331,7 +330,7 @@ const startRest=(sec,completedN,totalSets,nextN,ex)=>{
     if(pb) pb.style.display='none';
 
     const badge=$('restBadge'), nxt=$('restNextName'), rt=$('restTimer'), ov=$('restOverlay');
-    if(badge) badge.textContent=`Set ${completedN} Complete ✓`;
+    if(badge) badge.textContent=`Set ${completedN} Complete 🎉`;
     const nextName=nextN<=totalSets?`Set ${nextN} of ${totalSets}`:(exercises[currentExIdx+1]?.name||'Workout Complete');
     if(nxt) nxt.textContent=nextName;
     restTimeLeft=sec;
@@ -355,7 +354,42 @@ const skipRest=()=>{
     if(pi) pi.innerHTML='<i class="fas fa-pause"></i>';
 };
 
-// ── EXIT ─────────────────────────────────────────────────────────────────────
+// ⏩ SKIP TO NEXT EXERCISE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+const skipToNextExercise = () => {
+    console.log('skipToNextExercise called');
+
+    const restOv = $('restOverlay');
+    if (restOv && restOv.classList.contains('active')) {
+        restOv.classList.remove('active');
+        isResting = false;
+        if (restInterval) { clearInterval(restInterval); restInterval = null; }
+    }
+
+    const ex = exercises[currentExIdx];
+    if (!ex) return;
+
+    for (let i = 0; i < ex.sets; i++) {
+        if (!isDone(currentExIdx, i)) {
+            const inp = $(`wi_${currentExIdx}_${i}`);
+            if (inp && inp.tagName === 'INPUT') {
+                saveW(currentExIdx, i, parseFloat(inp.value) || 0);
+            }
+            markD(currentExIdx, i);
+            totalCompleted++;
+        }
+    }
+
+    totalCalories += toFin(ex.calories_per_minute, 5) * toFin(ex.duration_minutes, 0);
+    updateExit();
+
+    if (currentExIdx + 1 < exercises.length) {
+        loadExercise(currentExIdx + 1);
+    } else {
+        finishWorkout();
+    }
+};
+
+// 🚪 EXIT ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 const showExitModal=()=>{
     const m=$('exitModal'); if(m) m.classList.add('active');
     if(!isPaused&&!isResting) togglePause();
@@ -397,19 +431,32 @@ const completeExercise=()=>{
     totalCompleted+=1; updateExit(); loadExercise(currentExIdx+1);
 };
 
-// ── INIT ─────────────────────────────────────────────────────────────────────
+// 🎬 INIT ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 document.addEventListener('click', (e) => {
     if (!e.target.closest('.set-weight-zone') && !e.target.classList.contains('w-inp')) {
         document.activeElement?.blur();
     }
 });
+
 document.addEventListener('DOMContentLoaded',()=>{
     loadExercise(initialExIdx);
     updateExit();
 });
 
-Object.assign(window,{
-    closeDescModal,closeDescModalOnBg,completeExercise,
-    exitWithoutSaving,openDescModal,returnToWorkout,
-    saveAndExit,showExitModal,skipRest,togglePause,toggleExerciseMedia,
+// 🌐 WINDOW EXPORTS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Object.assign(window, {
+    closeDescModal,
+    closeDescModalOnBg,
+    completeExercise,
+    exitWithoutSaving,
+    openDescModal,
+    returnToWorkout,
+    saveAndExit,
+    showExitModal,
+    skipRest,
+    skipToNextExercise,
+    togglePause,
+    toggleExerciseMedia,
 });
+
+console.log('✅ Active Workout v2 loaded. skipToNextExercise:', typeof window.skipToNextExercise);

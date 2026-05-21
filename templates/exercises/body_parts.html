@@ -580,8 +580,7 @@
             const dy = e.changedTouches[0].clientY - touchStartY;
             if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
                 swipeHandled = true;
-                if (dx < 0 && showingFront) rotateBody();
-                if (dx > 0 && !showingFront) rotateBody();
+                 rotateBody();
             }
         }, {passive: true});
 

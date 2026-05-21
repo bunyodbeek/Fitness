@@ -279,20 +279,66 @@ body {
 .set-card.pulse { animation: pulseRing 0.6s ease-out; }
 
 /* ── BOTTOM BAR ── */
-.action-buttons {
-    position: fixed; bottom: 0; left: 0; right: 0;
-    height: 80px; display: flex; align-items: center;
-    padding: 0 14px 14px;
-    background: rgba(10,10,10,0.98);
-    border-top: 1px solid var(--border); z-index: 300;
-}
-.pause-btn {
-    width: 52px; height: 52px;
-    background: rgba(255,215,0,0.07); border: 1.5px solid rgba(255,215,0,0.2);
-    color: var(--gold); border-radius: 14px; font-size: 18px; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
+/* Bottom bar — fixed qilish */
+.bottom-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #0a0a0a;
+    border-top: 1px solid rgba(255,215,0,0.1);
+    padding: 10px 14px 14px;
+    z-index: 200;
 }
 
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.pause-btn {
+    flex: 1;
+    height: 52px;
+    background: rgba(255,255,255,0.08);  /* ← background qo'shildi */
+    border: 1.5px solid rgba(255,255,255,0.15);
+    border-radius: 14px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.pause-btn:hover {
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(255,255,255,0.25);
+}
+
+.next-ex-btn {
+    flex: 1;
+    height: 52px;
+    background: #ffd700;
+    border: none;
+    border-radius: 14px;
+    color: #0a0d1a;
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 20px rgba(255,215,0,0.3);
+}
+
+.next-ex-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
 /* ── REST OVERLAY ── */
 .rest-overlay {
     position: fixed; inset: 0; background: rgba(0,0,0,0.85);
@@ -375,10 +421,16 @@ body {
 </div>
 
 <!-- BOTTOM BAR -->
-<div class="action-buttons">
-    <button class="pause-btn" id="pauseBtn" onclick="togglePause()">
-        <span id="pauseIcon"><i class="fas fa-pause"></i></span>
-    </button>
+<div class="bottom-bar">
+    <div class="action-buttons">
+        <button class="pause-btn" id="pauseBtn" onclick="togglePause()">
+            <span id="pauseIcon"><i class="fas fa-pause"></i></span>
+            <span id="pauseText">Pause</span>
+        </button>
+        <button class="next-ex-btn" onclick="skipToNextExercise()">
+            NEXT ›
+        </button>
+    </div>
 </div>
 
 <!-- DESC MODAL -->

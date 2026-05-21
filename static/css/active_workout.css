@@ -370,19 +370,9 @@ body::before {
    BOTTOM ACTION BAR
    ============================================================ */
 .action-buttons {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: var(--bottom-bar-h);
     display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 0 16px 16px;
-    background: rgba(8, 11, 24, 0.95);
-    backdrop-filter: blur(20px);
-    border-top: 1px solid var(--gold-border);
-    z-index: 150;
+    gap: 10px;
+    padding: 0 14px 14px;
 }
 
 /* Pause button */
@@ -408,7 +398,14 @@ body::before {
 }
 
 .pause-btn:active {
-    transform: scale(0.95);
+    flex: 1; padding: 14px;
+    background: rgba(255,255,255,0.07);
+    border: 1.5px solid rgba(255,255,255,0.1);
+    border-radius: 16px; color: #fff;
+    font-size: 14px; font-weight: 700;
+    cursor: pointer; display: flex;
+    align-items: center; justify-content: center; gap: 8px;
+    transition: background 0.2s;
 }
 
 /* DID IT button */
