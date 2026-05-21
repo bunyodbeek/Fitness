@@ -97,7 +97,7 @@ body { background: #0a0a0a; font-family: -apple-system, BlinkMacSystemFont, 'Seg
 <div class="ex-picker-modal" id="exPickerModal">
     <div class="ex-picker-header">
         <input type="text" class="ex-picker-search" id="exSearchInput"
-               placeholder="Search exercises..." oninput="filterExercises(this.value)">
+               placeholder="{% trans 'Search exercises...' %}" oninput="filterExercises(this.value)">
         <button class="ex-picker-close" onclick="closeExPicker()">✕</button>
     </div>
     <div class="ex-picker-list" id="exPickerList">
@@ -122,7 +122,7 @@ body { background: #0a0a0a; font-family: -apple-system, BlinkMacSystemFont, 'Seg
     </div>
     <div class="ex-picker-footer">
         <button class="picker-done-btn" id="pickerDoneBtn" disabled onclick="confirmAddFavorites()">
-            Select exercises
+            {% trans "Select exercises" %}
         </button>
     </div>
 </div>
@@ -315,13 +315,15 @@ function updateDoneBtn() {
     const btn = document.getElementById('pickerDoneBtn');
     const n = selectedExercises.size;
     btn.disabled = n === 0;
-    btn.textContent = n > 0 ? `Add ${n} Exercise${n > 1 ? 's' : ''} ⭐` : 'Select exercises';
+    btn.textContent = n > 0
+        ? `{% trans "Add" %} ${n} {% trans "Exercise" %}${n > 1 ? 's' : ''} ⭐`
+        : '{% trans "Select exercises" %}';
 }
 
 async function confirmAddFavorites() {
     const btn = document.getElementById('pickerDoneBtn');
     btn.disabled = true;
-    btn.textContent = 'Adding...';
+    btn.textContent = '{% trans "Adding..." %}';
 
     const promises = Array.from(selectedExercises).map(exId =>
         fetch(`/${LANG}/exercises/favorite/toggle/${exId}/`, {

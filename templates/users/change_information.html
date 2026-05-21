@@ -1,9 +1,10 @@
+{% load i18n %}
 <!DOCTYPE html>
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ma'lumotlarni O'zgartirish</title>
+    <title>{% trans "Ma'lumotlarni O'zgartirish" %}</title>
     <style>
         * {
             margin: 0;
@@ -554,7 +555,7 @@
 <body>
     <div class="page-header">
         <button class="back-btn" onclick="window.history.back()">‹</button>
-        <h1 class="page-title">MA'LUMOTLAR</h1>
+        <h1 class="page-title">{% trans "MA'LUMOTLAR" %}</h1>
     </div>
 
     <div class="settings-content">

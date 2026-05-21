@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}All Workouts{% endblock %}
+{% block title %}{% trans "All Workouts" %}{% endblock %}
 {% load i18n %}
 
 {% block extra_css %}
@@ -654,9 +654,9 @@
     <div class="mode-switch-wrapper">
         <div class="mode-switch">
             <a href="{% url 'program_list' %}?type=gym"
-               class="mode-pill {% if active_workout_type == 'gym' %}active{% endif %}">Gym</a>
+               class="mode-pill {% if active_workout_type == 'gym' %}active{% endif %}">{% trans "Gym" %}</a>
             <a href="{% url 'program_list' %}?type=home"
-               class="mode-pill {% if active_workout_type == 'home' %}active{% endif %}">Home</a>
+               class="mode-pill {% if active_workout_type == 'home' %}active{% endif %}">{% trans "Home" %}</a>
         </div>
     </div>
 
