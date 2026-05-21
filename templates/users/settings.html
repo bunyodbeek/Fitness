@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load static %}
 
-{% block title %}Settings{% endblock %}
+{% block title %}{% trans "Settings" %}{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -147,7 +147,7 @@ body {
             <div class="menu-content">
                 <div class="menu-icon-wrapper">❓</div>
                 <div class="menu-text-wrapper">
-                    <div class="menu-text">FAQ</div>
+                    <div class="menu-text">{% trans "FAQ" %}</div>
                     <div class="menu-subtitle">{% trans 'Common questions' %}</div>
                 </div>
                 <div class="menu-arrow">›</div>
