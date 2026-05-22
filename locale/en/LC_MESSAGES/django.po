@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-22 12:52+0500\n"
+"POT-Creation-Date: 2026-05-22 15:06+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1492,17 +1492,19 @@ msgid "Version & info"
 msgstr ""
 
 #: templates/workouts/active_workout.html:403
-#: templates/workouts/home_session.html:512
+#: templates/workouts/home_session.html:756
 msgid "EXIT"
 msgstr ""
 
 #: templates/workouts/active_workout.html:431
 #: templates/workouts/active_workout.html:497
+#: templates/workouts/home_session.html:839
 msgid "Pause"
 msgstr ""
 
 #: templates/workouts/active_workout.html:434
 #: templates/workouts/active_workout.html:499
+#: templates/workouts/home_session.html:842
 msgid "NEXT"
 msgstr ""
 
@@ -1518,13 +1520,13 @@ msgstr ""
 
 #: templates/workouts/active_workout.html:456
 #: templates/workouts/active_workout.html:501
-#: templates/workouts/home_session.html:502
+#: templates/workouts/home_session.html:746
 msgid "Tap to skip"
 msgstr ""
 
 #: templates/workouts/active_workout.html:458
 #: templates/workouts/active_workout.html:502
-#: templates/workouts/home_session.html:504
+#: templates/workouts/home_session.html:748
 #, fuzzy
 #| msgid "Rest"
 msgid "Skip Rest"
@@ -1532,7 +1534,7 @@ msgstr "Rest"
 
 #: templates/workouts/active_workout.html:459
 #: templates/workouts/active_workout.html:503
-#: templates/workouts/home_session.html:505
+#: templates/workouts/home_session.html:749
 msgid "Next Up"
 msgstr ""
 
@@ -1650,12 +1652,48 @@ msgstr ""
 msgid "Workout Session"
 msgstr ""
 
-#: templates/workouts/home_session.html:514
+#: templates/workouts/home_session.html:720
+#, fuzzy
+#| msgid "Start Workout"
+msgid "Exit Workout?"
+msgstr "Start Workout"
+
+#: templates/workouts/home_session.html:721
+msgid "Your progress will be lost."
+msgstr ""
+
+#: templates/workouts/home_session.html:723
+msgid "Exit"
+msgstr ""
+
+#: templates/workouts/home_session.html:724
+#, fuzzy
+#| msgid "Start Workout"
+msgid "Continue Workout"
+msgstr "Start Workout"
+
+#: templates/workouts/home_session.html:742
+msgid "REST"
+msgstr ""
+
+#: templates/workouts/home_session.html:743
+msgid "Round Complete"
+msgstr ""
+
+#: templates/workouts/home_session.html:758
 #: templates/workouts/home_workout_complete.html:175
 #: templates/workouts/home_workout_detail.html:4
 #: templates/workouts/home_workout_detail.html:452
 #: templates/workouts/workout_complete.html:165
 msgid "Workout"
+msgstr ""
+
+#: templates/workouts/home_session.html:814
+msgid "SEC"
+msgstr ""
+
+#: templates/workouts/home_session.html:836
+msgid "START"
 msgstr ""
 
 #: templates/workouts/home_workout_complete.html:166
@@ -1692,7 +1730,7 @@ msgstr ""
 #: templates/workouts/home_workout_detail.html:477
 #: templates/workouts/week_days.html:542
 #: templates/workouts/workout_detail.html:4
-#: templates/workouts/workout_detail.html:222
+#: templates/workouts/workout_detail.html:221
 msgid "Day"
 msgstr ""
 
@@ -1814,11 +1852,11 @@ msgstr ""
 msgid "Back to Home"
 msgstr ""
 
-#: templates/workouts/workout_detail.html:239
+#: templates/workouts/workout_detail.html:238
 msgid "No exercises are included for this day."
 msgstr ""
 
-#: templates/workouts/workout_detail.html:254
+#: templates/workouts/workout_detail.html:253
 #, fuzzy
 #| msgid "Start Workout"
 msgid "Start Workout"

@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-22 12:52+0500\n"
+"POT-Creation-Date: 2026-05-22 15:06+0500\n"
 "PO-Revision-Date: 2026-05-22 12:00+0500\n"
 "Last-Translator: Claude AI\n"
 "Language-Team: Uzbek\n"
@@ -940,7 +940,6 @@ msgid "items"
 msgstr "element"
 
 #: templates/miniapp/questionarrie.html:8
-
 msgid "Fitness Questionnaire — Telegram WebApp"
 msgstr "Fitness So'rovnomasi — Telegram WebApp"
 
@@ -1093,17 +1092,14 @@ msgstr "Keyinroq tekshiring yoki boshqa rejani tanlang."
 
 #: templates/my_trainer/my_trainer_days.html:432
 #: templates/workouts/edition_detail.html:564
-
 msgid "▶ Start Workout"
 msgstr "▶ Mashg'ulotni boshlash"
 
 #: templates/users/add-card.html:7
-
 msgid "Karta bilan to‘lov"
 msgstr "Karta bilan to'lov"
 
 #: templates/users/add-card.html:104
-
 msgid "To‘lov / Karta Qo‘shish"
 msgstr "To'lov / Karta qo'shish"
 
@@ -1482,17 +1478,19 @@ msgid "Version & info"
 msgstr "Versiya va ma'lumot"
 
 #: templates/workouts/active_workout.html:403
-#: templates/workouts/home_session.html:512
+#: templates/workouts/home_session.html:756
 msgid "EXIT"
 msgstr "CHIQISH"
 
 #: templates/workouts/active_workout.html:431
 #: templates/workouts/active_workout.html:497
+#: templates/workouts/home_session.html:839
 msgid "Pause"
 msgstr "Pauza"
 
 #: templates/workouts/active_workout.html:434
 #: templates/workouts/active_workout.html:499
+#: templates/workouts/home_session.html:842
 msgid "NEXT"
 msgstr "Keyngisi"
 
@@ -1503,25 +1501,24 @@ msgid "Rest"
 msgstr "Dam olish"
 
 #: templates/workouts/active_workout.html:453
-
 msgid "Set 1 Complete"
 msgstr "To'lov amalga oshirildi"
 
 #: templates/workouts/active_workout.html:456
 #: templates/workouts/active_workout.html:501
-#: templates/workouts/home_session.html:502
+#: templates/workouts/home_session.html:746
 msgid "Tap to skip"
 msgstr "O'tkazib yuborish uchun bosing"
 
 #: templates/workouts/active_workout.html:458
 #: templates/workouts/active_workout.html:502
-#: templates/workouts/home_session.html:504
+#: templates/workouts/home_session.html:748
 msgid "Skip Rest"
 msgstr "Dam olishni o'tkazish"
 
 #: templates/workouts/active_workout.html:459
 #: templates/workouts/active_workout.html:503
-#: templates/workouts/home_session.html:505
+#: templates/workouts/home_session.html:749
 msgid "Next Up"
 msgstr "Keyingisi"
 
@@ -1530,17 +1527,15 @@ msgid "Set 2"
 msgstr "Set 2"
 
 #: templates/workouts/active_workout.html:467
-#, fuzzy
-#| msgid "Workout"
+
 msgid "Finish Workout?"
-msgstr "Mashg'ulot"
+msgstr "Mashg'ulotni yakunlash"
 
 #: templates/workouts/active_workout.html:468
 msgid "You have not completed all exercises."
 msgstr "Siz barcha mashqlarni tugatmadingiz"
 
 #: templates/workouts/active_workout.html:470
-
 msgid "Save & Exit"
 msgstr "Saqlash joyi"
 
@@ -1549,7 +1544,6 @@ msgid "Exit without Saving"
 msgstr "Saqlamasdan chiqish"
 
 #: templates/workouts/active_workout.html:472
-
 msgid "Return to Workout"
 msgstr "Oxirgi mashg'ulotlar"
 
@@ -1578,7 +1572,6 @@ msgid "Set"
 msgstr "Setlar"
 
 #: templates/workouts/active_workout.html:496
-
 msgid "Complete"
 msgstr "Tugatildi"
 
@@ -1644,13 +1637,53 @@ msgstr "HAFTALAR"
 msgid "Workout Session"
 msgstr "Mashg'ulot sessiyasi"
 
-#: templates/workouts/home_session.html:514
+#: templates/workouts/home_session.html:720
+
+msgid "Exit Workout?"
+msgstr "Mashg'ulotdan chiqish?"
+
+#: templates/workouts/home_session.html:721
+msgid "Your progress will be lost."
+msgstr "Sizning natijangiz yo'qoladi"
+
+#: templates/workouts/home_session.html:723
+msgid "Exit"
+msgstr "Chiqish"
+
+#: templates/workouts/home_session.html:724
+
+msgid "Continue Workout"
+msgstr "Davom etish"
+
+#: templates/workouts/home_session.html:742
+msgid "REST"
+msgstr "DAM"
+
+#: templates/workouts/home_session.html:743
+#, fuzzy
+#| msgid "Complete"
+msgid "Round Complete"
+msgstr "Tugatildi"
+
+#: templates/workouts/home_session.html:758
 #: templates/workouts/home_workout_complete.html:175
 #: templates/workouts/home_workout_detail.html:4
 #: templates/workouts/home_workout_detail.html:452
 #: templates/workouts/workout_complete.html:165
 msgid "Workout"
 msgstr "Mashg'ulot"
+
+#: templates/workouts/home_session.html:814
+#, fuzzy
+#| msgid "SET"
+msgid "SEC"
+msgstr "SET"
+
+#: templates/workouts/home_session.html:836
+#, fuzzy
+#| msgid "START NOW"
+msgid "START"
+msgstr "HOZIROQ BOSHLANG"
 
 #: templates/workouts/home_workout_complete.html:166
 msgid "WORKOUT COMPLETE!"
@@ -1684,7 +1717,7 @@ msgstr "BOSH SAHIFAGA"
 #: templates/workouts/home_workout_detail.html:477
 #: templates/workouts/week_days.html:542
 #: templates/workouts/workout_detail.html:4
-#: templates/workouts/workout_detail.html:222
+#: templates/workouts/workout_detail.html:221
 msgid "Day"
 msgstr "Kun"
 
@@ -1799,12 +1832,11 @@ msgstr "Jami ko'tarilgan og'irlik"
 msgid "Back to Home"
 msgstr "Bosh sahifaga"
 
-#: templates/workouts/workout_detail.html:239
+#: templates/workouts/workout_detail.html:238
 msgid "No exercises are included for this day."
 msgstr "Bu kunda mashqlar mavjud emas."
 
-#: templates/workouts/workout_detail.html:254
-
+#: templates/workouts/workout_detail.html:253
 msgid "Start Workout"
 msgstr "Mashg'ulotni boshlash"
 

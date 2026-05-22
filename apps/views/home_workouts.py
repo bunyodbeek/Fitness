@@ -332,35 +332,59 @@ class HomeWorkoutCompleteView(LoginRequiredMixin, View):
 
 
 class HomeSessionView(LoginRequiredMixin, TemplateView):
-	template_name = "workouts/home_session.html"
-	
-	def get_context_data(self, **kwargs):
-		context = super().get_context_data(**kwargs)
-		workout = get_object_or_404(HomeWorkout.objects.select_related("week__plan__program"), pk=self.kwargs["pk"])
-		
-		progress, created = UserWorkoutProgress.objects.get_or_create(user=self.request.user.profile, workout=workout)
-		if not created:
-			progress.current_round = 1
-			progress.current_order = 1
-			progress.save(update_fields=['current_round', 'current_order', 'updated_at'])
-		
-		setting = HomeProgressionSetting.objects.first() or HomeProgressionSetting.objects.create(key="default")
-		week_number = workout.week.week_number
-		workout_exercises = workout.workout_exercises.select_related("exercise").order_by("order", "id")
-		exercises = []
-		rounds = workout.rounds
-		rest_seconds = setting.rest_between_rounds
-		for wex in workout_exercises:
-			calc = calculate_home_week_exercise(workout.rounds, int((wex.minutes or 0) * 60), week_number, setting)
-			rounds = calc["rounds"];
-			rest_seconds = calc["rest_seconds"]
-			exercises.append(
-				{"name": wex.exercise.name, "name_uz": wex.exercise.name_uz, "name_ru": wex.exercise.name_ru,
-				 "image": wex.exercise.thumbnail, "video": wex.exercise.video,
-				 "duration_seconds": calc["duration_seconds"], "order": wex.order,
-				 "description": wex.exercise.description or ""})
-		total_time_seconds = rounds * sum(x["duration_seconds"] for x in exercises) + max(0, rounds - 1) * rest_seconds
-		context.update({"workout": workout, "exercises": exercises, "rounds": rounds, "rest_seconds": rest_seconds,
-		                "total_time_seconds": total_time_seconds, "week_number": week_number, "current_round": 1,
-		                "current_order": 1})
-		return context
+    template_name = "workouts/home_session.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        workout = get_object_or_404(HomeWorkout.objects.select_related("week__plan__program"), pk=self.kwargs["pk"])
+
+        progress, created = UserWorkoutProgress.objects.get_or_create(user=self.request.user.profile, workout=workout)
+        if not created:
+            progress.current_round = 1
+            progress.current_order = 1
+            progress.save(update_fields=['current_round', 'current_order', 'updated_at'])
+
+        from django.utils.translation import get_language
+        lang = (get_language() or 'en').split('-')[0]
+
+        setting = HomeProgressionSetting.objects.first() or HomeProgressionSetting.objects.create(key="default")
+        week_number = workout.week.week_number
+        workout_exercises = workout.workout_exercises.select_related("exercise").order_by("order", "id")
+        exercises = []
+        rounds = workout.rounds
+        rest_seconds = setting.rest_between_rounds
+        for wex in workout_exercises:
+            calc = calculate_home_week_exercise(workout.rounds, int((wex.minutes or 0) * 60), week_number, setting)
+            rounds = calc["rounds"]
+            rest_seconds = calc["rest_seconds"]
+
+            # Til bo'yicha nom
+            ex = wex.exercise
+            if lang == 'uz' and ex.name_uz:
+                display_name = ex.name_uz
+            elif lang == 'ru' and ex.name_ru:
+                display_name = ex.name_ru
+            else:
+                display_name = ex.name
+
+            exercises.append({
+                "name": display_name,
+                "image": ex.thumbnail,
+                "video": ex.video,
+                "duration_seconds": calc["duration_seconds"],
+                "order": wex.order,
+                "description": ex.description or ""
+            })
+
+        total_time_seconds = rounds * sum(x["duration_seconds"] for x in exercises) + max(0, rounds - 1) * rest_seconds
+        context.update({
+            "workout": workout,
+            "exercises": exercises,
+            "rounds": rounds,
+            "rest_seconds": rest_seconds,
+            "total_time_seconds": total_time_seconds,
+            "week_number": week_number,
+            "current_round": 1,
+            "current_order": 1,
+        })
+        return context

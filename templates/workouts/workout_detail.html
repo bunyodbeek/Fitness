@@ -214,13 +214,11 @@
 {% endblock %}
 
 {% block content %}
-    <div class="page-header">
-        <button class="back-btn" onclick="history.back()">←</button>
-            &#8592;
-        </button>
-        <h1 class="page-title">{% trans "Day" %} {{ current_day }}</h1>
-        <div class="header-spacer"></div>
-    </div>
+<div class="page-header">
+    <a href="{% url 'home_week_detail' week.id %}" class="back-btn">←</a>
+    <h1 class="page-title">{% trans "Day" %} {{ current_day }}</h1>
+    <div class="header-spacer"></div>
+</div>
 
     <div class="exercises-container">
         {% for item in workout_exercises %}
