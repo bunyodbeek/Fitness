@@ -1507,7 +1507,7 @@ msgstr "Отдых"
 #: templates/workouts/active_workout.html:453
 
 msgid "Set 1 Complete"
-msgstr "Оплата завершена"
+msgstr "Подход 1 завершён"
 
 #: templates/workouts/active_workout.html:456
 #: templates/workouts/active_workout.html:501
@@ -1543,7 +1543,7 @@ msgstr "Вы не выполнили все упражнения."
 #: templates/workouts/active_workout.html:470
 
 msgid "Save & Exit"
-msgstr "Сохранить в"
+msgstr "Сохранить и выйти"
 
 #: templates/workouts/active_workout.html:471
 msgid "Exit without Saving"
@@ -1552,7 +1552,7 @@ msgstr "выйти без сохранения"
 #: templates/workouts/active_workout.html:472
 
 msgid "Return to Workout"
-msgstr "Последние тренировки"
+msgstr "Вернуться к тренировке"
 
 #: templates/workouts/active_workout.html:490
 msgid "Did It"

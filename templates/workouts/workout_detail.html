@@ -215,8 +215,7 @@
 
 {% block content %}
     <div class="page-header">
-        <button class="back-btn" onclick="window.location.href='
-                {% if is_home_mode %}{% url 'home_plan_weeks' week.plan.id %}{% else %}{% url 'plan_weeks' week.plan.id %}{% endif %}'">
+        <button class="back-btn" onclick="history.back()">←</button>
             &#8592;
         </button>
         <h1 class="page-title">{% trans "Day" %} {{ current_day }}</h1>

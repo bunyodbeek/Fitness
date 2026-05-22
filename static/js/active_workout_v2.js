@@ -432,7 +432,7 @@ const submitForm=action=>{
         form.action=urls.complete||window.location.pathname;
     } else {
         if(exitRedirectUrl){ window.location.href=exitRedirectUrl; return; }
-        form.action=urls.start||window.location.pathname;
+        form.action=urls.complete||window.location.pathname;
     }
     const fields={
         csrfmiddlewaretoken:csrfToken,action,save_progress:'true',
