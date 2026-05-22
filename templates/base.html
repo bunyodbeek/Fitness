@@ -214,7 +214,7 @@
 
         /* Matnlar kichik harflarda */
         .bottom-nav .nav-item span:last-child { /* Faqat matnlar uchun */
-            text-transform: lowercase;
+            text-transform: uppercase;
             font-size: 10px;
             letter-spacing: 0.5px;
         }
@@ -459,24 +459,24 @@
     <div class="bottom-nav">
         <a href="{% url 'gym_program_list' %}" class="nav-item {% if 'program' in request.path %}active{% endif %}">
             <span class="icon">✅</span>
-            <span>{% trans "Workouts" %}</span>
+            <span>{% trans "WORKOUTS" %}</span>
         </a>
         <a href="{% url 'muscle_groups' %}"
            class="nav-item {% if 'exercises' in request.path or 'muscle' in request.path %}active{% endif %}">
             <span class="icon">💪</span>
-            <span>{% trans "Exercises" %}</span>
+            <span>{% trans "EXERCISES" %}</span>
         </a>
         <a href="{% url 'handbook_home' %}" class="nav-item {% if 'handbook' in request.path %}active{% endif %}">
             <span class="icon">📚</span>
-            <span>{% trans "Handbook" %}</span>
+            <span>{% trans "HANDBOOK" %}</span>
         </a>
         <a href="{% url 'favorite_list_page' %}" class="nav-item {% if 'favorites' in request.path %}active{% endif %}">
             <span class="icon">⭐</span>
-            <span>{% trans "Favourites" %}</span>
+            <span>{% trans "FAVORITES" %}</span>
         </a>
         <a href="{% url 'user_profile' %}" class="nav-item {% if 'profile' in request.path %}active{% endif %}">
             <span class="icon">👨</span>
-            <span>{% trans "Profile" %}</span>
+            <span>{% trans "PROFILE" %}</span>
         </a>
     </div>
 {% endblock %}
