@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-22 12:10+0500\n"
+"POT-Creation-Date: 2026-05-22 12:52+0500\n"
 "PO-Revision-Date: 2026-05-22 12:00+0500\n"
 "Last-Translator: Claude AI\n"
 "Language-Team: Russian\n"
@@ -942,8 +942,7 @@ msgid "items"
 msgstr "материалов"
 
 #: templates/miniapp/questionarrie.html:8
-#, fuzzy
-#| msgid "Fitness Questionnaire ? Telegram WebApp"
+
 msgid "Fitness Questionnaire — Telegram WebApp"
 msgstr "Фитнес-анкета — Telegram WebApp"
 
@@ -1096,21 +1095,17 @@ msgstr "Зайдите позже или выберите другой план.
 
 #: templates/my_trainer/my_trainer_days.html:432
 #: templates/workouts/edition_detail.html:564
-#: templates/workouts/workout_detail.html:245
-#, fuzzy
-#| msgid "? Start Workout"
-msgid "▶ Start Workout"
-msgstr "? Начать тренировку"
+
+msgid "▶Start Workout"
+msgstr "▶Начать тренировку"
 
 #: templates/users/add-card.html:7
-#, fuzzy
-#| msgid "Karta bilan to?lov"
+
 msgid "Karta bilan to‘lov"
 msgstr "Оплата картой"
 
 #: templates/users/add-card.html:104
-#, fuzzy
-#| msgid "To?lov / Karta Qo?shish"
+
 msgid "To‘lov / Karta Qo‘shish"
 msgstr "Оплата / Добавить карту"
 
@@ -1445,8 +1440,6 @@ msgid "Tiklash"
 msgstr "Восстановить"
 
 #: templates/users/settings.html:110
-#, fuzzy
-#| msgid "LANGUAGE SETTINGS"
 msgid "SETTINGS"
 msgstr "НАСТРОЙКИ"
 
@@ -1489,6 +1482,111 @@ msgstr "О приложении"
 #: templates/users/settings.html:173
 msgid "Version & info"
 msgstr "Версия и информация"
+
+#: templates/workouts/active_workout.html:403
+#: templates/workouts/home_session.html:512
+msgid "EXIT"
+msgstr "ВЫХОД"
+
+#: templates/workouts/active_workout.html:431
+#: templates/workouts/active_workout.html:497
+msgid "Pause"
+msgstr "Пауза"
+
+#: templates/workouts/active_workout.html:434
+#: templates/workouts/active_workout.html:499
+msgid "NEXT"
+msgstr "Следующее"
+
+#: templates/workouts/active_workout.html:452
+#: templates/workouts/active_workout.html:500
+#: templates/workouts/home_workout_detail.html:510
+msgid "Rest"
+msgstr "Отдых"
+
+#: templates/workouts/active_workout.html:453
+
+msgid "Set 1 Complete"
+msgstr "Оплата завершена"
+
+#: templates/workouts/active_workout.html:456
+#: templates/workouts/active_workout.html:501
+#: templates/workouts/home_session.html:502
+msgid "Tap to skip"
+msgstr "Нажмите, чтобы пропустить"
+
+#: templates/workouts/active_workout.html:458
+#: templates/workouts/active_workout.html:502
+#: templates/workouts/home_session.html:504
+msgid "Skip Rest"
+msgstr "Пропустить отдых"
+
+#: templates/workouts/active_workout.html:459
+#: templates/workouts/active_workout.html:503
+#: templates/workouts/home_session.html:505
+msgid "Next Up"
+msgstr "Следующее"
+
+#: templates/workouts/active_workout.html:460
+msgid "Set 2"
+msgstr ""
+
+#: templates/workouts/active_workout.html:467
+
+msgid "Finish Workout?"
+msgstr "Тренировка"
+
+#: templates/workouts/active_workout.html:468
+msgid "You have not completed all exercises."
+msgstr "Вы не выполнили все упражнения."
+
+#: templates/workouts/active_workout.html:470
+
+msgid "Save & Exit"
+msgstr "Сохранить в"
+
+#: templates/workouts/active_workout.html:471
+msgid "Exit without Saving"
+msgstr "выйти без сохранения"
+
+#: templates/workouts/active_workout.html:472
+
+msgid "Return to Workout"
+msgstr "Последние тренировки"
+
+#: templates/workouts/active_workout.html:490
+msgid "Did It"
+msgstr "Выполнить"
+
+#: templates/workouts/active_workout.html:491
+msgid "KG"
+msgstr "кг"
+
+#: templates/workouts/active_workout.html:492
+msgid "REPS"
+msgstr "Повторений"
+
+#: templates/workouts/active_workout.html:493
+msgid "SET"
+msgstr "Подход"
+
+#: templates/workouts/active_workout.html:494
+msgid "OF"
+msgstr "из"
+
+#: templates/workouts/active_workout.html:495
+
+msgid "Set"
+msgstr "Подходы"
+
+#: templates/workouts/active_workout.html:496
+
+msgid "Completed"
+msgstr "Завершено"
+
+#: templates/workouts/active_workout.html:498
+msgid "Resume"
+msgstr "Продолжить"
 
 #: templates/workouts/edition_detail.html:534
 msgid "all exercises:"
@@ -1548,22 +1646,6 @@ msgstr "НЕДЕЛИ"
 msgid "Workout Session"
 msgstr "Сессия тренировки"
 
-#: templates/workouts/home_session.html:502
-msgid "Tap to skip"
-msgstr "Нажмите, чтобы пропустить"
-
-#: templates/workouts/home_session.html:504
-msgid "Skip Rest"
-msgstr "Пропустить отдых"
-
-#: templates/workouts/home_session.html:505
-msgid "Next Up"
-msgstr "Следующее"
-
-#: templates/workouts/home_session.html:512
-msgid "EXIT"
-msgstr "ВЫХОД"
-
 #: templates/workouts/home_session.html:514
 #: templates/workouts/home_workout_complete.html:175
 #: templates/workouts/home_workout_detail.html:4
@@ -1604,7 +1686,7 @@ msgstr "НА ГЛАВНУЮ"
 #: templates/workouts/home_workout_detail.html:477
 #: templates/workouts/week_days.html:542
 #: templates/workouts/workout_detail.html:4
-#: templates/workouts/workout_detail.html:213
+#: templates/workouts/workout_detail.html:222
 msgid "Day"
 msgstr "День"
 
@@ -1621,10 +1703,6 @@ msgstr "Мин"
 #: templates/workouts/home_workout_detail.html:506
 msgid "rounds"
 msgstr "раундов"
-
-#: templates/workouts/home_workout_detail.html:510
-msgid "Rest"
-msgstr "Отдых"
 
 #: templates/workouts/home_workout_detail.html:540
 msgid "sec"
@@ -1726,9 +1804,14 @@ msgstr "Общий поднятый вес"
 msgid "Back to Home"
 msgstr "На главную"
 
-#: templates/workouts/workout_detail.html:230
+#: templates/workouts/workout_detail.html:239
 msgid "No exercises are included for this day."
 msgstr "На этот день нет упражнений."
+
+#: templates/workouts/workout_detail.html:254
+
+msgid "Start Workout"
+msgstr "Начать тренировку"
 
 #~ msgid "%(plan_count)s Plan"
 #~ msgid_plural "%(plan_count)s Plans"

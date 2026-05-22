@@ -1,4 +1,5 @@
 {% load static %}
+{% load i18n %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -396,8 +397,10 @@ body {
 <body>
 
 <!-- HEADER -->
+
+<!-- HEADER -->
 <div class="session-header">
-    <button class="exit-btn" onclick="showExitModal()">EXIT</button>
+    <button class="exit-btn" onclick="showExitModal()">{% trans "EXIT" %}</button>
     <div class="progress-counter">
         <span id="current">1</span>&nbsp;/&nbsp;<span id="total">{{ total_exercises }}</span>
     </div>
@@ -413,9 +416,9 @@ body {
         <img src="{% static 'images/default_exercise.svg' %}" alt="" class="exercise-image" id="exerciseImage">
     </div>
 
-   <div class="description-block" onclick="openDescModal()">
-    <div class="desc-preview-text" id="descPreview">—</div>
-</div>
+    <div class="description-block" onclick="openDescModal()">
+        <div class="desc-preview-text" id="descPreview">…</div>
+    </div>
 
     <div class="sets-wrapper" id="setsWrapper"></div>
 </div>
@@ -425,10 +428,10 @@ body {
     <div class="action-buttons">
         <button class="pause-btn" id="pauseBtn" onclick="togglePause()">
             <span id="pauseIcon"><i class="fas fa-pause"></i></span>
-            <span id="pauseText">Pause</span>
+            <span id="pauseText">{% trans "Pause" %}</span>
         </button>
         <button class="next-ex-btn" onclick="skipToNextExercise()">
-            NEXT ›
+            {% trans "NEXT" %} ›
         </button>
     </div>
 </div>
@@ -442,30 +445,31 @@ body {
         </div>
     </div>
 </div>
+
 <!-- REST OVERLAY -->
 <div class="rest-overlay" id="restOverlay">
     <div class="rest-panel">
-        <div class="rest-title">Rest</div>
-        <div class="rest-badge" id="restBadge">Set 1 Complete ✓</div>
+        <div class="rest-title">{% trans "Rest" %}</div>
+        <div class="rest-badge" id="restBadge">{% trans "Set 1 Complete" %} ✓</div>
         <div class="rest-circle" onclick="skipRest()">
             <div class="rest-time" id="restTimer">01:00</div>
-            <div class="rest-skip-hint">Tap to skip</div>
+            <div class="rest-skip-hint">{% trans "Tap to skip" %}</div>
         </div>
-        <button class="rest-skip-btn" onclick="skipRest()">Skip Rest</button>
-        <div class="rest-next-lbl">Next Up</div>
-        <div class="rest-next-name" id="restNextName">Set 2</div>
+        <button class="rest-skip-btn" onclick="skipRest()">{% trans "Skip Rest" %}</button>
+        <div class="rest-next-lbl">{% trans "Next Up" %}</div>
+        <div class="rest-next-name" id="restNextName">{% trans "Set 2" %}</div>
     </div>
 </div>
 
 <!-- EXIT MODAL -->
 <div class="exit-modal" id="exitModal">
     <div class="exit-content">
-        <h3>Finish Workout?</h3>
-        <p>You have not completed all exercises.</p>
+        <h3>{% trans "Finish Workout?" %}</h3>
+        <p>{% trans "You have not completed all exercises." %}</p>
         <div class="exit-btns">
-            <button id="saveExitBtn" class="btn-save" onclick="saveAndExit()">Save &amp; Exit</button>
-            <button onclick="exitWithoutSaving()">Exit without Saving</button>
-            <button onclick="returnToWorkout()">Return to Workout</button>
+            <button id="saveExitBtn" class="btn-save" onclick="saveAndExit()">{% trans "Save & Exit" %}</button>
+            <button onclick="exitWithoutSaving()">{% trans "Exit without Saving" %}</button>
+            <button onclick="returnToWorkout()">{% trans "Return to Workout" %}</button>
         </div>
     </div>
 </div>
@@ -481,6 +485,23 @@ window.ACTIVE_WORKOUT_CONFIG = {
     defaultExerciseImage: "{% static 'images/default_exercise.svg' %}",
     completeUrl:          "{{ workout_complete_url|default:'' }}",
     exitRedirectUrl:      "",
+    // JS ichida ishlatish uchun tarjimalar
+    translations: {
+        didIt:        "{% trans 'Did It' %}",
+        kg:           "{% trans 'KG' %}",
+        reps:         "{% trans 'REPS' %}",
+        setOf:        "{% trans 'SET' %}",
+        of:           "{% trans 'OF' %}",
+        set:          "{% trans 'Set' %}",
+        complete:     "{% trans 'Complete' %}",
+        pause:        "{% trans 'Pause' %}",
+        resume:       "{% trans 'Resume' %}",
+        next:         "{% trans 'NEXT' %}",
+        rest:         "{% trans 'Rest' %}",
+        tapToSkip:    "{% trans 'Tap to skip' %}",
+        skipRest:     "{% trans 'Skip Rest' %}",
+        nextUp:       "{% trans 'Next Up' %}",
+    }
 };
 const WORKOUT_URLS = {
     complete: "{{ workout_complete_url|default:'' }}",

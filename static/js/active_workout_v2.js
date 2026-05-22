@@ -1,4 +1,4 @@
-// 🔧 CONFIG ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ? CONFIG ?????????????????????????????????????????????????
 const CFG              = window.ACTIVE_WORKOUT_CONFIG || {};
 const exercises        = CFG.exercises        || [];
 const csrfToken        = CFG.csrfToken        || '';
@@ -6,6 +6,24 @@ const initialExIdx     = CFG.initialExerciseIndex || 0;
 const initialCompleted = CFG.initialCompleted || 0;
 const exitRedirectUrl  = CFG.exitRedirectUrl  || '';
 const defaultImage     = CFG.defaultExerciseImage || '';
+
+// ? TRANSLATIONS ?????????????????????????????????????????????????????
+const T = Object.assign({
+    didIt:    'Did It',
+    kg:       'KG',
+    reps:     'REPS',
+    setOf:    'SET',
+    of:       'OF',
+    set:      'Set',
+    complete: 'Complete',
+    pause:    'Pause',
+    resume:   'Resume',
+    next:     'NEXT',
+    rest:     'Rest',
+    tapToSkip:'Tap to skip',
+    skipRest: 'Skip Rest',
+    nextUp:   'Next Up',
+}, CFG.translations || {});
 
 try {
     const p = window.location.pathname;
@@ -15,7 +33,7 @@ try {
     }
 } catch(e) {}
 
-// 📊 STATE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ? STATE ????????????????????????????????????????????????
 let currentExIdx   = initialExIdx;
 let isPaused       = false;
 let isResting      = false;
@@ -30,10 +48,10 @@ let totalSecs      = 0;
 let totalCompleted = initialCompleted;
 let totalWeight    = 0;
 
-const setWeights = {}; // { exIdx: { setIdx: kg } }
-const doneSets   = {}; // { exIdx: Set<setIdx> }
+const setWeights = {};
+const doneSets   = {};
 
-// 🔧 UTILS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ? UTILS ????????????????????????????????????????????????
 const toFin   = (v, fb=0) => { const n=Number(v); return isFinite(n)?n:fb; };
 const fmtTime = s => `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
 const $       = id => document.getElementById(id);
@@ -57,7 +75,7 @@ const updateExit = () => {
     b.disabled=totalCompleted<1; b.style.opacity=totalCompleted<1?'0.5':'1';
 };
 
-// 📹 MEDIA ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ? MEDIA ????????????????????????????????????????????????
 const resetMedia = ex => {
     const v=$('exerciseVideo'), img=$('exerciseImage'); if(!v||!img) return;
     v.pause(); v.currentTime=0;
@@ -73,10 +91,10 @@ const resetMedia = ex => {
 };
 const toggleExerciseMedia = () => { if(exercises[currentExIdx]?.description) openDescModal(); };
 
-// 📝 DESC MODAL ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ? DESC MODAL ???????????????????????????????????????????
 const renderDescTrigger = desc => {
     const preview = $('descPreview'); if (!preview) return;
-    preview.textContent = desc?.trim() || 'No description available.';
+    preview.textContent = desc?.trim() || '';
 };
 
 const openDescModal = () => {
@@ -116,7 +134,7 @@ const closeDescModal = () => {
 
 const closeDescModalOnBg = e => { if (e.target.id === 'descOverlay') closeDescModal(); };
 
-// 🏋️ SET CARDS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ?? SET CARDS ???????????????????????????????????????????
 const renderSetCards = () => {
     const ex=exercises[currentExIdx], wr=$('setsWrapper');
     const exType=(ex.type||'strength').toLowerCase(); if(!wr||!ex||exType!=='strength') return;
@@ -129,11 +147,12 @@ const renderSetCards = () => {
         const rStr = ex.reps_max && ex.reps_max!==ex.reps
             ? `${ex.reps}–${ex.reps_max}` : String(ex.reps);
 
+        // SET X OF Y — tarjima bilan
         const lr = document.createElement('div');
         lr.className='set-label-row';
         lr.innerHTML=`
-            <span class="set-label-text">SET ${i+1} OF ${ex.sets}</span>
-            <span class="set-label-done${done?' show':''}" id="dl_${currentExIdx}_${i}">✓ Done</span>
+            <span class="set-label-text">${T.setOf} ${i+1} ${T.of} ${ex.sets}</span>
+            <span class="set-label-done${done?' show':''}" id="dl_${currentExIdx}_${i}">✓ ${T.complete}</span>
         `;
         wr.appendChild(lr);
 
@@ -176,19 +195,22 @@ const renderSetCards = () => {
             wZone.appendChild(sp);
         }
 
+        // KG — tarjima bilan
         const unitLbl=document.createElement('span');
-        unitLbl.className='w-unit'; unitLbl.textContent='KG';
+        unitLbl.className='w-unit'; unitLbl.textContent=T.kg;
         wZone.appendChild(unitLbl);
 
         const div=document.createElement('div'); div.className='set-divider';
 
+        // REPS — tarjima bilan
         const rZone=document.createElement('div'); rZone.className='set-reps-zone';
-        rZone.innerHTML=`<span class="r-num">${rStr}</span><span class="r-lbl">REPS</span>`;
+        rZone.innerHTML=`<span class="r-num">${rStr}</span><span class="r-lbl">${T.reps}</span>`;
 
+        // Did It — tarjima bilan
         const diCell=document.createElement('div');
         diCell.className='did-it-cell';
         diCell.id=`di_${currentExIdx}_${i}`;
-        diCell.textContent=done?'✓':'Did It';
+        diCell.textContent=done?'✓':T.didIt;
         if(!done) {
             diCell.addEventListener('click', ()=>didItSet(i));
         }
@@ -201,7 +223,7 @@ const renderSetCards = () => {
     }
 };
 
-// ✅ DID IT ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ? DID IT ???????????????????????????????????????????????
 const didItSet = si => {
     const ei = currentExIdx;
 
@@ -269,7 +291,7 @@ const didItSet = si => {
     }
 };
 
-// 🔄 LOAD EXERCISE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ? LOAD EXERCISE ????????????????????????????????????????
 const loadExercise = idx => {
     if(idx>=exercises.length) { finishWorkout(); return; }
     const ex=exercises[idx]; if(!ex) { finishWorkout(); return; }
@@ -277,11 +299,12 @@ const loadExercise = idx => {
     currentExIdx=idx; isResting=false; isPaused=false;
 
     const cur=$('current'), nm=$('exerciseName'),
-          pb=$('pauseBtn'), pi=$('pauseIcon'), ft=$('floatingTimer');
+          pb=$('pauseBtn'), pi=$('pauseIcon'), pt=$('pauseText'), ft=$('floatingTimer');
     if(cur) cur.textContent=idx+1;
     if(nm)  nm.textContent=ex.name||'';
     if(pb)  pb.style.display='flex';
     if(pi)  pi.innerHTML='<i class="fas fa-pause"></i>';
+    if(pt)  pt.textContent=T.pause;
     if(ft)  ft.classList.remove('hidden');
 
     resetMedia(ex);
@@ -296,7 +319,7 @@ const loadExercise = idx => {
     if(!sessionStart) { sessionStart=Date.now(); startTimer(); }
 };
 
-// ⏱️ TIMER ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ?? TIMER ????????????????????????????????????????????????
 const startTimer=()=>{
     clearInterval(timerInterval);
     timerInterval=setInterval(()=>{
@@ -306,23 +329,23 @@ const startTimer=()=>{
     },100);
 };
 
-// ⏸️ PAUSE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ?? PAUSE ????????????????????????????????????????????????
 const togglePause=()=>{
     if(isResting) return;
     const pi=$('pauseIcon'), pt=$('pauseText');
     if(!isPaused){
         isPaused=true; pauseStart=Date.now();
         if(pi) pi.innerHTML='<i class="fas fa-play"></i>';
-        if(pt) pt.textContent='Resume';
+        if(pt) pt.textContent=T.resume;
     } else {
         isPaused=false;
         if(pauseStart){ totalPaused+=(Date.now()-pauseStart); pauseStart=null; }
         if(pi) pi.innerHTML='<i class="fas fa-pause"></i>';
-        if(pt) pt.textContent='Pause';
+        if(pt) pt.textContent=T.pause;
     }
 };
 
-// 🛌 REST ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ? REST ?????????????????????????????????????????????????
 const startRest=(sec,completedN,totalSets,nextN,ex)=>{
     isResting=true;
     const ft=$('floatingTimer'), pb=$('pauseBtn');
@@ -330,8 +353,11 @@ const startRest=(sec,completedN,totalSets,nextN,ex)=>{
     if(pb) pb.style.display='none';
 
     const badge=$('restBadge'), nxt=$('restNextName'), rt=$('restTimer'), ov=$('restOverlay');
-    if(badge) badge.textContent=`Set ${completedN} Complete 🎉`;
-    const nextName=nextN<=totalSets?`Set ${nextN} of ${totalSets}`:(exercises[currentExIdx+1]?.name||'Workout Complete');
+    // "Set 2 Complete ✓" — tarjima bilan
+    if(badge) badge.textContent=`${T.set} ${completedN} ${T.complete} ✓`;
+    const nextName=nextN<=totalSets
+        ? `${T.set} ${nextN} ${T.of} ${totalSets}`
+        : (exercises[currentExIdx+1]?.name||'');
     if(nxt) nxt.textContent=nextName;
     restTimeLeft=sec;
     if(rt) rt.textContent=fmtTime(restTimeLeft);
@@ -347,17 +373,16 @@ const startRest=(sec,completedN,totalSets,nextN,ex)=>{
 
 const skipRest=()=>{
     isResting=false; clearInterval(restInterval);
-    const ov=$('restOverlay'),ft=$('floatingTimer'),pb=$('pauseBtn'),pi=$('pauseIcon');
+    const ov=$('restOverlay'),ft=$('floatingTimer'),pb=$('pauseBtn'),pi=$('pauseIcon'),pt=$('pauseText');
     if(ov) ov.classList.remove('active');
     if(ft) ft.classList.remove('hidden');
     if(pb) pb.style.display='flex';
     if(pi) pi.innerHTML='<i class="fas fa-pause"></i>';
+    if(pt) pt.textContent=T.pause;
 };
 
-// ⏩ SKIP TO NEXT EXERCISE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ? SKIP TO NEXT EXERCISE ????????????????????????????????
 const skipToNextExercise = () => {
-    console.log('skipToNextExercise called');
-
     const restOv = $('restOverlay');
     if (restOv && restOv.classList.contains('active')) {
         restOv.classList.remove('active');
@@ -389,7 +414,7 @@ const skipToNextExercise = () => {
     }
 };
 
-// 🚪 EXIT ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ? EXIT ?????????????????????????????????????????????????
 const showExitModal=()=>{
     const m=$('exitModal'); if(m) m.classList.add('active');
     if(!isPaused&&!isResting) togglePause();
@@ -431,7 +456,7 @@ const completeExercise=()=>{
     totalCompleted+=1; updateExit(); loadExercise(currentExIdx+1);
 };
 
-// 🎬 INIT ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ? INIT ?????????????????????????????????????????????????
 document.addEventListener('click', (e) => {
     if (!e.target.closest('.set-weight-zone') && !e.target.classList.contains('w-inp')) {
         document.activeElement?.blur();
@@ -443,7 +468,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     updateExit();
 });
 
-// 🌐 WINDOW EXPORTS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ? WINDOW EXPORTS ???????????????????????????????????????
 Object.assign(window, {
     closeDescModal,
     closeDescModalOnBg,

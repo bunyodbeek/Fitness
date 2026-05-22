@@ -25,17 +25,23 @@
             position: fixed;
             inset: 0;
             background: radial-gradient(circle at 20% 50%, rgba(255, 215, 0, 0.05) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 80%, rgba(255, 107, 107, 0.05) 0%, transparent 50%),
-                        radial-gradient(circle at 40% 90%, rgba(78, 205, 196, 0.05) 0%, transparent 50%);
+            radial-gradient(circle at 80% 80%, rgba(255, 107, 107, 0.05) 0%, transparent 50%),
+            radial-gradient(circle at 40% 90%, rgba(78, 205, 196, 0.05) 0%, transparent 50%);
             animation: particleFloat 15s ease-in-out infinite;
             pointer-events: none;
             z-index: 0;
         }
 
         @keyframes particleFloat {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            33% { transform: translate(30px, -30px) scale(1.1); }
-            66% { transform: translate(-20px, 20px) scale(0.9); }
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+            }
+            33% {
+                transform: translate(30px, -30px) scale(1.1);
+            }
+            66% {
+                transform: translate(-20px, 20px) scale(0.9);
+            }
         }
 
         .page-header {
@@ -98,8 +104,8 @@
 
         .exercise-card {
             background: linear-gradient(135deg,
-                rgba(255, 215, 0, 0.12) 0%,
-                rgba(255, 215, 0, 0.06) 100%);
+            rgba(255, 215, 0, 0.12) 0%,
+            rgba(255, 215, 0, 0.06) 100%);
             backdrop-filter: blur(10px);
             margin-bottom: 10px;
             padding: 12px;
@@ -184,8 +190,8 @@
 
         .no-exercises-card {
             background: linear-gradient(135deg,
-                rgba(255, 215, 0, 0.12) 0%,
-                rgba(255, 215, 0, 0.06) 100%);
+            rgba(255, 215, 0, 0.12) 0%,
+            rgba(255, 215, 0, 0.06) 100%);
             backdrop-filter: blur(10px);
             border: 1.5px solid rgba(255, 215, 0, 0.25);
             border-radius: 18px;
@@ -209,7 +215,10 @@
 
 {% block content %}
     <div class="page-header">
-        <button class="back-btn" onclick="window.location.href='{% if is_home_mode %}{% url 'home_plan_weeks' week.plan.id %}{% else %}{% url 'plan_weeks' week.plan.id %}{% endif %}'">&#8592;</button>
+        <button class="back-btn" onclick="window.location.href='
+                {% if is_home_mode %}{% url 'home_plan_weeks' week.plan.id %}{% else %}{% url 'plan_weeks' week.plan.id %}{% endif %}'">
+            &#8592;
+        </button>
         <h1 class="page-title">{% trans "Day" %} {{ current_day }}</h1>
         <div class="header-spacer"></div>
     </div>
@@ -219,8 +228,8 @@
             <a href="{% url 'exercise_detail' item.exercise.id %}" class="exercise-card">
                 <img src="{{ item.exercise.thumbnail.url }}" class="exercise-img" alt="{{ item.exercise.name }}">
                 <div class="exercise-info">
-                    <h3>{{ item.exercise.name }}</h3>
-                    <p><strong>{{ item.sets }}×{{ item.reps }}</strong> • {{ item.exercise.primary_body_part|title }}</p>
+                    <h3>{{ item.exercise.display_name }}</h3>
+                    <p>{{ item.exercise.display_body_part }}</p>
                 </div>
             </a>
         {% empty %}
@@ -241,8 +250,8 @@
 
     {% if workout_exercises %}
         <div class="start-workout-container">
-            <button class="start-workout-btn" onclick="startWorkout()">
-                {% trans '▶ Start Workout' %}
+            <button class="start-workout-btn" onclick="startWorkout()"> ▶
+                {% trans 'Start Workout' %}
             </button>
         </div>
     {% endif %}
