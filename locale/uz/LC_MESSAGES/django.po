@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-22 11:56+0500\n"
+"POT-Creation-Date: 2026-05-22 12:10+0500\n"
 "PO-Revision-Date: 2026-05-22 12:00+0500\n"
 "Last-Translator: Claude AI\n"
 "Language-Team: Uzbek\n"
@@ -1441,6 +1441,12 @@ msgstr "Bekor qilish"
 #: templates/users/restore_subscription.html:16
 msgid "Tiklash"
 msgstr "Tiklash"
+
+#: templates/users/settings.html:110
+#, fuzzy
+#| msgid "LANGUAGE SETTINGS"
+msgid "SETTINGS"
+msgstr "SOZLAMALAR"
 
 #: templates/users/settings.html:117
 msgid "ACCOUNT"
