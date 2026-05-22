@@ -158,7 +158,7 @@ msgstr "Kardio"
 #: apps/models/exercises.py:47 templates/miniapp/questionarrie.html:132
 #: templates/workouts/program_list.html:657
 msgid "Gym"
-msgstr "Sport zali"
+msgstr "Sport zal"
 
 #: apps/models/exercises.py:48 templates/miniapp/questionarrie.html:133
 #: templates/workouts/program_list.html:659
