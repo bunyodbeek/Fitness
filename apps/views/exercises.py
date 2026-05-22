@@ -34,33 +34,55 @@ class ExercisesByMuscleView(ListView):
     def get_queryset(self):
         qs = super().get_queryset()
         muscle_name = (self.kwargs['muscle'] or "").strip().lower()
-        qs = qs.filter(
-            primary_body_part__iexact=muscle_name,
-        )
+        qs = qs.filter(primary_body_part__iexact=muscle_name)
         self.muscle = muscle_name
         return qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['muscle'] = self.muscle.capitalize()
-        context['body_part'] = {'name': self.muscle.capitalize()}
+
+        lang = (get_language() or "en").split("-")[0]
+
+        try:
+            muscle_label = MuscleGroup(self.muscle).label
+        except ValueError:
+            muscle_label = self.muscle.capitalize()
+
+        context['muscle'] = muscle_label
+        context['body_part'] = {'name': muscle_label}
+
         user = self.request.user
         try:
             user_profile = user.profile
         except AttributeError:
             user_profile = None
+
         if user_profile:
             exercise_ids = [exercise.id for exercise in context['exercises']]
-            favorite_ids = Favorite.objects.filter(user=user_profile, exercise_id__in=exercise_ids).values_list(
-                'exercise_id', flat=True)
+            favorite_ids = Favorite.objects.filter(
+                user=user_profile, exercise_id__in=exercise_ids
+            ).values_list('exercise_id', flat=True)
             for exercise in context['exercises']:
                 exercise.is_favorited = exercise.id in favorite_ids
+                # Til bo'yicha nom
+                if lang == 'uz' and exercise.name_uz:
+                    exercise.display_name = exercise.name_uz
+                elif lang == 'ru' and exercise.name_ru:
+                    exercise.display_name = exercise.name_ru
+                else:
+                    exercise.display_name = exercise.name
             context['collections'] = user_profile.favorite_collections.all()
         else:
             for exercise in context['exercises']:
                 exercise.is_favorited = False
-        return context
+                if lang == 'uz' and exercise.name_uz:
+                    exercise.display_name = exercise.name_uz
+                elif lang == 'ru' and exercise.name_ru:
+                    exercise.display_name = exercise.name_ru
+                else:
+                    exercise.display_name = exercise.name
 
+        return context
 
 class ExerciseDetailView(LoginRequiredMixin, DetailView):
     model = Exercise

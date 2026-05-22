@@ -14,6 +14,7 @@ from django.db.models import (
     OneToOneField,
     TextChoices, TextField, PositiveIntegerField, Model, DateTimeField,
 )
+from django.utils.translation import gettext_lazy as _
 
 from apps.models.base import CreatedBaseModel
 from apps.models.managers import UserManager
@@ -32,40 +33,40 @@ class User(AbstractUser):
 
 class UserProfile(CreatedBaseModel):
     class Gender(TextChoices):
-        MALE = 'male', 'Male'
-        FEMALE = 'female', 'Female'
+        MALE   = 'male',   _('Male')
+        FEMALE = 'female', _('Female')
 
     class UnitSystem(TextChoices):
-        METRIC = 'metric', 'Metric'
-        ENGLISH = 'english', 'English'
+        METRIC  = 'metric',  _('Metric')
+        ENGLISH = 'english', _('English')
 
     class ExperienceLevel(TextChoices):
-        BEGINNER = 'beginner', 'Beginner'
-        ADVANCED = 'advanced', 'Advanced'
+        BEGINNER = 'beginner', _('Beginner')
+        ADVANCED = 'advanced', _('Advanced')
 
     class FitnessGoal(TextChoices):
-        BUILD_BODY = 'build_body', 'Build a great body'
-        LOSE_WEIGHT = 'lose_weight', 'Lose weight'
-        GAIN_MUSCLE = 'gain_muscle', 'Gain muscle'
-        GET_SHAPE = 'get_shape', 'Get in shape'
+        BUILD_BODY  = 'build_body',  _('Build a great body')
+        LOSE_WEIGHT = 'lose_weight', _('Lose weight')
+        GAIN_MUSCLE = 'gain_muscle', _('Gain muscle')
+        GET_SHAPE   = 'get_shape',   _('Get in shape')
 
-    user = OneToOneField('apps.User', CASCADE, related_name='profile')
-    telegram_id = BigIntegerField(unique=True, null=True, blank=True)
-    name = CharField(max_length=100, default='User')
-    avatar = ImageField(upload_to='avatars/', blank=True, null=True)
-    gender = CharField(max_length=10, choices=Gender.choices, default=Gender.MALE)
-    birth_date = DateField(null=True, blank=True)
-    weight = DecimalField(max_digits=5, decimal_places=1, null=True, blank=True)
-    height = DecimalField(max_digits=5, decimal_places=1, null=True, blank=True)
-    experience_level = CharField(max_length=20, choices=ExperienceLevel.choices, blank=True)
-    fitness_goal = CharField(max_length=20, choices=FitnessGoal.choices, blank=True)
-    workout_days_per_week = IntegerField(null=True, blank=True)
-    unit_system = CharField(max_length=10, choices=UnitSystem.choices, default=UnitSystem.METRIC)
-    onboarding_completed = BooleanField(default=False)
+    user         = OneToOneField('apps.User', CASCADE, related_name='profile')
+    telegram_id  = BigIntegerField(unique=True, null=True, blank=True)
+    name         = CharField(_('Name'), max_length=100, default='User')
+    avatar       = ImageField(_('Avatar'), upload_to='avatars/', blank=True, null=True)
+    gender       = CharField(_('Gender'), max_length=10, choices=Gender.choices, default=Gender.MALE)
+    birth_date   = DateField(_('Birth date'), null=True, blank=True)
+    weight       = DecimalField(_('Weight'), max_digits=5, decimal_places=1, null=True, blank=True)
+    height       = DecimalField(_('Height'), max_digits=5, decimal_places=1, null=True, blank=True)
+    experience_level     = CharField(_('Experience level'), max_length=20, choices=ExperienceLevel.choices, blank=True)
+    fitness_goal         = CharField(_('Fitness goal'), max_length=20, choices=FitnessGoal.choices, blank=True)
+    workout_days_per_week = IntegerField(_('Workout days per week'), null=True, blank=True)
+    unit_system          = CharField(_('Unit system'), max_length=10, choices=UnitSystem.choices, default=UnitSystem.METRIC)
+    onboarding_completed = BooleanField(_('Onboarding completed'), default=False)
 
     class Meta:
-        verbose_name = "User Profile"
-        verbose_name_plural = "User Profiles"
+        verbose_name = _('User Profile')
+        verbose_name_plural = _('User Profiles')
 
     def __str__(self):
         return f"{self.name}"
@@ -93,33 +94,32 @@ class UserProfile(CreatedBaseModel):
 
 class UserMotivation(CreatedBaseModel):
     class MotivationType(TextChoices):
-        HEALTHY_LIFESTYLE = 'healthy_lifestyle', 'I want a healthy lifestyle'
-        IMPROVE_PHYSIQUE = 'improve_physique', 'Improve my physique'
-        GET_STRONGER = 'get_stronger', 'Get stronger every day'
-        GOOD_CHALLENGE = 'good_challenge', 'I like a good challenge'
+        HEALTHY_LIFESTYLE = 'healthy_lifestyle', _('I want a healthy lifestyle')
+        IMPROVE_PHYSIQUE  = 'improve_physique',  _('Improve my physique')
+        GET_STRONGER      = 'get_stronger',      _('Get stronger every day')
+        GOOD_CHALLENGE    = 'good_challenge',    _('I like a good challenge')
 
-    user = ForeignKey('apps.UserProfile', CASCADE, related_name='motivations')
-    motivation = CharField(max_length=30, choices=MotivationType.choices)
+    user       = ForeignKey('apps.UserProfile', CASCADE, related_name='motivations')
+    motivation = CharField(_('Motivation'), max_length=30, choices=MotivationType.choices)
 
     class Meta:
         unique_together = ['user', 'motivation']
-        verbose_name = "User Motivation"
-        verbose_name_plural = "User Motivations"
+        verbose_name = _('User Motivation')
+        verbose_name_plural = _('User Motivations')
 
     def __str__(self):
         return f"{self.user.name} - {self.get_motivation_display()}"
 
 
-
 class UserProgram(CreatedBaseModel):
-    user = ForeignKey('apps.UserProfile', CASCADE, related_name='program_assignments')
-    program = ForeignKey('apps.Program', CASCADE, related_name='user_assignments')
-    is_active = BooleanField(default=True)
-    assigned_once = BooleanField(default=False)
+    user          = ForeignKey('apps.UserProfile', CASCADE, related_name='program_assignments')
+    program       = ForeignKey('apps.Program', CASCADE, related_name='user_assignments')
+    is_active     = BooleanField(_('Is active'), default=True)
+    assigned_once = BooleanField(_('Assigned once'), default=False)
 
     class Meta:
-        verbose_name = "User Program"
-        verbose_name_plural = "User Programs"
+        verbose_name = _('User Program')
+        verbose_name_plural = _('User Programs')
 
     def __str__(self):
         return f"{self.user.name} - {self.program.name}"
@@ -127,16 +127,16 @@ class UserProgram(CreatedBaseModel):
 
 class WorkoutDay(Model):
     class CompleteStatus(TextChoices):
-        NOT_STARTED = 'not_started', 'Not started'
-        UNFINISHED = 'unfinished', 'Unfinished'
-        COMPLETED = 'completed', 'Completed'
+        NOT_STARTED = 'not_started', _('Not started')
+        UNFINISHED  = 'unfinished',  _('Unfinished')
+        COMPLETED   = 'completed',   _('Completed')
 
-    program = ForeignKey('apps.UserProgram', CASCADE, related_name='workout_days')
-    status = CharField(max_length=20, choices=CompleteStatus.choices, default=CompleteStatus.NOT_STARTED)
-    order = PositiveIntegerField()
-    title = CharField(max_length=100)
-    body_part = CharField(max_length=100)
-    completed_at = DateTimeField(auto_now_add=True)
+    program      = ForeignKey('apps.UserProgram', CASCADE, related_name='workout_days')
+    status       = CharField(_('Status'), max_length=20, choices=CompleteStatus.choices, default=CompleteStatus.NOT_STARTED)
+    order        = PositiveIntegerField(_('Order'))
+    title        = CharField(_('Title'), max_length=100)
+    body_part    = CharField(_('Body part'), max_length=100)
+    completed_at = DateTimeField(_('Completed at'), auto_now_add=True)
 
     class Meta:
         ordering = ['order']
@@ -147,7 +147,7 @@ class WorkoutDay(Model):
 
 
 class UserProgramExercise(Model):
-    day = ForeignKey('apps.WorkoutDay', CASCADE, related_name='exercises')
+    day      = ForeignKey('apps.WorkoutDay', CASCADE, related_name='exercises')
     exercise = ForeignKey('apps.Exercise', CASCADE)
-    sets = PositiveIntegerField()
-    reps = PositiveIntegerField()
+    sets     = PositiveIntegerField(_('Sets'))
+    reps     = PositiveIntegerField(_('Reps'))

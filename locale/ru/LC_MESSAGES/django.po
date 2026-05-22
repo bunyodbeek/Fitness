@@ -5,15 +5,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-22 02:26+0500\n"
-"PO-Revision-Date: 2026-05-22 10:00+0500\n"
+"POT-Creation-Date: 2026-05-22 11:56+0500\n"
+"PO-Revision-Date: 2026-05-22 12:00+0500\n"
 "Last-Translator: Claude AI\n"
 "Language-Team: Russian\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n%100>=11 && n%100<=14)? 2 : 3);\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || "
+"(n%100>=11 && n%100<=14)? 2 : 3);\n"
 
 #: apps/admin/exercises.py:27
 msgid "Titles"
@@ -53,7 +55,7 @@ msgstr "Бот запущен"
 
 #: apps/models/analytics.py:9
 msgid "Onboarding Completed"
-msgstr "Онбординг завершён"
+msgstr "Анкета завершена"
 
 #: apps/models/analytics.py:10
 msgid "Workout Started"
@@ -87,99 +89,167 @@ msgstr "Активность пользователя"
 msgid "UserActivities"
 msgstr "Активности пользователей"
 
-#: apps/models/exercises.py:50 templates/miniapp/questionarrie.html:132
+#: apps/models/exercises.py:27 templates/exercises/body_parts.html:387
+msgid "Shoulders"
+msgstr "Плечи"
+
+#: apps/models/exercises.py:28 templates/exercises/body_parts.html:396
+msgid "Chest"
+msgstr "Грудь"
+
+#: apps/models/exercises.py:29 templates/exercises/body_parts.html:406
+msgid "Biceps"
+msgstr "Бицепс"
+
+#: apps/models/exercises.py:30 templates/exercises/body_parts.html:416
+msgid "Forearm"
+msgstr "Предплечье"
+
+#: apps/models/exercises.py:31 templates/exercises/body_parts.html:425
+msgid "Abs"
+msgstr "Пресс"
+
+#: apps/models/exercises.py:32 templates/exercises/body_parts.html:435
+msgid "Obliques"
+msgstr "Косые"
+
+#: apps/models/exercises.py:33 templates/exercises/body_parts.html:444
+msgid "Quads"
+msgstr "Квадрицепсы"
+
+#: apps/models/exercises.py:34 templates/exercises/body_parts.html:454
+msgid "Adductors"
+msgstr "Приводящие мышцы"
+
+#: apps/models/exercises.py:35 templates/exercises/body_parts.html:519
+msgid "Abductors"
+msgstr "Отводящие"
+
+#: apps/models/exercises.py:36 templates/exercises/body_parts.html:470
+msgid "Traps"
+msgstr "Трапеции"
+
+#: apps/models/exercises.py:37 templates/exercises/body_parts.html:480
+msgid "Triceps"
+msgstr "Трицепс"
+
+#: apps/models/exercises.py:38 templates/exercises/body_parts.html:489
+msgid "Lats"
+msgstr "Широчайшие мышцы спины"
+
+#: apps/models/exercises.py:39 templates/exercises/body_parts.html:499
+msgid "Lower back"
+msgstr "Поясница"
+
+#: apps/models/exercises.py:40 templates/exercises/body_parts.html:509
+msgid "Glutes"
+msgstr "Ягодичные мышцы"
+
+#: apps/models/exercises.py:41 templates/exercises/body_parts.html:529
+msgid "Hamstrings"
+msgstr "Задняя поверхность бедра"
+
+#: apps/models/exercises.py:42 templates/exercises/body_parts.html:538
+msgid "Calves"
+msgstr "Икроножные мышцы"
+
+#: apps/models/exercises.py:43 templates/exercises/body_parts.html:377
+msgid "Cardio"
+msgstr "Кардио"
+
+#: apps/models/exercises.py:47 templates/miniapp/questionarrie.html:132
 #: templates/workouts/program_list.html:657
 msgid "Gym"
 msgstr "Тренажёрный зал"
 
-#: apps/models/exercises.py:51 templates/miniapp/questionarrie.html:133
+#: apps/models/exercises.py:48 templates/miniapp/questionarrie.html:133
 #: templates/workouts/program_list.html:659
 msgid "Home"
 msgstr "Дома"
 
-#: apps/models/exercises.py:53
+#: apps/models/exercises.py:50 apps/models/users.py:55
 msgid "Name"
 msgstr "Название"
 
-#: apps/models/exercises.py:54
+#: apps/models/exercises.py:51
 msgid "Russian Name"
 msgstr "Русское название"
 
-#: apps/models/exercises.py:55
+#: apps/models/exercises.py:52
 msgid "Uzbek Name"
 msgstr "Узбекское название"
 
-#: apps/models/exercises.py:56 templates/exercises/exercise_detail.html:43
+#: apps/models/exercises.py:53 templates/exercises/exercise_detail.html:43
 #: templates/handbooks/item_detail.html:242
 msgid "Description"
 msgstr "Описание"
 
-#: apps/models/exercises.py:57
+#: apps/models/exercises.py:54
 msgid "Russian Description"
 msgstr "Русское описание"
 
-#: apps/models/exercises.py:58
+#: apps/models/exercises.py:55
 msgid "Uzbek Description"
 msgstr "Узбекское описание"
 
-#: apps/models/exercises.py:59
+#: apps/models/exercises.py:56
 msgid "Muscle Group"
 msgstr "Группа мышц"
 
-#: apps/models/exercises.py:60
+#: apps/models/exercises.py:57
 msgid "Image"
 msgstr "Изображение"
 
-#: apps/models/exercises.py:62 templates/users/progress.html:759
+#: apps/models/exercises.py:59 templates/users/progress.html:759
 #: templates/users/progress.html:941
 msgid "Calories"
 msgstr "Калории"
 
-#: apps/models/exercises.py:63
+#: apps/models/exercises.py:60
 #: templates/workouts/home_workout_complete.html:191
 #: templates/workouts/workout_complete.html:181
 msgid "Duration"
 msgstr "Длительность"
 
-#: apps/models/exercises.py:64
+#: apps/models/exercises.py:61
 msgid "Recommended weight (W1)"
 msgstr "Рекомендуемый вес (W1)"
 
-#: apps/models/exercises.py:65
+#: apps/models/exercises.py:62
 msgid "Workout type"
 msgstr "Тип тренировки"
 
-#: apps/models/exercises.py:69 apps/models/exercises.py:153
+#: apps/models/exercises.py:66 apps/models/exercises.py:150
 #: templates/exercises/exercise_detail.html:16
-#: templates/exercises/favorites_list.html:319
+#: templates/exercises/favorites_list.html:237
 #: templates/workouts/home_workout_detail.html:535
 msgid "Exercise"
 msgstr "Упражнение"
 
-#: apps/models/exercises.py:70 templates/base.html:467
+#: apps/models/exercises.py:67 templates/base.html:467
 #: templates/exercises/exercise_list.html:4 templates/users/progress.html:765
 #: templates/workouts/home_workout_detail.html:485
 #: templates/workouts/home_workout_detail.html:516
 msgid "Exercises"
 msgstr "Упражнения"
 
-#: apps/models/exercises.py:154
+#: apps/models/exercises.py:151
 msgid "Stem Number"
 msgstr "Номер шага"
 
-#: apps/models/exercises.py:155
+#: apps/models/exercises.py:152
 msgid "Text"
 msgstr "Текст"
 
-#: apps/models/exercises.py:156
+#: apps/models/exercises.py:153
 msgid "Uzbek Text"
 msgstr "Узбекский текст"
 
-#: apps/models/exercises.py:161
+#: apps/models/exercises.py:158
 msgid "ExerciseInstruction"
 msgstr "Инструкция упражнения"
 
-#: apps/models/exercises.py:162
+#: apps/models/exercises.py:159
 msgid "ExerciseInstructions"
 msgstr "Инструкции упражнений"
 
@@ -299,7 +369,7 @@ msgstr "Подписки"
 msgid "Jarayonda"
 msgstr "В процессе"
 
-#: apps/models/payments.py:109
+#: apps/models/payments.py:109 apps/models/users.py:135
 msgid "Status"
 msgstr "Статус"
 
@@ -343,6 +413,177 @@ msgstr "Платёж"
 msgid "Payments"
 msgstr "Платежи"
 
+#: apps/models/users.py:36 templates/miniapp/questionarrie.html:141
+msgid "Male"
+msgstr "Мужчина"
+
+#: apps/models/users.py:37 templates/miniapp/questionarrie.html:142
+msgid "Female"
+msgstr "Женщина"
+
+#: apps/models/users.py:40
+msgid "Metric"
+msgstr "Метрическая"
+
+#: apps/models/users.py:41
+msgid "English"
+msgstr "Английская"
+
+#: apps/models/users.py:44 templates/miniapp/questionarrie.html:151
+msgid "Beginner"
+msgstr "Начинающий"
+
+#: apps/models/users.py:45 templates/miniapp/questionarrie.html:154
+msgid "Advanced"
+msgstr "Продвинутый"
+
+#: apps/models/users.py:48
+msgid "Build a great body"
+msgstr "Построить отличное тело"
+
+#: apps/models/users.py:49 templates/miniapp/questionarrie.html:164
+msgid "Lose weight"
+msgstr "Похудеть"
+
+#: apps/models/users.py:50 templates/miniapp/questionarrie.html:165
+msgid "Gain muscle"
+msgstr "Набрать мышечную массу"
+
+#: apps/models/users.py:51 templates/miniapp/questionarrie.html:163
+msgid "Get in shape"
+msgstr "Привести себя в форму"
+
+#: apps/models/users.py:56
+msgid "Avatar"
+msgstr "Аватар"
+
+#: apps/models/users.py:57
+msgid "Gender"
+msgstr "Пол"
+
+#: apps/models/users.py:58
+msgid "Birth date"
+msgstr "Дата рождения"
+
+#: apps/models/users.py:59 apps/views/users.py:418
+msgid "Weight"
+msgstr "Вес"
+
+#: apps/models/users.py:60
+msgid "Height"
+msgstr "Рост"
+
+#: apps/models/users.py:61
+msgid "Experience level"
+msgstr "Уровень опыта"
+
+#: apps/models/users.py:62
+msgid "Fitness goal"
+msgstr "Цель фитнеса"
+
+#: apps/models/users.py:63
+msgid "Workout days per week"
+msgstr "Дней тренировок в неделю"
+
+#: apps/models/users.py:64
+msgid "Unit system"
+msgstr "Система единиц"
+
+#: apps/models/users.py:65
+msgid "Onboarding completed"
+msgstr "Анкета завершена"
+
+#: apps/models/users.py:68
+msgid "User Profile"
+msgstr "Профиль пользователя"
+
+#: apps/models/users.py:69
+msgid "User Profiles"
+msgstr "Профили пользователей"
+
+#: apps/models/users.py:97
+msgid "I want a healthy lifestyle"
+msgstr "Хочу здоровый образ жизни"
+
+#: apps/models/users.py:98
+msgid "Improve my physique"
+msgstr "Улучшить телосложение"
+
+#: apps/models/users.py:99
+msgid "Get stronger every day"
+msgstr "Становиться сильнее каждый день"
+
+#: apps/models/users.py:100
+msgid "I like a good challenge"
+msgstr "Люблю хорошие вызовы"
+
+#: apps/models/users.py:103
+msgid "Motivation"
+msgstr "Мотивация"
+
+#: apps/models/users.py:107
+msgid "User Motivation"
+msgstr "Мотивация пользователя"
+
+#: apps/models/users.py:108
+msgid "User Motivations"
+msgstr "Мотивации пользователей"
+
+#: apps/models/users.py:117
+msgid "Is active"
+msgstr "Активна"
+
+#: apps/models/users.py:118
+msgid "Assigned once"
+msgstr "Назначено однократно"
+
+#: apps/models/users.py:121
+msgid "User Program"
+msgstr "Программа пользователя"
+
+#: apps/models/users.py:122
+msgid "User Programs"
+msgstr "Программы пользователей"
+
+#: apps/models/users.py:130
+msgid "Not started"
+msgstr "Не начато"
+
+#: apps/models/users.py:131
+msgid "Unfinished"
+msgstr "Не завершено"
+
+#: apps/models/users.py:132 apps/models/workouts.py:329
+#: templates/workouts/home_workout_complete.html:207
+#: templates/workouts/home_workout_detail.html:470
+#: templates/workouts/workout_complete.html:207
+msgid "Completed"
+msgstr "Завершено"
+
+#: apps/models/users.py:136
+msgid "Order"
+msgstr "Порядок"
+
+#: apps/models/users.py:137
+msgid "Title"
+msgstr "Название"
+
+#: apps/models/users.py:138
+msgid "Body part"
+msgstr "Часть тела"
+
+#: apps/models/users.py:139
+msgid "Completed at"
+msgstr "Завершено в"
+
+#: apps/models/users.py:152
+msgid "Sets"
+msgstr "Подходы"
+
+#: apps/models/users.py:153
+msgid "Reps"
+msgstr "Повторения"
+
 #: apps/models/workouts.py:60 templates/workouts/edition_list.html:811
 #: templates/workouts/program_list.html:679
 msgid "Premium"
@@ -351,17 +592,6 @@ msgstr "Премиум"
 #: apps/models/workouts.py:328
 msgid "In progress"
 msgstr "В процессе"
-
-#: apps/models/workouts.py:329
-#: templates/workouts/home_workout_complete.html:207
-#: templates/workouts/home_workout_detail.html:470
-#: templates/workouts/workout_complete.html:207
-msgid "Completed"
-msgstr "Завершено"
-
-#: apps/views/users.py:418
-msgid "Weight"
-msgstr "Вес"
 
 #: apps/views/users.py:597
 msgid "Language saved successfully!"
@@ -392,81 +622,14 @@ msgstr "Избранное"
 msgid "Profile"
 msgstr "Профиль"
 
-#: templates/exercises/body_parts.html:3
+#: templates/exercises/body_parts.html:4
 msgid "Exercises - Body Parts"
 msgstr "Упражнения — части тела"
 
 #: templates/exercises/body_parts.html:356
-msgid "? EXERCISES"
-msgstr "? УПРАЖНЕНИЙ"
-
-#: templates/exercises/body_parts.html:377
-msgid "Cardio"
-msgstr "Кардио"
-
-#: templates/exercises/body_parts.html:387
-msgid "Shoulders"
-msgstr "Плечи"
-
-#: templates/exercises/body_parts.html:396
-msgid "Chest"
-msgstr "Грудь"
-
-#: templates/exercises/body_parts.html:406
-msgid "Biceps"
-msgstr "Бицепс"
-
-#: templates/exercises/body_parts.html:416
-msgid "Forearm"
-msgstr "Предплечье"
-
-#: templates/exercises/body_parts.html:425
-msgid "Abs"
-msgstr "Пресс"
-
-#: templates/exercises/body_parts.html:435
-msgid "Obliques"
-msgstr "Косые"
-
-#: templates/exercises/body_parts.html:444
-msgid "Quads"
-msgstr "Квадрицепсы"
-
-#: templates/exercises/body_parts.html:454
-msgid "Adductors"
-msgstr "Приводящие мышцы"
-
-#: templates/exercises/body_parts.html:470
-msgid "Traps"
-msgstr "Трапеции"
-
-#: templates/exercises/body_parts.html:480
-msgid "Triceps"
-msgstr "Трицепс"
-
-#: templates/exercises/body_parts.html:489
-msgid "Lats"
-msgstr "Широчайшие мышцы спины"
-
-#: templates/exercises/body_parts.html:499
-msgid "Lower back"
-msgstr "Поясница"
-
-#: templates/exercises/body_parts.html:509
-msgid "Glutes"
-msgstr "Ягодичные мышцы"
-
-#: templates/exercises/body_parts.html:519
-msgid "Abductors"
-msgstr "Отводящие"
-
-#: templates/exercises/body_parts.html:529
-msgid "Hamstrings"
-msgstr "Задняя поверхность бедра"
-
-#: templates/exercises/body_parts.html:538
-msgid "Calves"
-msgstr "Икроножные мышцы"
+#: templates/exercises/favorites_list.html:140
+msgid "EXERCISES"
+msgstr "УПРАЖНЕНИЯ"
 
 #: templates/exercises/custom_program_create.html:4
 #: templates/exercises/favorites_list.html:146
@@ -501,22 +664,18 @@ msgid "Add to favorites"
 msgstr "Добавить в избранное"
 
 #: templates/exercises/exercise_detail.html:64
-#: templates/exercises/exercise_list.html:852
 msgid "Existing collection"
 msgstr "Существующая коллекция"
 
 #: templates/exercises/exercise_detail.html:65
-#: templates/exercises/exercise_list.html:853
 msgid "Choose a collection"
 msgstr "Выбрать коллекцию"
 
 #: templates/exercises/exercise_detail.html:71
-#: templates/exercises/exercise_list.html:859
 msgid "New collection"
 msgstr "Новая коллекция"
 
 #: templates/exercises/exercise_detail.html:72
-#: templates/exercises/exercise_list.html:860
 msgid "Create new"
 msgstr "Создать новую"
 
@@ -529,7 +688,7 @@ msgid "Create collection"
 msgstr "Создать коллекцию"
 
 #: templates/exercises/exercise_detail.html:102
-#: templates/exercises/exercise_list.html:885
+#: templates/exercises/exercise_list.html:872
 msgid "No collections"
 msgstr "Нет коллекций"
 
@@ -558,29 +717,29 @@ msgstr "Поиск упражнений..."
 msgid "No exercises yet"
 msgstr "Пока нет упражнений"
 
-#: templates/exercises/exercise_list.html:871
+#: templates/exercises/exercise_list.html:858
 msgid "Collections"
 msgstr "Коллекции"
 
-#: templates/exercises/exercise_list.html:879
+#: templates/exercises/exercise_list.html:866
 #: templates/workouts/week_days.html:557
 msgid "exercises"
 msgstr "упражнений"
 
-#: templates/exercises/exercise_list.html:895
+#: templates/exercises/exercise_list.html:882
 msgid "New Collection"
 msgstr "Новая коллекция"
 
-#: templates/exercises/exercise_list.html:896
+#: templates/exercises/exercise_list.html:883
 msgid "Collection name..."
 msgstr "Название коллекции..."
 
-#: templates/exercises/exercise_list.html:898
+#: templates/exercises/exercise_list.html:885
 #: templates/users/profile_update.html:422
 msgid "Cancel"
 msgstr "Отмена"
 
-#: templates/exercises/exercise_list.html:899 templates/users/language.html:346
+#: templates/exercises/exercise_list.html:886 templates/users/language.html:346
 #: templates/users/profile_update.html:425
 msgid "Save"
 msgstr "Сохранить"
@@ -590,7 +749,7 @@ msgid "My favorites"
 msgstr "Моё избранное"
 
 #: templates/exercises/favorites_list.html:125
-#: templates/exercises/favorites_list.html:320
+#: templates/exercises/favorites_list.html:235
 msgid "Select exercises"
 msgstr "Выбрать упражнения"
 
@@ -601,10 +760,6 @@ msgstr "МОЁ ИЗБРАННОЕ"
 #: templates/exercises/favorites_list.html:139
 msgid "PROGRAMS"
 msgstr "ПРОГРАММЫ"
-
-#: templates/exercises/favorites_list.html:140
-msgid "EXERCISES"
-msgstr "УПРАЖНЕНИЯ"
 
 #: templates/exercises/favorites_list.html:166
 msgid "Edit Program"
@@ -643,21 +798,21 @@ msgstr "Пока нет избранного"
 msgid "Add exercises to your favorites!"
 msgstr "Добавьте упражнения в избранное!"
 
-#: templates/exercises/favorites_list.html:268
+#: templates/exercises/favorites_list.html:233
 msgid "Delete this program?"
 msgstr "Удалить эту программу?"
 
-#: templates/exercises/favorites_list.html:319
+#: templates/exercises/favorites_list.html:234
+msgid "Remove from favorites?"
+msgstr "Убрать из избранного?"
+
+#: templates/exercises/favorites_list.html:236
 msgid "Add"
 msgstr "Добавить"
 
-#: templates/exercises/favorites_list.html:326
+#: templates/exercises/favorites_list.html:238
 msgid "Adding..."
 msgstr "Добавление..."
-
-#: templates/exercises/favorites_list.html:385
-msgid "Remove from favorites?"
-msgstr "Убрать из избранного?"
 
 #: templates/handbooks/category_items.html:6
 msgid "All Items"
@@ -787,7 +942,9 @@ msgid "items"
 msgstr "материалов"
 
 #: templates/miniapp/questionarrie.html:8
-msgid "Fitness Questionnaire ? Telegram WebApp"
+#, fuzzy
+#| msgid "Fitness Questionnaire ? Telegram WebApp"
+msgid "Fitness Questionnaire — Telegram WebApp"
 msgstr "Фитнес-анкета — Telegram WebApp"
 
 #: templates/miniapp/questionarrie.html:130
@@ -798,29 +955,13 @@ msgstr "Где вы будете тренироваться?"
 msgid "Let's start with the basics"
 msgstr "Начнём с основного"
 
-#: templates/miniapp/questionarrie.html:141
-msgid "Male"
-msgstr "Мужчина"
-
-#: templates/miniapp/questionarrie.html:142
-msgid "Female"
-msgstr "Женщина"
-
 #: templates/miniapp/questionarrie.html:148
 msgid "How would you describe your gym experience?"
 msgstr "Как бы вы описали свой опыт тренировок?"
 
 #: templates/miniapp/questionarrie.html:151
-msgid "Beginner"
-msgstr "Начинающий"
-
-#: templates/miniapp/questionarrie.html:151
 msgid "Training for less than 6 mos"
 msgstr "Тренируюсь менее 6 месяцев"
-
-#: templates/miniapp/questionarrie.html:154
-msgid "Advanced"
-msgstr "Продвинутый"
 
 #: templates/miniapp/questionarrie.html:154
 msgid "Training for more than 2 yrs"
@@ -829,18 +970,6 @@ msgstr "Тренируюсь более 2 лет"
 #: templates/miniapp/questionarrie.html:161
 msgid "What's your current fitness objective?"
 msgstr "Какова ваша текущая фитнес-цель?"
-
-#: templates/miniapp/questionarrie.html:163
-msgid "Get in shape"
-msgstr "Привести себя в форму"
-
-#: templates/miniapp/questionarrie.html:164
-msgid "Lose weight"
-msgstr "Похудеть"
-
-#: templates/miniapp/questionarrie.html:165
-msgid "Gain muscle"
-msgstr "Набрать мышечную массу"
 
 #: templates/miniapp/questionarrie.html:171
 msgid "How many days per week would you like to work out?"
@@ -968,15 +1097,21 @@ msgstr "Зайдите позже или выберите другой план.
 #: templates/my_trainer/my_trainer_days.html:432
 #: templates/workouts/edition_detail.html:564
 #: templates/workouts/workout_detail.html:245
-msgid "? Start Workout"
+#, fuzzy
+#| msgid "? Start Workout"
+msgid "▶ Start Workout"
 msgstr "? Начать тренировку"
 
 #: templates/users/add-card.html:7
-msgid "Karta bilan to?lov"
+#, fuzzy
+#| msgid "Karta bilan to?lov"
+msgid "Karta bilan to‘lov"
 msgstr "Оплата картой"
 
 #: templates/users/add-card.html:104
-msgid "To?lov / Karta Qo?shish"
+#, fuzzy
+#| msgid "To?lov / Karta Qo?shish"
+msgid "To‘lov / Karta Qo‘shish"
 msgstr "Оплата / Добавить карту"
 
 #: templates/users/cancel_subscription.html:5
@@ -993,8 +1128,11 @@ msgid "Cancel subscription"
 msgstr "Отменить подписку"
 
 #: templates/users/cancel_subscription.html:440
-msgid "You are about to cancel your subscription. This action will stop your subscription services."
-msgstr "Вы собираетесь отменить подписку. Это действие остановит все услуги подписки."
+msgid ""
+"You are about to cancel your subscription. This action will stop your "
+"subscription services."
+msgstr ""
+"Вы собираетесь отменить подписку. Это действие остановит все услуги подписки."
 
 #: templates/users/cancel_subscription.html:446
 msgid "As a result of cancellation:"
@@ -1148,6 +1286,10 @@ msgstr "Оплачено"
 msgid "No payment history yet"
 msgstr "Пока нет истории платежей"
 
+#: templates/users/profile_detail.html:182
+msgid "PROFILE"
+msgstr "ПРОФИЛЬ"
+
 #: templates/users/profile_detail.html:208
 msgid "Until the end of the subscription"
 msgstr "До окончания подписки"
@@ -1287,8 +1429,8 @@ msgstr "Поздравляем!"
 
 #: templates/users/restore_subscription.html:4
 #: templates/users/restore_subscription.html:8
-msgid "Obunani bekor qilish"
-msgstr "Отмена подписки"
+msgid "Obunani tiklash"
+msgstr "Восстановление подписки"
 
 #: templates/users/restore_subscription.html:10
 msgid "Siz obunani qayta tiklamoqchisiz. Ushbu amal obunani faollashtiradi."
@@ -1502,13 +1644,17 @@ msgstr "Нет доступных недель"
 msgid "Check back later for this plan"
 msgstr "Зайдите позже за этим планом"
 
-#: templates/workouts/program_list.html:4
+#: templates/workouts/program_list.html:5
 msgid "All Workouts"
 msgstr "Все тренировки"
 
 #: templates/workouts/program_list.html:650
 msgid "WORKOUTS"
 msgstr "ТРЕНИРОВКИ"
+
+#: templates/workouts/program_list.html:682
+msgid "FOR YOU"
+msgstr "ДЛЯ ВАС"
 
 #: templates/workouts/program_list.html:689
 #: templates/workouts/program_list.html:692

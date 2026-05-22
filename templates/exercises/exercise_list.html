@@ -819,7 +819,7 @@ background: #0d0f18;
                         <div class="exercise-placeholder">🏋️</div>
                     {% endif %}
                     <div class="exercise-info">
-                        <h3 class="exercise-name">{{ exercise.name }}</h3>
+                        <h3 class="exercise-name">{{ exercise.display_name }}</h3>
 
                     </div>
                 </a>
@@ -846,20 +846,7 @@ background: #0d0f18;
                     <div class="save-option-desc">{% trans "Add to favorites" %}</div>
                 </div>
             </div>
-            <div class="save-option" onclick="showCollections(event)">
-                <div class="save-option-icon">📚</div>
-                <div class="save-option-info">
-                    <div class="save-option-title">{% trans "Existing collection" %}</div>
-                    <div class="save-option-desc">{% trans "Choose a collection" %}</div>
-                </div>
-            </div>
-            <div class="save-option" onclick="createCollection(event)">
-                <div class="save-option-icon">➕</div>
-                <div class="save-option-info">
-                    <div class="save-option-title">{% trans "New collection" %}</div>
-                    <div class="save-option-desc">{% trans "Create new" %}</div>
-                </div>
-            </div>
+
         </div>
     </div>
 </div>

@@ -24,26 +24,23 @@ from PIL import Image
 
 
 class MuscleGroup(TextChoices):
-    SHOULDERS = "shoulders", "Shoulders"
-    CHEST = "chest", "Chest"
-    BICEPS = "biceps", "Biceps"
-    FOREARM = "forearm", "Forearm"
-    ABS = "abs", "Abs"
-    OBLIQUES = "obliques", "Obliques"
-    QUADS = "quads", "Quadriceps"
-    ADDUCTORS = "adductors", "Adductors (Inner Thigh)"
-    ABDUCTORS = "abductors", "Abductors (Outer Thigh)"
-
-    TRAPS = "traps", "Trapezius"
-    TRICEPS = "triceps", "Triceps"
-    LATS = "lats", "Latissimus Dorsi"
-    LOWER_BACK = "lower_back", "Lower Back"
-    GLUTES = "glutes", "Glutes"
-    HAMSTRINGS = "hamstrings", "Hamstrings"
-    CALVES = "calves", "Calves"
-
-    CARDIO = "cardio", "Cardio"
-
+    SHOULDERS  = "shoulders",  _("Shoulders")
+    CHEST      = "chest",      _("Chest")
+    BICEPS     = "biceps",     _("Biceps")
+    FOREARM    = "forearm",    _("Forearm")
+    ABS        = "abs",        _("Abs")
+    OBLIQUES   = "obliques",   _("Obliques")
+    QUADS      = "quads",      _("Quads")
+    ADDUCTORS  = "adductors",  _("Adductors")
+    ABDUCTORS  = "abductors",  _("Abductors")
+    TRAPS      = "traps",      _("Traps")
+    TRICEPS    = "triceps",    _("Triceps")
+    LATS       = "lats",       _("Lats")
+    LOWER_BACK = "lower_back", _("Lower back")
+    GLUTES     = "glutes",     _("Glutes")
+    HAMSTRINGS = "hamstrings", _("Hamstrings")
+    CALVES     = "calves",     _("Calves")
+    CARDIO     = "cardio",     _("Cardio")
 
 class Exercise(CreatedBaseModel):
     class WorkoutType(TextChoices):

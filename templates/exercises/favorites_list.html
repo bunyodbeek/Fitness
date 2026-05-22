@@ -161,10 +161,10 @@ body { background: #0a0a0a; font-family: -apple-system, BlinkMacSystemFont, 'Seg
                 {% endif %}
                 <div class="program-card-image-overlay"></div>
             </div>
-            <button class="program-menu-btn" onclick="toggleMenu(event, {{ program.id }})">···</button>
+            <button class="program-menu-btn" onclick="toggleMenu(event, {{ program.id }})">⋯</button>
             <div class="program-dropdown" id="menu{{ program.id }}">
                 <button class="dropdown-item" onclick="editProgram(event, {{ program.id }})">✏️ {% trans "Edit Program" %}</button>
-                <button class="dropdown-item delete" onclick="deleteProgram(event, {{ program.id }})">🗑 {% trans "Delete Program" %}</button>
+                <button class="dropdown-item delete" onclick="deleteProgram(event, {{ program.id }})">🗑️ {% trans "Delete Program" %}</button>
             </div>
             <div class="program-card-body">
                 <div class="program-card-name">{{ program.name }}</div>
@@ -177,7 +177,7 @@ body { background: #0a0a0a; font-family: -apple-system, BlinkMacSystemFont, 'Seg
         </div>
         {% empty %}
         <div class="empty-state">
-            <div class="empty-state-icon">💪</div>
+            <div class="empty-state-icon">📋</div>
             <h3>{% trans "No custom programs yet" %}</h3>
             <p>{% trans "Create your first program!" %}</p>
         </div>
@@ -207,11 +207,11 @@ body { background: #0a0a0a; font-family: -apple-system, BlinkMacSystemFont, 'Seg
                         <div class="favorite-meta">{{ fav.exercise.primary_body_part }}</div>
                     </div>
                 </a>
-                <button class="unfavorite-btn" data-exercise-id="{{ fav.exercise.id }}">⭐</button>
+                <button class="unfavorite-btn" data-exercise-id="{{ fav.exercise.id }}">❤️</button>
             </div>
             {% empty %}
             <div class="empty-state" id="emptyExercises">
-                <div class="empty-state-icon">⭐</div>
+                <div class="empty-state-icon">💪</div>
                 <h3>{% trans "No favorites yet" %}</h3>
                 <p>{% trans "Add exercises to your favorites!" %}</p>
             </div>
@@ -223,11 +223,21 @@ body { background: #0a0a0a; font-family: -apple-system, BlinkMacSystemFont, 'Seg
 
 {% csrf_token %}
 
+<!-- JS TRANSLATIONS: apostrof muammosini hal qilish uchun alohida chiqarildi -->
 <script>
 const CSRF = document.querySelector('[name=csrfmiddlewaretoken]').value;
 const LANG = window.location.pathname.match(/^\/(en|ru|uz)\//)?.[1] || 'en';
 
-// Already favorited IDs
+// Barcha tarjimalarni oldindan saqlash — apostrofdan xavfsiz
+const T = {
+    deleteConfirm:    "{% trans 'Delete this program?' %}",
+    removeConfirm:    "{% trans 'Remove from favorites?' %}",
+    selectExercises:  "{% trans 'Select exercises' %}",
+    add:              "{% trans 'Add' %}",
+    exercise:         "{% trans 'Exercise' %}",
+    adding:           "{% trans 'Adding...' %}",
+};
+
 const favoriteIds = new Set([{% for id in favorite_exercise_ids %}{{ id }},{% endfor %}]);
 let selectedExercises = new Set();
 
@@ -242,15 +252,18 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
     });
 });
 
-// PROGRAM CARD
+// PROGRAM CARD — click navigatsiya
 function openProgram(e, url) {
     if (e.target.closest('.program-menu-btn') || e.target.closest('.program-dropdown')) return;
     window.location.href = url;
 }
 
+// 3-DOTS MENU
 function toggleMenu(e, id) {
     e.stopPropagation();
-    document.querySelectorAll('.program-dropdown').forEach(d => { if (d.id !== `menu${id}`) d.classList.remove('open'); });
+    document.querySelectorAll('.program-dropdown').forEach(d => {
+        if (d.id !== `menu${id}`) d.classList.remove('open');
+    });
     document.getElementById(`menu${id}`).classList.toggle('open');
 }
 
@@ -265,13 +278,19 @@ function editProgram(e, id) {
 
 function deleteProgram(e, id) {
     e.stopPropagation();
-    if (!confirm('{% trans "Delete this program?" %}')) return;
+    if (!confirm(T.deleteConfirm)) return;
     fetch(`/${LANG}/favorites/custom-program/${id}/delete/`, {
-        method: 'POST', headers: { 'X-CSRFToken': CSRF }
+        method: 'POST',
+        headers: { 'X-CSRFToken': CSRF }
     }).then(r => r.json()).then(data => {
         if (data.success) {
             const card = document.getElementById(`programCard${id}`);
-            if (card) { card.style.opacity = '0'; card.style.transform = 'scale(0.95)'; setTimeout(() => card.remove(), 250); }
+            if (card) {
+                card.style.opacity = '0';
+                card.style.transform = 'scale(0.95)';
+                card.style.transition = 'all 0.25s';
+                setTimeout(() => card.remove(), 250);
+            }
         }
     });
 }
@@ -293,7 +312,8 @@ function closeExPicker() {
 function filterExercises(q) {
     q = q.toLowerCase();
     document.querySelectorAll('.ex-picker-item').forEach(item => {
-        const match = item.dataset.name.toLowerCase().includes(q) || item.dataset.muscle.toLowerCase().includes(q);
+        const match = item.dataset.name.toLowerCase().includes(q) ||
+                      item.dataset.muscle.toLowerCase().includes(q);
         item.style.display = match ? 'flex' : 'none';
     });
 }
@@ -316,14 +336,14 @@ function updateDoneBtn() {
     const n = selectedExercises.size;
     btn.disabled = n === 0;
     btn.textContent = n > 0
-        ? `{% trans "Add" %} ${n} {% trans "Exercise" %}${n > 1 ? 's' : ''} ⭐`
-        : '{% trans "Select exercises" %}';
+        ? `${T.add} ${n} ${T.exercise}${n > 1 ? 's' : ''} →`
+        : T.selectExercises;
 }
 
 async function confirmAddFavorites() {
     const btn = document.getElementById('pickerDoneBtn');
     btn.disabled = true;
-    btn.textContent = '{% trans "Adding..." %}';
+    btn.textContent = T.adding;
 
     const promises = Array.from(selectedExercises).map(exId =>
         fetch(`/${LANG}/exercises/favorite/toggle/${exId}/`, {
@@ -336,19 +356,16 @@ async function confirmAddFavorites() {
 
     results.forEach(({ exId, data }) => {
         if (data.success && data.status === 'added') {
-            // already-added state
             const pickerItem = document.getElementById(`pickerItem${exId}`);
             if (pickerItem) pickerItem.classList.add('already-added');
             favoriteIds.add(exId);
 
-            // Add to favorites list
             const item = document.getElementById(`pickerItem${exId}`);
             if (!item) return;
-            const thumb = item.dataset.thumb;
-            const name = item.dataset.name;
+            const thumb  = item.dataset.thumb;
+            const name   = item.dataset.name;
             const muscle = item.dataset.muscle;
 
-            // Remove empty state
             const emptyEl = document.getElementById('emptyExercises');
             if (emptyEl) emptyEl.remove();
 
@@ -366,11 +383,10 @@ async function confirmAddFavorites() {
                         <div class="favorite-meta">${muscle}</div>
                     </div>
                 </a>
-                <button class="unfavorite-btn" data-exercise-id="${exId}">⭐</button>
+                <button class="unfavorite-btn" data-exercise-id="${exId}">❤️</button>
             `;
             document.getElementById('favoritesList').appendChild(favEl);
 
-            // Bind unfavorite
             favEl.querySelector('.unfavorite-btn').addEventListener('click', function() {
                 unfavoriteExercise(exId);
             });
@@ -382,14 +398,14 @@ async function confirmAddFavorites() {
 
 // UNFAVORITE
 function unfavoriteExercise(exId) {
-    if (!confirm('{% trans "Remove from favorites?" %}')) return;
+    if (!confirm(T.removeConfirm)) return;
     fetch(`/${LANG}/exercises/favorite/toggle/${exId}/`, {
-        method: 'POST', headers: { 'X-CSRFToken': CSRF }
+        method: 'POST',
+        headers: { 'X-CSRFToken': CSRF }
     }).then(() => {
         const el = document.getElementById(`favItem${exId}`);
         if (el) el.remove();
         favoriteIds.delete(exId);
-        // picker'da already-added olib tashlash
         const pickerItem = document.getElementById(`pickerItem${exId}`);
         if (pickerItem) pickerItem.classList.remove('already-added');
     });
