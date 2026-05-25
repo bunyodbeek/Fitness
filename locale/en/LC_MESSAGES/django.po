@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-22 15:06+0500\n"
+"POT-Creation-Date: 2026-05-22 15:52+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -225,8 +225,8 @@ msgstr ""
 msgid "Exercise"
 msgstr ""
 
-#: apps/models/exercises.py:67 templates/base.html:467
-#: templates/exercises/exercise_list.html:4 templates/users/progress.html:765
+#: apps/models/exercises.py:67 templates/exercises/exercise_list.html:4
+#: templates/users/progress.html:765
 #: templates/workouts/home_workout_detail.html:485
 #: templates/workouts/home_workout_detail.html:516
 msgid "Exercises"
@@ -606,34 +606,29 @@ msgstr ""
 msgid "Selected language doesn't exist."
 msgstr ""
 
-#: templates/base.html:462 templates/my_trainer/my_trainer.html:327
-#: templates/my_trainer/my_trainer.html:334 templates/users/progress.html:747
-#: templates/users/progress.html:773 templates/users/progress.html:941
-msgid "Workouts"
+#: templates/base.html:462 templates/workouts/program_list.html:650
+msgid "WORKOUTS"
 msgstr ""
 
-#: templates/base.html:471 templates/handbooks/category_list.html:6
-#: templates/handbooks/category_list.html:268
-#: templates/handbooks/search_results.html:6
-#: templates/handbooks/subcategory_list.html:6
-msgid "Handbook"
+#: templates/base.html:467 templates/exercises/body_parts.html:356
+#: templates/exercises/favorites_list.html:140
+msgid "EXERCISES"
+msgstr ""
+
+#: templates/base.html:471
+msgid "HANDBOOK"
 msgstr ""
 
 #: templates/base.html:475
-msgid "Favourites"
+msgid "FAVORITES"
 msgstr ""
 
-#: templates/base.html:479 templates/users/profile_detail.html:235
-msgid "Profile"
+#: templates/base.html:479 templates/users/profile_detail.html:182
+msgid "PROFILE"
 msgstr ""
 
 #: templates/exercises/body_parts.html:4
 msgid "Exercises - Body Parts"
-msgstr ""
-
-#: templates/exercises/body_parts.html:356
-#: templates/exercises/favorites_list.html:140
-msgid "EXERCISES"
 msgstr ""
 
 #: templates/exercises/custom_program_create.html:4
@@ -652,6 +647,7 @@ msgid "Your browser doesn't support video tag"
 msgstr ""
 
 #: templates/exercises/exercise_detail.html:45
+#: templates/workouts/home_session.html:855
 msgid "No description available."
 msgstr ""
 
@@ -871,6 +867,13 @@ msgstr ""
 msgid "Boshqa kalit so'z bilan qidiring"
 msgstr ""
 
+#: templates/handbooks/category_list.html:6
+#: templates/handbooks/category_list.html:268
+#: templates/handbooks/search_results.html:6
+#: templates/handbooks/subcategory_list.html:6
+msgid "Handbook"
+msgstr ""
+
 #: templates/handbooks/item_detail.html:230
 msgid "views"
 msgstr ""
@@ -1062,6 +1065,12 @@ msgstr ""
 
 #: templates/my_trainer/my_trainer.html:317
 msgid "Current Plan"
+msgstr ""
+
+#: templates/my_trainer/my_trainer.html:327
+#: templates/my_trainer/my_trainer.html:334 templates/users/progress.html:747
+#: templates/users/progress.html:773 templates/users/progress.html:941
+msgid "Workouts"
 msgstr ""
 
 #: templates/my_trainer/my_trainer.html:327
@@ -1287,10 +1296,6 @@ msgstr ""
 msgid "No payment history yet"
 msgstr ""
 
-#: templates/users/profile_detail.html:182
-msgid "PROFILE"
-msgstr ""
-
 #: templates/users/profile_detail.html:208
 msgid "Until the end of the subscription"
 msgstr ""
@@ -1305,6 +1310,10 @@ msgstr ""
 
 #: templates/users/profile_detail.html:224
 msgid "Plans & pricing"
+msgstr ""
+
+#: templates/users/profile_detail.html:235
+msgid "Profile"
 msgstr ""
 
 #: templates/users/profile_detail.html:236
@@ -1341,6 +1350,10 @@ msgstr ""
 
 #: templates/users/profile_update.html:391
 msgid "Tap to change photo"
+msgstr ""
+
+#: templates/users/progress.html:728
+msgid "STATISTICS"
 msgstr ""
 
 #: templates/users/progress.html:735
@@ -1499,12 +1512,14 @@ msgstr ""
 #: templates/workouts/active_workout.html:431
 #: templates/workouts/active_workout.html:497
 #: templates/workouts/home_session.html:839
+#: templates/workouts/home_session.html:849
 msgid "Pause"
 msgstr ""
 
 #: templates/workouts/active_workout.html:434
 #: templates/workouts/active_workout.html:499
 #: templates/workouts/home_session.html:842
+#: templates/workouts/home_session.html:851
 msgid "NEXT"
 msgstr ""
 
@@ -1535,6 +1550,7 @@ msgstr "Rest"
 #: templates/workouts/active_workout.html:459
 #: templates/workouts/active_workout.html:503
 #: templates/workouts/home_session.html:749
+#: templates/workouts/home_session.html:853
 msgid "Next Up"
 msgstr ""
 
@@ -1579,6 +1595,7 @@ msgid "SET"
 msgstr ""
 
 #: templates/workouts/active_workout.html:494
+#: templates/workouts/home_session.html:848
 msgid "OF"
 msgstr ""
 
@@ -1591,6 +1608,7 @@ msgid "Complete"
 msgstr ""
 
 #: templates/workouts/active_workout.html:498
+#: templates/workouts/home_session.html:850
 msgid "Resume"
 msgstr ""
 
@@ -1677,6 +1695,7 @@ msgid "REST"
 msgstr ""
 
 #: templates/workouts/home_session.html:743
+#: templates/workouts/home_session.html:852
 msgid "Round Complete"
 msgstr ""
 
@@ -1689,11 +1708,16 @@ msgid "Workout"
 msgstr ""
 
 #: templates/workouts/home_session.html:814
+#: templates/workouts/home_session.html:854
 msgid "SEC"
 msgstr ""
 
 #: templates/workouts/home_session.html:836
 msgid "START"
+msgstr ""
+
+#: templates/workouts/home_session.html:847
+msgid "ROUND"
 msgstr ""
 
 #: templates/workouts/home_workout_complete.html:166
@@ -1730,7 +1754,7 @@ msgstr ""
 #: templates/workouts/home_workout_detail.html:477
 #: templates/workouts/week_days.html:542
 #: templates/workouts/workout_detail.html:4
-#: templates/workouts/workout_detail.html:221
+#: templates/workouts/workout_detail.html:219
 msgid "Day"
 msgstr ""
 
@@ -1779,10 +1803,6 @@ msgstr ""
 #| msgid "Start Workout"
 msgid "All Workouts"
 msgstr "Start Workout"
-
-#: templates/workouts/program_list.html:650
-msgid "WORKOUTS"
-msgstr ""
 
 #: templates/workouts/program_list.html:682
 msgid "FOR YOU"
@@ -1852,11 +1872,11 @@ msgstr ""
 msgid "Back to Home"
 msgstr ""
 
-#: templates/workouts/workout_detail.html:238
+#: templates/workouts/workout_detail.html:236
 msgid "No exercises are included for this day."
 msgstr ""
 
-#: templates/workouts/workout_detail.html:253
+#: templates/workouts/workout_detail.html:251
 #, fuzzy
 #| msgid "Start Workout"
 msgid "Start Workout"

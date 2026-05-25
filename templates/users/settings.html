@@ -1,182 +1,323 @@
 {% extends 'base.html' %}
+{% load lang_extras %}
 {% load i18n %}
 {% load static %}
 
 {% block title %}{% trans "Settings" %}{% endblock %}
 
 {% block extra_css %}
-<style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-body {
-    background: #0a0a0a;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    min-height: 100vh;
-    color: #fff;
-    overflow-x: hidden;
-}
+        body {
+            background: #0a0a0a;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
 
-.page-header {
-    background: rgba(10,10,10,0.97);
-    backdrop-filter: blur(10px);
-    padding: 12px 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    border-bottom: 1px solid rgba(255,215,0,0.1);
-}
-.back-btn {
-    background: none; border: none;
-    color: #ffd700; font-size: 22px;
-    cursor: pointer; width: 32px; height: 32px;
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.3s;
-}
-.back-btn:hover { transform: translateX(-3px); }
-.page-title {
-    flex: 1; text-align: center;
-    font-size: 16px; font-weight: 800;
-    letter-spacing: 3px; text-transform: uppercase;
-    background: linear-gradient(135deg, #ffd700, #ff6b6b);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-.header-spacer { width: 32px; }
+        .page-header {
+            background: rgba(10, 10, 10, 0.97);
+            backdrop-filter: blur(10px);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+        }
 
-.container {
-    padding: 16px 12px 100px;
-    max-width: 600px;
-    margin: 0 auto;
-}
+        .back-btn {
+            background: none;
+            border: none;
+            color: #ffd700;
+            font-size: 22px;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
 
-.section-title {
-    color: rgba(255,255,255,0.4);
-    font-size: 11px; font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin: 16px 0 8px 4px;
-}
-.section-title:first-child { margin-top: 4px; }
+        .back-btn:hover {
+            transform: translateX(-3px);
+        }
 
-.menu-section {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
+        .page-title {
+            flex: 1;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #ffd700, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
 
-.menu-card {
-    background: rgba(255,255,255,0.04);
-    border: 1.5px solid rgba(255,215,0,0.12);
-    border-radius: 14px;
-    padding: 12px 14px;
-    cursor: pointer;
-    transition: all 0.3s;
-}
-.menu-card:hover {
-    border-color: rgba(255,215,0,0.35);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(255,215,0,0.1);
-}
-.menu-content { display: flex; align-items: center; gap: 12px; }
-.menu-icon-wrapper {
-    width: 36px; height: 36px;
-    border-radius: 10px;
-    background: linear-gradient(135deg, #ffd700, #f39c12);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px; flex-shrink: 0;
-    transition: all 0.3s;
-}
-.menu-card:hover .menu-icon-wrapper { transform: scale(1.08); }
-.menu-text-wrapper { flex: 1; min-width: 0; }
-.menu-text { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 2px; }
-.menu-subtitle { font-size: 11px; color: rgba(255,255,255,0.5); }
-.menu-arrow { font-size: 20px; color: rgba(255,215,0,0.5); transition: all 0.3s; }
-.menu-card:hover .menu-arrow { color: #ffd700; transform: translateX(4px); }
+        .header-spacer {
+            width: 32px;
+        }
 
-@media (max-width: 360px) {
-    .page-title { font-size: 14px; letter-spacing: 2px; }
-    .menu-text { font-size: 13px; }
-}
-</style>
+        .container {
+            padding: 16px 12px 100px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 16px 0 8px 4px;
+        }
+
+        .section-title:first-child {
+            margin-top: 4px;
+        }
+
+        .menu-section {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .menu-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1.5px solid rgba(255, 215, 0, 0.12);
+            border-radius: 14px;
+            padding: 12px 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .menu-card:hover {
+            border-color: rgba(255, 215, 0, 0.35);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.1);
+        }
+
+        .menu-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .menu-icon-wrapper {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #ffd700, #f39c12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+            transition: all 0.3s;
+        }
+
+        .menu-card:hover .menu-icon-wrapper {
+            transform: scale(1.08);
+        }
+
+        .menu-text-wrapper {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .menu-text {
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 2px;
+        }
+
+        .menu-subtitle {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .menu-arrow {
+            font-size: 20px;
+            color: rgba(255, 215, 0, 0.5);
+            transition: all 0.3s;
+        }
+
+        .menu-card:hover .menu-arrow {
+            color: #ffd700;
+            transform: translateX(4px);
+        }
+
+        @media (max-width: 360px) {
+            .page-title {
+                font-size: 14px;
+                letter-spacing: 2px;
+            }
+
+            .menu-text {
+                font-size: 13px;
+            }
+        }
+    </style>
 {% endblock %}
 
 {% block content %}
 
-<div class="page-header">
-    <button class="back-btn" onclick="window.location.href='{% url 'user_profile' %}'">←</button>
-    <h1 class="page-title">⚙️ {% trans 'SETTINGS' %}</h1>
-    <div class="header-spacer"></div>
-</div>
+    {% pdf_url 'contract' as contract_pdf %}
+    {% pdf_url 'faq' as faq_pdf %}
+    {% pdf_url 'about' as about_pdf %}
+    {% pdf_url 'policy' as policy_pdf %}
 
-<div class="container">
-
-    <!-- Account -->
-    <div class="section-title">{% trans 'ACCOUNT' %}</div>
-    <div class="menu-section">
-        <div class="menu-card" onclick="window.location.href='#'">
-            <div class="menu-content">
-                <div class="menu-icon-wrapper">💳</div>
-                <div class="menu-text-wrapper">
-                    <div class="menu-text">{% trans 'Payment history' %}</div>
-                    <div class="menu-subtitle">{% trans 'Transactions' %}</div>
-                </div>
-                <div class="menu-arrow">›</div>
-            </div>
+    <!-- PDF Viewer Modal -->
+    <div id="pdf-modal"
+         style="display:none; position:fixed; inset:0; background:#111; z-index:9999; flex-direction:column;">
+        <div style="display:flex; align-items:center; padding:16px; background:#1a1a1a; border-bottom:1px solid #333;">
+            <button onclick="closePdfModal()"
+                    style="background:none; border:none; color:#FFD700; font-size:20px; cursor:pointer;">
+                ← {% trans 'Back' %}</button>
+            <span id="pdf-modal-title"
+                  style="color:#fff; font-family:'Bebas Neue'; font-size:20px; margin-left:12px;"></span>
+        </div>
+        <div id="pdf-canvas-container"
+             style="flex:1; overflow-y:auto; padding:12px; display:flex; flex-direction:column; gap:8px;">
+            <div style="color:#aaa; text-align:center; padding:40px;">Loading...</div>
         </div>
     </div>
 
-    <!-- Help & Info -->
-    <div class="section-title">{% trans 'HELP & INFO' %}</div>
-    <div class="menu-section">
-
-        <div class="menu-card" onclick="">
-            <div class="menu-content">
-                <div class="menu-icon-wrapper">📄</div>
-                <div class="menu-text-wrapper">
-                    <div class="menu-text">{% trans 'Contract' %}</div>
-                    <div class="menu-subtitle">{% trans 'Terms of use' %}</div>
-                </div>
-                <div class="menu-arrow">›</div>
-            </div>
-        </div>
-
-        <div class="menu-card" onclick="">
-            <div class="menu-content">
-                <div class="menu-icon-wrapper">❓</div>
-                <div class="menu-text-wrapper">
-                    <div class="menu-text">{% trans "FAQ" %}</div>
-                    <div class="menu-subtitle">{% trans 'Common questions' %}</div>
-                </div>
-                <div class="menu-arrow">›</div>
-            </div>
-        </div>
-
-        <div class="menu-card" onclick="window.location.href='{% url 'change_language' %}'">
-            <div class="menu-content">
-                <div class="menu-icon-wrapper">🌐</div>
-                <div class="menu-text-wrapper">
-                    <div class="menu-text">{% trans 'Language settings' %}</div>
-                    <div class="menu-subtitle">{% trans 'Change language' %}</div>
-                </div>
-                <div class="menu-arrow">›</div>
-            </div>
-        </div>
-
-        <div class="menu-card" onclick="">
-            <div class="menu-content">
-                <div class="menu-icon-wrapper">ℹ️</div>
-                <div class="menu-text-wrapper">
-                    <div class="menu-text">{% trans 'About app' %}</div>
-                    <div class="menu-subtitle">{% trans 'Version & info' %}</div>
-                </div>
-                <div class="menu-arrow">›</div>
-            </div>
-        </div>
-
+    <div class="page-header">
+        <button class="back-btn" onclick="window.location.href='{% url 'user_profile' %}'">←</button>
+        <h1 class="page-title">⚙️ {% trans 'SETTINGS' %}</h1>
+        <div class="header-spacer"></div>
     </div>
-</div>
+
+    <div class="container">
+        <!-- Account -->
+        <div class="section-title">{% trans 'ACCOUNT' %}</div>
+        <div class="menu-section">
+            <div class="menu-card" onclick="window.location.href='#'">
+                <div class="menu-content">
+                    <div class="menu-icon-wrapper">💳</div>
+                    <div class="menu-text-wrapper">
+                        <div class="menu-text">{% trans 'Payment history' %}</div>
+                        <div class="menu-subtitle">{% trans 'Transactions' %}</div>
+                    </div>
+                    <div class="menu-arrow">›</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Help & Info -->
+        <div class="section-title">{% trans 'HELP & INFO' %}</div>
+        <div class="menu-section">
+
+            <div class="menu-card" onclick="openPdf('{{ contract_pdf }}', '{% trans 'Contract' %}')">
+                <div class="menu-content">
+                    <div class="menu-icon-wrapper">📄</div>
+                    <div class="menu-text-wrapper">
+                        <div class="menu-text">{% trans 'Contract' %}</div>
+                        <div class="menu-subtitle">{% trans 'Terms of use' %}</div>
+                    </div>
+                    <div class="menu-arrow">›</div>
+                </div>
+            </div>
+
+            <div class="menu-card" onclick="openPdf('{{ faq_pdf }}', '{% trans 'FAQ' %}')">
+                <div class="menu-content">
+                    <div class="menu-icon-wrapper">❓</div>
+                    <div class="menu-text-wrapper">
+                        <div class="menu-text">{% trans "FAQ" %}</div>
+                        <div class="menu-subtitle">{% trans 'Common questions' %}</div>
+                    </div>
+                    <div class="menu-arrow">›</div>
+                </div>
+            </div>
+
+            <div class="menu-card" onclick="window.location.href='{% url 'change_language' %}'">
+                <div class="menu-content">
+                    <div class="menu-icon-wrapper">🌐</div>
+                    <div class="menu-text-wrapper">
+                        <div class="menu-text">{% trans 'Language settings' %}</div>
+                        <div class="menu-subtitle">{% trans 'Change language' %}</div>
+                    </div>
+                    <div class="menu-arrow">›</div>
+                </div>
+            </div>
+
+            <div class="menu-card" onclick="openPdf('{{ policy_pdf }}', '{% trans 'Policy' %}')">
+                <div class="menu-content">
+                    <div class="menu-icon-wrapper">🔒</div>
+                    <div class="menu-text-wrapper">
+                        <div class="menu-text">{% trans 'Policy' %}</div>
+                        <div class="menu-subtitle">{% trans 'Privacy & data usage' %}</div>
+                    </div>
+                    <div class="menu-arrow">›</div>
+                </div>
+            </div>
+            <div class="menu-card" onclick="">
+                <div class="menu-content">
+                    <div class="menu-icon-wrapper">ℹ️</div>
+                    <div class="menu-text-wrapper">
+                        <div class="menu-text">{% trans 'About app' %}</div>
+                        <div class="menu-subtitle">{% trans 'Version & info' %}</div>
+                    </div>
+                    <div class="menu-arrow">›</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- PDF.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc =
+            'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        function openPdf(url, title) {
+            document.getElementById('pdf-modal-title').textContent = title;
+            document.getElementById('pdf-modal').style.display = 'flex';
+            document.getElementById('pdf-canvas-container').innerHTML =
+                '<div style="color:#aaa;text-align:center;padding:40px;">Loading...</div>';
+            renderPdf(url);
+        }
+
+        function closePdfModal() {
+            document.getElementById('pdf-modal').style.display = 'none';
+            document.getElementById('pdf-canvas-container').innerHTML = '';
+        }
+
+        async function renderPdf(url) {
+            const container = document.getElementById('pdf-canvas-container');
+            container.innerHTML = '';
+            try {
+                const pdf = await pdfjsLib.getDocument(url).promise;
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const scale = container.clientWidth / page.getViewport({scale: 1}).width;
+                    const viewport = page.getViewport({scale});
+                    const canvas = document.createElement('canvas');
+                    canvas.width = viewport.width;
+                    canvas.height = viewport.height;
+                    canvas.style.width = '100%';
+                    canvas.style.borderRadius = '8px';
+                    container.appendChild(canvas);
+                    await page.render({canvasContext: canvas.getContext('2d'), viewport}).promise;
+                }
+            } catch (e) {
+                container.innerHTML = '<div style="color:#ff4444;text-align:center;padding:40px;">Failed to load PDF</div>';
+            }
+        }
+    </script>
 
 {% endblock %}

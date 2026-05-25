@@ -20,6 +20,7 @@ media/
 static/*
 !static/css/
 !static/js/
+!static/docs/
 staticfiles/
 
 # 5. IDE va Tizim fayllari

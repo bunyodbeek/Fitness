@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-22 15:06+0500\n"
+"POT-Creation-Date: 2026-05-22 15:52+0500\n"
 "PO-Revision-Date: 2026-05-22 12:00+0500\n"
 "Last-Translator: Claude AI\n"
 "Language-Team: Uzbek\n"
@@ -224,8 +224,8 @@ msgstr "Mashg'ulot turi"
 msgid "Exercise"
 msgstr "Mashq"
 
-#: apps/models/exercises.py:67 templates/base.html:467
-#: templates/exercises/exercise_list.html:4 templates/users/progress.html:765
+#: apps/models/exercises.py:67 templates/exercises/exercise_list.html:4
+#: templates/users/progress.html:765
 #: templates/workouts/home_workout_detail.html:485
 #: templates/workouts/home_workout_detail.html:516
 msgid "Exercises"
@@ -599,35 +599,32 @@ msgstr "Til muvaffaqiyatli saqlandi!"
 msgid "Selected language doesn't exist."
 msgstr "Tanlangan til mavjud emas."
 
-#: templates/base.html:462 templates/my_trainer/my_trainer.html:327
-#: templates/my_trainer/my_trainer.html:334 templates/users/progress.html:747
-#: templates/users/progress.html:773 templates/users/progress.html:941
-msgid "Workouts"
-msgstr "Mashg'ulotlar"
+#: templates/base.html:462 templates/workouts/program_list.html:650
+msgid "WORKOUTS"
+msgstr "MASHG'ULOTLAR"
 
-#: templates/base.html:471 templates/handbooks/category_list.html:6
-#: templates/handbooks/category_list.html:268
-#: templates/handbooks/search_results.html:6
-#: templates/handbooks/subcategory_list.html:6
-msgid "Handbook"
-msgstr "Qo'llanma"
+#: templates/base.html:467 templates/exercises/body_parts.html:356
+#: templates/exercises/favorites_list.html:140
+msgid "EXERCISES"
+msgstr "MASHQLAR"
+
+#: templates/base.html:471
+msgid "HANDBOOK"
+msgstr ""
 
 #: templates/base.html:475
-msgid "Favourites"
-msgstr "Sevimlilar"
+#, fuzzy
+#| msgid "MY FAVORITES"
+msgid "FAVORITES"
+msgstr "MENING SEVIMLILARIM"
 
-#: templates/base.html:479 templates/users/profile_detail.html:235
-msgid "Profile"
-msgstr "Profil"
+#: templates/base.html:479 templates/users/profile_detail.html:182
+msgid "PROFILE"
+msgstr "PROFIL"
 
 #: templates/exercises/body_parts.html:4
 msgid "Exercises - Body Parts"
 msgstr "Mashqlar — Tana qismlari"
-
-#: templates/exercises/body_parts.html:356
-#: templates/exercises/favorites_list.html:140
-msgid "EXERCISES"
-msgstr "MASHQLAR"
 
 #: templates/exercises/custom_program_create.html:4
 #: templates/exercises/favorites_list.html:146
@@ -643,6 +640,7 @@ msgid "Your browser doesn't support video tag"
 msgstr "Brauzeringiz videoni qo'llab-quvvatlamaydi"
 
 #: templates/exercises/exercise_detail.html:45
+#: templates/workouts/home_session.html:855
 msgid "No description available."
 msgstr "Tavsif mavjud emas."
 
@@ -858,6 +856,13 @@ msgstr "Hech narsa topilmadi"
 msgid "Boshqa kalit so'z bilan qidiring"
 msgstr "Boshqa kalit so'z bilan qidiring"
 
+#: templates/handbooks/category_list.html:6
+#: templates/handbooks/category_list.html:268
+#: templates/handbooks/search_results.html:6
+#: templates/handbooks/subcategory_list.html:6
+msgid "Handbook"
+msgstr "Qo'llanma"
+
 #: templates/handbooks/item_detail.html:230
 msgid "views"
 msgstr "ko'rishlar"
@@ -1050,6 +1055,12 @@ msgstr "MENING MURABBIYIM"
 #: templates/my_trainer/my_trainer.html:317
 msgid "Current Plan"
 msgstr "Joriy reja"
+
+#: templates/my_trainer/my_trainer.html:327
+#: templates/my_trainer/my_trainer.html:334 templates/users/progress.html:747
+#: templates/users/progress.html:773 templates/users/progress.html:941
+msgid "Workouts"
+msgstr "Mashg'ulotlar"
 
 #: templates/my_trainer/my_trainer.html:327
 msgid "This Week"
@@ -1275,10 +1286,6 @@ msgstr "To'langan"
 msgid "No payment history yet"
 msgstr "Hozircha to'lovlar tarixi yo'q"
 
-#: templates/users/profile_detail.html:182
-msgid "PROFILE"
-msgstr "PROFIL"
-
 #: templates/users/profile_detail.html:208
 msgid "Until the end of the subscription"
 msgstr "Obuna tugashiga"
@@ -1294,6 +1301,10 @@ msgstr "Obunani boshqarish"
 #: templates/users/profile_detail.html:224
 msgid "Plans & pricing"
 msgstr "Rejalar va narxlar"
+
+#: templates/users/profile_detail.html:235
+msgid "Profile"
+msgstr "Profil"
 
 #: templates/users/profile_detail.html:236
 msgid "Edit information"
@@ -1330,6 +1341,10 @@ msgstr "PROFILNI TAHRIRLASH"
 #: templates/users/profile_update.html:391
 msgid "Tap to change photo"
 msgstr "Rasmni o'zgartirish uchun bosing"
+
+#: templates/users/progress.html:728
+msgid "STATISTICS"
+msgstr "Statistikalar"
 
 #: templates/users/progress.html:735
 msgid "Today"
@@ -1485,12 +1500,14 @@ msgstr "CHIQISH"
 #: templates/workouts/active_workout.html:431
 #: templates/workouts/active_workout.html:497
 #: templates/workouts/home_session.html:839
+#: templates/workouts/home_session.html:849
 msgid "Pause"
 msgstr "Pauza"
 
 #: templates/workouts/active_workout.html:434
 #: templates/workouts/active_workout.html:499
 #: templates/workouts/home_session.html:842
+#: templates/workouts/home_session.html:851
 msgid "NEXT"
 msgstr "Keyngisi"
 
@@ -1519,6 +1536,7 @@ msgstr "Dam olishni o'tkazish"
 #: templates/workouts/active_workout.html:459
 #: templates/workouts/active_workout.html:503
 #: templates/workouts/home_session.html:749
+#: templates/workouts/home_session.html:853
 msgid "Next Up"
 msgstr "Keyingisi"
 
@@ -1527,7 +1545,6 @@ msgid "Set 2"
 msgstr "Set 2"
 
 #: templates/workouts/active_workout.html:467
-
 msgid "Finish Workout?"
 msgstr "Mashg'ulotni yakunlash"
 
@@ -1564,6 +1581,7 @@ msgid "SET"
 msgstr "SET"
 
 #: templates/workouts/active_workout.html:494
+#: templates/workouts/home_session.html:848
 msgid "OF"
 msgstr "/"
 
@@ -1576,6 +1594,7 @@ msgid "Complete"
 msgstr "Tugatildi"
 
 #: templates/workouts/active_workout.html:498
+#: templates/workouts/home_session.html:850
 msgid "Resume"
 msgstr "Davom etish"
 
@@ -1638,7 +1657,6 @@ msgid "Workout Session"
 msgstr "Mashg'ulot sessiyasi"
 
 #: templates/workouts/home_session.html:720
-
 msgid "Exit Workout?"
 msgstr "Mashg'ulotdan chiqish?"
 
@@ -1651,7 +1669,6 @@ msgid "Exit"
 msgstr "Chiqish"
 
 #: templates/workouts/home_session.html:724
-
 msgid "Continue Workout"
 msgstr "Davom etish"
 
@@ -1660,6 +1677,7 @@ msgid "REST"
 msgstr "DAM"
 
 #: templates/workouts/home_session.html:743
+#: templates/workouts/home_session.html:852
 #, fuzzy
 #| msgid "Complete"
 msgid "Round Complete"
@@ -1674,6 +1692,7 @@ msgid "Workout"
 msgstr "Mashg'ulot"
 
 #: templates/workouts/home_session.html:814
+#: templates/workouts/home_session.html:854
 #, fuzzy
 #| msgid "SET"
 msgid "SEC"
@@ -1684,6 +1703,10 @@ msgstr "SET"
 #| msgid "START NOW"
 msgid "START"
 msgstr "HOZIROQ BOSHLANG"
+
+#: templates/workouts/home_session.html:847
+msgid "ROUND"
+msgstr ""
 
 #: templates/workouts/home_workout_complete.html:166
 msgid "WORKOUT COMPLETE!"
@@ -1717,7 +1740,7 @@ msgstr "BOSH SAHIFAGA"
 #: templates/workouts/home_workout_detail.html:477
 #: templates/workouts/week_days.html:542
 #: templates/workouts/workout_detail.html:4
-#: templates/workouts/workout_detail.html:221
+#: templates/workouts/workout_detail.html:219
 msgid "Day"
 msgstr "Kun"
 
@@ -1762,10 +1785,6 @@ msgstr "Bu reja uchun keyinroq tekshiring"
 #: templates/workouts/program_list.html:5
 msgid "All Workouts"
 msgstr "Barcha mashg'ulotlar"
-
-#: templates/workouts/program_list.html:650
-msgid "WORKOUTS"
-msgstr "MASHG'ULOTLAR"
 
 #: templates/workouts/program_list.html:682
 msgid "FOR YOU"
@@ -1832,13 +1851,16 @@ msgstr "Jami ko'tarilgan og'irlik"
 msgid "Back to Home"
 msgstr "Bosh sahifaga"
 
-#: templates/workouts/workout_detail.html:238
+#: templates/workouts/workout_detail.html:236
 msgid "No exercises are included for this day."
 msgstr "Bu kunda mashqlar mavjud emas."
 
-#: templates/workouts/workout_detail.html:253
+#: templates/workouts/workout_detail.html:251
 msgid "Start Workout"
 msgstr "Mashg'ulotni boshlash"
+
+#~ msgid "Favourites"
+#~ msgstr "Sevimlilar"
 
 #~ msgid "%(plan_count)s Plan"
 #~ msgid_plural "%(plan_count)s Plans"
