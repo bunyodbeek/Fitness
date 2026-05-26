@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-22 15:52+0500\n"
+"POT-Creation-Date: 2026-05-26 16:10+0500\n"
 "PO-Revision-Date: 2026-05-22 12:00+0500\n"
 "Last-Translator: Claude AI\n"
 "Language-Team: Russian\n"
@@ -601,26 +601,25 @@ msgstr "Язык успешно сохранён!"
 msgid "Selected language doesn't exist."
 msgstr "Выбранный язык не существует."
 
-#: templates/base.html:462 templates/workouts/program_list.html:650
+#: templates/base.html:461 templates/workouts/program_list.html:650
 msgid "WORKOUTS"
 msgstr "ТРЕНИРОВКИ"
 
-#: templates/base.html:467 templates/exercises/body_parts.html:356
+#: templates/base.html:466 templates/exercises/body_parts.html:356
 #: templates/exercises/favorites_list.html:140
 msgid "EXERCISES"
 msgstr "УПРАЖНЕНИЯ"
 
-#: templates/base.html:471
+#: templates/base.html:470
 msgid "HANDBOOK"
-msgstr ""
+msgstr "СПРАВОЧНИК"
 
-#: templates/base.html:475
-#, fuzzy
-#| msgid "MY FAVORITES"
+#: templates/base.html:474
+
 msgid "FAVORITES"
-msgstr "МОЁ ИЗБРАННОЕ"
+msgstr "ИЗБРАННОЕ"
 
-#: templates/base.html:479 templates/users/profile_detail.html:182
+#: templates/base.html:478 templates/users/profile_detail.html:182
 msgid "PROFILE"
 msgstr "ПРОФИЛЬ"
 
@@ -720,7 +719,7 @@ msgid "Collections"
 msgstr "Коллекции"
 
 #: templates/exercises/exercise_list.html:866
-#: templates/workouts/week_days.html:557
+#: templates/workouts/week_days.html:533
 msgid "exercises"
 msgstr "упражнений"
 
@@ -1105,8 +1104,7 @@ msgstr "Зайдите позже или выберите другой план.
 
 #: templates/my_trainer/my_trainer_days.html:432
 #: templates/workouts/edition_detail.html:564
-#, fuzzy
-#| msgid "▶Start Workout"
+
 msgid "▶ Start Workout"
 msgstr "▶Начать тренировку"
 
@@ -1175,7 +1173,7 @@ msgstr "Изменение данных"
 msgid "MA'LUMOTLAR"
 msgstr "ДАННЫЕ"
 
-#: templates/users/language.html:8 templates/users/settings.html:161
+#: templates/users/language.html:8 templates/users/settings.html:250
 msgid "Language settings"
 msgstr "Настройки языка"
 
@@ -1252,7 +1250,7 @@ msgstr "Возобновить подписку"
 msgid "Reactivate your plan"
 msgstr "Активировать план снова"
 
-#: templates/users/payment_history.html:7 templates/users/settings.html:123
+#: templates/users/payment_history.html:7 templates/users/settings.html:212
 msgid "Payment history"
 msgstr "История платежей"
 
@@ -1322,7 +1320,7 @@ msgstr "Статистика"
 msgid "your results"
 msgstr "ваши результаты"
 
-#: templates/users/profile_detail.html:259 templates/users/settings.html:5
+#: templates/users/profile_detail.html:259 templates/users/settings.html:6
 msgid "Settings"
 msgstr "Настройки"
 
@@ -1358,7 +1356,7 @@ msgstr "Сегодня"
 #: templates/workouts/home_workout_detail.html:462
 #: templates/workouts/home_workout_week.html:1
 #: templates/workouts/plan_weeks.html:326 templates/workouts/week_days.html:4
-#: templates/workouts/week_days.html:482
+#: templates/workouts/week_days.html:483
 msgid "Week"
 msgstr "Неделя"
 
@@ -1452,47 +1450,59 @@ msgstr "Отмена"
 msgid "Tiklash"
 msgstr "Восстановить"
 
-#: templates/users/settings.html:110
+#: templates/users/settings.html:188
+msgid "<-"
+msgstr "<-"
+
+#: templates/users/settings.html:200
 msgid "SETTINGS"
 msgstr "НАСТРОЙКИ"
 
-#: templates/users/settings.html:117
+#: templates/users/settings.html:206
 msgid "ACCOUNT"
 msgstr "АККАУНТ"
 
-#: templates/users/settings.html:124
+#: templates/users/settings.html:213
 msgid "Transactions"
 msgstr "Транзакции"
 
-#: templates/users/settings.html:132
+#: templates/users/settings.html:221
 msgid "HELP & INFO"
 msgstr "ПОМОЩЬ И ИНФОРМАЦИЯ"
 
-#: templates/users/settings.html:139
+#: templates/users/settings.html:224 templates/users/settings.html:228
 msgid "Contract"
 msgstr "Договор"
 
-#: templates/users/settings.html:140
+#: templates/users/settings.html:229
 msgid "Terms of use"
 msgstr "Условия использования"
 
-#: templates/users/settings.html:150
+#: templates/users/settings.html:235 templates/users/settings.html:239
 msgid "FAQ"
 msgstr "Частые вопросы"
 
-#: templates/users/settings.html:151
+#: templates/users/settings.html:240
 msgid "Common questions"
 msgstr "Часто задаваемые вопросы"
 
-#: templates/users/settings.html:162
+#: templates/users/settings.html:251
 msgid "Change language"
 msgstr "Сменить язык"
 
-#: templates/users/settings.html:172
+#: templates/users/settings.html:257 templates/users/settings.html:261
+msgid "Policy"
+msgstr "Политика"
+
+#: templates/users/settings.html:262
+msgid "Privacy & data usage"
+msgstr "Конфиденциальность и использование данных"
+
+#: templates/users/settings.html:271
 msgid "About app"
 msgstr "О приложении"
 
-#: templates/users/settings.html:173
+#: templates/users/settings.html:272
 msgid "Version & info"
 msgstr "Версия и информация"
 
@@ -1546,7 +1556,7 @@ msgstr "Следующее"
 
 #: templates/workouts/active_workout.html:460
 msgid "Set 2"
-msgstr ""
+msgstr "подход 2"
 
 #: templates/workouts/active_workout.html:467
 msgid "Finish Workout?"
@@ -1661,10 +1671,9 @@ msgid "Workout Session"
 msgstr "Сессия тренировки"
 
 #: templates/workouts/home_session.html:720
-#, fuzzy
-#| msgid "Finish Workout?"
+
 msgid "Exit Workout?"
-msgstr "Тренировка"
+msgstr "Выйти из тренировки?"
 
 #: templates/workouts/home_session.html:721
 msgid "Your progress will be lost."
@@ -1675,10 +1684,9 @@ msgid "Exit"
 msgstr "Выход"
 
 #: templates/workouts/home_session.html:724
-#, fuzzy
-#| msgid "Recent Workouts"
+
 msgid "Continue Workout"
-msgstr "Последние тренировки"
+msgstr "Продолжить тренировку"
 
 #: templates/workouts/home_session.html:742
 msgid "REST"
@@ -1686,10 +1694,9 @@ msgstr "ОТДЫХ"
 
 #: templates/workouts/home_session.html:743
 #: templates/workouts/home_session.html:852
-#, fuzzy
-#| msgid "Workout Completed"
+
 msgid "Round Complete"
-msgstr "Тренировка завершена"
+msgstr "Раунд завершен"
 
 #: templates/workouts/home_session.html:758
 #: templates/workouts/home_workout_complete.html:175
@@ -1701,20 +1708,18 @@ msgstr "Тренировка"
 
 #: templates/workouts/home_session.html:814
 #: templates/workouts/home_session.html:854
-#, fuzzy
-#| msgid "SET"
+
 msgid "SEC"
-msgstr "Подход"
+msgstr "SEC"
 
 #: templates/workouts/home_session.html:836
-#, fuzzy
-#| msgid "START NOW"
+
 msgid "START"
-msgstr "НАЧАТЬ СЕЙЧАС"
+msgstr "НАЧАТЬ"
 
 #: templates/workouts/home_session.html:847
 msgid "ROUND"
-msgstr ""
+msgstr "РАУНД"
 
 #: templates/workouts/home_workout_complete.html:166
 msgid "WORKOUT COMPLETE!"
@@ -1746,14 +1751,14 @@ msgstr "НА ГЛАВНУЮ"
 
 #: templates/workouts/home_workout_detail.html:464
 #: templates/workouts/home_workout_detail.html:477
-#: templates/workouts/week_days.html:542
+#: templates/workouts/week_days.html:518
 #: templates/workouts/workout_detail.html:4
 #: templates/workouts/workout_detail.html:219
 msgid "Day"
 msgstr "День"
 
 #: templates/workouts/home_workout_detail.html:480
-#: templates/workouts/week_days.html:552
+#: templates/workouts/week_days.html:528
 #, python-format
 msgid "Day %(num)s"
 msgstr "День %(num)s"
@@ -1826,23 +1831,23 @@ msgstr "Начать эту программу"
 msgid "Browse All"
 msgstr "Просмотреть все"
 
-#: templates/workouts/week_days.html:517
+#: templates/workouts/week_days.html:493
 msgid "Weekly Progress"
 msgstr "Прогресс за неделю"
 
-#: templates/workouts/week_days.html:532
+#: templates/workouts/week_days.html:508
 msgid "Training Days"
 msgstr "Дни тренировок"
 
-#: templates/workouts/week_days.html:565
+#: templates/workouts/week_days.html:541
 msgid "Done"
 msgstr "Готово"
 
-#: templates/workouts/week_days.html:575
+#: templates/workouts/week_days.html:551
 msgid "No workouts yet"
 msgstr "Пока нет тренировок"
 
-#: templates/workouts/week_days.html:576
+#: templates/workouts/week_days.html:552
 msgid "This week has no training days configured"
 msgstr "На этой неделе нет настроенных дней тренировок"
 

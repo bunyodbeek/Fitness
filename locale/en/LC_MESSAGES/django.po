@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-22 15:52+0500\n"
+"POT-Creation-Date: 2026-05-26 16:10+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -606,24 +606,24 @@ msgstr ""
 msgid "Selected language doesn't exist."
 msgstr ""
 
-#: templates/base.html:462 templates/workouts/program_list.html:650
+#: templates/base.html:461 templates/workouts/program_list.html:650
 msgid "WORKOUTS"
 msgstr ""
 
-#: templates/base.html:467 templates/exercises/body_parts.html:356
+#: templates/base.html:466 templates/exercises/body_parts.html:356
 #: templates/exercises/favorites_list.html:140
 msgid "EXERCISES"
 msgstr ""
 
-#: templates/base.html:471
+#: templates/base.html:470
 msgid "HANDBOOK"
 msgstr ""
 
-#: templates/base.html:475
+#: templates/base.html:474
 msgid "FAVORITES"
 msgstr ""
 
-#: templates/base.html:479 templates/users/profile_detail.html:182
+#: templates/base.html:478 templates/users/profile_detail.html:182
 msgid "PROFILE"
 msgstr ""
 
@@ -725,7 +725,7 @@ msgid "Collections"
 msgstr ""
 
 #: templates/exercises/exercise_list.html:866
-#: templates/workouts/week_days.html:557
+#: templates/workouts/week_days.html:533
 msgid "exercises"
 msgstr ""
 
@@ -1181,7 +1181,7 @@ msgstr ""
 msgid "MA'LUMOTLAR"
 msgstr ""
 
-#: templates/users/language.html:8 templates/users/settings.html:161
+#: templates/users/language.html:8 templates/users/settings.html:250
 msgid "Language settings"
 msgstr ""
 
@@ -1258,7 +1258,7 @@ msgstr ""
 msgid "Reactivate your plan"
 msgstr ""
 
-#: templates/users/payment_history.html:7 templates/users/settings.html:123
+#: templates/users/payment_history.html:7 templates/users/settings.html:212
 msgid "Payment history"
 msgstr ""
 
@@ -1328,7 +1328,7 @@ msgstr ""
 msgid "your results"
 msgstr ""
 
-#: templates/users/profile_detail.html:259 templates/users/settings.html:5
+#: templates/users/profile_detail.html:259 templates/users/settings.html:6
 msgid "Settings"
 msgstr ""
 
@@ -1364,7 +1364,7 @@ msgstr ""
 #: templates/workouts/home_workout_detail.html:462
 #: templates/workouts/home_workout_week.html:1
 #: templates/workouts/plan_weeks.html:326 templates/workouts/week_days.html:4
-#: templates/workouts/week_days.html:482
+#: templates/workouts/week_days.html:483
 msgid "Week"
 msgstr ""
 
@@ -1460,47 +1460,59 @@ msgstr ""
 msgid "Tiklash"
 msgstr "Save"
 
-#: templates/users/settings.html:110
+#: templates/users/settings.html:188
+msgid "<-"
+msgstr ""
+
+#: templates/users/settings.html:200
 msgid "SETTINGS"
 msgstr ""
 
-#: templates/users/settings.html:117
+#: templates/users/settings.html:206
 msgid "ACCOUNT"
 msgstr ""
 
-#: templates/users/settings.html:124
+#: templates/users/settings.html:213
 msgid "Transactions"
 msgstr ""
 
-#: templates/users/settings.html:132
+#: templates/users/settings.html:221
 msgid "HELP & INFO"
 msgstr ""
 
-#: templates/users/settings.html:139
+#: templates/users/settings.html:224 templates/users/settings.html:228
 msgid "Contract"
 msgstr ""
 
-#: templates/users/settings.html:140
+#: templates/users/settings.html:229
 msgid "Terms of use"
 msgstr ""
 
-#: templates/users/settings.html:150
+#: templates/users/settings.html:235 templates/users/settings.html:239
 msgid "FAQ"
 msgstr ""
 
-#: templates/users/settings.html:151
+#: templates/users/settings.html:240
 msgid "Common questions"
 msgstr ""
 
-#: templates/users/settings.html:162
+#: templates/users/settings.html:251
 msgid "Change language"
 msgstr ""
 
-#: templates/users/settings.html:172
+#: templates/users/settings.html:257 templates/users/settings.html:261
+msgid "Policy"
+msgstr ""
+
+#: templates/users/settings.html:262
+msgid "Privacy & data usage"
+msgstr ""
+
+#: templates/users/settings.html:271
 msgid "About app"
 msgstr ""
 
-#: templates/users/settings.html:173
+#: templates/users/settings.html:272
 msgid "Version & info"
 msgstr ""
 
@@ -1752,14 +1764,14 @@ msgstr ""
 
 #: templates/workouts/home_workout_detail.html:464
 #: templates/workouts/home_workout_detail.html:477
-#: templates/workouts/week_days.html:542
+#: templates/workouts/week_days.html:518
 #: templates/workouts/workout_detail.html:4
 #: templates/workouts/workout_detail.html:219
 msgid "Day"
 msgstr ""
 
 #: templates/workouts/home_workout_detail.html:480
-#: templates/workouts/week_days.html:552
+#: templates/workouts/week_days.html:528
 #, python-format
 msgid "Day %(num)s"
 msgstr ""
@@ -1834,25 +1846,25 @@ msgstr ""
 msgid "Browse All"
 msgstr ""
 
-#: templates/workouts/week_days.html:517
+#: templates/workouts/week_days.html:493
 #, fuzzy
 #| msgid "4-Week Program"
 msgid "Weekly Progress"
 msgstr "4-Week Program"
 
-#: templates/workouts/week_days.html:532
+#: templates/workouts/week_days.html:508
 msgid "Training Days"
 msgstr ""
 
-#: templates/workouts/week_days.html:565
+#: templates/workouts/week_days.html:541
 msgid "Done"
 msgstr ""
 
-#: templates/workouts/week_days.html:575
+#: templates/workouts/week_days.html:551
 msgid "No workouts yet"
 msgstr ""
 
-#: templates/workouts/week_days.html:576
+#: templates/workouts/week_days.html:552
 msgid "This week has no training days configured"
 msgstr ""
 
