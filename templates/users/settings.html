@@ -298,26 +298,31 @@
         }
 
         async function renderPdf(url) {
-            const container = document.getElementById('pdf-canvas-container');
-            container.innerHTML = '';
-            try {
-                const pdf = await pdfjsLib.getDocument(url).promise;
-                for (let i = 1; i <= pdf.numPages; i++) {
-                    const page = await pdf.getPage(i);
-                    const scale = container.clientWidth / page.getViewport({scale: 1}).width;
-                    const viewport = page.getViewport({scale});
-                    const canvas = document.createElement('canvas');
-                    canvas.width = viewport.width;
-                    canvas.height = viewport.height;
-                    canvas.style.width = '100%';
-                    canvas.style.borderRadius = '8px';
-                    container.appendChild(canvas);
-                    await page.render({canvasContext: canvas.getContext('2d'), viewport}).promise;
-                }
-            } catch (e) {
-                container.innerHTML = '<div style="color:#ff4444;text-align:center;padding:40px;">Failed to load PDF</div>';
-            }
+    const container = document.getElementById('pdf-canvas-container');
+    container.innerHTML = '';
+    try {
+        const pdf = await pdfjsLib.getDocument(url).promise;
+        for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i);
+
+            const pixelRatio = window.devicePixelRatio || 1;  // ← ADD THIS
+            const baseScale = container.clientWidth / page.getViewport({ scale: 1 }).width;
+            const scale = baseScale * pixelRatio;             // ← MULTIPLY BY pixelRatio
+            const viewport = page.getViewport({ scale });
+
+            const canvas = document.createElement('canvas');
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
+            canvas.style.width = '100%';          // ← CSS size stays same
+            canvas.style.height = 'auto';         // ← ADD THIS
+            canvas.style.borderRadius = '8px';
+            container.appendChild(canvas);
+            await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
         }
+    } catch (e) {
+        container.innerHTML = '<div style="color:#ff4444;text-align:center;padding:40px;">Failed to load PDF</div>';
+    }
+}
     </script>
 
 {% endblock %}
