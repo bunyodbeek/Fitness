@@ -62,7 +62,7 @@ class ProgramListView(ListView):
 				status=WorkoutProgress.Status.COMPLETED,
 			).values_list("workout_id", flat=True)
 		)
-
+		
 		filtered_programs = []
 		for program in qs:
 			workout_ids = [
@@ -74,7 +74,7 @@ class ProgramListView(ListView):
 			if workout_ids and all(wid in completed_workout_ids for wid in workout_ids):
 				continue
 			filtered_programs.append(program)
-
+		
 		recommended = get_recommended_program(profile, workout_type=workout_type)
 		if recommended:
 			filtered_programs.sort(key=lambda p: (p.id != recommended.id, p.id))
@@ -101,7 +101,7 @@ class ProgramDetailView(DetailView):
 	model = Program
 	template_name = 'workouts/edition_list.html'
 	context_object_name = 'program'
-
+	
 	def get_queryset(self):
 		workout_type = get_session_workout_type(self.request, self.forced_workout_type)
 		return Program.objects.filter(is_active=True, workout_type=workout_type).prefetch_related('plans')
@@ -126,7 +126,6 @@ class PlanWeeksView(DetailView):
 	def get_queryset(self):
 		w_type = get_session_workout_type(self.request, self.forced_workout_type)
 		
-	
 		return Plan.objects.filter(program__workout_type=w_type)
 	
 	def get(self, request, *args, **kwargs):
@@ -154,6 +153,10 @@ class WeekDetailView(DetailView):
 	model = Week
 	template_name = 'workouts/week_days.html'
 	context_object_name = 'week'
+	
+	def get_queryset(self):
+		w_type = get_session_workout_type(self.request, self.forced_workout_type)
+		return Week.objects.filter(plan__program__workout_type=w_type)
 	
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
@@ -184,10 +187,11 @@ class WorkoutDetailView(DetailView):
 	model = Workout
 	template_name = 'workouts/workout_detail.html'
 	context_object_name = 'workout'
-
+	
 	def get_queryset(self):
 		workout_type = get_session_workout_type(self.request, self.forced_workout_type)
-		return Workout.objects.filter(week__plan__program__workout_type=workout_type).select_related('week__plan__program')
+		return Workout.objects.filter(week__plan__program__workout_type=workout_type).select_related(
+			'week__plan__program')
 	
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
@@ -241,9 +245,9 @@ class WorkoutStartView(LoginRequiredMixin, View):
 	def get(self, request, pk):
 		workout = get_object_or_404(Workout, pk=pk)
 		wtype = (
-			self.forced_workout_type
-			or workout.week.plan.program.workout_type
-			or get_session_workout_type(request)
+				self.forced_workout_type
+				or workout.week.plan.program.workout_type
+				or get_session_workout_type(request)
 		)
 		
 		workout_exercises = WorkoutExercise.objects.filter(
@@ -315,7 +319,7 @@ class WorkoutStartView(LoginRequiredMixin, View):
 class WorkoutCompleteView(LoginRequiredMixin, View):
 	forced_workout_type = None
 	template_name = "workouts/workout_complete.html"
-
+	
 	@staticmethod
 	def _safe_float(value, default=0.0):
 		try:
@@ -323,7 +327,7 @@ class WorkoutCompleteView(LoginRequiredMixin, View):
 		except (ValueError, TypeError):
 			return default
 		return parsed if math.isfinite(parsed) else default
-
+	
 	@staticmethod
 	def _safe_int(value, default=0):
 		try:

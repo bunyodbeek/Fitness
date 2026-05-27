@@ -57,7 +57,7 @@ from apps.views.handbook import (
 	HandbookCategoryListView,
 	HandbookItemDetailView,
 	HandbookSearchView,
-	 HandbookCategoryDetailView, HandbookSubCategoryDetailView,
+	HandbookCategoryDetailView, HandbookSubCategoryDetailView,
 )
 from apps.views.workouts import WeekDetailView
 from apps.views.favorite import CustomProgramCreateView, CustomProgramDeleteView, CustomProgramDetailView
@@ -112,7 +112,7 @@ urlpatterns = [
 	     name='gym_workout_start'),
 	path('gym/workout/<int:pk>/complete/', WorkoutCompleteView.as_view(forced_workout_type=WorkoutType.GYM),
 	     name='gym_workout_complete'),
-	
+	path('gym/week/<int:pk>/', WeekDetailView.as_view(forced_workout_type=WorkoutType.GYM), name='gym_week_detail'),
 	# Home mode
 	path('mode/<str:workout_type>/', WorkoutModeSwitchView.as_view(), name='workout_mode_switch'),
 	path('home/programs/', HomeProgramListView.as_view(), name='home_program_list'),
@@ -120,8 +120,9 @@ urlpatterns = [
 	     name='home_program_detail'),
 	path('home/plan/<int:pk>/', PlanWeeksView.as_view(forced_workout_type=WorkoutType.HOME), name='home_plan_weeks'),
 	path('home/week/<int:pk>/', HomeWeekDetailView.as_view(), name='home_week_detail'),
-	path('home/workout/<int:pk>/', WorkoutDetailView.as_view(forced_workout_type=WorkoutType.HOME), name='home_workout_detail'),
-
+	path('home/workout/<int:pk>/', WorkoutDetailView.as_view(forced_workout_type=WorkoutType.HOME),
+	     name='home_workout_detail'),
+	
 	path('home/workouts/<int:pk>/', WorkoutDetailView.as_view(forced_workout_type=WorkoutType.HOME),
 	     name='home_workout_detail_legacy'),
 	path('home/workout/<int:pk>/done/', HomeWorkoutDoneView.as_view(), name='home_workout_done'),
