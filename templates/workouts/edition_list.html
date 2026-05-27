@@ -763,23 +763,19 @@
         {% endif %}
         <div class="program-header-overlay">
             <div class="program-logo">{{ program.name|upper }}</div>
-{#            <div class="program-subtitle">{% trans "Professional Workout Program" %}</div>#}
         </div>
     </div>
 
     <div class="stats-bar">
         <div class="stat-item">
-            {# plans — view context_data da yuboriladi #}
             <div class="stat-value">{{ plans|length }}</div>
             <div class="stat-label">{% trans "Plans" %}</div>
         </div>
         <div class="stat-item">
-            {# weeks_count — Plan modelidagi to'g'ri field nomi #}
             <div class="stat-value">{{ plans.first.weeks_count|default:"6" }}</div>
             <div class="stat-label">{% trans "Weeks" %}</div>
         </div>
         <div class="stat-item">
-            {# days_per_week yo'q — o'rniga birinchi plandan haftalardagi workout sonini olamiz #}
             <div class="stat-value">{{ plans.first.weeks.first.workouts.count|default:"—" }}</div>
             <div class="stat-label">{% trans "Days/Week" %}</div>
         </div>
@@ -796,15 +792,20 @@
 
     <div class="editions-list">
         {% for plan in plans %}
-            {# URL: gym yoki home ga qarab tanlang #}
-<a href="{% if is_custom %}{% url 'custom_plan_weeks' plan.id %}{% elif is_home_mode %}{% url 'home_plan_weeks' plan.id %}{% else %}{% url 'plan_weeks' plan.id %}{% endif %}" class="edition-card">                <div class="edition-number edition-{{ forloop.counter }}">
+{% if is_custom %}
+    {% url 'custom_plan_weeks' plan.id %}
+{% elif is_home_mode %}
+    {% url 'home_plan_weeks' plan.id %}
+{% elif use_gym_urls %}
+    {% url 'gym_plan_weeks' plan.id %}
+{% else %}
+    {% url 'plan_weeks' plan.id %}
+{% endif %}   class="edition-card">                <div class="edition-number edition-{{ forloop.counter }}">
                     {{ forloop.counter }}
                 </div>
                 <div class="edition-content">
-                    {# plan.name — to'g'ri field nomi (title emas!) #}
                     <div class="edition-title">{{ plan.name }}</div>
                     <div class="edition-meta">
-                        {# weeks_count — to'g'ri field nomi #}
                         {{ plan.weeks_count }}{% trans "w" %} &bull; {{ plan.weeks.first.workouts.count|default:"?" }}{% trans "d/week" %}
                     </div>
                     {% if plan.is_premium %}

@@ -112,10 +112,11 @@ class ProgramDetailView(DetailView):
 		context['plans'] = self.object.plans.filter(program__workout_type=active_type).order_by('order')
 		context['active_workout_type'] = active_type
 		context['is_home_mode'] = active_type == WorkoutType.HOME
+		context['use_gym_urls'] = self.forced_workout_type == WorkoutType.GYM  # ← QO'SHING
+		
 		return context
 
 
-# --- 3. Plan ichidagi 6 ta HAFTA (Week List) ---
 class PlanWeeksView(DetailView):
 	forced_workout_type = None
 	model = Plan
