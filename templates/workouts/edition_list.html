@@ -792,15 +792,7 @@
 
         <div class="editions-list">
             {% for plan in plans %}
-                {% if is_custom %}
-                    {% url 'custom_plan_weeks' plan.id %}
-                {% elif is_home_mode %}
-                    {% url 'home_plan_weeks' plan.id %}
-                {% elif use_gym_urls %}
-                    {% url 'gym_plan_weeks' plan.id %}
-                {% else %}
-                    {% url 'plan_weeks' plan.id %}
-                {% endif %}   class="edition-card">
+                <a href="{% if is_custom %}{% url 'custom_plan_weeks' plan.id %}{% elif is_home_mode %}{% url 'home_plan_weeks' plan.id %}{% elif use_gym_urls %}{% url 'gym_plan_weeks' plan.id %}{% else %}{% url 'plan_weeks' plan.id %}{% endif %}" class="edition-card">
                 <div class="edition-number edition-{{ forloop.counter }}">
                     {{ forloop.counter }}
                 </div>
