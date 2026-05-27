@@ -748,100 +748,104 @@
     </style>
 {% endblock %}
 {% block content %}
-<div class="page-header">
-    <button class="back-btn" onclick="goBack()">&#8592;</button>
-    <h1 class="page-title">&#127947; {% trans 'PLANS' %}</h1>
-    <div class="header-spacer"></div>
-</div>
-
-<div class="container">
-    <div class="program-header">
-        {% if program.image %}
-            <img src="{{ program.image.url }}" alt="{{ program.name }}" class="program-header-image">
-        {% else %}
-            <div class="placeholder-image">{{ program.name|slice:":3"|upper }}</div>
-        {% endif %}
-        <div class="program-header-overlay">
-            <div class="program-logo">{{ program.name|upper }}</div>
-        </div>
+    <div class="page-header">
+        <button class="back-btn" onclick="goBack()">&#8592;</button>
+        <h1 class="page-title">&#127947; {% trans 'PLANS' %}</h1>
+        <div class="header-spacer"></div>
     </div>
 
-    <div class="stats-bar">
-        <div class="stat-item">
-            <div class="stat-value">{{ plans|length }}</div>
-            <div class="stat-label">{% trans "Plans" %}</div>
+    <div class="container">
+        <div class="program-header">
+            {% if program.image %}
+                <img src="{{ program.image.url }}" alt="{{ program.name }}" class="program-header-image">
+            {% else %}
+                <div class="placeholder-image">{{ program.name|slice:":3"|upper }}</div>
+            {% endif %}
+            <div class="program-header-overlay">
+                <div class="program-logo">{{ program.name|upper }}</div>
+            </div>
         </div>
-        <div class="stat-item">
-            <div class="stat-value">{{ plans.first.weeks_count|default:"6" }}</div>
-            <div class="stat-label">{% trans "Weeks" %}</div>
+
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-value">{{ plans|length }}</div>
+                <div class="stat-label">{% trans "Plans" %}</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">{{ plans.first.weeks_count|default:"6" }}</div>
+                <div class="stat-label">{% trans "Weeks" %}</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">{{ plans.first.weeks.first.workouts.count|default:"—" }}</div>
+                <div class="stat-label">{% trans "Days/Week" %}</div>
+            </div>
         </div>
-        <div class="stat-item">
-            <div class="stat-value">{{ plans.first.weeks.first.workouts.count|default:"—" }}</div>
-            <div class="stat-label">{% trans "Days/Week" %}</div>
+
+        <div class="program-info">
+            <h2 class="info-title">{% trans "About this program" %}</h2>
+            <p class="info-text">
+                {{ program.description|default:"Transform your body with this comprehensive workout program designed for all fitness levels."|truncatewords:25 }}
+            </p>
         </div>
-    </div>
 
-    <div class="program-info">
-        <h2 class="info-title">{% trans "About this program" %}</h2>
-        <p class="info-text">
-            {{ program.description|default:"Transform your body with this comprehensive workout program designed for all fitness levels."|truncatewords:25 }}
-        </p>
-    </div>
+        <div class="section-title">{% trans 'Choose Your Plan' %}</div>
 
-    <div class="section-title">{% trans 'Choose Your Plan' %}</div>
-
-    <div class="editions-list">
-        {% for plan in plans %}
-{% if is_custom %}
-    {% url 'custom_plan_weeks' plan.id %}
-{% elif is_home_mode %}
-    {% url 'home_plan_weeks' plan.id %}
-{% elif use_gym_urls %}
-    {% url 'gym_plan_weeks' plan.id %}
-{% else %}
-    {% url 'plan_weeks' plan.id %}
-{% endif %}   class="edition-card">                <div class="edition-number edition-{{ forloop.counter }}">
+        <div class="editions-list">
+            {% for plan in plans %}
+                {% if is_custom %}
+                    {% url 'custom_plan_weeks' plan.id %}
+                {% elif is_home_mode %}
+                    {% url 'home_plan_weeks' plan.id %}
+                {% elif use_gym_urls %}
+                    {% url 'gym_plan_weeks' plan.id %}
+                {% else %}
+                    {% url 'plan_weeks' plan.id %}
+                {% endif %}   class="edition-card">
+                <div class="edition-number edition-{{ forloop.counter }}">
                     {{ forloop.counter }}
                 </div>
                 <div class="edition-content">
                     <div class="edition-title">{{ plan.name }}</div>
                     <div class="edition-meta">
-                        {{ plan.weeks_count }}{% trans "w" %} &bull; {{ plan.weeks.first.workouts.count|default:"?" }}{% trans "d/week" %}
+                        {{ plan.weeks_count }}{% trans "w" %} &bull;
+                        {{ plan.weeks.first.workouts.count|default:"?" }}{% trans "d/week" %}
                     </div>
                     {% if plan.is_premium %}
                         <div class="edition-premium">&#9733; {% trans "Premium" %}</div>
                     {% endif %}
                 </div>
                 <div class="edition-arrow">&#8250;</div>
-            </a>
-        {% empty %}
-            <div class="empty-state">
-                <div class="icon">&#127947;</div>
-                <h3>{% trans 'No plans available' %}</h3>
-                <p>{% trans 'Check back later for workout plans' %}</p>
-            </div>
-        {% endfor %}
+                </a>
+            {% empty %}
+                <div class="empty-state">
+                    <div class="icon">&#127947;</div>
+                    <h3>{% trans 'No plans available' %}</h3>
+                    <p>{% trans 'Check back later for workout plans' %}</p>
+                </div>
+            {% endfor %}
+        </div>
     </div>
-</div>
 {% endblock %}
 
 {% block extra_js %}
-<script>
-function goBack() {
-    {% if is_custom %}
-        window.location.href = '{% url "favorite_list_page" %}';
-    {% elif is_home_mode %}
-        window.location.href = '{% url "home_program_list" %}';
-    {% else %}
-        window.location.href = '{% url "gym_program_list" %}';
-    {% endif %}
-}    document.querySelectorAll('.edition-card').forEach(card => {
-        card.addEventListener('touchstart', function () {
-            this.style.transform = 'scale(0.98)';
+    <script>
+        function goBack() {
+            {% if is_custom %}
+                window.location.href = '{% url "favorite_list_page" %}';
+            {% elif is_home_mode %}
+                window.location.href = '{% url "home_program_list" %}';
+            {% else %}
+                window.location.href = '{% url "gym_program_list" %}';
+            {% endif %}
+        }
+
+        document.querySelectorAll('.edition-card').forEach(card => {
+            card.addEventListener('touchstart', function () {
+                this.style.transform = 'scale(0.98)';
+            });
+            card.addEventListener('touchend', function () {
+                this.style.transform = '';
+            });
         });
-        card.addEventListener('touchend', function () {
-            this.style.transform = '';
-        });
-    });
-</script>
+    </script>
 {% endblock %}
