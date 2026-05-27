@@ -178,7 +178,6 @@ class WeekDetailView(DetailView):
 		return context
 
 
-# --- 5. Kun tafsilotlari (Mashqlar ro'yxati va START tugmasi) ---
 class WorkoutDetailView(DetailView):
 	forced_workout_type = None
 	

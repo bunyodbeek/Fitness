@@ -120,8 +120,8 @@ urlpatterns = [
 	     name='home_program_detail'),
 	path('home/plan/<int:pk>/', PlanWeeksView.as_view(forced_workout_type=WorkoutType.HOME), name='home_plan_weeks'),
 	path('home/week/<int:pk>/', HomeWeekDetailView.as_view(), name='home_week_detail'),
-	path('home/workout/<int:pk>/', WorkoutDetailView.as_view(forced_workout_type=WorkoutType.HOME),
-	     name='home_workout_detail'),
+	path('home/workout/<int:pk>/', WorkoutDetailView.as_view(forced_workout_type=WorkoutType.HOME), name='home_workout_detail'),
+
 	path('home/workouts/<int:pk>/', WorkoutDetailView.as_view(forced_workout_type=WorkoutType.HOME),
 	     name='home_workout_detail_legacy'),
 	path('home/workout/<int:pk>/done/', HomeWorkoutDoneView.as_view(), name='home_workout_done'),

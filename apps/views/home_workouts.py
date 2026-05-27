@@ -273,13 +273,15 @@ class HomeWeekDetailView(DetailView):
 	template_name = 'workouts/week_days.html'
 	context_object_name = 'week'
 	
+	def get_queryset(self):
+		return Week.objects.filter(plan__program__workout_type=WorkoutType.HOME)  
+	
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		workouts = self.object.workouts.all().order_by('day_number').annotate(
 			exercise_count=Count('workout_exercises')
 		)
 		
-		# Home mode da UserWorkoutProgress orqali completed kunlarni aniqlaymiz
 		completed_ids = set()
 		if self.request.user.is_authenticated:
 			from apps.models.workouts import UserWorkoutProgress
