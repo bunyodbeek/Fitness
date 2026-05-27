@@ -478,8 +478,7 @@
 {% block content %}
 
    <div class="page-header">
-    <button class="back-btn" onclick="window.location.href='{% if is_home_mode %}{% url 'home_plan_weeks' week.plan.id %}{% else %}{% url 'plan_weeks' week.plan.id %}{% endif %}'">
-        &#8592;</button>
+<button class="back-btn" onclick="window.location.href='{% if is_home_mode %}{% url 'home_plan_weeks' week.plan.id %}{% else %}{% url 'gym_plan_weeks' week.plan.id %}{% endif %}'">        &#8592;</button>
     <h1 class="page-title">{% trans "Week" %} {{ week.week_number }}</h1>
     <div class="header-spacer"></div>
 </div>
@@ -509,9 +508,8 @@
 
         <div class="days-list">
             {% for workout in workouts %}
-                <a href="
-                        {% if is_home_mode %}{% url 'home_workout_detail' workout.id %}{% else %}{% url 'workout_detail' workout.id %}{% endif %}"
-                   class="day-card {% if workout.id in completed_workout_ids %}completed{% endif %}">
+<a href="{% if is_home_mode %}{% url 'home_workout_detail' workout.id %}{% else %}{% url 'gym_workout_detail' workout.id %}{% endif %}"
+   class="day-card {% if workout.id in completed_workout_ids %}completed{% endif %}">
 
                     <!-- Day circle -->
                     <div class="day-circle">

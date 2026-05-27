@@ -152,18 +152,16 @@ class WeekDetailView(DetailView):
 	forced_workout_type = None
 	
 	model = Week
-	template_name = 'workouts/week_days.html'  # Yangi template yaratishingiz kerak
+	template_name = 'workouts/week_days.html'
 	context_object_name = 'week'
 	
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		# Shu haftaga tegishli hamma kunlarni olish
 		active_type = self.object.plan.program.workout_type
 		workouts = self.object.workouts.all().order_by('day_number').annotate(
 			exercise_count=Count('workout_exercises')
 		)
 		
-		# Qaysi kunlar bajarilganini aniqlash
 		profile = getattr(self.request.user, 'profile', None)
 		completed_ids = set()
 		if profile:
