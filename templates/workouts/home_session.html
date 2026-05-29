@@ -140,7 +140,7 @@
         }
 
         .progress-count {
-           font-size: 10px;
+            font-size: 10px;
             font-weight: 700;
             color: rgba(255, 255, 255, 0.3);
             text-transform: uppercase;
@@ -195,10 +195,10 @@
 
         /* ?? EXERCISE NAME ?? */
         .exercise-name {
-            font-size: clamp(18px, 5.5vw, 26px);
+            font-size: clamp(18px, 5.5vw, 22px);
             font-weight: 900;
             color: var(--gold);
-            margin-bottom: 5px;
+            margin-bottom: 0;
             margin-top: 0;
             line-height: 1.2;
             text-align: center;
@@ -257,6 +257,34 @@
         .fullscreen-btn svg {
             width: 18px;
             height: 18px;
+        }
+
+        /* CSS fallback fullscreen (iOS rasm / WebView) */
+        .exercise-image-wrap.css-fullscreen {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            aspect-ratio: auto;
+            z-index: 9999;
+            border-radius: 0;
+            background: #000;
+            margin: 0;
+        }
+
+        .exercise-image-wrap.css-fullscreen .exercise-image {
+            object-fit: contain;
+        }
+
+        body.fs-lock {
+            overflow: hidden;
+        }
+
+        /* native fullscreen'da ham contain bo'lsin */
+        .exercise-image:fullscreen,
+        .exercise-image:-webkit-full-screen {
+            object-fit: contain;
+            background: #000;
         }
 
         /* ?? DESCRIPTION (rasm 1 dagidek - chekada chevron) ?? */
@@ -1119,9 +1147,11 @@
             if (roundNum < currentRound) {
                 fill.style.width = '100%'; // tugagan roundlar to'liq
             } else if (roundNum === currentRound) {
-                // joriy round - exercise soniga qarab to'ladi
+                // joriy round - tugatilgan exercise soniga qarab to'ladi
+                // currentExIndex = hozir bajarilayotgan exercise (hali tugamagan)
+                // shuning uchun tugatilganlar soni = currentExIndex
                 const pct = TOTAL_EXERCISES > 0
-                    ? ((currentExIndex + 1) / TOTAL_EXERCISES) * 100
+                    ? (currentExIndex / TOTAL_EXERCISES) * 100
                     : 0;
                 fill.style.width = pct + '%';
             } else {
@@ -1264,24 +1294,41 @@
         if (video) video.pause();
     }
 
-    // ?? FULLSCREEN / gorizontal ??
+    // ?? FULLSCREEN (telefon uchun to'liq ekran) ??
     function toggleFullscreen() {
         const el = document.getElementById('exImage');
         if (!el) return;
-        const target = (el.tagName === 'VIDEO' || el.tagName === 'IMG')
-            ? el
-            : el.closest('.exercise-image-wrap');
-        if (!target) return;
 
-        if (!document.fullscreenElement) {
-            if (target.requestFullscreen) target.requestFullscreen();
-            else if (target.webkitRequestFullscreen) target.webkitRequestFullscreen();
-            else if (target.webkitEnterFullscreen) target.webkitEnterFullscreen(); // iOS video
+        // 1) Agar VIDEO bo'lsa va iOS native fullscreen mavjud bo'lsa - eng ishonchli yo'l
+        if (el.tagName === 'VIDEO' && typeof el.webkitEnterFullscreen === 'function') {
+            try { el.webkitEnterFullscreen(); return; } catch (e) {}
+        }
+
+        // 2) Standart Fullscreen API (Android Chrome, desktop)
+        const wrap = el.closest('.exercise-image-wrap') || el;
+        const fsTarget = (el.tagName === 'VIDEO') ? el : wrap;
+
+        const isFs = document.fullscreenElement || document.webkitFullscreenElement;
+        if (!isFs) {
+            if (fsTarget.requestFullscreen) { fsTarget.requestFullscreen(); return; }
+            if (fsTarget.webkitRequestFullscreen) { fsTarget.webkitRequestFullscreen(); return; }
+            // 3) Fallback: CSS orqali to'liq ekran (iOS rasm / WebView uchun)
+            wrap.classList.toggle('css-fullscreen');
+            document.body.classList.toggle('fs-lock');
         } else {
             if (document.exitFullscreen) document.exitFullscreen();
             else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
         }
     }
+
+    // CSS fallback fullscreen'dan chiqish (tap qilganda)
+    document.addEventListener('click', function (e) {
+        const fsEl = document.querySelector('.exercise-image-wrap.css-fullscreen');
+        if (fsEl && !e.target.closest('.fullscreen-btn')) {
+            fsEl.classList.remove('css-fullscreen');
+            document.body.classList.remove('fs-lock');
+        }
+    }, true);
 
     // ?? EXERCISE TIMER ??
     function startExerciseTimer() {
