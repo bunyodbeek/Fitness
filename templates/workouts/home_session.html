@@ -25,14 +25,16 @@
             --gold: #ffd700;
             --gold2: #ffb300;
             --red: #ff4757;
-            --bg: #0a0a0a; /* ← qora */
-            --bg2: #111111; /* ← card background */
+            --bg: #0a0a0a; /* ? qora */
+            --bg2: #111111; /* ? card background */
             --border: rgba(255, 215, 0, 0.12);
             --muted: rgba(255, 255, 255, 0.45);
             --card-bg: rgba(255, 255, 255, 0.04);
+            --gold-grad: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
         }
 
-        /* ── HEADER ── */
+
+        /* ?? HEADER ?? */
         .session-header {
             position: fixed;
             top: 0;
@@ -44,10 +46,25 @@
             padding: 0 14px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            gap: 8px;
             border-bottom: 1px solid var(--border);
             height: 52px;
+        }
+
+        /* exit chapda, timer o'ngda mustaqil; title absolute markazda */
+        .header-side {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            z-index: 2;
+        }
+
+        .header-side.left {
+            justify-content: flex-start;
+        }
+
+        .header-side.right {
+            justify-content: flex-end;
+            margin-left: auto;
         }
 
         .exit-btn {
@@ -64,9 +81,15 @@
             flex-shrink: 0;
         }
 
+        /* title endi absolute markazda - header markaziga to'liq joylashadi */
         .header-center {
-            flex: 1;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
             text-align: center;
+            z-index: 1;
+            max-width: 55%;
         }
 
         .header-day-name {
@@ -74,6 +97,10 @@
             font-weight: 800;
             color: #fff;
             letter-spacing: 1px;
+            text-transform: uppercase;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .overall-timer {
@@ -86,7 +113,7 @@
             transition: opacity 0.3s;
         }
 
-        /* ── PROGRESS ── */
+        /* ?? PROGRESS ?? */
         .progress-section {
             position: fixed;
             top: 52px;
@@ -101,7 +128,7 @@
         .progress-info {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 5px;
+            margin-bottom: 7px;
         }
 
         .progress-label {
@@ -113,26 +140,39 @@
         }
 
         .progress-count {
-            font-size: 10px;
+           font-size: 10px;
             font-weight: 700;
-            color: var(--gold);
+            color: rgba(255, 255, 255, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
         }
 
-        .progress-track {
-            height: 3px;
+        /* ?? SEGMENTED PROGRESS (rasm 1 dagidek) ?? */
+        .progress-segments {
+            display: flex;
+            gap: 5px;
+            width: 100%;
+        }
+
+        .progress-segment {
+            flex: 1;
+            height: 5px;
             background: rgba(255, 255, 255, 0.08);
             border-radius: 99px;
             overflow: hidden;
+            position: relative;
         }
 
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--gold), #ff6b6b);
+        .progress-segment-fill {
+            position: absolute;
+            inset: 0;
+            width: 0%;
+            background: var(--gold-grad);
             border-radius: 99px;
-            transition: width 0.5s ease;
+            transition: width 0.4s ease;
         }
 
-        /* ── SCROLL CONTAINER ── */
+        /* ?? SCROLL CONTAINER ?? */
         .scroll-wrap {
             position: fixed;
             top: 96px; /* header + progress */
@@ -153,18 +193,19 @@
             padding: 12px 0 20px;
         }
 
-        /* ── EXERCISE NAME ── */
+        /* ?? EXERCISE NAME ?? */
         .exercise-name {
             font-size: clamp(18px, 5.5vw, 26px);
             font-weight: 900;
             color: var(--gold);
-            margin-bottom: 10px;
+            margin-bottom: 5px;
+            margin-top: 0;
             line-height: 1.2;
             text-align: center;
-            padding: 0 14px;
+            text-transform: uppercase;
         }
 
-        /* ── VIDEO frameless ── */
+        /* ?? VIDEO frameless ?? */
         .exercise-image-wrap {
             position: relative;
             width: 100%;
@@ -172,6 +213,7 @@
             background: #000;
             overflow: hidden;
             margin-bottom: 12px;
+            border-radius: 14px;
         }
 
         .exercise-image {
@@ -193,49 +235,77 @@
             opacity: 0.3;
         }
 
-        /* ── DESCRIPTION ── */
+        /* fullscreen / gorizontal button (rasm 1 dagidek, chap yuqorida) */
+        .fullscreen-btn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 5;
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #fff;
+        }
+
+        .fullscreen-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* ?? DESCRIPTION (rasm 1 dagidek - chekada chevron) ?? */
         .description-block {
-            padding: 9px 14px;
+            margin: 0 14px 14px;
+            padding: 12px 14px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 14px;
             cursor: pointer;
             transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
         .description-block:hover {
             background: rgba(255, 255, 255, 0.07);
         }
 
-        .description-label {
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 1.5px;
-            color: rgba(255, 255, 255, 0.4);
-            text-transform: uppercase;
-            flex: 1;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .description-expand-btn {
-            font-size: 10px;
-            font-weight: 700;
-            color: var(--gold);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            flex-shrink: 0;
-        }
-
         .desc-preview-text {
+            flex: 1;
             font-size: 12px;
             color: rgba(255, 255, 255, 0.6);
             line-height: 1.5;
+            text-transform: lowercase;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
 
-        /* ── DESC MODAL (gym style) ── */
+        .desc-chevron {
+            flex-shrink: 0;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.4);
+            transition: transform 0.2s;
+        }
+
+        .desc-chevron svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* ?? DESC MODAL (gym style) ?? */
         .desc-overlay {
             position: fixed;
             inset: 0;
@@ -301,20 +371,21 @@
             font-size: 13px;
             line-height: 1.7;
             color: rgba(255, 255, 255, 0.75);
+            text-transform: lowercase;
         }
 
 
-        /* ── TIMER ── */
+        /* ?? TIMER (kattaroq, raqam markazda) ?? */
         .timer-wrap {
             display: flex;
             justify-content: center;
-            margin: 0 0 14px;
+            margin: 6px 0 18px;
         }
 
         .timer-circle-container {
             position: relative;
-            width: 180px;
-            height: 180px;
+            width: 230px;
+            height: 230px;
         }
 
         .timer-svg {
@@ -339,17 +410,17 @@
             transition: stroke-dashoffset 1s linear;
         }
 
+        /* inner endi grid - timer markazda, sec absolute pastda */
         .timer-inner {
             position: absolute;
             inset: 0;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
         }
 
         .timer-display {
-            font-size: 48px;
+            font-size: 58px;
             font-weight: 900;
             color: var(--gold);
             line-height: 1;
@@ -357,16 +428,20 @@
             letter-spacing: -1px;
         }
 
+        /* sec endi absolute - timer markazga to'g'ri turadi */
         .timer-label {
+            position: absolute;
+            bottom: 42px;
+            left: 50%;
+            transform: translateX(-50%);
             font-size: 10px;
             color: rgba(255, 255, 255, 0.35);
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 2px;
-            margin-top: 4px;
         }
 
-        /* ── NEXT UP ── */
+        /* ?? NEXT UP (clickable -> modal) ?? */
         .next-up-section {
             margin: 0 14px 14px;
         }
@@ -432,7 +507,107 @@
             color: rgba(255, 255, 255, 0.4);
         }
 
-        /* ── REST OVERLAY (gym style) ── */
+        /* ?? NEXT UP PREVIEW MODAL ?? */
+        .nextup-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(12px);
+            z-index: 720;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s;
+        }
+
+        .nextup-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .nextup-panel {
+            width: 100%;
+            max-width: 500px;
+            background: #111111;
+            border: 1px solid var(--border);
+            border-bottom: none;
+            border-radius: 24px 24px 0 0;
+            overflow: hidden;
+            transform: translateY(40px);
+            transition: transform 0.3s cubic-bezier(0.34, 1.4, 0.64, 1);
+            max-height: calc(100vh - 80px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .nextup-overlay.active .nextup-panel {
+            transform: translateY(0);
+        }
+
+        .nextup-modal-media {
+            width: 100%;
+            aspect-ratio: 16/10;
+            background: #000;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .nextup-modal-media video,
+        .nextup-modal-media img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .nextup-modal-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 64px;
+            opacity: 0.3;
+        }
+
+        .nextup-modal-body {
+            padding: 16px 20px 24px;
+            overflow-y: auto;
+        }
+
+        .nextup-modal-tag {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 6px;
+        }
+
+        .nextup-modal-name {
+            font-size: 20px;
+            font-weight: 900;
+            color: #fff;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .nextup-modal-dur {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.45);
+            margin-bottom: 12px;
+        }
+
+        .nextup-modal-desc {
+            font-size: 13px;
+            line-height: 1.7;
+            color: rgba(255, 255, 255, 0.7);
+            text-transform: lowercase;
+        }
+
+        /* ?? REST OVERLAY (gym style) ?? */
         .rest-overlay {
             position: fixed;
             inset: 0;
@@ -490,22 +665,23 @@
             margin-bottom: 22px;
         }
 
+        /* rest circle kattaroq, raqam markazda */
         .rest-circle {
-            width: 164px;
-            height: 164px;
+            position: relative;
+            width: 210px;
+            height: 210px;
             border-radius: 50%;
             border: 3px solid rgba(255, 215, 0, 0.3);
             background: radial-gradient(circle, rgba(255, 215, 0, 0.05) 0%, transparent 70%);
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 18px;
+            margin: 0 auto 22px;
             cursor: pointer;
         }
 
         .rest-time {
-            font-size: 50px;
+            font-size: 60px;
             font-weight: 900;
             letter-spacing: 3px;
             color: var(--gold);
@@ -514,13 +690,19 @@
             font-variant-numeric: tabular-nums;
         }
 
+        /* skip hint absolute pastda - raqam markazda qoladi */
         .rest-skip-hint {
+            position: absolute;
+            bottom: 38px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
             font-size: 10px;
             font-weight: 600;
             letter-spacing: 1px;
             text-transform: uppercase;
             color: rgba(255, 215, 0, 0.4);
-            margin-top: 5px;
+            line-height: 1.4;
         }
 
         .rest-skip-btn {
@@ -534,26 +716,9 @@
             letter-spacing: 1.5px;
             text-transform: uppercase;
             cursor: pointer;
-            margin-bottom: 18px;
         }
 
-        .rest-next-lbl {
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: var(--muted);
-            margin-bottom: 4px;
-        }
-
-        .rest-next-name {
-            font-size: 20px;
-            font-weight: 900;
-            letter-spacing: 2px;
-            color: #fff;
-        }
-
-        /* ── BOTTOM BAR ── */
+        /* ?? BOTTOM BAR ?? */
         .bottom-bar {
             position: fixed;
             bottom: 0;
@@ -635,7 +800,7 @@
             opacity: 0.9;
         }
 
-        /* ── EXIT MODAL ── */
+        /* ?? EXIT MODAL ?? */
         .exit-modal {
             position: fixed;
             inset: 0;
@@ -671,6 +836,7 @@
             font-weight: 900;
             color: var(--gold);
             margin-bottom: 8px;
+            text-transform: uppercase;
         }
 
         .exit-modal-box p {
@@ -678,6 +844,7 @@
             color: rgba(255, 255, 255, 0.4);
             margin-bottom: 22px;
             line-height: 1.5;
+            text-transform: lowercase;
         }
 
         .exit-modal-buttons {
@@ -696,6 +863,7 @@
             font-size: 13px;
             font-weight: 700;
             cursor: pointer;
+            text-transform: uppercase;
         }
 
         .btn-return {
@@ -708,6 +876,7 @@
             font-size: 13px;
             font-weight: 800;
             cursor: pointer;
+            text-transform: uppercase;
         }
     </style>
 {% endblock %}
@@ -736,39 +905,52 @@
         </div>
     </div>
 
+    <!-- NEXT UP PREVIEW MODAL -->
+    <div class="nextup-overlay" id="nextupOverlay" onclick="closeNextupModal()">
+        <div class="nextup-panel" onclick="event.stopPropagation()">
+            <div class="nextup-modal-media" id="nextupModalMedia"></div>
+            <div class="nextup-modal-body">
+                <div class="nextup-modal-tag">{% trans "Next Up" %}</div>
+                <div class="nextup-modal-name" id="nextupModalName"></div>
+                <div class="nextup-modal-dur" id="nextupModalDur"></div>
+                <div class="nextup-modal-desc" id="nextupModalDesc"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- REST OVERLAY (gym style) -->
     <div class="rest-overlay" id="restOverlay">
         <div class="rest-panel">
             <div class="rest-title">{% trans "REST" %}</div>
-            <div class="rest-badge" id="restBadge">{% trans 'Round Complete' %} 💪</div>
+            <div class="rest-badge" id="restBadge">{% trans 'Round Complete' %}</div>
             <div class="rest-circle" onclick="skipRest()">
                 <div class="rest-time" id="restTimerDisplay">01:00</div>
                 <div class="rest-skip-hint">{% trans "Tap to skip" %}</div>
             </div>
             <button class="rest-skip-btn" onclick="skipRest()">{% trans "Skip Rest" %}</button>
-            <div class="rest-next-lbl">{% trans "Next Up" %}</div>
-            <div class="rest-next-name" id="restNextName">—</div>
         </div>
     </div>
 
     <!-- HEADER -->
     <div class="session-header">
-        <button class="exit-btn" onclick="showExitModal()">{% trans "EXIT" %}</button>
+        <div class="header-side left">
+            <button class="exit-btn" onclick="showExitModal()">{% trans "EXIT" %}</button>
+        </div>
         <div class="header-center">
             <div class="header-day-name">{{ workout.title|default:_("Workout") }}</div>
         </div>
-        <div class="overall-timer" id="overallTimer">00:00</div>
+        <div class="header-side right">
+            <div class="overall-timer" id="overallTimer">00:00</div>
+        </div>
     </div>
 
     <!-- PROGRESS -->
     <div class="progress-section">
         <div class="progress-info">
             <span class="progress-label" id="roundLabel">ROUND {{ current_round }} OF {{ rounds }}</span>
-            <span class="progress-count" id="exCounter">1 / {{ exercises|length }}</span>
+            <span class="progress-count gold-text" id="exCounter">EXERCISE 1 OF {{ exercises|length }}</span>
         </div>
-        <div class="progress-track">
-            <div class="progress-fill" id="progressFill" style="width:0%"></div>
-        </div>
+        <div class="progress-segments" id="progressSegments"></div>
     </div>
 
     <!-- SCROLL WRAP -->
@@ -777,8 +959,17 @@
 
             <div class="exercise-name" id="exName">{{ exercises.0.name }}</div>
 
-            <!-- VIDEO frameless -->
+            <!-- VIDEO frameless + fullscreen button -->
             <div class="exercise-image-wrap">
+                <button class="fullscreen-btn" onclick="toggleFullscreen()" aria-label="Fullscreen">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                         stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M8 3H5a2 2 0 0 0-2 2v3"/>
+                        <path d="M21 8V5a2 2 0 0 0-2-2h-3"/>
+                        <path d="M3 16v3a2 2 0 0 0 2 2h3"/>
+                        <path d="M16 21h3a2 2 0 0 0 2-2v-3"/>
+                    </svg>
+                </button>
                 {% if exercises.0.video %}
                     <video autoplay loop muted playsinline class="exercise-image" id="exImage">
                         <source src="{{ exercises.0.video.url }}">
@@ -786,44 +977,50 @@
                 {% elif exercises.0.image %}
                     <img src="{{ exercises.0.image.url }}" alt="" class="exercise-image" id="exImage">
                 {% else %}
-                    <div class="exercise-image-placeholder" id="exImage">💪</div>
+                    <div class="exercise-image-placeholder" id="exImage">?</div>
                 {% endif %}
             </div>
 
-            <!-- DESCRIPTION -->
+            <!-- DESCRIPTION (chevron chekada) -->
             <div class="description-block" onclick="openDescModal()">
                 <div class="desc-preview-text" id="descPreview"></div>
+                <div class="desc-chevron">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                         stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                </div>
             </div>
 
             <!-- TIMER -->
             <div class="timer-wrap">
                 <div class="timer-circle-container">
-                    <svg class="timer-svg" viewBox="0 0 180 180">
+                    <svg class="timer-svg" viewBox="0 0 230 230">
                         <defs>
                             <linearGradient id="timerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                                 <stop offset="0%" style="stop-color:#ffd700"/>
                                 <stop offset="100%" style="stop-color:#ff6b6b"/>
                             </linearGradient>
                         </defs>
-                        <circle class="timer-bg-circle" cx="90" cy="90" r="82"/>
-                        <circle class="timer-progress-circle" cx="90" cy="90" r="82"
-                                id="timerCircle" stroke-dasharray="515" stroke-dashoffset="515"/>
+                        <circle class="timer-bg-circle" cx="115" cy="115" r="105"/>
+                        <circle class="timer-progress-circle" cx="115" cy="115" r="105"
+                                id="timerCircle" stroke-dasharray="659.7" stroke-dashoffset="659.7"/>
                     </svg>
                     <div class="timer-inner">
                         <div class="timer-display" id="timerDisplay">00:00</div>
-                        <div class="timer-label">{% trans "SEC" %}</div>
                     </div>
+                    <div class="timer-label">{% trans "SEC" %}</div>
                 </div>
             </div>
 
             <!-- NEXT UP -->
             <div class="next-up-section" id="nextUpSection" style="display:none;">
                 <div class="next-up-label">NEXT UP</div>
-                <div class="next-up-card" onclick="goToNextUp()">
-                    <div class="next-up-thumb-placeholder" id="nextUpThumb">💪</div>
+                <div class="next-up-card" onclick="openNextupModal()">
+                    <div class="next-up-thumb-placeholder" id="nextUpThumb">?</div>
                     <div class="next-up-info">
-                        <div class="next-up-name" id="nextUpName">—</div>
-                        <div class="next-up-dur" id="nextUpDur">—</div>
+                        <div class="next-up-name" id="nextUpName">?</div>
+                        <div class="next-up-dur" id="nextUpDur">?</div>
                     </div>
                 </div>
             </div>
@@ -833,19 +1030,19 @@
 
     <!-- BOTTOM BAR -->
     <div class="bottom-bar" id="bottomBar">
-        <button class="btn-start" id="startBtn" onclick="startWorkout()">▶ {% trans "START" %}</button>
+        <button class="btn-start" id="startBtn" onclick="startWorkout()">{% trans "START" %}</button>
         <button class="btn-pause" id="pauseBtn" onclick="togglePause()" style="display:none;">
-            <span id="pauseIcon">⏸</span>
             <span id="pauseText">{% trans "Pause" %}</span>
         </button>
         <button class="btn-next" id="nextBtn" onclick="nextExercise()" style="display:none;">
-            {% trans "NEXT" %} ›
+            {% trans "NEXT" %}
         </button>
     </div>
 <script>
     const T = {
         round:         "{% trans 'ROUND' %}",
         of:            "{% trans 'OF' %}",
+        exercise:      "{% trans 'EXERCISE' %}",
         pause:         "{% trans 'Pause' %}",
         resume:        "{% trans 'Resume' %}",
         next:          "{% trans 'NEXT' %}",
@@ -871,7 +1068,7 @@
     const TOTAL_ROUNDS   = {{ rounds }};
     const REST_SECONDS   = {{ rest_seconds }};
     const TOTAL_EXERCISES = EXERCISES.length;
-    const CIRCUMFERENCE  = 2 * Math.PI * 82;
+    const CIRCUMFERENCE  = 2 * Math.PI * 105;
 
     let currentRound    = {{ current_round }};
     let currentExIndex  = Math.max({{ current_order|default:1 }} - 1, 0);
@@ -899,11 +1096,44 @@
         }, 1000);
     }
 
+    // ?? SEGMENTED PROGRESS BAR (har round = 1 segment) ??
+    function buildSegments() {
+        const wrap = document.getElementById('progressSegments');
+        wrap.innerHTML = '';
+        for (let i = 0; i < TOTAL_ROUNDS; i++) {
+            const seg = document.createElement('div');
+            seg.className = 'progress-segment';
+            const fill = document.createElement('div');
+            fill.className = 'progress-segment-fill';
+            fill.id = 'segFill-' + i;
+            seg.appendChild(fill);
+            wrap.appendChild(seg);
+        }
+    }
+
+    function updateSegments() {
+        for (let i = 0; i < TOTAL_ROUNDS; i++) {
+            const fill = document.getElementById('segFill-' + i);
+            if (!fill) continue;
+            const roundNum = i + 1;
+            if (roundNum < currentRound) {
+                fill.style.width = '100%'; // tugagan roundlar to'liq
+            } else if (roundNum === currentRound) {
+                // joriy round - exercise soniga qarab to'ladi
+                const pct = TOTAL_EXERCISES > 0
+                    ? ((currentExIndex + 1) / TOTAL_EXERCISES) * 100
+                    : 0;
+                fill.style.width = pct + '%';
+            } else {
+                fill.style.width = '0%';
+            }
+        }
+    }
+
     // ?? START ??
     function startWorkout() {
         isStarted = true;
 
-        // Buttonlarni almashtirish
         document.getElementById('startBtn').style.display = 'none';
         document.getElementById('pauseBtn').style.display = 'flex';
         document.getElementById('nextBtn').style.display  = 'flex';
@@ -918,13 +1148,10 @@
         const ex = EXERCISES[currentExIndex];
         if (!ex) return;
 
-        // T bilan tarjima
         document.getElementById('roundLabel').textContent  = `${T.round} ${currentRound} ${T.of} ${TOTAL_ROUNDS}`;
-        document.getElementById('exCounter').textContent   = `${currentExIndex + 1} / ${TOTAL_EXERCISES}`;
+        document.getElementById('exCounter').textContent   = `${T.exercise} ${currentExIndex + 1} ${T.of} ${TOTAL_EXERCISES}`;
 
-        const totalSteps = TOTAL_ROUNDS * TOTAL_EXERCISES;
-        const doneSteps  = (currentRound - 1) * TOTAL_EXERCISES + currentExIndex;
-        document.getElementById('progressFill').style.width = `${(doneSteps / totalSteps) * 100}%`;
+        updateSegments();
 
         document.getElementById('exName').textContent = ex.name;
 
@@ -945,7 +1172,7 @@
                 imgWrap.src = ex.image;
             }
         } else {
-            if (imgWrap) imgWrap.outerHTML = `<div class="exercise-image-placeholder" id="exImage">💪</div>`;
+            if (imgWrap) imgWrap.outerHTML = `<div class="exercise-image-placeholder" id="exImage">?</div>`;
         }
 
         // Description preview
@@ -995,7 +1222,64 @@
         if (imageUrl) {
             thumbEl.outerHTML = `<img src="${imageUrl}" alt="" class="next-up-thumb" id="nextUpThumb">`;
         } else if (thumbEl.tagName === 'IMG') {
-            thumbEl.outerHTML = `<div class="next-up-thumb-placeholder" id="nextUpThumb">💪</div>`;
+            thumbEl.outerHTML = `<div class="next-up-thumb-placeholder" id="nextUpThumb">?</div>`;
+        }
+    }
+
+    // ?? NEXT UP modal uchun keyingi exerciseni aniqlash ??
+    function getNextExerciseData() {
+        const nextIndex = currentExIndex + 1;
+        if (nextIndex < TOTAL_EXERCISES) {
+            return { ex: EXERCISES[nextIndex], roundSuffix: '' };
+        }
+        if (currentRound < TOTAL_ROUNDS) {
+            return { ex: EXERCISES[0], roundSuffix: ' (' + T.round + ' ' + (currentRound + 1) + ')' };
+        }
+        return null;
+    }
+
+    function openNextupModal() {
+        const data = getNextExerciseData();
+        if (!data) return;
+        const ex = data.ex;
+
+        document.getElementById('nextupModalName').textContent = ex.name + data.roundSuffix;
+        document.getElementById('nextupModalDur').textContent  = formatTime(ex.duration);
+        document.getElementById('nextupModalDesc').textContent = ex.description || T.noDesc;
+
+        const media = document.getElementById('nextupModalMedia');
+        if (ex.video) {
+            media.innerHTML = `<video autoplay loop muted playsinline><source src="${ex.video}"></video>`;
+        } else if (ex.image) {
+            media.innerHTML = `<img src="${ex.image}" alt="">`;
+        } else {
+            media.innerHTML = `<div class="nextup-modal-placeholder">?</div>`;
+        }
+        document.getElementById('nextupOverlay').classList.add('active');
+    }
+
+    function closeNextupModal() {
+        document.getElementById('nextupOverlay').classList.remove('active');
+        const video = document.querySelector('#nextupModalMedia video');
+        if (video) video.pause();
+    }
+
+    // ?? FULLSCREEN / gorizontal ??
+    function toggleFullscreen() {
+        const el = document.getElementById('exImage');
+        if (!el) return;
+        const target = (el.tagName === 'VIDEO' || el.tagName === 'IMG')
+            ? el
+            : el.closest('.exercise-image-wrap');
+        if (!target) return;
+
+        if (!document.fullscreenElement) {
+            if (target.requestFullscreen) target.requestFullscreen();
+            else if (target.webkitRequestFullscreen) target.webkitRequestFullscreen();
+            else if (target.webkitEnterFullscreen) target.webkitEnterFullscreen(); // iOS video
+        } else {
+            if (document.exitFullscreen) document.exitFullscreen();
+            else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
         }
     }
 
@@ -1037,10 +1321,7 @@
         restLeft  = REST_SECONDS;
         clearInterval(exerciseTimer);
 
-        const nextEx = EXERCISES[0];
-        document.getElementById('restNextName').textContent      = nextEx ? nextEx.name : '?';
-        // T bilan tarjima
-        document.getElementById('restBadge').textContent         = `${T.roundComplete} ${currentRound} ✓`;
+        document.getElementById('restBadge').textContent         = `${T.roundComplete} ${currentRound}`;
         document.getElementById('restTimerDisplay').textContent  = formatTime(restLeft);
         document.getElementById('restOverlay').classList.add('active');
 
@@ -1064,20 +1345,9 @@
 
     function skipRest() { endRest(); }
 
-    function goToNextUp() {
-        const nextIndex = currentExIndex + 1;
-        if (nextIndex < TOTAL_EXERCISES) {
-            currentExIndex = nextIndex;
-            updateUI();
-            if (isStarted && !isResting) startExerciseTimer();
-        }
-    }
-
     // ?? PAUSE ??
     function togglePause() {
         isPaused = !isPaused;
-        document.getElementById('pauseIcon').textContent = isPaused ? '▶' : '⏸';
-        // T bilan tarjima
         document.getElementById('pauseText').textContent = isPaused ? T.resume : T.pause;
     }
 
@@ -1141,6 +1411,8 @@
     }
 
     // Initial display
+    buildSegments();
+    updateSegments();
     document.getElementById('timerDisplay').textContent = formatTime(EXERCISES[currentExIndex]?.duration || 0);
     const previewEl = document.getElementById('descPreview');
     if (previewEl) previewEl.textContent = EXERCISES[currentExIndex]?.description || T.noDesc;
