@@ -23,6 +23,8 @@ const T = Object.assign({
     tapToSkip:'Tap to skip',
     skipRest: 'Skip Rest',
     nextUp:   'Next Up',
+    progress: 'PROGRESS',
+    noDesc:   'No description available.',
 }, CFG.translations || {});
 
 try {
@@ -75,6 +77,40 @@ const updateExit = () => {
     b.disabled=totalCompleted<1; b.style.opacity=totalCompleted<1?'0.5':'1';
 };
 
+// ?? PROGRESS SEGMENTS (har exercise = 1 segment, set soniga qarab to'ladi) ??
+const buildSegments = () => {
+    const wrap = $('progressSegments'); if (!wrap) return;
+    wrap.innerHTML = '';
+    const n = exercises.length || 1;
+    for (let i = 0; i < n; i++) {
+        const seg = document.createElement('div');
+        seg.className = 'progress-segment';
+        const fill = document.createElement('div');
+        fill.className = 'progress-segment-fill';
+        fill.id = 'segFill-' + i;
+        seg.appendChild(fill);
+        wrap.appendChild(seg);
+    }
+};
+
+const updateSegments = () => {
+    const n = exercises.length || 0;
+    for (let i = 0; i < n; i++) {
+        const fill = $('segFill-' + i); if (!fill) continue;
+        if (i < currentExIdx) {
+            fill.style.width = '100%';            // tugagan exercise'lar to'liq
+        } else if (i === currentExIdx) {
+            // joriy exercise - tugatilgan set soniga qarab to'ladi
+            const ex = exercises[i];
+            const totalSets = (ex && ex.sets) ? ex.sets : 1;
+            const pct = totalSets > 0 ? (doneN(i) / totalSets) * 100 : 0;
+            fill.style.width = pct + '%';
+        } else {
+            fill.style.width = '0%';
+        }
+    }
+};
+
 // ? MEDIA ????????????????????????????????????????????????
 const resetMedia = ex => {
     const v=$('exerciseVideo'), img=$('exerciseImage'); if(!v||!img) return;
@@ -91,10 +127,50 @@ const resetMedia = ex => {
 };
 const toggleExerciseMedia = () => { if(exercises[currentExIdx]?.description) openDescModal(); };
 
+// ?? FULLSCREEN (vertikal to'liq ekran - gif/video formatini saqlaydi) ??
+const toggleFullscreen = (e) => {
+    if (e) { e.stopPropagation(); }
+    const v = $('exerciseVideo');
+    const img = $('exerciseImage');
+    const wrap = $('mediaContainer');
+    if (!wrap) return;
+
+    const videoActive = v && v.classList.contains('active');
+    const el = videoActive ? v : img;
+
+    // 1) iOS native video fullscreen (gif/video formatini saqlaydi, loop/muted o'zgarmaydi)
+    if (videoActive && typeof v.webkitEnterFullscreen === 'function') {
+        try { v.webkitEnterFullscreen(); return; } catch (err) {}
+    }
+
+    // 2) Standart Fullscreen API (Android/desktop)
+    const isFs = document.fullscreenElement || document.webkitFullscreenElement;
+    if (!isFs) {
+        const target = videoActive ? v : wrap;
+        if (target.requestFullscreen) { target.requestFullscreen(); return; }
+        if (target.webkitRequestFullscreen) { target.webkitRequestFullscreen(); return; }
+        // 3) CSS fallback (iOS rasm / WebView) - vertikal to'liq ekran
+        wrap.classList.toggle('css-fullscreen');
+        document.body.classList.toggle('fs-lock');
+    } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+    }
+};
+
+// CSS fallback fullscreen'dan chiqish (tap qilganda)
+document.addEventListener('click', (e) => {
+    const fsEl = document.querySelector('.exercise-media-container.css-fullscreen');
+    if (fsEl && !e.target.closest('.fullscreen-btn')) {
+        fsEl.classList.remove('css-fullscreen');
+        document.body.classList.remove('fs-lock');
+    }
+}, true);
+
 // ? DESC MODAL ???????????????????????????????????????????
 const renderDescTrigger = desc => {
     const preview = $('descPreview'); if (!preview) return;
-    preview.textContent = desc?.trim() || '';
+    preview.textContent = (desc && desc.trim()) ? desc.trim() : T.noDesc;
 };
 
 const openDescModal = () => {
@@ -102,7 +178,7 @@ const openDescModal = () => {
     const ov = $('descOverlay'); if (!ov) return;
 
     const tx = $('descModalText') || $('descText');
-    if (tx) tx.textContent = ex.description || '';
+    if (tx) tx.textContent = ex.description || T.noDesc;
 
     const media = $('descMedia');
     if (media) {
@@ -134,6 +210,82 @@ const closeDescModal = () => {
 
 const closeDescModalOnBg = e => { if (e.target.id === 'descOverlay') closeDescModal(); };
 
+// ?? NEXT UP ??
+const updateNextUp = () => {
+    const section = $('nextUpSection'); if (!section) return;
+    const nextIdx = currentExIdx + 1;
+    if (nextIdx >= exercises.length) {
+        section.style.display = 'none';
+        return;
+    }
+    const next = exercises[nextIdx];
+    section.style.display = 'block';
+    const nm = $('nextUpName'); if (nm) nm.textContent = next.name || '';
+
+    // davomiylik / set ma'lumoti
+    const dur = $('nextUpDur');
+    if (dur) {
+        const exType = (next.type || 'strength').toLowerCase();
+        if (exType === 'strength' && next.sets) {
+            dur.textContent = `${next.sets} ${T.setOf.toLowerCase()} × ${next.reps || ''} ${T.reps.toLowerCase()}`;
+        } else if (next.duration_minutes) {
+            dur.textContent = `${next.duration_minutes} min`;
+        } else {
+            dur.textContent = '';
+        }
+    }
+
+    updateNextUpThumb(next.image);
+};
+
+const updateNextUpThumb = imageUrl => {
+    const thumbEl = $('nextUpThumb'); if (!thumbEl) return;
+    if (imageUrl) {
+        thumbEl.outerHTML = `<img src="${imageUrl}" alt="" class="next-up-thumb" id="nextUpThumb">`;
+    } else if (thumbEl.tagName === 'IMG') {
+        thumbEl.outerHTML = `<div class="next-up-thumb-placeholder" id="nextUpThumb">?</div>`;
+    }
+};
+
+const openNextupModal = () => {
+    const nextIdx = currentExIdx + 1;
+    if (nextIdx >= exercises.length) return;
+    const ex = exercises[nextIdx];
+
+    const nm = $('nextupModalName'); if (nm) nm.textContent = ex.name || '';
+    const dur = $('nextupModalDur');
+    if (dur) {
+        const exType = (ex.type || 'strength').toLowerCase();
+        if (exType === 'strength' && ex.sets) {
+            dur.textContent = `${ex.sets} ${T.setOf.toLowerCase()} × ${ex.reps || ''} ${T.reps.toLowerCase()}`;
+        } else if (ex.duration_minutes) {
+            dur.textContent = `${ex.duration_minutes} min`;
+        } else {
+            dur.textContent = '';
+        }
+    }
+    const desc = $('nextupModalDesc'); if (desc) desc.textContent = ex.description || T.noDesc;
+
+    const media = $('nextupModalMedia');
+    if (media) {
+        if (ex.video) {
+            media.innerHTML = `<video autoplay loop muted playsinline><source src="${ex.video}"></video>`;
+        } else if (ex.image) {
+            media.innerHTML = `<img src="${ex.image}" alt="">`;
+        } else {
+            media.innerHTML = `<div class="nextup-modal-placeholder">?</div>`;
+        }
+    }
+    const ov = $('nextupOverlay'); if (ov) ov.classList.add('active');
+};
+
+const closeNextupModal = () => {
+    const ov = $('nextupOverlay');
+    if (ov) ov.classList.remove('active');
+    const video = document.querySelector('#nextupModalMedia video');
+    if (video) video.pause();
+};
+
 // ?? SET CARDS ???????????????????????????????????????????
 const renderSetCards = () => {
     const ex=exercises[currentExIdx], wr=$('setsWrapper');
@@ -145,14 +297,13 @@ const renderSetCards = () => {
         const w    = getW(currentExIdx, i);
         const wStr = w%1===0 ? String(w) : w.toFixed(1);
         const rStr = ex.reps_max && ex.reps_max!==ex.reps
-            ? `${ex.reps}–${ex.reps_max}` : String(ex.reps);
+            ? `${ex.reps}?${ex.reps_max}` : String(ex.reps);
 
-        // SET X OF Y — tarjima bilan
         const lr = document.createElement('div');
         lr.className='set-label-row';
         lr.innerHTML=`
             <span class="set-label-text">${T.setOf} ${i+1} ${T.of} ${ex.sets}</span>
-            <span class="set-label-done${done?' show':''}" id="dl_${currentExIdx}_${i}">✓ ${T.complete}</span>
+            <span class="set-label-done${done?' show':''}" id="dl_${currentExIdx}_${i}">? ${T.complete}</span>
         `;
         wr.appendChild(lr);
 
@@ -195,22 +346,19 @@ const renderSetCards = () => {
             wZone.appendChild(sp);
         }
 
-        // KG — tarjima bilan
         const unitLbl=document.createElement('span');
         unitLbl.className='w-unit'; unitLbl.textContent=T.kg;
         wZone.appendChild(unitLbl);
 
         const div=document.createElement('div'); div.className='set-divider';
 
-        // REPS — tarjima bilan
         const rZone=document.createElement('div'); rZone.className='set-reps-zone';
         rZone.innerHTML=`<span class="r-num">${rStr}</span><span class="r-lbl">${T.reps}</span>`;
 
-        // Did It — tarjima bilan
         const diCell=document.createElement('div');
         diCell.className='did-it-cell';
         diCell.id=`di_${currentExIdx}_${i}`;
-        diCell.textContent=done?'✓':T.didIt;
+        diCell.textContent=done?'?':T.didIt;
         if(!done) {
             diCell.addEventListener('click', ()=>didItSet(i));
         }
@@ -243,6 +391,7 @@ const didItSet = si => {
     }
 
     updateExit();
+    updateSegments();
 
     const di = $(`di_${ei}_${si}`);
     if (di) {
@@ -270,7 +419,7 @@ const didItSet = si => {
                 setTimeout(() => card.classList.remove('pulse'), 700);
             }
             if (dl) dl.classList.add('show');
-            if (diEl) { diEl.textContent = '✓'; diEl.style.pointerEvents = 'none'; }
+            if (diEl) { diEl.textContent = '?'; diEl.style.pointerEvents = 'none'; }
             if (inp && inp.tagName === 'INPUT') {
                 const val = getW(ei, i);
                 const sp = document.createElement('span');
@@ -316,6 +465,9 @@ const loadExercise = idx => {
         if(exType2==='strength') renderSetCards();
     }
 
+    updateSegments();
+    updateNextUp();
+
     if(!sessionStart) { sessionStart=Date.now(); startTimer(); }
 };
 
@@ -345,20 +497,15 @@ const togglePause=()=>{
     }
 };
 
-// ? REST ?????????????????????????????????????????????????
+// ? REST ????????????????????????????????????????????????? (next exercise olib tashlandi)
 const startRest=(sec,completedN,totalSets,nextN,ex)=>{
     isResting=true;
     const ft=$('floatingTimer'), pb=$('pauseBtn');
     if(ft) ft.classList.add('hidden');
     if(pb) pb.style.display='none';
 
-    const badge=$('restBadge'), nxt=$('restNextName'), rt=$('restTimer'), ov=$('restOverlay');
-    // "Set 2 Complete ✓" — tarjima bilan
-    if(badge) badge.textContent=`${T.set} ${completedN} ${T.complete} ✓`;
-    const nextName=nextN<=totalSets
-        ? `${T.set} ${nextN} ${T.of} ${totalSets}`
-        : (exercises[currentExIdx+1]?.name||'');
-    if(nxt) nxt.textContent=nextName;
+    const badge=$('restBadge'), rt=$('restTimer'), ov=$('restOverlay');
+    if(badge) badge.textContent=`${T.set} ${completedN} ${T.complete}`;
     restTimeLeft=sec;
     if(rt) rt.textContent=fmtTime(restTimeLeft);
     if(ov) ov.classList.add('active');
@@ -406,6 +553,7 @@ const skipToNextExercise = () => {
 
     totalCalories += toFin(ex.calories_per_minute, 5) * toFin(ex.duration_minutes, 0);
     updateExit();
+    updateSegments();
 
     if (currentExIdx + 1 < exercises.length) {
         loadExercise(currentExIdx + 1);
@@ -464,6 +612,7 @@ document.addEventListener('click', (e) => {
 });
 
 document.addEventListener('DOMContentLoaded',()=>{
+    buildSegments();
     loadExercise(initialExIdx);
     updateExit();
 });
@@ -472,16 +621,19 @@ document.addEventListener('DOMContentLoaded',()=>{
 Object.assign(window, {
     closeDescModal,
     closeDescModalOnBg,
+    closeNextupModal,
     completeExercise,
     exitWithoutSaving,
     openDescModal,
+    openNextupModal,
     returnToWorkout,
     saveAndExit,
     showExitModal,
     skipRest,
     skipToNextExercise,
+    toggleFullscreen,
     togglePause,
     toggleExerciseMedia,
 });
 
-console.log('✅ Active Workout v2 loaded. skipToNextExercise:', typeof window.skipToNextExercise);
+console.log('? Active Workout v2 loaded. skipToNextExercise:', typeof window.skipToNextExercise);
