@@ -45,7 +45,7 @@
             }
         }
 
-        /* ── Header ── */
+        /* ===== Header ===== */
         .page-header {
             background: linear-gradient(135deg, rgba(15, 52, 96, 0.95) 0%, rgba(22, 33, 62, 0.95) 100%);
             backdrop-filter: blur(10px);
@@ -96,18 +96,25 @@
             width: 32px;
         }
 
-        /* ── Container ── */
+        /* =========================================================
+           ⬅️➡️ EKRAN CHETIDAN SPACING (ong-chap)
+           Faqat shu --side-space ni o'zgartir, hamma element birga suriladi.
+           Mobile = 12px (boshqa pagelar bilan bir xil)
+           ========================================================= */
         .container {
+            --side-space: 12px;      /* ⬅️➡️ ong-chap chetdan space */
+
             position: relative;
             z-index: 1;
             max-width: 640px;
             margin: 0 auto;
-            padding-bottom: 90px;
+            padding: 0 var(--side-space) 90px;
         }
 
-        /* ── Week Hero Banner ── */
+        /* ===== Week Hero Banner =====
+           margin: <TEPA> 0 0;  (ong-chap 0 — container side-space ishlaydi) */
         .week-hero {
-            margin: 14px 12px 0;
+            margin: 12px 0 0;   /* ⬆️ headerdan keyingi birinchi space */
             border-radius: 18px;
             overflow: hidden;
             position: relative;
@@ -197,9 +204,10 @@
             font-size: 12px;
         }
 
-        /* Progress bar */
+        /* ===== Progress bar =====
+           margin: <TEPA> 0 0;  (ong-chap 0) */
         .progress-section {
-            margin: 12px 12px 0;
+            margin: 12px 0 0;   /* ⬆️ hero/headerdan keyingi space */
             background: rgba(255, 255, 255, 0.04);
             border: 1px solid rgba(255, 215, 0, 0.1);
             border-radius: 14px;
@@ -241,22 +249,25 @@
             transition: width 0.8s ease;
         }
 
-        /* ── Section title ── */
+        /* ===== Section title ("TRAINING DAYS") =====
+           ⬆️⬇️ Tepa va past spacing shu padding dan boshqariladi.
+           padding: <TEPA> 0 <PAST>;  (ong-chap 0) */
         .section-title {
             font-size: 11px;
             font-weight: 800;
             color: rgba(255, 255, 255, 0.4);
             text-transform: uppercase;
             letter-spacing: 1.5px;
-            padding: 16px 12px 8px;
+            padding: 14px 0 8px;   /* ⬆️ progress ostidagi | ⬇️ kartalar ustidagi */
         }
 
-        /* ── Day Cards ── */
+        /* ===== Day Cards =====
+           gap = cardlar orasidagi space */
         .days-list {
-            padding: 0 12px;
+            padding: 0;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 10px;
         }
 
         .day-card {
@@ -472,6 +483,13 @@
             {# 0ms, 10ms, 20ms... very subtle stagger #}
             }
         {% endfor %}
+
+        /* ===== VERY SMALL PHONES ===== */
+        @media (max-width: 360px) {
+            .container {
+                --side-space: 10px;   /* ⬅️➡️ kichik telefonda ozgina kamroq */
+            }
+        }
     </style>
 {% endblock %}
 
@@ -536,7 +554,7 @@
                     <!-- Right side -->
                     <div class="day-right">
                         {% if workout.id in completed_workout_ids %}
-                            <span class="completed-badge">✓ {% trans "Done" %}</span>
+                            <span class="completed-badge">? {% trans "Done" %}</span>
                         {% else %}
                             <span class="day-arrow">&#8250;</span>
                         {% endif %}
@@ -545,7 +563,7 @@
                 </a>
             {% empty %}
                 <div class="empty-state">
-                    <div class="empty-icon">🏋️</div>
+                    <div class="empty-icon">??</div>
                     <h3>{% trans "No workouts yet" %}</h3>
                     <p>{% trans "This week has no training days configured" %}</p>
                 </div>

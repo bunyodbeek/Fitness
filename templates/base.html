@@ -150,72 +150,86 @@
             z-index: 1;
         }
 
-        /* ===== TELEGRAM-STYLE BOTTOM NAVIGATION ===== */
+        /* =========================================================
+           BOTTOM NAVIGATION
+           - Faqat AKTIV item'da matn ko'rinadi, qolganlarida faqat icon
+           - Ikki tomondan kengroq (ekran chetiga yaqin)
+           - Hamma item bir xil alignment (markazda)
+           ========================================================= */
         .bottom-nav {
             position: fixed;
             bottom: 0;
-            left: 20px;
-            right: 20px;
+            left: 0;
+            right: 0;
             background: linear-gradient(to top, rgba(15, 30, 48, 0.98) 0%, rgba(7, 9, 12, 0.98) 100%);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             display: flex;
             justify-content: space-around;
-            padding: 12px 6px;
+            align-items: center;
+            padding: 10px 8px;
             box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
             z-index: 100;
-            border-radius: 20px 20px 20px 20px; /* Yuqori tomoni yulduz shaklida */
-            margin: 0 16px 16px 16px; /* Pastki va tomonlardan cheklangan */
+            border-radius: 20px;
+            margin: 0 8px 10px;   /* ikki tomondan ozgina chet, kengroq */
         }
 
         .bottom-nav .nav-item {
+            flex: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
+            gap: 0;
             color: rgba(255, 255, 255, 0.6);
             text-decoration: none;
-            font-size: 12px;
             font-weight: 600;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            padding: 8px 12px;
+            transition: all 0.25s ease;
+            padding: 8px 4px;
             border-radius: 12px;
             position: relative;
-            letter-spacing: 0.7px;
-            width: 20%; /* Har bir tugma 20% ni egallaydi */
+            min-width: 0;
+            height: 52px;
         }
 
-        /* Aktiv holatda - qora fon bilan ajratish */
-        .bottom-nav .nav-item.active {
-            color: #ffd700;
-            background: rgba(0, 0, 0, 0.4); /* Rasmda ko'rinib turibdi */
-            border-radius: 12px;
-        }
-
-        /* Hover holati (agar kerak bo'lsa) */
-        .bottom-nav .nav-item:hover {
-            color: #ffd700;
-            background: rgba(255, 215, 0, 0.1);
-        }
-
-        /* Icon stillari */
+        /* Icon - barcha item'da bir xil */
         .bottom-nav .nav-item .icon {
             font-size: 24px;
-            margin-bottom: 4px;
-            transition: all 0.3s ease;
+            line-height: 1;
+            transition: transform 0.25s ease;
             filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
         }
 
-        /* Icon hover va active holatlari */
-        .bottom-nav .nav-item:hover .icon,
+        /* Matn - default yashirin (faqat aktivda ko'rinadi) */
+        .bottom-nav .nav-item .nav-label {
+            max-width: 0;
+            opacity: 0;
+            overflow: hidden;
+            white-space: nowrap;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+            margin-top: 0;
+            transition: max-width 0.3s ease, opacity 0.25s ease, margin-top 0.25s ease;
+        }
+
+        /* ===== AKTIV holat ===== */
+        .bottom-nav .nav-item.active {
+            color: #ffd700;
+            background: rgba(255, 215, 0, 0.1);
+            flex: 1.6;   /* aktiv item kengroq - matnga joy beradi */
+        }
+
         .bottom-nav .nav-item.active .icon {
-            transform: scale(1.15);
+            transform: scale(1.1);
             filter: drop-shadow(0 4px 8px rgba(255, 215, 0, 0.5));
         }
 
-        .bottom-nav .nav-item span:last-child { /* Faqat matnlar uchun */
-            text-transform: uppercase;
-            font-size: 10px;
-            letter-spacing: 0.5px;
+        .bottom-nav .nav-item.active .nav-label {
+            max-width: 120px;
+            opacity: 1;
+            margin-top: 3px;
         }
 
         /* Placeholder for images */
@@ -251,12 +265,8 @@
         }
 
         @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-            100% {
-                transform: rotate(360deg);
-            }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         /* Premium Messages */
@@ -295,14 +305,8 @@
         }
 
         @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .empty-state .icon {
@@ -314,12 +318,8 @@
         }
 
         @keyframes float {
-            0%, 100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-20px);
-            }
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
         }
 
         .empty-state h3 {
@@ -359,21 +359,8 @@
                 font-size: 15px;
             }
 
-            .bottom-nav {
-                padding: 10px 0 6px 0;
-            }
-
-            .bottom-nav .nav-item {
-                font-size: 10px;
-                padding: 6px 8px;
-            }
-
-            .bottom-nav .nav-item .icon {
-                font-size: 22px;
-            }
-
             body {
-                padding-bottom: 70px;
+                padding-bottom: 72px;
             }
         }
 
@@ -433,21 +420,12 @@
         }
 
         @keyframes toastIn {
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+            to { opacity: 1; transform: translateX(0); }
         }
 
         @keyframes toastOut {
-            from {
-                opacity: 1;
-                transform: translateX(0);
-            }
-            to {
-                opacity: 0;
-                transform: translateX(120%);
-            }
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(120%); }
         }
     </style>
     {% block extra_css %}{% endblock %}
@@ -457,25 +435,25 @@
 {% block bottom_nav %}
     <div class="bottom-nav">
         <a href="{% url 'gym_program_list' %}" class="nav-item {% if 'program' in request.path %}active{% endif %}">
-            <span class="icon">✅</span>
-            <span>{% trans "WORKOUTS" %}</span>
+            <span class="icon">&#9989;</span>
+            <span class="nav-label">{% trans "WORKOUTS" %}</span>
         </a>
         <a href="{% url 'muscle_groups' %}"
            class="nav-item {% if 'exercises' in request.path or 'muscle' in request.path %}active{% endif %}">
-            <span class="icon">💪</span>
-            <span>{% trans "EXERCISES" %}</span>
+            <span class="icon">&#128170;</span>
+            <span class="nav-label">{% trans "EXERCISES" %}</span>
         </a>
         <a href="{% url 'handbook_home' %}" class="nav-item {% if 'handbook' in request.path %}active{% endif %}">
-            <span class="icon">📚</span>
-            <span>{% trans "HANDBOOK" %}</span>
+            <span class="icon">&#128218;</span>
+            <span class="nav-label">{% trans "HANDBOOK" %}</span>
         </a>
         <a href="{% url 'favorite_list_page' %}" class="nav-item {% if 'favorites' in request.path %}active{% endif %}">
-            <span class="icon">⭐</span>
-            <span>{% trans "FAVORITES" %}</span>
+            <span class="icon">&#11088;</span>
+            <span class="nav-label">{% trans "FAVORITES" %}</span>
         </a>
         <a href="{% url 'user_profile' %}" class="nav-item {% if 'profile' in request.path %}active{% endif %}">
-            <span class="icon">👨</span>
-            <span>{% trans "PROFILE" %}</span>
+            <span class="icon">&#128100;</span>
+            <span class="nav-label">{% trans "PROFILE" %}</span>
         </a>
     </div>
 {% endblock %}

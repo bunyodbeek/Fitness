@@ -27,6 +27,9 @@
             --muted: rgba(255, 255, 255, 0.45);
             --card-bg: rgba(255, 255, 255, 0.04);
             --gold-grad: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
+
+            /* ⬅️➡️ EKRAN CHETIDAN SPACING (butun loyiha bilan bir xil) */
+            --side-space: 12px;
         }
 
         /* REUSABLE GOLD GRADIENT TEXT (butun program uchun) */
@@ -45,7 +48,7 @@
             overflow-x: hidden;
         }
 
-        /* ?? HEADER ?? */
+        /* ===== HEADER ===== */
         .session-header {
             position: sticky;
             top: 0;
@@ -53,7 +56,7 @@
             height: 52px;
             display: flex;
             align-items: center;
-            padding: 0 14px;
+            padding: 0 var(--side-space);
             background: rgba(10, 10, 10, 0.98);
             backdrop-filter: blur(16px);
             border-bottom: 1px solid var(--border);
@@ -112,11 +115,16 @@
             text-overflow: ellipsis;
         }
 
+        /* timer - boshqa pagelardagi gold gradient text bilan bir xil */
         .floating-timer {
             font-family: 'Bebas Neue', sans-serif;
             font-size: 20px;
             letter-spacing: 2px;
-            color: var(--gold);
+            background: var(--gold-grad);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
             line-height: 1;
             flex-shrink: 0;
             transition: opacity 0.3s;
@@ -127,14 +135,14 @@
             pointer-events: none;
         }
 
-        /* ?? PROGRESS (segmented - har exercise = 1 segment) ?? */
+        /* ===== PROGRESS (segmented - har exercise = 1 segment) ===== */
         .progress-section {
             position: sticky;
             top: 52px;
             z-index: 199;
             background: rgba(10, 10, 10, 0.98);
             backdrop-filter: blur(16px);
-            padding: 8px 14px;
+            padding: 8px var(--side-space);
             border-bottom: 1px solid rgba(255, 255, 255, 0.04);
         }
 
@@ -183,21 +191,26 @@
             transition: width 0.4s ease;
         }
 
-        /* ?? MAIN ?? */
+        /* ===== MAIN ===== */
         .exercise-content {
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 12px 14px 106px;
+            padding: 12px var(--side-space) 106px;
             gap: 12px;
             max-width: 500px;
             margin: 0 auto;
         }
 
+        /* exercise name - gold gradient (boshqa sahifa sarlavhalari bilan bir xil) */
         .exercise-name {
             font-size: clamp(18px, 5.5vw, 22px);
             font-weight: 900;
-            color: var(--gold);
+            background: var(--gold-grad);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
             margin-bottom: 0;
             margin-top: 0;
             line-height: 1.2;
@@ -205,7 +218,7 @@
             text-transform: uppercase;
         }
 
-        /* ?? MEDIA ?? */
+        /* ===== MEDIA ===== */
         .exercise-media-container {
             width: 100%;
             aspect-ratio: 16/9;
@@ -262,37 +275,48 @@
             height: 18px;
         }
 
-        /* CSS fallback fullscreen (iOS - vertikal to'liq ekran) */
+        /* =========================================================
+           CSS FULLSCREEN — VERTICAL to'liq ekran (portret)
+           Tugma bosilganda media-container butun ekranni egallaydi,
+           video object-fit: contain bo'lib vertikal (portret) ko'rinadi.
+           ========================================================= */
         .exercise-media-container.css-fullscreen {
             position: fixed;
             inset: 0;
             width: 100vw;
             height: 100vh;
+            height: 100dvh;          /* mobil brauzer adres paneli hisobga olinadi */
             aspect-ratio: auto;
             z-index: 9999;
             border-radius: 0;
             background: #000;
             margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .exercise-media-container.css-fullscreen .exercise-image,
         .exercise-media-container.css-fullscreen .exercise-video {
-            object-fit: contain;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;     /* vertical/portret - kesilmaydi, to'liq ko'rinadi */
+        }
+
+        /* fullscreen holatda tugma chiqish (X) ikonkasiga aylanadi, kattaroq joyda */
+        .exercise-media-container.css-fullscreen .fullscreen-btn {
+            top: 16px;
+            left: 16px;
+            width: 44px;
+            height: 44px;
+            background: rgba(0, 0, 0, 0.65);
         }
 
         body.fs-lock {
             overflow: hidden;
         }
 
-        .exercise-video:fullscreen,
-        .exercise-video:-webkit-full-screen,
-        .exercise-image:fullscreen,
-        .exercise-image:-webkit-full-screen {
-            object-fit: contain;
-            background: #000;
-        }
-
-        /* ?? DESCRIPTION (home bilan bir hil - chevron chekada, set bilan bir alignment) ?? */
+        /* ===== DESCRIPTION ===== */
         .description-block {
             width: 100%;
             padding: 12px 14px;
@@ -337,7 +361,7 @@
             height: 18px;
         }
 
-        /* ?? SETS ?? */
+        /* ===== SETS ===== */
         .sets-wrapper {
             width: 100%;
             display: flex;
@@ -372,6 +396,7 @@
             opacity: 1;
         }
 
+        /* set-card: active workout indikatori - to'liq gold (A variant, saqlandi) */
         .set-card {
             width: 100%;
             border-radius: 14px;
@@ -566,7 +591,7 @@
             animation: pulseRing 0.6s ease-out;
         }
 
-        /* ?? NEXT UP (home bilan bir hil - clickable -> modal) ?? */
+        /* ===== NEXT UP ===== */
         .next-up-section {
             width: 100%;
         }
@@ -632,7 +657,7 @@
             color: rgba(255, 255, 255, 0.4);
         }
 
-        /* ?? NEXT UP PREVIEW MODAL (home bilan bir hil) ?? */
+        /* ===== NEXT UP PREVIEW MODAL ===== */
         .nextup-overlay {
             position: fixed;
             inset: 0;
@@ -732,7 +757,7 @@
             text-transform: lowercase;
         }
 
-        /* ?? BOTTOM BAR ?? */
+        /* ===== BOTTOM BAR ===== */
         .bottom-bar {
             position: fixed;
             bottom: 0;
@@ -740,7 +765,7 @@
             right: 0;
             background: #0a0a0a;
             border-top: 1px solid rgba(255, 215, 0, 0.1);
-            padding: 10px 14px 14px;
+            padding: 10px var(--side-space) 14px;
             z-index: 200;
         }
 
@@ -773,10 +798,11 @@
             border-color: rgba(255, 255, 255, 0.25);
         }
 
+        /* NEXT tugma - boshqa pagelardagi primary gold gradient bilan bir xil */
         .next-ex-btn {
             flex: 1;
             height: 52px;
-            background: #ffd700;
+            background: var(--gold-grad);
             border: none;
             border-radius: 14px;
             color: #0a0d1a;
@@ -794,7 +820,7 @@
             transform: translateY(-1px);
         }
 
-        /* ?? REST OVERLAY (home bilan bir hil - next exercise olib tashlandi) ?? */
+        /* ===== REST OVERLAY ===== */
         .rest-overlay {
             position: fixed;
             inset: 0;
@@ -831,11 +857,16 @@
             transform: translateY(0);
         }
 
+        /* rest title - gold gradient (boshqa sarlavhalar bilan bir xil) */
         .rest-title {
             font-size: 36px;
             font-weight: 900;
             letter-spacing: 4px;
-            color: var(--gold);
+            background: var(--gold-grad);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
             margin-bottom: 8px;
             text-transform: uppercase;
         }
@@ -904,7 +935,7 @@
             cursor: pointer;
         }
 
-        /* ?? DESC MODAL ?? */
+        /* ===== DESC MODAL ===== */
         .desc-overlay {
             position: fixed;
             inset: 0;
@@ -972,7 +1003,7 @@
             text-transform: lowercase;
         }
 
-        /* ?? EXIT MODAL ?? */
+        /* ===== EXIT MODAL ===== */
         .exit-modal {
             position: fixed;
             inset: 0;
@@ -1009,11 +1040,16 @@
             transform: scale(1);
         }
 
+        /* exit title - gold gradient */
         .exit-content h3 {
             font-size: 22px;
             font-weight: 900;
             letter-spacing: 1px;
-            color: var(--gold);
+            background: var(--gold-grad);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
             margin-bottom: 7px;
             text-transform: uppercase;
         }
@@ -1042,8 +1078,9 @@
             text-transform: uppercase;
         }
 
+        /* save tugma - primary gold gradient */
         .btn-save {
-            background: linear-gradient(135deg, var(--gold), var(--gold2));
+            background: var(--gold-grad);
             color: #0a0d1a;
             border: none;
         }
@@ -1058,6 +1095,13 @@
             background: transparent;
             border: 1px solid rgba(255, 255, 255, 0.1);
             color: var(--muted);
+        }
+
+        /* ===== VERY SMALL PHONES ===== */
+        @media (max-width: 360px) {
+            :root {
+                --side-space: 10px;   /* ⬅️➡️ kichik telefonda ozgina kamroq */
+            }
         }
     </style>
 </head>
@@ -1227,7 +1271,9 @@
         complete: "{{ workout_complete_url|default:'' }}",
         start: "{{ workout_start_url|default:'' }}"
     };
+    // Eslatma: toggleFullscreen va boshqa funksiyalar active_workout_v3.js ichida.
+    // Bu yerda qayta e'lon qilmaymiz (aks holda "already declared" xatosi chiqadi).
 </script>
-<script src="{% static 'js/active_workout_v3.js' %}"></script>
+<script src="{% static 'js/active_workout_v4.js' %}"></script>
 </body>
 </html>

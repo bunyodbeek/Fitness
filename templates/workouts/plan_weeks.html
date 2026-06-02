@@ -91,19 +91,27 @@
         width: 32px;
     }
 
-   .container {
-    position: fixed;
-    top: 57px; /* header height */
-    bottom: 0;
-    left: 0; right: 0;
-    z-index: 1;
-    max-width: 640px;
-    margin: 0 auto;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: 20px;
-}
-   .container::-webkit-scrollbar { display: none; }
+    /* =========================================================
+       ⬅️➡️ EKRAN CHETIDAN SPACING (ong-chap)
+       Faqat shu --side-space ni o'zgartir, hamma element birga suriladi.
+       Mobile = 12px (boshqa pagelar bilan bir xil)
+       Eslatma: bu .container fixed + scrollable, shuni o'zgartirmadik.
+       ========================================================= */
+    .container {
+        --side-space: 12px;      /* ⬅️➡️ ong-chap chetdan space */
+
+        position: fixed;
+        top: 57px; /* header height */
+        bottom: 0;
+        left: 0; right: 0;
+        z-index: 1;
+        max-width: 640px;
+        margin: 0 auto;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        padding: 0 var(--side-space) 20px;   /* ong-chap chet + pastki scroll space */
+    }
+    .container::-webkit-scrollbar { display: none; }
 
 
     /* Plan header banner */
@@ -112,6 +120,7 @@
         height: 140px;
         overflow: hidden;
         margin-bottom: 0;
+        border-radius: 14px;   /* card kabi yumaloq, qolganlar bilan bir xil */
     }
 
     .plan-header-image {
@@ -152,7 +161,9 @@
         margin-top: 3px;
     }
 
-    /* Stats bar */
+    /* Stats bar =====
+       ⬇️⬆️ Vertikal spacing shu margin dan boshqariladi.
+       margin: <TEPA> 0 <PAST>;  (ong-chap 0 — container side-space ishlaydi) */
     .stats-bar {
         background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
         backdrop-filter: blur(10px);
@@ -161,7 +172,7 @@
         grid-template-columns: repeat(2, 1fr);
         gap: 8px;
         border: 1.5px solid rgba(255, 215, 0, 0.15);
-        margin: 12px;
+        margin: 12px 0 12px;   /* ⬆️ banner ostidagi space | ⬇️ weeks list ustidagi space */
         border-radius: 14px;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     }
@@ -190,9 +201,10 @@
         letter-spacing: 0.5px;
     }
 
-    /* Weeks list */
+    /* Weeks list =====
+       gap = cardlar orasidagi space */
     .weeks-list {
-        padding: 0 12px;
+        padding: 0;
         display: flex;
         flex-direction: column;
         gap: 10px;
@@ -276,6 +288,13 @@
     .empty-state p {
         font-size: 13px;
         color: rgba(255,255,255,0.5);
+    }
+
+    /* ===== VERY SMALL PHONES ===== */
+    @media (max-width: 360px) {
+        .container {
+            --side-space: 10px;   /* ⬅️➡️ kichik telefonda ozgina kamroq */
+        }
     }
 </style>
 {% endblock %}

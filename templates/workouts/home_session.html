@@ -14,7 +14,7 @@
         }
 
         body {
-            background: #0d0f18;
+            background: #0a0a0a;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             min-height: 100vh;
             color: #fff;
@@ -25,16 +25,19 @@
             --gold: #ffd700;
             --gold2: #ffb300;
             --red: #ff4757;
-            --bg: #0a0a0a; /* ? qora */
-            --bg2: #111111; /* ? card background */
+            --bg: #0a0a0a;
+            --bg2: #111111;
             --border: rgba(255, 215, 0, 0.12);
             --muted: rgba(255, 255, 255, 0.45);
             --card-bg: rgba(255, 255, 255, 0.04);
             --gold-grad: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
+
+            /* ⬅️➡️ EKRAN CHETIDAN SPACING (butun loyiha bilan bir xil) */
+            --side-space: 12px;
         }
 
 
-        /* ?? HEADER ?? */
+        /* ===== HEADER ===== */
         .session-header {
             position: fixed;
             top: 0;
@@ -43,14 +46,13 @@
             z-index: 100;
             background: rgba(10, 10, 10, 0.98);
             backdrop-filter: blur(16px);
-            padding: 0 14px;
+            padding: 0 var(--side-space);
             display: flex;
             align-items: center;
             border-bottom: 1px solid var(--border);
             height: 52px;
         }
 
-        /* exit chapda, timer o'ngda mustaqil; title absolute markazda */
         .header-side {
             display: flex;
             align-items: center;
@@ -81,7 +83,6 @@
             flex-shrink: 0;
         }
 
-        /* title endi absolute markazda - header markaziga to'liq joylashadi */
         .header-center {
             position: absolute;
             left: 50%;
@@ -103,17 +104,22 @@
             text-overflow: ellipsis;
         }
 
+        /* timer - gold gradient text (gym bilan bir xil) */
         .overall-timer {
             font-family: 'Bebas Neue', sans-serif;
             font-size: 20px;
             letter-spacing: 2px;
-            color: var(--gold);
+            background: var(--gold-grad);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
             line-height: 1;
             flex-shrink: 0;
             transition: opacity 0.3s;
         }
 
-        /* ?? PROGRESS ?? */
+        /* ===== PROGRESS ===== */
         .progress-section {
             position: fixed;
             top: 52px;
@@ -121,7 +127,8 @@
             right: 0;
             z-index: 99;
             background: rgba(10, 10, 10, 0.98);
-            padding: 8px 14px;
+            backdrop-filter: blur(16px);
+            padding: 8px var(--side-space);
             border-bottom: 1px solid rgba(255, 255, 255, 0.04);
         }
 
@@ -142,12 +149,10 @@
         .progress-count {
             font-size: 10px;
             font-weight: 700;
-            color: rgba(255, 255, 255, 0.3);
             text-transform: uppercase;
-            letter-spacing: 1.5px;
+            letter-spacing: 1px;
         }
 
-        /* ?? SEGMENTED PROGRESS (rasm 1 dagidek) ?? */
         .progress-segments {
             display: flex;
             gap: 5px;
@@ -172,7 +177,7 @@
             transition: width 0.4s ease;
         }
 
-        /* ?? SCROLL CONTAINER ?? */
+        /* ===== SCROLL CONTAINER ===== */
         .scroll-wrap {
             position: fixed;
             top: 96px; /* header + progress */
@@ -190,14 +195,18 @@
         .container {
             max-width: 540px;
             margin: 0 auto;
-            padding: 12px 0 20px;
+            padding: 12px var(--side-space) 20px;
         }
 
-        /* ?? EXERCISE NAME ?? */
+        /* ===== EXERCISE NAME (gold gradient - gym bilan bir xil) ===== */
         .exercise-name {
             font-size: clamp(18px, 5.5vw, 22px);
             font-weight: 900;
-            color: var(--gold);
+            background: var(--gold-grad);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
             margin-bottom: 0;
             margin-top: 0;
             line-height: 1.2;
@@ -205,14 +214,14 @@
             text-transform: uppercase;
         }
 
-        /* ?? VIDEO frameless ?? */
+        /* ===== VIDEO frameless ===== */
         .exercise-image-wrap {
             position: relative;
             width: 100%;
             aspect-ratio: 16/9;
             background: #000;
             overflow: hidden;
-            margin-bottom: 12px;
+            margin: 12px 0;
             border-radius: 14px;
         }
 
@@ -235,7 +244,7 @@
             opacity: 0.3;
         }
 
-        /* fullscreen / gorizontal button (rasm 1 dagidek, chap yuqorida) */
+        /* fullscreen button */
         .fullscreen-btn {
             position: absolute;
             top: 10px;
@@ -259,39 +268,52 @@
             height: 18px;
         }
 
-        /* CSS fallback fullscreen (iOS rasm / WebView) */
+        /* CSS fullscreen - vertikal to'liq ekran (gym bilan bir xil) */
         .exercise-image-wrap.css-fullscreen {
             position: fixed;
             inset: 0;
             width: 100vw;
             height: 100vh;
+            height: 100dvh;
             aspect-ratio: auto;
             z-index: 9999;
             border-radius: 0;
             background: #000;
             margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .exercise-image-wrap.css-fullscreen .exercise-image {
+            width: 100%;
+            height: 100%;
             object-fit: contain;
+        }
+
+        .exercise-image-wrap.css-fullscreen .fullscreen-btn {
+            top: 16px;
+            left: 16px;
+            width: 44px;
+            height: 44px;
+            background: rgba(0, 0, 0, 0.65);
         }
 
         body.fs-lock {
             overflow: hidden;
         }
 
-        /* native fullscreen'da ham contain bo'lsin */
         .exercise-image:fullscreen,
         .exercise-image:-webkit-full-screen {
             object-fit: contain;
             background: #000;
         }
 
-        /* ?? DESCRIPTION (rasm 1 dagidek - chekada chevron) ?? */
+        /* ===== DESCRIPTION ===== */
         .description-block {
-            margin: 0 14px 14px;
+            margin: 0 0 14px;
             padding: 12px 14px;
-            background: rgba(255, 255, 255, 0.04);
+            background: var(--card-bg);
             border: 1px solid rgba(255, 255, 255, 0.07);
             border-radius: 14px;
             cursor: pointer;
@@ -333,7 +355,7 @@
             height: 18px;
         }
 
-        /* ?? DESC MODAL (gym style) ?? */
+        /* ===== DESC MODAL ===== */
         .desc-overlay {
             position: fixed;
             inset: 0;
@@ -357,7 +379,7 @@
         .desc-panel {
             width: 100%;
             max-width: 500px;
-            background: rgba(0, 0, 0, 0.85);
+            background: #111111;
             border: 1px solid var(--border);
             border-top: none;
             border-radius: 0 0 24px 24px;
@@ -403,7 +425,7 @@
         }
 
 
-        /* ?? TIMER (kattaroq, raqam markazda) ?? */
+        /* ===== TIMER ===== */
         .timer-wrap {
             display: flex;
             justify-content: center;
@@ -438,7 +460,6 @@
             transition: stroke-dashoffset 1s linear;
         }
 
-        /* inner endi grid - timer markazda, sec absolute pastda */
         .timer-inner {
             position: absolute;
             inset: 0;
@@ -456,7 +477,6 @@
             letter-spacing: -1px;
         }
 
-        /* sec endi absolute - timer markazga to'g'ri turadi */
         .timer-label {
             position: absolute;
             bottom: 42px;
@@ -469,9 +489,9 @@
             letter-spacing: 2px;
         }
 
-        /* ?? NEXT UP (clickable -> modal) ?? */
+        /* ===== NEXT UP ===== */
         .next-up-section {
-            margin: 0 14px 14px;
+            margin: 0 0 14px;
         }
 
         .next-up-label {
@@ -535,7 +555,7 @@
             color: rgba(255, 255, 255, 0.4);
         }
 
-        /* ?? NEXT UP PREVIEW MODAL ?? */
+        /* ===== NEXT UP PREVIEW MODAL ===== */
         .nextup-overlay {
             position: fixed;
             inset: 0;
@@ -635,7 +655,7 @@
             text-transform: lowercase;
         }
 
-        /* ?? REST OVERLAY (gym style) ?? */
+        /* ===== REST OVERLAY ===== */
         .rest-overlay {
             position: fixed;
             inset: 0;
@@ -672,11 +692,16 @@
             transform: translateY(0);
         }
 
+        /* rest title - gold gradient (gym bilan bir xil) */
         .rest-title {
             font-size: 36px;
             font-weight: 900;
             letter-spacing: 4px;
-            color: var(--gold);
+            background: var(--gold-grad);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
             margin-bottom: 8px;
             text-transform: uppercase;
         }
@@ -693,7 +718,6 @@
             margin-bottom: 22px;
         }
 
-        /* rest circle kattaroq, raqam markazda */
         .rest-circle {
             position: relative;
             width: 210px;
@@ -718,7 +742,6 @@
             font-variant-numeric: tabular-nums;
         }
 
-        /* skip hint absolute pastda - raqam markazda qoladi */
         .rest-skip-hint {
             position: absolute;
             bottom: 38px;
@@ -746,7 +769,7 @@
             cursor: pointer;
         }
 
-        /* ?? BOTTOM BAR ?? */
+        /* ===== BOTTOM BAR ===== */
         .bottom-bar {
             position: fixed;
             bottom: 0;
@@ -756,17 +779,18 @@
             background: rgba(10, 10, 10, 0.98);
             backdrop-filter: blur(16px);
             border-top: 1px solid var(--border);
-            padding: 12px 14px 20px;
+            padding: 12px var(--side-space) 20px;
             display: flex;
             gap: 10px;
             height: 80px;
             align-items: center;
         }
 
+        /* START tugma - gold gradient (gym primary bilan bir xil) */
         .btn-start {
             width: 100%;
             padding: 14px;
-            background: var(--gold);
+            background: var(--gold-grad);
             border: none;
             border-radius: 16px;
             color: #0a0a0a;
@@ -781,13 +805,14 @@
 
         .btn-start:hover {
             opacity: 0.9;
+            transform: translateY(-1px);
         }
 
         .btn-pause {
             flex: 1;
             padding: 14px;
-            background: rgba(255, 255, 255, 0.07);
-            border: 1.5px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.08);
+            border: 1.5px solid rgba(255, 255, 255, 0.15);
             border-radius: 16px;
             color: #fff;
             font-size: 14px;
@@ -801,13 +826,15 @@
         }
 
         .btn-pause:hover {
-            background: rgba(255, 255, 255, 0.11);
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.25);
         }
 
+        /* NEXT tugma - gold gradient (gym bilan bir xil) */
         .btn-next {
             flex: 1;
             padding: 14px;
-            background: var(--gold);
+            background: var(--gold-grad);
             border: none;
             border-radius: 16px;
             color: #0a0a0a;
@@ -826,13 +853,14 @@
 
         .btn-next:hover {
             opacity: 0.9;
+            transform: translateY(-1px);
         }
 
-        /* ?? EXIT MODAL ?? */
+        /* ===== EXIT MODAL (gym style bilan bir xil) ===== */
         .exit-modal {
             position: fixed;
             inset: 0;
-            background: rgba(5, 5, 5, 0.9);
+            background: rgba(5, 7, 18, 0.88);
             backdrop-filter: blur(12px);
             display: flex;
             align-items: center;
@@ -849,81 +877,98 @@
             pointer-events: all;
         }
 
-        .exit-modal-box {
+        .exit-content {
             width: 100%;
-            max-width: 340px;
-            background: #141414;
-            border: 1px solid rgba(255, 215, 0, 0.15);
+            max-width: 360px;
+            background: #111111;
+            border: 1px solid rgba(255, 215, 0, 0.18);
             border-radius: 24px;
-            padding: 28px 24px;
+            padding: 30px 22px;
             text-align: center;
+            transform: scale(0.95);
+            transition: transform 0.25s;
         }
 
-        .exit-modal-box h3 {
+        .exit-modal.active .exit-content {
+            transform: scale(1);
+        }
+
+        /* exit title - gold gradient */
+        .exit-content h3 {
             font-size: 22px;
             font-weight: 900;
-            color: var(--gold);
-            margin-bottom: 8px;
+            letter-spacing: 1px;
+            background: var(--gold-grad);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+            margin-bottom: 7px;
             text-transform: uppercase;
         }
 
-        .exit-modal-box p {
+        .exit-content p {
             font-size: 13px;
-            color: rgba(255, 255, 255, 0.4);
+            color: var(--muted);
             margin-bottom: 22px;
             line-height: 1.5;
             text-transform: lowercase;
         }
 
-        .exit-modal-buttons {
+        .exit-btns {
             display: flex;
             flex-direction: column;
             gap: 10px;
         }
 
-        .btn-exit-confirm {
+        .exit-btns button {
             width: 100%;
-            padding: 13px;
-            border-radius: 12px;
-            background: rgba(255, 71, 87, 0.1);
-            border: 1.5px solid rgba(255, 71, 87, 0.3);
-            color: #ff4757;
+            padding: 12px;
+            border-radius: 13px;
             font-size: 13px;
             font-weight: 700;
             cursor: pointer;
             text-transform: uppercase;
         }
 
-        .btn-return {
-            width: 100%;
-            padding: 13px;
-            border-radius: 12px;
-            background: var(--gold);
+        /* primary (Continue) - gold gradient */
+        .btn-continue {
+            background: var(--gold-grad);
+            color: #0a0d1a;
             border: none;
-            color: #0a0a0a;
-            font-size: 13px;
-            font-weight: 800;
-            cursor: pointer;
-            text-transform: uppercase;
+        }
+
+        /* secondary (Exit) - shaffof */
+        .exit-btns button.btn-exit-out {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--muted);
+        }
+
+        /* ===== VERY SMALL PHONES ===== */
+        @media (max-width: 360px) {
+            :root {
+                --side-space: 10px;
+            }
         }
     </style>
 {% endblock %}
 
 {% block content %}
 
-    <!-- EXIT MODAL -->
+    <!-- EXIT MODAL (gym style) -->
     <div class="exit-modal" id="exitModal">
-        <div class="exit-modal-box">
+        <div class="exit-content">
             <h3>{% trans "Exit Workout?" %}</h3>
             <p>{% trans "Your progress will be lost." %}</p>
-            <div class="exit-modal-buttons">
-                <button onclick="exitWithoutSaving()" class="btn-exit-confirm">{% trans "Exit" %}</button>
-                <button onclick="returnToWorkout()" class="btn-return">{% trans "Continue Workout" %}</button>
+            <div class="exit-btns">
+                <button onclick="returnToWorkout()" class="btn-continue">{% trans "Continue Workout" %}</button>
+                <button onclick="exitWithoutSaving()" class="btn-exit-out">{% trans "Exit" %}</button>
             </div>
         </div>
     </div>
 
-    <!-- DESC OVERLAY (gym style) -->
+    <!-- DESC OVERLAY -->
     <div class="desc-overlay" id="descOverlay" onclick="closeDescModal()">
         <div class="desc-panel" onclick="event.stopPropagation()">
             <div class="desc-media" id="descMedia"></div>
@@ -946,7 +991,7 @@
         </div>
     </div>
 
-    <!-- REST OVERLAY (gym style) -->
+    <!-- REST OVERLAY -->
     <div class="rest-overlay" id="restOverlay">
         <div class="rest-panel">
             <div class="rest-title">{% trans "REST" %}</div>
@@ -1124,7 +1169,6 @@
         }, 1000);
     }
 
-    // ?? SEGMENTED PROGRESS BAR (har round = 1 segment) ??
     function buildSegments() {
         const wrap = document.getElementById('progressSegments');
         wrap.innerHTML = '';
@@ -1145,11 +1189,8 @@
             if (!fill) continue;
             const roundNum = i + 1;
             if (roundNum < currentRound) {
-                fill.style.width = '100%'; // tugagan roundlar to'liq
+                fill.style.width = '100%';
             } else if (roundNum === currentRound) {
-                // joriy round - tugatilgan exercise soniga qarab to'ladi
-                // currentExIndex = hozir bajarilayotgan exercise (hali tugamagan)
-                // shuning uchun tugatilganlar soni = currentExIndex
                 const pct = TOTAL_EXERCISES > 0
                     ? (currentExIndex / TOTAL_EXERCISES) * 100
                     : 0;
@@ -1160,7 +1201,6 @@
         }
     }
 
-    // ?? START ??
     function startWorkout() {
         isStarted = true;
 
@@ -1173,7 +1213,6 @@
         startExerciseTimer();
     }
 
-    // ?? UI UPDATE ??
     function updateUI() {
         const ex = EXERCISES[currentExIndex];
         if (!ex) return;
@@ -1185,7 +1224,6 @@
 
         document.getElementById('exName').textContent = ex.name;
 
-        // Media
         const imgWrap = document.getElementById('exImage');
         if (ex.video) {
             if (imgWrap && imgWrap.tagName === 'VIDEO') {
@@ -1205,7 +1243,6 @@
             if (imgWrap) imgWrap.outerHTML = `<div class="exercise-image-placeholder" id="exImage">?</div>`;
         }
 
-        // Description preview
         const previewEl = document.getElementById('descPreview');
         if (previewEl) previewEl.textContent = ex.description || T.noDesc;
 
@@ -1256,7 +1293,6 @@
         }
     }
 
-    // ?? NEXT UP modal uchun keyingi exerciseni aniqlash ??
     function getNextExerciseData() {
         const nextIndex = currentExIndex + 1;
         if (nextIndex < TOTAL_EXERCISES) {
@@ -1294,30 +1330,18 @@
         if (video) video.pause();
     }
 
-    // ?? FULLSCREEN (telefon uchun to'liq ekran) ??
+    // ?? FULLSCREEN (vertikal to'liq ekran - gym bilan bir xil) ??
     function toggleFullscreen() {
-        const el = document.getElementById('exImage');
-        if (!el) return;
+        const wrap = document.querySelector('.exercise-image-wrap');
+        if (!wrap) return;
 
-        // 1) Agar VIDEO bo'lsa va iOS native fullscreen mavjud bo'lsa - eng ishonchli yo'l
-        if (el.tagName === 'VIDEO' && typeof el.webkitEnterFullscreen === 'function') {
-            try { el.webkitEnterFullscreen(); return; } catch (e) {}
-        }
-
-        // 2) Standart Fullscreen API (Android Chrome, desktop)
-        const wrap = el.closest('.exercise-image-wrap') || el;
-        const fsTarget = (el.tagName === 'VIDEO') ? el : wrap;
-
-        const isFs = document.fullscreenElement || document.webkitFullscreenElement;
+        const isFs = wrap.classList.contains('css-fullscreen');
         if (!isFs) {
-            if (fsTarget.requestFullscreen) { fsTarget.requestFullscreen(); return; }
-            if (fsTarget.webkitRequestFullscreen) { fsTarget.webkitRequestFullscreen(); return; }
-            // 3) Fallback: CSS orqali to'liq ekran (iOS rasm / WebView uchun)
-            wrap.classList.toggle('css-fullscreen');
-            document.body.classList.toggle('fs-lock');
+            wrap.classList.add('css-fullscreen');
+            document.body.classList.add('fs-lock');
         } else {
-            if (document.exitFullscreen) document.exitFullscreen();
-            else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+            wrap.classList.remove('css-fullscreen');
+            document.body.classList.remove('fs-lock');
         }
     }
 
@@ -1330,7 +1354,6 @@
         }
     }, true);
 
-    // ?? EXERCISE TIMER ??
     function startExerciseTimer() {
         clearInterval(exerciseTimer);
         exerciseTimer = setInterval(() => {
@@ -1343,7 +1366,6 @@
         }, 1000);
     }
 
-    // ?? NEXT ??
     function nextExercise() {
         if (isResting) return;
         currentExIndex++;
@@ -1362,7 +1384,6 @@
         startExerciseTimer();
     }
 
-    // ?? REST ??
     function startRest() {
         isResting = true;
         restLeft  = REST_SECONDS;
@@ -1392,13 +1413,11 @@
 
     function skipRest() { endRest(); }
 
-    // ?? PAUSE ??
     function togglePause() {
         isPaused = !isPaused;
         document.getElementById('pauseText').textContent = isPaused ? T.resume : T.pause;
     }
 
-    // ?? DESC MODAL ??
     function openDescModal() {
         const ex = EXERCISES[currentExIndex];
         document.getElementById('descText').textContent = ex.description || T.noDesc;
@@ -1422,7 +1441,6 @@
         if (video) video.pause();
     }
 
-    // ?? EXIT ??
     function showExitModal() {
         document.getElementById('exitModal').classList.add('active');
     }
@@ -1433,7 +1451,6 @@
         window.location.href = '{% url "home_program_list"%}';
     }
 
-    // ?? COMPLETE ??
     function submitComplete() {
         const form = document.createElement('form');
         form.method = 'POST';
@@ -1457,7 +1474,6 @@
         form.submit();
     }
 
-    // Initial display
     buildSegments();
     updateSegments();
     document.getElementById('timerDisplay').textContent = formatTime(EXERCISES[currentExIndex]?.duration || 0);

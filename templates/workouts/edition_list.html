@@ -101,13 +101,19 @@
             width: 32px;
         }
 
-        /* ===== CONTAINER ===== */
+        /* =========================================================
+           ⬅️➡️ EKRAN CHETIDAN SPACING (ong-chap)
+           Faqat shu --side-space ni o'zgartir, hamma element birga suriladi.
+           Mobile = 12px (program_list bilan bir xil)
+           ========================================================= */
         .container {
+            --side-space: 12px;      /* ⬅️➡️ ong-chap chetdan space */
+
             position: relative;
             z-index: 1;
             max-width: 600px;
             margin: 0 auto;
-            padding-bottom: 90px;
+            padding: 0 var(--side-space) 90px;
         }
 
         /* ===== PROGRAM HEADER ===== */
@@ -116,6 +122,7 @@
             height: 120px;
             overflow: hidden;
             margin-bottom: 0;
+            border-radius: 14px;   /* card kabi yumaloq, qolganlar bilan bir xil */
         }
 
         .program-header-image {
@@ -168,7 +175,9 @@
             font-weight: 500;
         }
 
-        /* ===== STATS BAR ===== */
+        /* ===== STATS BAR =====
+           ⬇️⬆️ Bloklar orasidagi vertikal spacing shu margin dan boshqariladi.
+           margin: <TEPA> 0 <PAST>; (ong-chap 0 - container side-space ishlaydi) */
         .stats-bar {
             background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
             backdrop-filter: blur(10px);
@@ -177,7 +186,7 @@
             grid-template-columns: repeat(3, 1fr);
             gap: 8px;
             border: 1.5px solid rgba(255, 215, 0, 0.15);
-            margin: 12px;
+            margin: 12px 0 12px;   /* ⬆️ program-header ostidagi space | ⬇️ program-info ustidagi space */
             border-radius: 14px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             animation: fadeIn 0.5s ease;
@@ -222,12 +231,13 @@
             letter-spacing: 0.5px;
         }
 
-        /* ===== PROGRAM INFO ===== */
+        /* ===== PROGRAM INFO =====
+           margin: 0 0 <PAST>;  (ong-chap 0, faqat pastdagi space) */
         .program-info {
             background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
             backdrop-filter: blur(10px);
             padding: 14px;
-            margin: 0 12px 12px;
+            margin: 0 0 12px;   /* ⬇️ "ABOUT" ostidagi (Choose Your Plan ustidagi) space */
             border-radius: 14px;
             border: 1.5px solid rgba(255, 215, 0, 0.15);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
@@ -249,7 +259,7 @@
             font-size: 11px;
             line-height: 1.6;
             color: rgba(255, 255, 255, 0.75);
-            margin-bottom: 12px;
+            margin-bottom: 0;
         }
 
         .info-highlight {
@@ -267,10 +277,12 @@
             font-weight: 700;
         }
 
-        /* ===== SECTION TITLE ===== */
+        /* ===== SECTION TITLE ("CHOOSE YOUR PLAN") =====
+           ⬆️⬇️ Bu yozuvning TEPA va PAST spacingi shu padding dan boshqariladi.
+           padding: <TEPA> 14px <PAST>;  (kichraytirish uchun shu 2 raqamni o'zgartir) */
         .section-title {
-            padding: 12px 14px;
-            margin: 0 12px 12px;
+            padding: 4px 14px 8px;   /* ⬆️ tepasi | ⬇️ pasti — kichraytirildi */
+            margin: 0;
             font-size: 12px;
             font-weight: 800;
             background: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
@@ -282,12 +294,13 @@
             animation: fadeIn 0.7s ease;
         }
 
-        /* ===== EDITIONS LIST ===== */
+        /* ===== EDITIONS LIST =====
+           gap = cardlar orasidagi space (program_list bilan bir xil 14px) */
         .editions-list {
-            padding: 0 12px;
+            padding: 0;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 14px;
         }
 
         /* ===== EDITION CARD ===== */
@@ -484,7 +497,7 @@
 
             .stats-bar {
                 padding: 14px;
-                margin: 14px 16px;
+                margin: 14px 0 14px;   /* ong-chap 0 — har doim bir xil */
                 gap: 10px;
             }
 
@@ -498,7 +511,7 @@
 
             .program-info {
                 padding: 16px;
-                margin: 0 16px 14px;
+                margin: 0 0 14px;   /* ong-chap 0 — har doim bir xil */
             }
 
             .info-title {
@@ -514,8 +527,8 @@
             }
 
             .editions-list {
-                padding: 0 16px;
-                gap: 12px;
+                padding: 0;
+                gap: 14px;
             }
 
             .edition-card {
@@ -562,7 +575,7 @@
 
             .stats-bar {
                 padding: 16px;
-                margin: 16px 20px;
+                margin: 16px 0 16px;   /* ong-chap 0 — har doim bir xil */
                 gap: 12px;
             }
 
@@ -576,7 +589,7 @@
 
             .program-info {
                 padding: 18px;
-                margin: 0 20px 16px;
+                margin: 0 0 16px;   /* ong-chap 0 — har doim bir xil */
             }
 
             .info-title {
@@ -594,11 +607,11 @@
 
             .section-title {
                 font-size: 14px;
-                margin: 0 20px 14px;
+                margin: 0;
             }
 
             .editions-list {
-                padding: 0 20px;
+                padding: 0;
                 gap: 14px;
             }
 
@@ -628,6 +641,10 @@
 
         /* ===== VERY SMALL PHONES ===== */
         @media (max-width: 360px) {
+            .container {
+                --side-space: 10px;   /* ⬅️➡️ kichik telefonda ozgina kamroq */
+            }
+
             .page-header {
                 padding: 10px 12px;
             }
@@ -657,7 +674,7 @@
 
             .stats-bar {
                 padding: 10px;
-                margin: 10px;
+                margin: 10px 0 10px;   /* ong-chap 0 — har doim bir xil */
                 gap: 6px;
             }
 
@@ -675,7 +692,7 @@
 
             .program-info {
                 padding: 12px;
-                margin: 0 10px 10px;
+                margin: 0 0 10px;   /* ong-chap 0 — har doim bir xil */
             }
 
             .info-title {
@@ -684,7 +701,7 @@
 
             .info-text {
                 font-size: 10px;
-                margin-bottom: 10px;
+                margin-bottom: 0;
             }
 
             .info-highlight {
@@ -694,12 +711,12 @@
 
             .section-title {
                 font-size: 11px;
-                padding: 10px 12px;
-                margin: 0 10px 10px;
+                padding: 4px 12px 8px;
+                margin: 0;
             }
 
             .editions-list {
-                padding: 0 10px;
+                padding: 0;
                 gap: 8px;
             }
 
@@ -776,7 +793,7 @@
                 <div class="stat-label">{% trans "Weeks" %}</div>
             </div>
             <div class="stat-item">
-                <div class="stat-value">{{ plans.first.weeks.first.workouts.count|default:"—" }}</div>
+                <div class="stat-value">{{ plans.first.weeks.first.workouts.count|default:"?" }}</div>
                 <div class="stat-label">{% trans "Days/Week" %}</div>
             </div>
         </div>
@@ -792,21 +809,22 @@
 
         <div class="editions-list">
             {% for plan in plans %}
-                <a href="{% if is_custom %}{% url 'custom_plan_weeks' plan.id %}{% elif is_home_mode %}{% url 'home_plan_weeks' plan.id %}{% elif use_gym_urls %}{% url 'gym_plan_weeks' plan.id %}{% else %}{% url 'plan_weeks' plan.id %}{% endif %}" class="edition-card">
-                <div class="edition-number edition-{{ forloop.counter }}">
-                    {{ forloop.counter }}
-                </div>
-                <div class="edition-content">
-                    <div class="edition-title">{{ plan.name }}</div>
-                    <div class="edition-meta">
-                        {{ plan.weeks_count }}{% trans "w" %} &bull;
-                        {{ plan.weeks.first.workouts.count|default:"?" }}{% trans "d/week" %}
+                <a href="{% if is_custom %}{% url 'custom_plan_weeks' plan.id %}{% elif is_home_mode %}{% url 'home_plan_weeks' plan.id %}{% elif use_gym_urls %}{% url 'gym_plan_weeks' plan.id %}{% else %}{% url 'plan_weeks' plan.id %}{% endif %}"
+                   class="edition-card">
+                    <div class="edition-number edition-{{ forloop.counter }}">
+                        {{ forloop.counter }}
                     </div>
-                    {% if plan.is_premium %}
-                        <div class="edition-premium">&#9733; {% trans "Premium" %}</div>
-                    {% endif %}
-                </div>
-                <div class="edition-arrow">&#8250;</div>
+                    <div class="edition-content">
+                        <div class="edition-title">{{ plan.name }}</div>
+                        <div class="edition-meta">
+                            {{ plan.weeks_count }}{% trans "w" %} &bull;
+                            {{ plan.weeks.first.workouts.count|default:"?" }}{% trans "d/week" %}
+                        </div>
+                        {% if plan.is_premium %}
+                            <div class="edition-premium">&#9733; {% trans "Premium" %}</div>
+                        {% endif %}
+                    </div>
+                    <div class="edition-arrow">&#8250;</div>
                 </a>
             {% empty %}
                 <div class="empty-state">

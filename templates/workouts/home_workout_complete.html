@@ -2,124 +2,182 @@
 {% load static %}
 {% load i18n %}
 
-{% block content %}
+{% block bottom_nav %}{% endblock %}
 
+{% block content %}
 <style>
-    .workout-complete-page {
-        background: #0d0d0d;
-        min-height: 100vh;
+    * {
+        box-sizing: border-box;
+    }
+
+    /* scroll yo'q: sahifa ekran balandligiga qulflanadi */
+    html, body {
+        overflow: hidden;
+    }
+
+    .complete-page {
+        --side-space: 16px;   /* ⬅️➡️ chetdan space (markazlangan kartalar uchun ozgina kengroq) */
+
+        height: 100vh;
+        height: 100dvh;
+        background: #0b0303;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        padding: 40px 20px 100px;
-        box-sizing: border-box;
+        padding: 20px var(--side-space);
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        position: relative;
+        overflow: hidden;
     }
 
-    /* ===== TROPHY ICON ===== */
+    /* loyihaning umumiy fon "particle" effekti */
+    .complete-page::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background:
+            radial-gradient(circle at 20% 30%, rgba(255, 215, 0, 0.06) 0%, transparent 50%),
+            radial-gradient(circle at 80% 80%, rgba(255, 107, 107, 0.05) 0%, transparent 50%),
+            radial-gradient(circle at 50% 95%, rgba(78, 205, 196, 0.04) 0%, transparent 50%);
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    /* ===== TROPHY ===== */
     .trophy-wrap {
-        width: 80px;
-        height: 80px;
-        border-radius: 20px;
-        background: linear-gradient(135deg, rgba(255,215,0,0.15) 0%, rgba(255,179,0,0.08) 100%);
-        border: 1.5px solid rgba(255,215,0,0.3);
+        position: relative;
+        z-index: 1;
+        margin-bottom: 14px;
+    }
+
+    .trophy-icon {
+        width: 76px;
+        height: 76px;
+        background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 179, 0, 0.08));
+        border: 1.5px solid rgba(255, 215, 0, 0.25);
+        border-radius: 22px;
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 38px;
-        margin-bottom: 20px;
-        box-shadow: 0 0 30px rgba(255,215,0,0.2);
+        box-shadow: 0 0 40px rgba(255, 215, 0, 0.15);
+        animation: trophyPulse 2.5s ease-in-out infinite;
     }
 
-    /* ===== TITLE ===== */
+    @keyframes trophyPulse {
+        0%, 100% { box-shadow: 0 0 40px rgba(255, 215, 0, 0.15); transform: scale(1); }
+        50%       { box-shadow: 0 0 60px rgba(255, 215, 0, 0.30); transform: scale(1.04); }
+    }
+
+    /* ===== TITLE (boshqa page sarlavhalari bilan bir xil gold gradient) ===== */
     .complete-title {
-        font-size: clamp(22px, 5vw, 30px);
-        font-weight: 900;
+        font-size: clamp(22px, 6vw, 28px);
+        font-weight: 800;
         letter-spacing: 3px;
         text-transform: uppercase;
-        background: linear-gradient(135deg, #ffd700 0%, #ffb300 100%);
+        background: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
         -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
         background-clip: text;
-        margin: 0 0 10px;
+        -webkit-text-fill-color: transparent;
+        color: transparent;
         text-align: center;
+        margin: 0 0 6px;
+        position: relative;
+        z-index: 1;
     }
 
     .complete-sub {
-        font-size: 14px;
-        color: rgba(255,255,255,0.5);
-        margin-bottom: 28px;
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.45);
         text-align: center;
-        line-height: 1.5;
-    }
-
-    /* ===== STATS BOX ===== */
-    .stats-box {
-        width: 100%;
-        max-width: 400px;
-        background: rgba(255,255,255,0.03);
-        border: 1px solid rgba(255,215,0,0.12);
-        border-radius: 16px;
-        overflow: hidden;
         margin-bottom: 20px;
+        position: relative;
+        z-index: 1;
+        line-height: 1.5;
+        max-width: 320px;
     }
 
-    .stats-row {
+    /* ===== STATS CARD (boshqa pagelardagi shaffof card uslubida) ===== */
+    .complete-card {
+        width: 100%;
+        max-width: 420px;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
+        backdrop-filter: blur(10px);
+        border: 1.5px solid rgba(255, 215, 0, 0.15);
+        border-radius: 18px;
+        padding: 6px 16px;
+        position: relative;
+        z-index: 1;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+        margin-bottom: 16px;
+        animation: cardIn 0.5s ease;
+    }
+
+    @keyframes cardIn {
+        from { opacity: 0; transform: translateY(16px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .stat-row {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 14px 18px;
-        border-bottom: 1px solid rgba(255,255,255,0.05);
+        padding: 11px 0;
+        border-bottom: 1px solid rgba(255, 215, 0, 0.08);
         gap: 12px;
     }
 
-    .stats-row:last-child {
-        border-bottom: none;
-    }
+    .stat-row:last-child { border-bottom: none; }
 
-    .stats-left {
+    .stat-left {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 10px;
+        min-width: 0;
     }
 
-    .stats-icon {
+    .stat-icon {
         width: 32px;
         height: 32px;
-        border-radius: 8px;
-        background: rgba(255,215,0,0.1);
+        border-radius: 10px;
+        background: rgba(255, 215, 0, 0.08);
+        border: 1px solid rgba(255, 215, 0, 0.15);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 16px;
+        font-size: 15px;
         flex-shrink: 0;
     }
 
-    .stats-label {
+    .stat-label {
         font-size: 13px;
-        color: rgba(255,255,255,0.6);
         font-weight: 500;
+        color: rgba(255, 255, 255, 0.55);
     }
 
-    .stats-value {
+    .stat-value {
         font-size: 14px;
         font-weight: 700;
         color: #ffd700;
         text-align: right;
         flex-shrink: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 55%;
     }
 
-    /* ===== BUTTON ===== */
+    /* ===== BUTTON (primary gold gradient) ===== */
     .btn-home {
         width: 100%;
-        max-width: 400px;
-        padding: 16px;
+        max-width: 420px;
+        height: 52px;
         background: linear-gradient(135deg, #ffd700 0%, #f39c12 100%);
-        color: #1a1a2e;
-        font-weight: 800;
+        color: #0a0d1a;
         font-size: 14px;
-        letter-spacing: 2px;
+        letter-spacing: 1.5px;
+        font-weight: 800;
         text-transform: uppercase;
         border: none;
         border-radius: 14px;
@@ -128,110 +186,114 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-        box-shadow: 0 6px 24px rgba(255,215,0,0.35);
+        gap: 8px;
+        box-shadow: 0 6px 24px rgba(255, 215, 0, 0.3);
+        position: relative;
+        z-index: 1;
+        transition: transform 0.15s, box-shadow 0.15s;
     }
 
     .btn-home:hover {
         transform: translateY(-2px);
-        box-shadow: 0 10px 30px rgba(255,215,0,0.45);
+        box-shadow: 0 8px 30px rgba(255, 215, 0, 0.4);
+        color: #0a0d1a;
+        text-decoration: none;
     }
 
     .btn-home:active {
         transform: scale(0.99);
     }
 
-    /* ===== RESPONSIVE ===== */
+    /* ===== VERY SMALL PHONES ===== */
     @media (max-width: 360px) {
-        .trophy-wrap    { width: 68px; height: 68px; font-size: 32px; }
-        .complete-title { font-size: 20px; letter-spacing: 2px; }
-        .stats-row      { padding: 12px 14px; }
-        .stats-icon     { width: 28px; height: 28px; font-size: 14px; }
-        .stats-label    { font-size: 12px; }
-        .stats-value    { font-size: 13px; }
-        .btn-home       { font-size: 13px; padding: 14px; }
+        .complete-page { --side-space: 12px; }
+        .trophy-icon   { width: 64px; height: 64px; font-size: 32px; border-radius: 18px; }
+        .complete-title{ font-size: 20px; letter-spacing: 2px; }
+        .complete-sub  { font-size: 12px; margin-bottom: 16px; }
+        .complete-card { padding: 4px 14px; }
+        .stat-row      { padding: 9px 0; }
+        .stat-icon     { width: 28px; height: 28px; font-size: 14px; }
+        .stat-label    { font-size: 12px; }
+        .stat-value    { font-size: 13px; }
+        .btn-home      { height: 48px; font-size: 13px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
-        * { transition-duration: 0.01ms !important; }
+        * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
     }
 </style>
 
-<div class="workout-complete-page">
+<div class="complete-page">
 
-    <!-- Trophy -->
-    <div class="trophy-wrap">🏆</div>
+    <div class="trophy-wrap">
+        <div class="trophy-icon">&#127942;</div>
+    </div>
 
-    <!-- Title -->
-    <h1 class="complete-title">{% trans "WORKOUT COMPLETE!" %}</h1>
+    <h1 class="complete-title">{% trans "Workout Complete!" %}</h1>
     <p class="complete-sub">{% trans "Great job! Successfully completed today's training" %}</p>
 
-    <!-- Stats -->
-    <div class="stats-box">
+    <div class="complete-card">
 
-        <div class="stats-row">
-            <div class="stats-left">
-                <div class="stats-icon">⚡</div>
-                <span class="stats-label">{% trans "Workout" %}</span>
+        <div class="stat-row">
+            <div class="stat-left">
+                <div class="stat-icon">&#127968;</div>
+                <span class="stat-label">{% trans "Workout" %}</span>
             </div>
-            <span class="stats-value">{{ workout.title|default:"" }}</span>
+            <span class="stat-value">{{ workout.title|default:"" }}</span>
         </div>
 
-        <div class="stats-row">
-            <div class="stats-left">
-                <div class="stats-icon">🔄</div>
-                <span class="stats-label">{% trans "Rounds" %}</span>
+        <div class="stat-row">
+            <div class="stat-left">
+                <div class="stat-icon">&#128260;</div>
+                <span class="stat-label">{% trans "Rounds" %}</span>
             </div>
-            <span class="stats-value">{{ workout_summary.exercises_completed }}</span>
+            <span class="stat-value">{{ workout_summary.exercises_completed }}</span>
         </div>
 
-        <div class="stats-row">
-            <div class="stats-left">
-                <div class="stats-icon">⏱</div>
-                <span class="stats-label">{% trans "Duration" %}</span>
+        <div class="stat-row">
+            <div class="stat-left">
+                <div class="stat-icon">&#9201;</div>
+                <span class="stat-label">{% trans "Duration" %}</span>
             </div>
-            <span class="stats-value" id="formatted-duration">—</span>
+            <span class="stat-value" id="formatted-duration">&mdash;</span>
         </div>
 
-        <div class="stats-row">
-            <div class="stats-left">
-                <div class="stats-icon">🔥</div>
-                <span class="stats-label">{% trans "Calories Burned" %}</span>
+        <div class="stat-row">
+            <div class="stat-left">
+                <div class="stat-icon">&#128293;</div>
+                <span class="stat-label">{% trans "Calories Burned" %}</span>
             </div>
-            <span class="stats-value">{{ workout_summary.total_calories|floatformat:0 }} {% trans "kcal" %}</span>
+            <span class="stat-value">{{ workout_summary.total_calories|floatformat:0 }} {% trans "kcal" %}</span>
         </div>
 
-        <div class="stats-row">
-            <div class="stats-left">
-                <div class="stats-icon">📅</div>
-                <span class="stats-label">{% trans "Completed" %}</span>
+        <div class="stat-row">
+            <div class="stat-left">
+                <div class="stat-icon">&#128197;</div>
+                <span class="stat-label">{% trans "Completed" %}</span>
             </div>
-            <span class="stats-value" id="completion-time">—</span>
+            <span class="stat-value" id="completion-time">&mdash;</span>
         </div>
 
     </div>
 
-    <!-- Button -->
     <a href="{% url 'home_program_list' %}" class="btn-home">
-        {% trans "BACK TO HOME" %}
+        {% trans "Back to Home" %}
     </a>
 
 </div>
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // Duration formatlash
         const durationSec = {{ workout_summary.duration_seconds|default:0 }};
         const mins = Math.floor(durationSec / 60);
         const secs = durationSec % 60;
-        document.getElementById('formatted-duration').textContent =
-            `${mins}:${secs.toString().padStart(2, '0')}`;
+        const durEl = document.getElementById('formatted-duration');
+        if (durEl) durEl.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
 
-        // Vaqt
         const now = new Date();
         const options = { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false };
-        document.getElementById('completion-time').textContent =
-            now.toLocaleString('en-US', options).replace(',', '');
+        const timeEl = document.getElementById('completion-time');
+        if (timeEl) timeEl.textContent = now.toLocaleString('en-US', options).replace(',', '');
     });
 </script>
 
