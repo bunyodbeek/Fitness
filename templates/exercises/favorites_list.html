@@ -229,13 +229,21 @@ const CSRF = document.querySelector('[name=csrfmiddlewaretoken]').value;
 const LANG = window.location.pathname.match(/^\/(en|ru|uz)\//)?.[1] || 'en';
 
 // Barcha tarjimalarni oldindan saqlash — apostrofdan xavfsiz
+{% trans "Delete this program?" as txt_delete_confirm %}
+{% trans "Remove from favorites?" as txt_remove_confirm %}
+{% trans "Select exercises" as txt_select_exercises %}
+{% trans "Add" as txt_add %}
+{% trans "Exercise" as txt_exercise %}
+{% trans "Exercises" as txt_exercises %}
+{% trans "Adding..." as txt_adding %}
 const T = {
-    deleteConfirm:    "{% trans 'Delete this program?' %}",
-    removeConfirm:    "{% trans 'Remove from favorites?' %}",
-    selectExercises:  "{% trans 'Select exercises' %}",
-    add:              "{% trans 'Add' %}",
-    exercise:         "{% trans 'Exercise' %}",
-    adding:           "{% trans 'Adding...' %}",
+    deleteConfirm: '{{ txt_delete_confirm|escapejs }}',
+    removeConfirm: '{{ txt_remove_confirm|escapejs }}',
+    selectExercises: '{{ txt_select_exercises|escapejs }}',
+    add: '{{ txt_add|escapejs }}',
+    exercise: '{{ txt_exercise|escapejs }}',
+    exercises: '{{ txt_exercises|escapejs }}',
+    adding: '{{ txt_adding|escapejs }}',
 };
 
 const favoriteIds = new Set([{% for id in favorite_exercise_ids %}{{ id }},{% endfor %}]);
@@ -336,7 +344,7 @@ function updateDoneBtn() {
     const n = selectedExercises.size;
     btn.disabled = n === 0;
     btn.textContent = n > 0
-        ? `${T.add} ${n} ${T.exercise}${n > 1 ? 's' : ''} →`
+        ? `${T.add} ${n} ${n > 1 ? T.exercises : T.exercise} →`
         : T.selectExercises;
 }
 
