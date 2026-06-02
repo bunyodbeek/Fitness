@@ -113,7 +113,7 @@ body { background: #0a0a0a; font-family: -apple-system, BlinkMacSystemFont, 'Seg
 <div class="ex-picker-modal" id="exPickerModal">
     <div class="ex-picker-header">
         <input type="text" class="ex-picker-search" id="exSearchInput"
-               placeholder="Search exercises..." oninput="filterExercises(this.value)">
+               placeholder="{% trans 'Search exercises...' %}" oninput="filterExercises(this.value)">
         <button class="ex-picker-close" onclick="closeExPicker()">✕</button>
     </div>
     <div class="ex-picker-list" id="exPickerList">
@@ -137,7 +137,7 @@ body { background: #0a0a0a; font-family: -apple-system, BlinkMacSystemFont, 'Seg
     </div>
     <div class="ex-picker-footer">
         <button class="picker-done-btn" id="pickerDoneBtn" disabled onclick="confirmSelection()">
-            Select exercises
+            {% trans "Select exercises" %}
         </button>
     </div>
 </div>
@@ -145,7 +145,7 @@ body { background: #0a0a0a; font-family: -apple-system, BlinkMacSystemFont, 'Seg
 <!-- HEADER -->
 <div class="cp-header">
     <button class="cp-back-btn" onclick="goBack()">←</button>
-    <div class="cp-title" id="headerTitle">Create Program</div>
+    <div class="cp-title" id="headerTitle">{% trans "Create Program" %}</div>
     <div class="cp-step-indicator" id="stepIndicator">1 / 4</div>
 </div>
 <div class="cp-progress-bar">
@@ -156,56 +156,56 @@ body { background: #0a0a0a; font-family: -apple-system, BlinkMacSystemFont, 'Seg
 
     <!-- STEP 1 -->
     <div class="cp-step active" id="step1">
-        <div class="step-title">Program Name</div>
-        <div class="step-sub">Give your program a name</div>
+        <div class="step-title">{% trans "Program Name" %}</div>
+        <div class="step-sub">{% trans "Give your program a name" %}</div>
         <input type="text" class="cp-input" id="programName"
-               placeholder="e.g. My Strength Program" oninput="validateCurrentStep()">
+               placeholder="{% trans 'e.g. My Strength Program' %}" oninput="validateCurrentStep()">
     </div>
 
     <!-- STEP 2 -->
     <div class="cp-step" id="step2">
-        <div class="step-title">Your Goal</div>
-        <div class="step-sub">What do you want to achieve?</div>
+        <div class="step-title">{% trans "Your Goal" %}</div>
+        <div class="step-sub">{% trans "What do you want to achieve?" %}</div>
         <div class="goal-grid">
             <div class="goal-card" data-goal="fat_loss" onclick="selectGoal(this)">
                 <div class="goal-icon">🔥</div>
-                <div class="goal-name">Fat Loss</div>
-                <div class="goal-desc">Burn calories & slim down</div>
+                <div class="goal-name">{% trans "Fat Loss" %}</div>
+                <div class="goal-desc">{% trans "Burn calories & slim down" %}</div>
             </div>
             <div class="goal-card" data-goal="muscle_gain" onclick="selectGoal(this)">
                 <div class="goal-icon">💪</div>
-                <div class="goal-name">Muscle Gain</div>
-                <div class="goal-desc">Build size & strength</div>
+                <div class="goal-name">{% trans "Muscle Gain" %}</div>
+                <div class="goal-desc">{% trans "Build size & strength" %}</div>
             </div>
             <div class="goal-card" data-goal="recomposition" onclick="selectGoal(this)">
                 <div class="goal-icon">⚡</div>
-                <div class="goal-name">Recomposition</div>
-                <div class="goal-desc">Lose fat, gain muscle</div>
+                <div class="goal-name">{% trans "Recomposition" %}</div>
+                <div class="goal-desc">{% trans "Lose fat, gain muscle" %}</div>
             </div>
             <div class="goal-card" data-goal="general" onclick="selectGoal(this)">
                 <div class="goal-icon">🎯</div>
-                <div class="goal-name">General Fitness</div>
-                <div class="goal-desc">Overall health & fitness</div>
+                <div class="goal-name">{% trans "General Fitness" %}</div>
+                <div class="goal-desc">{% trans "Overall health & fitness" %}</div>
             </div>
         </div>
     </div>
 
     <!-- STEP 3 -->
     <div class="cp-step" id="step3">
-        <div class="step-title">Build Your Days</div>
-        <div class="step-sub">Choose workouts per week, then add exercises</div>
+        <div class="step-title">{% trans "Build Your Days" %}</div>
+        <div class="step-sub">{% trans "Choose workouts per week, then add exercises" %}</div>
         <div class="days-grid" style="margin-bottom:20px;">
             <div class="days-card" data-days="2" onclick="selectDays(this)">
                 <div class="days-num">2</div>
-                <div class="days-label">days/week</div>
+                <div class="days-label">{% trans "days/week" %}</div>
             </div>
             <div class="days-card" data-days="3" onclick="selectDays(this)">
                 <div class="days-num">3</div>
-                <div class="days-label">days/week</div>
+                <div class="days-label">{% trans "days/week" %}</div>
             </div>
             <div class="days-card" data-days="4" onclick="selectDays(this)">
                 <div class="days-num">4</div>
-                <div class="days-label">days/week</div>
+                <div class="days-label">{% trans "days/week" %}</div>
             </div>
         </div>
         <div id="dayTabsSection" style="display:none;">
@@ -216,23 +216,23 @@ body { background: #0a0a0a; font-family: -apple-system, BlinkMacSystemFont, 'Seg
 
     <!-- STEP 4 -->
     <div class="cp-step" id="step4">
-        <div class="step-title">Review & Save</div>
-        <div class="step-sub">Check your program before saving</div>
+        <div class="step-title">{% trans "Review & Save" %}</div>
+        <div class="step-sub">{% trans "Check your program before saving" %}</div>
         <div class="summary-section">
             <div class="summary-row">
-                <span class="summary-label">Program Name</span>
+                <span class="summary-label">{% trans "Program Name" %}</span>
                 <span class="summary-value" id="summaryName">—</span>
             </div>
             <div class="summary-row">
-                <span class="summary-label">Goal</span>
+                <span class="summary-label">{% trans "Goal" %}</span>
                 <span class="summary-value" id="summaryGoal">—</span>
             </div>
             <div class="summary-row">
-                <span class="summary-label">Weeks</span>
-                <span class="summary-value">6 weeks</span>
+                <span class="summary-label">{% trans "Weeks" %}</span>
+                <span class="summary-value">{% blocktrans count weeks=6 %}{{ weeks }} week{% plural %}{{ weeks }} weeks{% endblocktrans %}</span>
             </div>
             <div class="summary-row">
-                <span class="summary-label">Days/week</span>
+                <span class="summary-label">{% trans "Days/week" %}</span>
                 <span class="summary-value" id="summaryDays">—</span>
             </div>
         </div>
@@ -242,9 +242,38 @@ body { background: #0a0a0a; font-family: -apple-system, BlinkMacSystemFont, 'Seg
 </div>
 
 <div class="cp-bottom">
-    <button class="btn-next-step" id="nextBtn" onclick="nextStep()">Continue →</button>
+    <button class="btn-next-step" id="nextBtn" onclick="nextStep()">{% trans "Continue" %} →</button>
 </div>
 <script>
+{% trans "Fat Loss" as txt_fat_loss %}
+{% trans "Muscle Gain" as txt_muscle_gain %}
+{% trans "Recomposition" as txt_recomposition %}
+{% trans "General Fitness" as txt_general_fitness %}
+{% trans "Please enter a program name" as txt_enter_program_name %}
+{% trans "Please select a goal" as txt_select_goal %}
+{% trans "Please select days per week" as txt_select_days %}
+{% trans "Please add at least 1 exercise" as txt_add_one_exercise %}
+{% trans "Name" as txt_name %}
+{% trans "Goal" as txt_goal %}
+{% trans "Exercises" as txt_exercises %}
+{% trans "Review" as txt_review %}
+{% trans "Update Program" as txt_update_program %}
+{% trans "Save Program" as txt_save_program %}
+{% trans "Continue" as txt_continue %}
+{% trans "Day" as txt_day %}
+{% trans "Add Exercise" as txt_add_exercise %}
+{% trans "Select exercises" as txt_select_exercises %}
+{% trans "Add" as txt_add %}
+{% trans "Exercise" as txt_exercise %}
+{% trans "Exercises" as txt_exercises_plural %}
+{% trans "Sets" as txt_sets %}
+{% trans "Reps" as txt_reps %}
+{% trans "days/week" as txt_days_week %}
+{% trans "exercise" as txt_exercise_lower %}
+{% trans "exercises" as txt_exercises_lower %}
+{% trans "Saving..." as txt_saving %}
+{% trans "Error saving program" as txt_error_saving_program %}
+{% trans "Network error. Please try again." as txt_network_error %}
 const CSRF = '{{ csrf_token }}';
 const LANG = window.location.pathname.match(/^\/(en|ru|uz)\//)?.[1] || 'en';
 const IS_EDIT = {% if is_edit %}true{% else %}false{% endif %};
@@ -257,7 +286,41 @@ let currentPickerDay = 1;
 let selectedExercises = new Set();
 let dayData = {};
 
-const GOAL_LABELS = { 'fat_loss':'Fat Loss','muscle_gain':'Muscle Gain','recomposition':'Recomposition','general':'General Fitness' };
+const I18N = {
+    fatLoss: '{{ txt_fat_loss|escapejs }}',
+    muscleGain: '{{ txt_muscle_gain|escapejs }}',
+    recomposition: '{{ txt_recomposition|escapejs }}',
+    generalFitness: '{{ txt_general_fitness|escapejs }}',
+    enterProgramName: '{{ txt_enter_program_name|escapejs }}',
+    selectGoal: '{{ txt_select_goal|escapejs }}',
+    selectDays: '{{ txt_select_days|escapejs }}',
+    addOneExercise: '{{ txt_add_one_exercise|escapejs }}',
+    stepTitles: ['{{ txt_name|escapejs }}','{{ txt_goal|escapejs }}','{{ txt_exercises|escapejs }}','{{ txt_review|escapejs }}'],
+    updateProgram: '{{ txt_update_program|escapejs }} 💪',
+    saveProgram: '{{ txt_save_program|escapejs }} 💪',
+    continue: '{{ txt_continue|escapejs }} →',
+    day: '{{ txt_day|escapejs }}',
+    addExercise: '{{ txt_add_exercise|escapejs }}',
+    selectExercises: '{{ txt_select_exercises|escapejs }}',
+    add: '{{ txt_add|escapejs }}',
+    exercise: '{{ txt_exercise|escapejs }}',
+    exercises: '{{ txt_exercises_plural|escapejs }}',
+    sets: '{{ txt_sets|escapejs }}',
+    reps: '{{ txt_reps|escapejs }}',
+    daysWeek: '{{ txt_days_week|escapejs }}',
+    exerciseLower: '{{ txt_exercise_lower|escapejs }}',
+    exercisesLower: '{{ txt_exercises_lower|escapejs }}',
+    saving: '{{ txt_saving|escapejs }}',
+    errorSavingProgram: '{{ txt_error_saving_program|escapejs }}',
+    networkError: '{{ txt_network_error|escapejs }}',
+};
+
+const GOAL_LABELS = {
+    'fat_loss': I18N.fatLoss,
+    'muscle_gain': I18N.muscleGain,
+    'recomposition': I18N.recomposition,
+    'general': I18N.generalFitness,
+};
 
 function goBack() {
     if (currentStep === 1) window.location.href = `/${LANG}/favorites/`;
@@ -266,15 +329,15 @@ function goBack() {
 
 function nextStep() {
     if (currentStep === 1) {
-        if (!document.getElementById('programName').value.trim()) { alert('Please enter a program name'); return; }
+        if (!document.getElementById('programName').value.trim()) { alert(I18N.enterProgramName); return; }
         currentStep = 2;
     } else if (currentStep === 2) {
-        if (!selectedGoal) { alert('Please select a goal'); return; }
+        if (!selectedGoal) { alert(I18N.selectGoal); return; }
         currentStep = 3;
     } else if (currentStep === 3) {
-        if (!selectedDays) { alert('Please select days per week'); return; }
+        if (!selectedDays) { alert(I18N.selectDays); return; }
         const total = Object.values(dayData).reduce((s,a) => s + a.length, 0);
-        if (total === 0) { alert('Please add at least 1 exercise'); return; }
+        if (total === 0) { alert(I18N.addOneExercise); return; }
         buildSummary(); currentStep = 4;
     } else { saveProgram(); return; }
     showStep(currentStep);
@@ -285,8 +348,8 @@ function showStep(step) {
     document.getElementById(`step${step}`).classList.add('active');
     document.getElementById('progressFill').style.width = `${(step/4)*100}%`;
     document.getElementById('stepIndicator').textContent = `${step} / 4`;
-    document.getElementById('headerTitle').textContent = ['Name','Goal','Exercises','Review'][step-1];
-    document.getElementById('nextBtn').textContent = step === 4 ? (IS_EDIT ? 'Update Program 💪' : 'Save Program 💪') : 'Continue →';
+    document.getElementById('headerTitle').textContent = I18N.stepTitles[step-1];
+    document.getElementById('nextBtn').textContent = step === 4 ? (IS_EDIT ? I18N.updateProgram : I18N.saveProgram) : I18N.continue;
     validateCurrentStep();
 }
 
@@ -324,13 +387,13 @@ function buildDayTabs() {
         const tab = document.createElement('div');
         tab.className = `day-tab${i===1?' active':''}`;
         tab.id = `dayTab${i}`;
-        tab.innerHTML = `Day ${i} <span class="ex-count" id="tabCount${i}">0</span>`;
+        tab.innerHTML = `${I18N.day} ${i} <span class="ex-count" id="tabCount${i}">0</span>`;
         tab.onclick = () => switchDayTab(i);
         tabsEl.appendChild(tab);
         const sec = document.createElement('div');
         sec.className = `day-exercises${i===1?' active':''}`;
         sec.id = `daySection${i}`;
-        sec.innerHTML = `<div id="exList${i}"></div><button class="btn-add-exercise" onclick="openExPicker(${i})">+ Add Exercise</button>`;
+        sec.innerHTML = `<div id="exList${i}"></div><button class="btn-add-exercise" onclick="openExPicker(${i})">+ ${I18N.addExercise}</button>`;
         sectEl.appendChild(sec);
     }
     for (let i = 1; i <= selectedDays; i++) refreshDayExercises(i);
@@ -393,7 +456,7 @@ function updateDoneBtn() {
     const btn = document.getElementById('pickerDoneBtn');
     const n = selectedExercises.size;
     btn.disabled = n === 0;
-    btn.textContent = n > 0 ? `Add ${n} Exercise${n>1?'s':''} ✓` : 'Select exercises';
+    btn.textContent = n > 0 ? `${I18N.add} ${n} ${n > 1 ? I18N.exercises : I18N.exercise} ✓` : I18N.selectExercises;
 }
 
 function confirmSelection() {
@@ -427,8 +490,8 @@ function refreshDayExercises(day) {
             <div class="added-ex-info">
                 <div class="added-ex-name">${ex.name}</div>
                 <div class="added-ex-params">
-                    <div class="ex-param-wrap"><input type="number" class="ex-param-input" value="${ex.sets}" min="1" max="10" onchange="updateExParam(${day},${ex.id},'sets',this.value)"><div class="ex-param-label">Sets</div></div>
-                    <div class="ex-param-wrap"><input type="number" class="ex-param-input" value="${ex.reps}" min="1" max="50" onchange="updateExParam(${day},${ex.id},'reps',this.value)"><div class="ex-param-label">Reps</div></div>
+                    <div class="ex-param-wrap"><input type="number" class="ex-param-input" value="${ex.sets}" min="1" max="10" onchange="updateExParam(${day},${ex.id},'sets',this.value)"><div class="ex-param-label">${I18N.sets}</div></div>
+                    <div class="ex-param-wrap"><input type="number" class="ex-param-input" value="${ex.reps}" min="1" max="50" onchange="updateExParam(${day},${ex.id},'reps',this.value)"><div class="ex-param-label">${I18N.reps}</div></div>
                     <div class="ex-param-wrap"><input type="number" class="ex-param-input" value="${ex.weight}" min="0" step="2.5" onchange="updateExParam(${day},${ex.id},'weight',this.value)"><div class="ex-param-label">kg</div></div>
                 </div>
             </div>
@@ -447,24 +510,24 @@ function updateExParam(day, exId, param, value) {
 function buildSummary() {
     document.getElementById('summaryName').textContent = document.getElementById('programName').value.trim();
     document.getElementById('summaryGoal').textContent = GOAL_LABELS[selectedGoal]||selectedGoal;
-    document.getElementById('summaryDays').textContent = `${selectedDays} days/week`;
+    document.getElementById('summaryDays').textContent = `${selectedDays} ${I18N.daysWeek}`;
     const listEl = document.getElementById('summaryDaysList');
     listEl.innerHTML = '';
     for (let i = 1; i <= selectedDays; i++) {
         const n = (dayData[i]||[]).length;
-        listEl.innerHTML += `<div class="day-summary-item"><div class="day-summary-name">Day ${i}</div><div class="day-summary-count">${n} exercise${n!==1?'s':''}</div></div>`;
+        listEl.innerHTML += `<div class="day-summary-item"><div class="day-summary-name">${I18N.day} ${i}</div><div class="day-summary-count">${n} ${n !== 1 ? I18N.exercisesLower : I18N.exerciseLower}</div></div>`;
     }
 }
 
 async function saveProgram() {
     const btn = document.getElementById('nextBtn');
     btn.disabled = true;
-    btn.innerHTML = '<span class="spinner"></span> Saving...';
+    btn.innerHTML = `<span class="spinner"></span> ${I18N.saving}`;
 
     const days = [];
     for (let i = 1; i <= selectedDays; i++) {
         days.push({
-            day_number: i, title: `Day ${i}`,
+            day_number: i, title: `${I18N.day} ${i}`,
             exercises: (dayData[i]||[]).map((ex,idx) => ({
                 exercise_id: ex.id,
                 sets: parseInt(ex.sets)||3,
@@ -494,14 +557,14 @@ async function saveProgram() {
         if (data.success) {
             window.location.href = data.redirect_url || `/${LANG}/favorites/`;
         } else {
-            alert(data.error||'Error saving program');
+            alert(data.error || I18N.errorSavingProgram);
             btn.disabled = false;
-            btn.textContent = IS_EDIT ? 'Update Program 💪' : 'Save Program 💪';
+            btn.textContent = IS_EDIT ? I18N.updateProgram : I18N.saveProgram;
         }
     } catch {
-        alert('Network error. Please try again.');
+        alert(I18N.networkError);
         btn.disabled = false;
-        btn.textContent = IS_EDIT ? 'Update Program 💪' : 'Save Program 💪';
+        btn.textContent = IS_EDIT ? I18N.updateProgram : I18N.saveProgram;
     }
 }
 
