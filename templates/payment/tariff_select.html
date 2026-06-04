@@ -2,378 +2,285 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tarifni tanlang</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap"
-          rel="stylesheet">
-    <style>
-        :root {
-            --bg: #0d0f18;
-            --card: #161925;
-            --card-2: #1c2030;
-            --gold: #ffd700;
-            --gold-dim: #e6c200;
-            --text: #ffffff;
-            --text-dim: #9aa0b0;
-            --border: rgba(255, 255, 255, 0.06);
-        }
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<title>Tarifni tanlang</title>
+	<script src="https://telegram.org/js/telegram-web-app.js"></script>
+	<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+	<style>
+		:root {
+			--bg: #0d0f18;
+			--card: #161925;
+			--card-2: #1c2030;
+			--gold: #ffd700;
+			--gold-dim: #e6c200;
+			--text: #ffffff;
+			--text-dim: #9aa0b0;
+			--border: rgba(255, 255, 255, 0.06);
+		}
+		* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+		body {
+			background: var(--bg);
+			color: var(--text);
+			font-family: 'Inter', sans-serif;
+			min-height: 100vh;
+			padding: 0 0 120px;
+		}
+		.topbar {
+			display: flex;
+			align-items: center;
+			gap: 14px;
+			padding: 18px 20px 8px;
+		}
+		.back-btn {
+			width: 36px; height: 36px;
+			border-radius: 10px;
+			background: var(--card);
+			border: 1px solid var(--border);
+			display: flex; align-items: center; justify-content: center;
+			cursor: pointer;
+		}
+		.back-btn svg { width: 18px; height: 18px; stroke: var(--text); fill: none; stroke-width: 2.5; }
+		.topbar-title h2 {
+			font-family: 'Bebas Neue', sans-serif;
+			font-size: 26px;
+			letter-spacing: 1px;
+		}
+		.topbar-title p { font-size: 13px; color: var(--text-dim); }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
+		.currency-toggle {
+			display: flex;
+			margin: 16px 20px 0;
+			background: var(--card);
+			border: 1px solid var(--border);
+			border-radius: 12px;
+			padding: 4px;
+		}
+		.currency-toggle button {
+			flex: 1;
+			padding: 12px;
+			border: none;
+			background: transparent;
+			color: var(--text-dim);
+			font-family: 'Bebas Neue', sans-serif;
+			font-size: 18px;
+			letter-spacing: 1px;
+			border-radius: 9px;
+			cursor: pointer;
+			transition: all .2s ease;
+		}
+		.currency-toggle button.active {
+			background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+			color: #1a1400;
+		}
 
-        body {
-            background: var(--bg);
-            color: var(--text);
-            font-family: 'Inter', sans-serif;
-            min-height: 100vh;
-            padding: 0 0 120px;
-        }
+		.plans { padding: 18px 20px 0; max-width: 520px; margin: 0 auto; }
+		.plan {
+			position: relative;
+			display: flex;
+			align-items: center;
+			gap: 14px;
+			padding: 18px 16px;
+			margin-bottom: 12px;
+			background: var(--card);
+			border: 1.5px solid var(--border);
+			border-radius: 16px;
+			cursor: pointer;
+			transition: all .15s ease;
+		}
+		.plan.selected {
+			border-color: var(--gold);
+			background: var(--card-2);
+			box-shadow: 0 0 0 1px var(--gold) inset;
+		}
+		.radio {
+			width: 22px; height: 22px;
+			border-radius: 50%;
+			border: 2px solid var(--text-dim);
+			flex-shrink: 0;
+			position: relative;
+			transition: all .15s ease;
+		}
+		.plan.selected .radio { border-color: var(--gold); }
+		.plan.selected .radio::after {
+			content: '';
+			position: absolute;
+			inset: 4px;
+			border-radius: 50%;
+			background: var(--gold);
+		}
+		.plan-info { flex: 1; }
+		.plan-name {
+			font-family: 'Bebas Neue', sans-serif;
+			font-size: 22px;
+			letter-spacing: 0.5px;
+		}
+		.plan-price { font-size: 14px; color: var(--text-dim); margin-top: 2px; }
+		.plan-price b { color: var(--text); font-weight: 600; }
+		.badge-popular {
+			position: absolute;
+			top: -9px; left: 16px;
+			background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+			color: #1a1400;
+			font-size: 10px;
+			font-weight: 700;
+			letter-spacing: 0.5px;
+			padding: 3px 10px;
+			border-radius: 20px;
+		}
+		.discount {
+			flex-shrink: 0;
+			text-align: right;
+		}
+		.discount .pct {
+			font-family: 'Bebas Neue', sans-serif;
+			font-size: 20px;
+			color: var(--gold);
+			line-height: 1;
+		}
+		.discount .lbl { font-size: 11px; color: var(--text-dim); }
 
-        .topbar {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            padding: 18px 20px 8px;
-        }
+		.meta-row {
+			display: flex;
+			justify-content: center;
+			gap: 22px;
+			padding: 20px;
+			color: var(--text-dim);
+			font-size: 12px;
+		}
+		.meta-row span { display: flex; align-items: center; gap: 6px; }
+		.meta-row svg { width: 14px; height: 14px; stroke: var(--gold); fill: none; stroke-width: 2; }
 
-        .back-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
-            background: var(--card);
-            border: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-
-        .back-btn svg {
-            width: 18px;
-            height: 18px;
-            stroke: var(--text);
-            fill: none;
-            stroke-width: 2.5;
-        }
-
-        .topbar-title h2 {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 26px;
-            letter-spacing: 1px;
-        }
-
-        .topbar-title p {
-            font-size: 13px;
-            color: var(--text-dim);
-        }
-
-        .currency-toggle {
-            display: flex;
-            margin: 16px 20px 0;
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 4px;
-        }
-
-        .currency-toggle button {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            background: transparent;
-            color: var(--text-dim);
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 18px;
-            letter-spacing: 1px;
-            border-radius: 9px;
-            cursor: pointer;
-            transition: all .2s ease;
-        }
-
-        .currency-toggle button.active {
-            background: linear-gradient(135deg, var(--gold), var(--gold-dim));
-            color: #1a1400;
-        }
-
-        .plans {
-            padding: 18px 20px 0;
-            max-width: 520px;
-            margin: 0 auto;
-        }
-
-        .plan {
-            position: relative;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            padding: 18px 16px;
-            margin-bottom: 12px;
-            background: var(--card);
-            border: 1.5px solid var(--border);
-            border-radius: 16px;
-            cursor: pointer;
-            transition: all .15s ease;
-        }
-
-        .plan.selected {
-            border-color: var(--gold);
-            background: var(--card-2);
-            box-shadow: 0 0 0 1px var(--gold) inset;
-        }
-
-        .radio {
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            border: 2px solid var(--text-dim);
-            flex-shrink: 0;
-            position: relative;
-            transition: all .15s ease;
-        }
-
-        .plan.selected .radio {
-            border-color: var(--gold);
-        }
-
-        .plan.selected .radio::after {
-            content: '';
-            position: absolute;
-            inset: 4px;
-            border-radius: 50%;
-            background: var(--gold);
-        }
-
-        .plan-info {
-            flex: 1;
-        }
-
-        .plan-name {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 22px;
-            letter-spacing: 0.5px;
-        }
-
-        .plan-price {
-            font-size: 14px;
-            color: var(--text-dim);
-            margin-top: 2px;
-        }
-
-        .plan-price b {
-            color: var(--text);
-            font-weight: 600;
-        }
-
-        .badge-popular {
-            position: absolute;
-            top: -9px;
-            left: 16px;
-            background: linear-gradient(135deg, var(--gold), var(--gold-dim));
-            color: #1a1400;
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            padding: 3px 10px;
-            border-radius: 20px;
-        }
-
-        .discount {
-            flex-shrink: 0;
-            text-align: right;
-        }
-
-        .discount .pct {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 20px;
-            color: var(--gold);
-            line-height: 1;
-        }
-
-        .discount .lbl {
-            font-size: 11px;
-            color: var(--text-dim);
-        }
-
-        .meta-row {
-            display: flex;
-            justify-content: center;
-            gap: 22px;
-            padding: 20px;
-            color: var(--text-dim);
-            font-size: 12px;
-        }
-
-        .meta-row span {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .meta-row svg {
-            width: 14px;
-            height: 14px;
-            stroke: var(--gold);
-            fill: none;
-            stroke-width: 2;
-        }
-
-        .footer {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 16px 20px calc(16px + env(safe-area-inset-bottom));
-            background: linear-gradient(180deg, transparent, var(--bg) 30%);
-        }
-
-        .btn-primary {
-            display: block;
-            width: 100%;
-            max-width: 520px;
-            margin: 0 auto;
-            padding: 16px;
-            border: none;
-            border-radius: 14px;
-            background: linear-gradient(135deg, var(--gold), var(--gold-dim));
-            color: #1a1400;
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 22px;
-            letter-spacing: 1px;
-            cursor: pointer;
-            box-shadow: 0 8px 24px rgba(255, 215, 0, 0.25);
-            transition: transform .1s ease;
-        }
-
-        .btn-primary:active {
-            transform: scale(0.98);
-        }
-
-        .btn-primary:disabled {
-            opacity: 0.4;
-            box-shadow: none;
-        }
-    </style>
+		.footer {
+			position: fixed;
+			bottom: 0; left: 0; right: 0;
+			padding: 16px 20px calc(16px + env(safe-area-inset-bottom));
+			background: linear-gradient(180deg, transparent, var(--bg) 30%);
+		}
+		.btn-primary {
+			display: block;
+			width: 100%;
+			max-width: 520px;
+			margin: 0 auto;
+			padding: 16px;
+			border: none;
+			border-radius: 14px;
+			background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+			color: #1a1400;
+			font-family: 'Bebas Neue', sans-serif;
+			font-size: 22px;
+			letter-spacing: 1px;
+			cursor: pointer;
+			box-shadow: 0 8px 24px rgba(255, 215, 0, 0.25);
+			transition: transform .1s ease;
+		}
+		.btn-primary:active { transform: scale(0.98); }
+		.btn-primary:disabled { opacity: 0.4; box-shadow: none; }
+	</style>
 </head>
 <body>
-<div class="topbar">
-    <div class="back-btn" onclick="goBack()">
-        <svg viewBox="0 0 24 24">
-            <polyline points="15 18 9 12 15 6"/>
-        </svg>
-    </div>
-    <div class="topbar-title">
-        <h2>Tarifni tanlang</h2>
-        <p>Siz uchun eng mos tarifni tanlang</p>
-    </div>
-</div>
+	<div class="topbar">
+		<div class="back-btn" onclick="goBack()">
+			<svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+		</div>
+		<div class="topbar-title">
+			<h2>Tarifni tanlang</h2>
+			<p>Siz uchun eng mos tarifni tanlang</p>
+		</div>
+	</div>
 
-<div class="currency-toggle">
-    <button data-cur="UZS" class="active" onclick="setCurrency('UZS')">UZS</button>
-    <button data-cur="USD" onclick="setCurrency('USD')">USD</button>
-</div>
+	<div class="currency-toggle">
+		<button data-cur="UZS" class="active" onclick="setCurrency('UZS')">UZS</button>
+		<button data-cur="USD" onclick="setCurrency('USD')">USD</button>
+	</div>
 
-<div class="plans">
-    {% for plan in plans %}
-        <div class="plan{% if plan.is_popular %} selected{% endif %}"
-             data-id="{{ plan.id }}"
-             data-uzs="{{ plan.price_uzs|floatformat:0 }}"
-             data-usd="{{ plan.price_usd|floatformat:2 }}"
-             data-disc-uzs="{{ plan.discount_uzs }}"
-             data-disc-usd="{{ plan.discount_usd }}"
-             onclick="selectPlan(this)">
-            {% if plan.is_popular %}
-                <div class="badge-popular">ENG POPULAR</div>{% endif %}
-            <div class="radio"></div>
-            <div class="plan-info">
-                <div class="plan-name">{{ plan.months }} OY</div>
-                <div class="plan-price">
-                    <b class="amount-uzs">{{ plan.price_uzs|floatformat:0 }} UZS</b>
-                    <b class="amount-usd" style="display:none">${{ plan.price_usd|floatformat:2 }}</b>
-                    <span class="per"> / {% if plan.months == 1 %}oy{% else %}{{ plan.months }} oy{% endif %}</span>
-                </div>
-            </div>
-            <div class="discount" {% if not plan.discount_uzs %}style="display:none"{% endif %}>
-                <div class="pct disc-val">{{ plan.discount_uzs }}%</div>
-                <div class="lbl">tejang</div>
-            </div>
-        </div>
-    {% endfor %}
-</div>
+	<div class="plans">
+		{% for plan in plans %}
+		<div class="plan{% if plan.is_popular %} selected{% endif %}"
+		     data-id="{{ plan.id }}"
+		     data-uzs="{{ plan.price_uzs|floatformat:0 }}"
+		     data-usd="{{ plan.price_usd|floatformat:2 }}"
+		     data-disc-uzs="{{ plan.discount_uzs }}"
+		     data-disc-usd="{{ plan.discount_usd }}"
+		     onclick="selectPlan(this)">
+			{% if plan.is_popular %}<div class="badge-popular">ENG POPULAR</div>{% endif %}
+			<div class="radio"></div>
+			<div class="plan-info">
+				<div class="plan-name">{{ plan.months }} OY</div>
+				<div class="plan-price">
+					<b class="amount-uzs">{{ plan.price_uzs|floatformat:0 }} UZS</b>
+					<b class="amount-usd" style="display:none">${{ plan.price_usd|floatformat:2 }}</b>
+					<span class="per"> / {% if plan.months == 1 %}oy{% else %}{{ plan.months }} oy{% endif %}</span>
+				</div>
+			</div>
+			<div class="discount" {% if not plan.discount_uzs %}style="display:none"{% endif %}>
+				<div class="pct disc-val">{{ plan.discount_uzs }}%</div>
+				<div class="lbl">tejang</div>
+			</div>
+		</div>
+		{% endfor %}
+	</div>
 
-<div class="meta-row">
+	<div class="meta-row">
 		<span>
-			<svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0z"/><polyline
-                    points="12 7 12 12 15 14"/></svg>
+			<svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0z"/><polyline points="12 7 12 12 15 14"/></svg>
 			Istalgan vaqtda bekor qilish mumkin
 		</span>
-    <span>
+		<span>
 			<svg viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z"/></svg>
 			Xavfsiz to'lov
 		</span>
-</div>
+	</div>
 
-<div class="footer">
-    <button class="btn-primary" id="continueBtn" onclick="continueToPayment()">Davom etish</button>
-</div>
+	<div class="footer">
+		<button class="btn-primary" id="continueBtn" onclick="continueToPayment()">Davom etish</button>
+	</div>
 
-<script>
-    const tg = window.Telegram?.WebApp;
-    if (tg) {
-        tg.ready();
-        tg.expand();
-    }
+	<script>
+		const tg = window.Telegram?.WebApp;
+		if (tg) { tg.ready(); tg.expand(); }
 
-    let currency = 'UZS';
+		let currency = 'UZS';
 
-    function setCurrency(cur) {
-        currency = cur;
-        document.querySelectorAll('.currency-toggle button').forEach(b => {
-            b.classList.toggle('active', b.dataset.cur === cur);
-        });
-        document.querySelectorAll('.plan').forEach(plan => {
-            const uzs = plan.querySelector('.amount-uzs');
-            const usd = plan.querySelector('.amount-usd');
-            const disc = plan.querySelector('.discount');
-            const discVal = plan.querySelector('.disc-val');
-            if (cur === 'USD') {
-                uzs.style.display = 'none';
-                usd.style.display = 'inline';
-                const d = parseInt(plan.dataset.discUsd) || 0;
-                discVal.textContent = d + '%';
-                disc.style.display = d > 0 ? 'block' : 'none';
-            } else {
-                uzs.style.display = 'inline';
-                usd.style.display = 'none';
-                const d = parseInt(plan.dataset.discUzs) || 0;
-                discVal.textContent = d + '%';
-                disc.style.display = d > 0 ? 'block' : 'none';
-            }
-        });
-    }
+		function setCurrency(cur) {
+			currency = cur;
+			document.querySelectorAll('.currency-toggle button').forEach(b => {
+				b.classList.toggle('active', b.dataset.cur === cur);
+			});
+			document.querySelectorAll('.plan').forEach(plan => {
+				const uzs = plan.querySelector('.amount-uzs');
+				const usd = plan.querySelector('.amount-usd');
+				const disc = plan.querySelector('.discount');
+				const discVal = plan.querySelector('.disc-val');
+				if (cur === 'USD') {
+					uzs.style.display = 'none';
+					usd.style.display = 'inline';
+					const d = parseInt(plan.dataset.discUsd) || 0;
+					discVal.textContent = d + '%';
+					disc.style.display = d > 0 ? 'block' : 'none';
+				} else {
+					uzs.style.display = 'inline';
+					usd.style.display = 'none';
+					const d = parseInt(plan.dataset.discUzs) || 0;
+					discVal.textContent = d + '%';
+					disc.style.display = d > 0 ? 'block' : 'none';
+				}
+			});
+		}
 
-    function selectPlan(el) {
-        document.querySelectorAll('.plan').forEach(p => p.classList.remove('selected'));
-        el.classList.add('selected');
-    }
+		function selectPlan(el) {
+			document.querySelectorAll('.plan').forEach(p => p.classList.remove('selected'));
+			el.classList.add('selected');
+		}
 
-    function continueToPayment() {
-        const selected = document.querySelector('.plan.selected');
-        if (!selected) {
-            return;
-        }
-        const id = selected.dataset.id;
-        window.location.href = `/${LANG}/premium/tariffs/${id}/method/?currency=${currency}`;
-    }
+		function continueToPayment() {
+			const selected = document.querySelector('.plan.selected');
+			if (!selected) { return; }
+			const id = selected.dataset.id;
+			window.location.href = `/premium/tariffs/${id}/method/?currency=${currency}`;
+		}
 
-    function goBack() {
-        history.back();
-    }
-</script>
+		function goBack() { history.back(); }
+	</script>
 </body>
 </html>
