@@ -11,6 +11,7 @@ import math
 from apps.models import Program, Plan, Week
 from apps.models.workouts import Workout, WorkoutExercise, WorkoutProgress, WorkoutType
 from apps.workouts.recommendation import get_recommended_program
+from apps.utils.mixins import PremiumRequiredMixin
 
 
 def get_session_workout_type(request, forced_type=None):
@@ -105,6 +106,7 @@ class ProgramDetailView(DetailView):
 	def get_queryset(self):
 		workout_type = get_session_workout_type(self.request, self.forced_workout_type)
 		return Program.objects.filter(is_active=True, workout_type=workout_type).prefetch_related('plans')
+
 	
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
@@ -117,35 +119,27 @@ class ProgramDetailView(DetailView):
 		return context
 
 
-class PlanWeeksView(DetailView):
+class PlanWeeksView(PremiumRequiredMixin, DetailView):
 	forced_workout_type = None
 	model = Plan
 	template_name = 'workouts/plan_weeks.html'
 	context_object_name = 'plan'
-	
+
 	def get_queryset(self):
 		w_type = get_session_workout_type(self.request, self.forced_workout_type)
-		
 		return Plan.objects.filter(program__workout_type=w_type)
-	
-	def get(self, request, *args, **kwargs):
-		# Bu yerda try-except qo'shsak xatoni aniqroq ko'ramiz
-		try:
-			return super().get(request, *args, **kwargs)
-		except Http404:
-			# Agar plan topilmasa, bazada bunaqa id va turdagi plan borligini tekshiring
-			raise Http404(
-				f"IDsi {kwargs.get('pk')} bo'lgan plan tanlangan tur ({get_session_workout_type(request, self.forced_workout_type)}) uchun topilmadi.")
-	
+
+	def premium_not_found_message(self, kwargs):
+		w_type = get_session_workout_type(self.request, self.forced_workout_type)
+		return f"IDsi {kwargs.get('pk')} bo'lgan plan tanlangan tur ({w_type}) uchun topilmadi."
+
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		# Plan ichidagi hamma haftalarni chiqaramiz
 		active_type = self.object.program.workout_type
 		context['weeks'] = self.object.weeks.all().order_by('week_number')
 		context['active_workout_type'] = active_type
 		context['is_home_mode'] = active_type == WorkoutType.HOME
 		return context
-
 
 class WeekDetailView(DetailView):
 	forced_workout_type = None
