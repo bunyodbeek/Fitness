@@ -1,0 +1,142 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<title>Tabriklaymiz, Premium!</title>
+	<script src="https://telegram.org/js/telegram-web-app.js"></script>
+	<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+	<style>
+		:root {
+			--bg: #0d0f18;
+			--card: #161925;
+			--gold: #ffd700;
+			--gold-dim: #e6c200;
+			--text: #ffffff;
+			--text-dim: #9aa0b0;
+			--border: rgba(255, 255, 255, 0.06);
+		}
+		* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+		body {
+			background:
+				radial-gradient(circle at 50% 12%, rgba(255, 215, 0, 0.22), transparent 55%),
+				var(--bg);
+			color: var(--text);
+			font-family: 'Inter', sans-serif;
+			min-height: 100vh;
+			padding: 0 0 110px;
+			overflow-x: hidden;
+		}
+		.hero {
+			text-align: center;
+			padding: 64px 24px 24px;
+		}
+		.crown {
+			width: 92px; height: 92px;
+			margin: 0 auto 20px;
+			border-radius: 50%;
+			display: flex; align-items: center; justify-content: center;
+			background: radial-gradient(circle, rgba(255,215,0,0.3), rgba(255,215,0,0.05));
+			border: 1px solid rgba(255, 215, 0, 0.5);
+			box-shadow: 0 0 40px rgba(255, 215, 0, 0.3);
+			animation: pop .5s ease;
+		}
+		@keyframes pop { 0% { transform: scale(0); } 70% { transform: scale(1.1); } 100% { transform: scale(1); } }
+		.crown svg { width: 48px; height: 48px; fill: var(--gold); }
+		.hero h1 {
+			font-family: 'Bebas Neue', sans-serif;
+			font-size: 40px;
+			letter-spacing: 1px;
+			line-height: 1.05;
+		}
+		.hero h1 .gold { color: var(--gold); }
+		.hero p {
+			color: var(--text-dim);
+			font-size: 14px;
+			margin-top: 10px;
+			max-width: 300px;
+			margin-inline: auto;
+			line-height: 1.5;
+		}
+		.benefits {
+			padding: 14px 20px 0;
+			max-width: 520px;
+			margin: 0 auto;
+		}
+		.benefit {
+			display: flex;
+			align-items: flex-start;
+			gap: 12px;
+			padding: 13px 0;
+			border-bottom: 1px solid var(--border);
+		}
+		.benefit:last-child { border-bottom: none; }
+		.check {
+			flex-shrink: 0;
+			width: 22px; height: 22px;
+			border-radius: 50%;
+			background: rgba(255, 215, 0, 0.12);
+			display: flex; align-items: center; justify-content: center;
+			margin-top: 1px;
+		}
+		.check svg { width: 12px; height: 12px; stroke: var(--gold); }
+		.benefit span { font-size: 14px; line-height: 1.45; color: #d6d9e2; }
+		.footer {
+			position: fixed;
+			bottom: 0; left: 0; right: 0;
+			padding: 16px 20px calc(16px + env(safe-area-inset-bottom));
+			background: linear-gradient(180deg, transparent, var(--bg) 30%);
+		}
+		.btn-primary {
+			display: block;
+			width: 100%;
+			max-width: 520px;
+			margin: 0 auto;
+			padding: 16px;
+			border: none;
+			border-radius: 14px;
+			background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+			color: #1a1400;
+			font-family: 'Bebas Neue', sans-serif;
+			font-size: 22px;
+			letter-spacing: 1px;
+			text-align: center;
+			text-decoration: none;
+			cursor: pointer;
+			box-shadow: 0 8px 24px rgba(255, 215, 0, 0.25);
+			transition: transform .1s ease;
+		}
+		.btn-primary:active { transform: scale(0.98); }
+	</style>
+</head>
+<body>
+	<div class="hero">
+		<div class="crown">
+			<svg viewBox="0 0 24 24"><path d="M2 6l4 4 6-7 6 7 4-4-2 13H4L2 6z"/></svg>
+		</div>
+		<h1>Tabriklaymiz,<br><span class="gold">Premium!</span></h1>
+		<p>Endi siz barcha Premium imkoniyatlaridan foydalana olasiz.</p>
+	</div>
+
+	<div class="benefits">
+		{% for benefit in benefits %}
+		<div class="benefit">
+			<div class="check">
+				<svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+			</div>
+			<span>{{ benefit }}</span>
+		</div>
+		{% endfor %}
+	</div>
+
+	<div class="footer">
+		<a href="/" class="btn-primary">Boshlash</a>
+	</div>
+
+	<script>
+		const tg = window.Telegram?.WebApp;
+		if (tg) { tg.ready(); tg.expand(); }
+	</script>
+</body>
+</html>

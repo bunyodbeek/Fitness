@@ -40,6 +40,7 @@ from apps.views.favorite import (
 	CustomProgramStartView,
 	CustomProgramCompleteView, CustomProgramEditView, CustomProgramEditSaveView,
 )
+from apps.views.payments import PremiumView, TariffSelectView, PaymentMethodView, PaymentCreateView, PaymentSuccessView
 from apps.views.users import (
 	AdminAnalyticsView,
 	ChangeLanguageView,
@@ -169,5 +170,10 @@ urlpatterns = [
 	path('favorites/custom-program/<int:pk>/edit/', CustomProgramEditView.as_view(), name='custom_program_edit'),
 	path('favorites/custom-program/<int:pk>/edit/save/', CustomProgramEditSaveView.as_view(),
 	     name='custom_program_edit_save'),
+	path('premium/', PremiumView.as_view(), name='premium'),
+	path('premium/tariffs/', TariffSelectView.as_view(), name='tariff_select'),
+	path('premium/tariffs/<int:plan_id>/method/', PaymentMethodView.as_view(), name='payment_method'),
+	path('premium/tariffs/<int:plan_id>/pay/', PaymentCreateView.as_view(), name='payment_create'),
+	path('premium/success/', PaymentSuccessView.as_view(), name='payment_success'),
 
 ]
