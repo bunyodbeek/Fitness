@@ -151,8 +151,12 @@
 		const tg = window.Telegram?.WebApp;
 		if (tg) { tg.ready(); tg.expand(); }
 		function goBack() {
-			if (tg) { tg.close(); } else { history.back(); }
-		}
+    if (window.history.length > 1) {
+        history.back();
+    } else {
+        window.location.href = "/";
+    }
+}
 	</script>
 </body>
 </html>

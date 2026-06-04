@@ -96,9 +96,8 @@ class ProgramListView(ListView):
 
 
 # --- 2. Programma ichidagi Planlar ---
-class ProgramDetailView(DetailView):
+class ProgramDetailView(PremiumRequiredMixin, DetailView):
 	forced_workout_type = None
-	
 	model = Program
 	template_name = 'workouts/edition_list.html'
 	context_object_name = 'program'
@@ -106,7 +105,6 @@ class ProgramDetailView(DetailView):
 	def get_queryset(self):
 		workout_type = get_session_workout_type(self.request, self.forced_workout_type)
 		return Program.objects.filter(is_active=True, workout_type=workout_type).prefetch_related('plans')
-
 	
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
@@ -114,8 +112,7 @@ class ProgramDetailView(DetailView):
 		context['plans'] = self.object.plans.filter(program__workout_type=active_type).order_by('order')
 		context['active_workout_type'] = active_type
 		context['is_home_mode'] = active_type == WorkoutType.HOME
-		context['use_gym_urls'] = self.forced_workout_type == WorkoutType.GYM  # ← QO'SHING
-		
+		context['use_gym_urls'] = self.forced_workout_type == WorkoutType.GYM
 		return context
 
 
@@ -124,15 +121,15 @@ class PlanWeeksView(PremiumRequiredMixin, DetailView):
 	model = Plan
 	template_name = 'workouts/plan_weeks.html'
 	context_object_name = 'plan'
-
+	
 	def get_queryset(self):
 		w_type = get_session_workout_type(self.request, self.forced_workout_type)
 		return Plan.objects.filter(program__workout_type=w_type)
-
+	
 	def premium_not_found_message(self, kwargs):
 		w_type = get_session_workout_type(self.request, self.forced_workout_type)
 		return f"IDsi {kwargs.get('pk')} bo'lgan plan tanlangan tur ({w_type}) uchun topilmadi."
-
+	
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		active_type = self.object.program.workout_type
@@ -140,6 +137,7 @@ class PlanWeeksView(PremiumRequiredMixin, DetailView):
 		context['active_workout_type'] = active_type
 		context['is_home_mode'] = active_type == WorkoutType.HOME
 		return context
+
 
 class WeekDetailView(DetailView):
 	forced_workout_type = None
