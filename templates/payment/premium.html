@@ -9,14 +9,15 @@
 	<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 	<style>
 		:root {
-			--bg: #0d0f18;
-			--card: #161925;
-			--card-2: #1c2030;
+			--bg: #000000;
+			--card: rgba(255, 255, 255, 0.04);
 			--gold: #ffd700;
-			--gold-dim: #e6c200;
+			--gold-grad: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
 			--text: #ffffff;
 			--text-dim: #9aa0b0;
-			--border: rgba(255, 255, 255, 0.06);
+			--border: rgba(255, 255, 255, 0.07);
+
+			--side-space: 12px;
 		}
 		* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 		body {
@@ -24,23 +25,75 @@
 			color: var(--text);
 			font-family: 'Inter', sans-serif;
 			min-height: 100vh;
-			padding: 0 0 100px;
+			padding: 0 0 110px;
 			overflow-x: hidden;
 		}
+
+		/* ===== STANDART HEADER (boshqa pagelar bilan bir xil) ===== */
+		.page-header {
+			background: rgba(0, 0, 0, 0.95);
+			backdrop-filter: blur(12px);
+			padding: 14px var(--side-space);
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			position: sticky;
+			top: 0;
+			z-index: 100;
+			border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+		}
+		.back-btn {
+			background: none;
+			border: none;
+			color: var(--gold);
+			cursor: pointer;
+			padding: 0;
+			width: 32px;
+			height: 32px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			transition: transform 0.3s ease;
+			flex-shrink: 0;
+		}
+		.back-btn svg { flex-shrink: 0; }
+		.back-btn:hover { transform: translateX(-3px); }
+		.header-title-wrap {
+			flex: 1;
+			text-align: center;
+			min-width: 0;
+		}
+		.page-title {
+			color: var(--gold);
+			font-size: 13px;
+			font-weight: 800;
+			letter-spacing: 2px;
+			text-transform: uppercase;
+			line-height: 1.2;
+		}
+		.page-subtitle {
+			font-size: 10px;
+			color: var(--text-dim);
+			margin-top: 2px;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+		.header-spacer { width: 32px; flex-shrink: 0; }
+
+		/* ===== HERO ===== */
 		.hero {
 			position: relative;
-			padding: 48px 24px 28px;
+			padding: 36px 24px 24px;
 			text-align: center;
-			background:
-				radial-gradient(circle at 50% 0%, rgba(255, 215, 0, 0.18), transparent 60%),
-				linear-gradient(180deg, #15110a 0%, var(--bg) 100%);
+			background: radial-gradient(circle at 50% 0%, rgba(255, 215, 0, 0.12), transparent 60%);
 		}
 		.crown {
 			width: 76px; height: 76px;
 			margin: 0 auto 16px;
 			border-radius: 50%;
 			display: flex; align-items: center; justify-content: center;
-			background: radial-gradient(circle, rgba(255,215,0,0.25), rgba(255,215,0,0.04));
+			background: rgba(255, 215, 0, 0.10);
 			border: 1px solid rgba(255, 215, 0, 0.35);
 		}
 		.crown svg { width: 40px; height: 40px; fill: var(--gold); }
@@ -48,7 +101,11 @@
 			font-family: 'Bebas Neue', sans-serif;
 			font-size: 42px;
 			letter-spacing: 2px;
-			color: var(--gold);
+			background: var(--gold-grad);
+			-webkit-background-clip: text;
+			background-clip: text;
+			-webkit-text-fill-color: transparent;
+			color: transparent;
 			line-height: 1;
 		}
 		.hero p {
@@ -59,8 +116,10 @@
 			margin-inline: auto;
 			line-height: 1.5;
 		}
+
+		/* ===== BENEFITS ===== */
 		.benefits {
-			padding: 8px 20px 0;
+			padding: 8px var(--side-space) 0;
 			max-width: 520px;
 			margin: 0 auto;
 		}
@@ -68,61 +127,91 @@
 			display: flex;
 			align-items: flex-start;
 			gap: 12px;
-			padding: 14px 0;
-			border-bottom: 1px solid var(--border);
+			padding: 14px 16px;
+			margin-bottom: 10px;
+			background: var(--card);
+			border: 1px solid var(--border);
+			border-radius: 14px;
 		}
-		.benefit:last-child { border-bottom: none; }
 		.check {
 			flex-shrink: 0;
-			width: 22px; height: 22px;
+			width: 24px; height: 24px;
 			border-radius: 50%;
 			background: rgba(255, 215, 0, 0.12);
+			border: 1px solid rgba(255, 215, 0, 0.25);
 			display: flex; align-items: center; justify-content: center;
 			margin-top: 1px;
 		}
-		.check svg { width: 12px; height: 12px; stroke: var(--gold); }
+		.check svg { width: 12px; height: 12px; stroke: var(--gold); flex-shrink: 0; }
 		.benefit span { font-size: 14px; line-height: 1.45; color: #d6d9e2; }
+
+		/* ===== FOOTER ===== */
 		.footer {
 			position: fixed;
 			bottom: 0; left: 0; right: 0;
-			padding: 16px 20px calc(16px + env(safe-area-inset-bottom));
-			background: linear-gradient(180deg, transparent, var(--bg) 30%);
+			padding: 12px var(--side-space) calc(14px + env(safe-area-inset-bottom));
+			background: linear-gradient(180deg, transparent, var(--bg) 35%);
 		}
+		/* start workout uslubidagi tugma */
 		.btn-primary {
-			display: block;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 8px;
 			width: 100%;
 			max-width: 520px;
 			margin: 0 auto;
-			padding: 16px;
+			padding: 15px;
 			border: none;
 			border-radius: 14px;
-			background: linear-gradient(135deg, var(--gold), var(--gold-dim));
-			color: #1a1400;
-			font-family: 'Bebas Neue', sans-serif;
-			font-size: 22px;
-			letter-spacing: 1px;
+			background: var(--gold-grad);
+			color: #1a1300;
+			font-size: 15px;
+			font-weight: 800;
+			letter-spacing: 1.5px;
+			text-transform: uppercase;
 			text-align: center;
 			text-decoration: none;
 			cursor: pointer;
-			box-shadow: 0 8px 24px rgba(255, 215, 0, 0.25);
-			transition: transform .1s ease;
+			box-shadow: 0 6px 24px rgba(255, 215, 0, 0.3);
+			transition: transform .15s ease, opacity .15s ease;
 		}
-		.btn-primary:active { transform: scale(0.98); }
+		.btn-primary:hover { transform: translateY(-1px); opacity: 0.95; }
+		.btn-primary:active { transform: scale(0.99); }
 		.btn-ghost {
 			display: block;
 			text-align: center;
-			margin: 12px auto 0;
+			margin: 10px auto 0;
 			color: var(--text-dim);
-			font-size: 14px;
+			font-size: 13px;
 			text-decoration: none;
 			background: none;
 			border: none;
 			width: 100%;
 			cursor: pointer;
 		}
+
+		/* ===== VERY SMALL PHONES ===== */
+		@media (max-width: 360px) {
+			:root { --side-space: 10px; }
+			.hero h1 { font-size: 36px; }
+			.page-title { font-size: 12px; letter-spacing: 1.5px; }
+		}
 	</style>
 </head>
 <body>
+	<!-- STANDART HEADER -->
+	<div class="page-header">
+		<button class="back-btn" onclick="goBack()">
+			<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+		</button>
+		<div class="header-title-wrap">
+			<div class="page-title">Premium</div>
+			<div class="page-subtitle">Barcha imkoniyatlarni oching</div>
+		</div>
+		<div class="header-spacer"></div>
+	</div>
+
 	<div class="hero">
 		<div class="crown">
 			<svg viewBox="0 0 24 24"><path d="M2 6l4 4 6-7 6 7 4-4-2 13H4L2 6z"/></svg>

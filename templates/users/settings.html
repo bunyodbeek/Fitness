@@ -13,8 +13,13 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --gold: #ffd700;
+            --gold-grad: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
+        }
+
         body {
-            background: #0a0a0a;
+            background: #000000;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             min-height: 100vh;
             color: #fff;
@@ -22,31 +27,31 @@
         }
 
         .page-header {
-            background: rgba(10, 10, 10, 0.97);
-            backdrop-filter: blur(10px);
-            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(12px);
+            padding: 14px 16px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             position: sticky;
             top: 0;
             z-index: 100;
-            border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
 
         .back-btn {
             background: none;
             border: none;
-            color: #ffd700;
-            font-size: 22px;
+            color: var(--gold);
             cursor: pointer;
             width: 32px;
             height: 32px;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s;
+            transition: transform 0.3s;
         }
+        .back-btn svg { flex-shrink: 0; }
 
         .back-btn:hover {
             transform: translateX(-3px);
@@ -55,14 +60,17 @@
         .page-title {
             flex: 1;
             text-align: center;
-            font-size: 16px;
+            font-size: 13px;
             font-weight: 800;
-            letter-spacing: 3px;
+            letter-spacing: 2px;
             text-transform: uppercase;
-            background: linear-gradient(135deg, #ffd700, #ff6b6b);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
+        .page-title svg { flex-shrink: 0; }
 
         .header-spacer {
             width: 32px;
@@ -95,17 +103,17 @@
 
         .menu-card {
             background: rgba(255, 255, 255, 0.04);
-            border: 1.5px solid rgba(255, 215, 0, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.07);
             border-radius: 14px;
             padding: 12px 14px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: transform 0.25s, border-color 0.25s, background 0.25s;
         }
 
         .menu-card:hover {
             border-color: rgba(255, 215, 0, 0.35);
+            background: rgba(255, 255, 255, 0.06);
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.1);
         }
 
         .menu-content {
@@ -115,20 +123,23 @@
         }
 
         .menu-icon-wrapper {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
-            background: linear-gradient(135deg, #ffd700, #f39c12);
+            width: 38px;
+            height: 38px;
+            border-radius: 11px;
+            background: rgba(255, 215, 0, 0.10);
+            border: 1px solid rgba(255, 215, 0, 0.22);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
             flex-shrink: 0;
-            transition: all 0.3s;
+            color: var(--gold);
+            transition: all 0.25s;
         }
+        .menu-icon-wrapper svg { width: 19px; height: 19px; }
 
         .menu-card:hover .menu-icon-wrapper {
-            transform: scale(1.08);
+            background: rgba(255, 215, 0, 0.16);
+            transform: scale(1.05);
         }
 
         .menu-text-wrapper {
@@ -149,20 +160,21 @@
         }
 
         .menu-arrow {
-            font-size: 20px;
             color: rgba(255, 215, 0, 0.5);
-            transition: all 0.3s;
+            transition: all 0.25s;
+            flex-shrink: 0;
+            display: flex;
         }
 
         .menu-card:hover .menu-arrow {
-            color: #ffd700;
+            color: var(--gold);
             transform: translateX(4px);
         }
 
         @media (max-width: 360px) {
             .page-title {
-                font-size: 14px;
-                letter-spacing: 2px;
+                font-size: 12px;
+                letter-spacing: 1.5px;
             }
 
             .menu-text {
@@ -181,11 +193,11 @@
 
     <!-- PDF Viewer Modal -->
     <div id="pdf-modal"
-         style="display:none; position:fixed; inset:0; background:#111; z-index:9999; flex-direction:column;">
-        <div style="display:flex; align-items:center; padding:16px; background:#1a1a1a; border-bottom:1px solid #333;">
+         style="display:none; position:fixed; inset:0; background:#0a0a0a; z-index:9999; flex-direction:column;">
+        <div style="display:flex; align-items:center; padding:16px; background:#0a0a0a; border-bottom:1px solid rgba(255,255,255,0.07);">
             <button onclick="closePdfModal()"
-                    style="background:none; border:none; color:#FFD700; font-size:20px; cursor:pointer;">
-                ←
+                    style="background:none; border:none; color:#FFD700; cursor:pointer; display:flex; align-items:center;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             </button>
             <span id="pdf-modal-title"
                   style="color:#fff; font-family:'Bebas Neue'; font-size:20px; margin-left:12px;"></span>
@@ -197,8 +209,13 @@
     </div>
 
     <div class="page-header">
-        <button class="back-btn" onclick="window.location.href='{% url 'user_profile' %}'">←</button>
-        <h1 class="page-title">⚙️ {% trans 'SETTINGS' %}</h1>
+        <button class="back-btn" onclick="window.location.href='{% url 'user_profile' %}'">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <h1 class="page-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            {% trans 'SETTINGS' %}
+        </h1>
         <div class="header-spacer"></div>
     </div>
 
@@ -208,12 +225,16 @@
         <div class="menu-section">
             <div class="menu-card" onclick="window.location.href='#'">
                 <div class="menu-content">
-                    <div class="menu-icon-wrapper">💳</div>
+                    <div class="menu-icon-wrapper">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+                    </div>
                     <div class="menu-text-wrapper">
                         <div class="menu-text">{% trans 'Payment history' %}</div>
                         <div class="menu-subtitle">{% trans 'Transactions' %}</div>
                     </div>
-                    <div class="menu-arrow">›</div>
+                    <div class="menu-arrow">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+                    </div>
                 </div>
             </div>
         </div>
@@ -227,12 +248,16 @@
                  data-title="{% trans 'Contract' %}"
                  onclick="openPdf(this.dataset.pdf, this.dataset.title)">
                 <div class="menu-content">
-                    <div class="menu-icon-wrapper">📄</div>
+                    <div class="menu-icon-wrapper">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>
+                    </div>
                     <div class="menu-text-wrapper">
                         <div class="menu-text">{% trans 'Contract' %}</div>
                         <div class="menu-subtitle">{% trans 'Terms of use' %}</div>
                     </div>
-                    <div class="menu-arrow">›</div>
+                    <div class="menu-arrow">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+                    </div>
                 </div>
             </div>
 
@@ -241,23 +266,31 @@
                  data-title="{% trans 'FAQ' %}"
                  onclick="openPdf(this.dataset.pdf, this.dataset.title)">
                 <div class="menu-content">
-                    <div class="menu-icon-wrapper">❓</div>
+                    <div class="menu-icon-wrapper">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                    </div>
                     <div class="menu-text-wrapper">
                         <div class="menu-text">{% trans "FAQ" %}</div>
                         <div class="menu-subtitle">{% trans 'Common questions' %}</div>
                     </div>
-                    <div class="menu-arrow">›</div>
+                    <div class="menu-arrow">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+                    </div>
                 </div>
             </div>
 
             <div class="menu-card" onclick="window.location.href='{% url 'change_language' %}'">
                 <div class="menu-content">
-                    <div class="menu-icon-wrapper">🌐</div>
+                    <div class="menu-icon-wrapper">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                    </div>
                     <div class="menu-text-wrapper">
                         <div class="menu-text">{% trans 'Language settings' %}</div>
                         <div class="menu-subtitle">{% trans 'Change language' %}</div>
                     </div>
-                    <div class="menu-arrow">›</div>
+                    <div class="menu-arrow">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+                    </div>
                 </div>
             </div>
 
@@ -266,23 +299,31 @@
                  data-title="{% trans 'Policy' %}"
                  onclick="openPdf(this.dataset.pdf, this.dataset.title)">
                 <div class="menu-content">
-                    <div class="menu-icon-wrapper">🔒</div>
+                    <div class="menu-icon-wrapper">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    </div>
                     <div class="menu-text-wrapper">
                         <div class="menu-text">{% trans 'Policy' %}</div>
                         <div class="menu-subtitle">{% trans 'Privacy & data usage' %}</div>
                     </div>
-                    <div class="menu-arrow">›</div>
+                    <div class="menu-arrow">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+                    </div>
                 </div>
             </div>
 
             <div class="menu-card" onclick="">
                 <div class="menu-content">
-                    <div class="menu-icon-wrapper">ℹ️</div>
+                    <div class="menu-icon-wrapper">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                    </div>
                     <div class="menu-text-wrapper">
                         <div class="menu-text">{% trans 'About app' %}</div>
                         <div class="menu-subtitle">{% trans 'Version & info' %}</div>
                     </div>
-                    <div class="menu-arrow">›</div>
+                    <div class="menu-arrow">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+                    </div>
                 </div>
             </div>
 

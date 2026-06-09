@@ -53,19 +53,29 @@ def get_recommended_program(user_profile, workout_type: str | None = None) -> Pr
         "RC": Program.Goal.RECOMPOSITION,
     }
 
-    qs = Program.objects.filter(
+    base_filter = dict(
         is_active=True,
         type=Program.ProgramType.ADMIN,
         goal=goal_map.get(key_goal),
         level=key_level,
     )
-
     if workout_type in {"gym", "home"}:
-        qs = qs.filter(workout_type=workout_type)
+        base_filter["workout_type"] = workout_type
 
-    prioritized = qs.order_by("is_premium", "id").first()
-    if prioritized:
-        return prioritized
+    # Avval individual (tavsiya) programmalar ichidan qidirish
+    individual = Program.objects.filter(**base_filter, is_individual=True).order_by("is_premium", "id").first()
+    if individual:
+        return individual
 
-    fallback_qs = Program.objects.filter(is_active=True, type=Program.ProgramType.ADMIN)
-    return fallback_qs.filter(workout_type=workout_type).first() if workout_type else fallback_qs.first()
+    # Keyin oddiy admin programmalar ichidan
+    regular = Program.objects.filter(**base_filter, is_individual=False).order_by("is_premium", "id").first()
+    if regular:
+        return regular
+
+    # Hech narsa topilmasa — istalgan individual programma (workout_type bo'yicha)
+    fallback_qs = Program.objects.filter(is_active=True, type=Program.ProgramType.ADMIN, is_individual=True)
+    if workout_type in {"gym", "home"}:
+        fallback = fallback_qs.filter(workout_type=workout_type).first()
+        if fallback:
+            return fallback
+    return fallback_qs.first()

@@ -7,87 +7,131 @@
 {% block extra_css %}
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { background: #0a0a0a; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; min-height: 100vh; color: #fff; }
 
-.page-header { position: sticky; top: 0; z-index: 100; background: rgba(10,10,10,0.97); backdrop-filter: blur(12px); padding: 14px 16px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.06); }
-.page-title { font-size: 16px; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; color: #ffd700; }
+:root {
+    --gold: #ffd700;
+    --gold-grad: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
+    --side-space: 12px;
+    --card-bg: rgba(255,255,255,0.04);
+    --card-border: rgba(255,255,255,0.07);
+}
 
-.favorites-content { max-width: 540px; margin: 0 auto; padding: 16px 16px 100px; }
+body { background: #000000; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; min-height: 100vh; color: #fff; }
+
+/* HEADER (base.html dagi asosiy header tegilmadi) */
+.page-header { position: sticky; top: 0; z-index: 100; background: rgba(0,0,0,0.95); backdrop-filter: blur(12px); padding: 14px 16px; display: flex; align-items: center; justify-content: center; gap: 8px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.page-title { font-size: 13px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); display: flex; align-items: center; gap: 8px; }
+.page-title svg { flex-shrink: 0; }
+
+.favorites-content { max-width: 540px; margin: 0 auto; padding: 16px var(--side-space) 100px; }
 
 /* TABS */
-.favorites-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
-.tab-btn { flex: 1; padding: 10px 16px; background: rgba(255,255,255,0.05); border: 1.5px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); font-size: 12px; font-weight: 700; cursor: pointer; border-radius: 12px; text-transform: uppercase; letter-spacing: 1px; transition: all 0.2s; }
-.tab-btn.active { background: #ffd700; border-color: #ffd700; color: #0a0a0a; }
+.favorites-tabs { display: flex; gap: 8px; margin-bottom: 16px; background: var(--card-bg); border: 1px solid rgba(255,255,255,0.06); padding: 5px; border-radius: 14px; }
+.tab-btn { flex: 1; padding: 11px 16px; background: transparent; border: none; color: rgba(255,255,255,0.55); font-size: 12px; font-weight: 700; cursor: pointer; border-radius: 10px; text-transform: uppercase; letter-spacing: 1px; transition: all 0.2s; }
+.tab-btn.active { color: var(--gold); background: rgba(255,215,0,0.12); box-shadow: inset 0 0 0 1px rgba(255,215,0,0.25); }
 
-/* CREATE BTN */
-.create-program-btn { width: 100%; padding: 14px; background: rgba(255,215,0,0.07); border: 1.5px dashed rgba(255,215,0,0.35); border-radius: 14px; color: #ffd700; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 16px; transition: all 0.2s; text-decoration: none; }
-.create-program-btn:hover { background: rgba(255,215,0,0.12); border-color: #ffd700; }
+/* CREATE BTN (to'liq karta, rasmga mos) */
+.create-program-btn { width: 100%; padding: 16px 14px; background: rgba(255,215,0,0.06); border: 1px solid rgba(255,215,0,0.22); border-radius: 16px; cursor: pointer; display: flex; align-items: center; gap: 14px; margin-bottom: 16px; transition: all 0.2s; text-decoration: none; }
+.create-program-btn:hover { background: rgba(255,215,0,0.1); border-color: rgba(255,215,0,0.4); }
+.create-program-btn .cp-icon { width: 42px; height: 42px; border-radius: 50%; background: rgba(255,215,0,0.12); border: 1px solid rgba(255,215,0,0.3); display: flex; align-items: center; justify-content: center; color: var(--gold); flex-shrink: 0; }
+.create-program-btn .cp-icon svg { flex-shrink: 0; }
+.create-program-btn .cp-text { flex: 1; min-width: 0; text-align: left; }
+.create-program-btn .cp-title { font-size: 14px; font-weight: 700; color: var(--gold); margin-bottom: 2px; display: flex; align-items: center; gap: 6px; }
+.create-program-btn .cp-sub { font-size: 11px; color: rgba(255,255,255,0.5); font-weight: 400; }
+.create-program-btn .cp-arrow { color: rgba(255,215,0,0.6); flex-shrink: 0; display: flex; }
 
 /* PROGRAM CARD */
-.program-card { position: relative; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,215,0,0.12); border-radius: 18px; overflow: hidden; margin-bottom: 14px; cursor: pointer; transition: all 0.25s; text-decoration: none; display: block; color: inherit; }
-.program-card:hover { border-color: rgba(255,215,0,0.35); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(255,215,0,0.1); }
-.program-card-image { width: 100%; height: 130px; background: linear-gradient(135deg, #1a1a1a, #2a2a2a); position: relative; overflow: hidden; }
+.program-card { position: relative; background: #0a0a0a; border: 1px solid var(--card-border); border-radius: 18px; overflow: hidden; margin-bottom: 16px; cursor: pointer; transition: transform 0.25s, border-color 0.25s; text-decoration: none; display: block; color: inherit; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
+.program-card:hover { border-color: rgba(255,215,0,0.35); transform: translateY(-2px); }
+.program-card-image { width: 100%; height: 130px; background: #1a1a1a; position: relative; overflow: hidden; }
 .program-card-image img { width: 100%; height: 100%; object-fit: cover; }
-.program-card-image-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.6)); }
+.program-card-image-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.65)); }
 .program-card-body { padding: 14px; }
-.program-card-name { font-size: 16px; font-weight: 900; color: #fff; margin-bottom: 8px; }
+.program-card-name { font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 8px; }
 .program-card-meta { display: flex; gap: 6px; flex-wrap: wrap; }
-.program-meta-tag { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; background: rgba(255,215,0,0.08); border: 1px solid rgba(255,215,0,0.15); color: rgba(255,215,0,0.8); }
+.program-meta-tag { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; padding: 5px 11px; border-radius: 10px; background: rgba(255,215,0,0.08); border: 1px solid rgba(255,215,0,0.22); color: var(--gold); }
+.program-meta-tag svg { flex-shrink: 0; }
 
 /* 3 DOTS */
-.program-menu-btn { position: absolute; top: 10px; right: 10px; width: 32px; height: 32px; background: rgba(10,10,10,0.75); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: #fff; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10; transition: background 0.2s; letter-spacing: 1px; }
+.program-menu-btn { position: absolute; top: 10px; right: 10px; width: 32px; height: 32px; background: rgba(0,0,0,0.65); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.15); border-radius: 9px; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10; transition: background 0.2s; }
 .program-menu-btn:hover { background: rgba(30,30,30,0.9); }
-.program-dropdown { position: absolute; top: 48px; right: 10px; background: #1a1a1a; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; overflow: hidden; z-index: 20; display: none; min-width: 160px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
+.program-menu-btn svg { flex-shrink: 0; }
+.program-dropdown { position: absolute; top: 48px; right: 10px; background: #1a1a1a; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; overflow: hidden; z-index: 20; display: none; min-width: 170px; box-shadow: 0 8px 24px rgba(0,0,0,0.6); }
 .program-dropdown.open { display: block; }
 .dropdown-item { padding: 12px 16px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: background 0.15s; border: none; background: none; width: 100%; color: #fff; text-align: left; }
+.dropdown-item svg { flex-shrink: 0; }
 .dropdown-item:hover { background: rgba(255,255,255,0.07); }
 .dropdown-item.delete { color: #ff4757; }
 .dropdown-item.delete:hover { background: rgba(255,71,87,0.1); }
 
-/* ADD EXERCISES BTN */
-.add-exercises-btn { width: 100%; padding: 13px; background: rgba(255,215,0,0.07); border: 1.5px dashed rgba(255,215,0,0.3); border-radius: 14px; color: #ffd700; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 16px; transition: all 0.2s; }
-.add-exercises-btn:hover { background: rgba(255,215,0,0.12); border-color: #ffd700; }
+/* ADD EXERCISES BTN (create card bilan bir xil) */
+.add-exercises-btn { width: 100%; padding: 16px 14px; background: rgba(255,215,0,0.06); border: 1px solid rgba(255,215,0,0.22); border-radius: 16px; cursor: pointer; display: flex; align-items: center; gap: 14px; margin-bottom: 16px; transition: all 0.2s; }
+.add-exercises-btn:hover { background: rgba(255,215,0,0.1); border-color: rgba(255,215,0,0.4); }
+.add-exercises-btn .cp-icon { width: 42px; height: 42px; border-radius: 50%; background: rgba(255,215,0,0.12); border: 1px solid rgba(255,215,0,0.3); display: flex; align-items: center; justify-content: center; color: var(--gold); flex-shrink: 0; }
+.add-exercises-btn .cp-icon svg { flex-shrink: 0; }
+.add-exercises-btn .cp-text { flex: 1; min-width: 0; text-align: left; }
+.add-exercises-btn .cp-title { font-size: 14px; font-weight: 700; color: var(--gold); margin-bottom: 2px; }
+.add-exercises-btn .cp-sub { font-size: 11px; color: rgba(255,255,255,0.5); font-weight: 400; }
+.add-exercises-btn .cp-arrow { color: rgba(255,215,0,0.6); flex-shrink: 0; display: flex; }
 
 /* EXERCISE ITEM */
-.favorite-item { display: flex; align-items: center; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; margin-bottom: 10px; overflow: hidden; transition: all 0.2s; }
-.favorite-item:hover { border-color: rgba(255,215,0,0.2); }
+.favorite-item { display: flex; align-items: center; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; margin-bottom: 10px; overflow: hidden; transition: border-color 0.2s; }
+.favorite-item:hover { border-color: rgba(255,215,0,0.25); }
 .item-link-wrapper { display: flex; align-items: center; gap: 12px; padding: 12px; flex: 1; text-decoration: none; color: white; min-width: 0; }
 .favorite-thumbnail { width: 60px; height: 60px; border-radius: 10px; object-fit: cover; background: #1a1a1a; flex-shrink: 0; }
-.favorite-title { font-size: 14px; font-weight: 700; color: #ffd700; margin-bottom: 4px; }
+.favorite-title { font-size: 14px; font-weight: 700; color: var(--gold); margin-bottom: 4px; }
 .favorite-meta { font-size: 11px; color: rgba(255,255,255,0.5); }
-.unfavorite-btn { width: 44px; height: 44px; background: transparent; border: none; color: #ffd700; font-size: 20px; cursor: pointer; flex-shrink: 0; margin-right: 8px; transition: transform 0.2s; }
-.unfavorite-btn:hover { transform: scale(1.2); }
+.unfavorite-btn { width: 44px; height: 44px; background: transparent; border: none; color: var(--gold); cursor: pointer; flex-shrink: 0; margin-right: 8px; transition: transform 0.2s; display: flex; align-items: center; justify-content: center; }
+.unfavorite-btn:hover { transform: scale(1.15); }
+.unfavorite-btn svg { flex-shrink: 0; }
 
 /* EXERCISE PICKER MODAL */
 .ex-picker-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.97); z-index: 500; display: none; flex-direction: column; }
 .ex-picker-modal.visible { display: flex; }
-.ex-picker-header { padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.07); display: flex; align-items: center; gap: 12px; background: #111; flex-shrink: 0; }
-.ex-picker-search { flex: 1; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 10px 14px; color: #fff; font-size: 14px; outline: none; }
-.ex-picker-search:focus { border-color: #ffd700; }
+.ex-picker-header { padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.07); display: flex; align-items: center; gap: 12px; background: #0a0a0a; flex-shrink: 0; }
+.ex-picker-search { flex: 1; background: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 11px 14px; color: #fff; font-size: 14px; outline: none; }
+.ex-picker-search:focus { border-color: var(--gold); }
 .ex-picker-search::placeholder { color: rgba(255,255,255,0.3); }
-.ex-picker-close { width: 36px; height: 36px; background: rgba(255,255,255,0.07); border: none; border-radius: 10px; color: #fff; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.ex-picker-close { width: 38px; height: 38px; background: var(--card-bg); border: none; border-radius: 10px; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.ex-picker-close svg { flex-shrink: 0; }
 .ex-picker-list { flex: 1; overflow-y: auto; padding: 12px 16px; }
 .ex-picker-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 12px; cursor: pointer; transition: all 0.15s; border: 1.5px solid transparent; margin-bottom: 6px; }
 .ex-picker-item:hover { background: rgba(255,255,255,0.05); }
 .ex-picker-item.already-added { opacity: 0.35; pointer-events: none; }
 .ex-picker-item.selected-in-picker { background: rgba(255,215,0,0.08); border-color: rgba(255,215,0,0.4); }
-.ex-picker-thumb { width: 44px; height: 44px; border-radius: 10px; background: #1a1a1a; flex-shrink: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+.ex-picker-thumb { width: 44px; height: 44px; border-radius: 10px; background: #1a1a1a; flex-shrink: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; color: var(--gold); }
 .ex-picker-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.ex-picker-thumb svg { flex-shrink: 0; }
 .ex-picker-info { flex: 1; min-width: 0; }
 .ex-picker-name { font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 2px; }
 .ex-picker-meta { font-size: 11px; color: rgba(255,255,255,0.4); }
 .ex-picker-check { width: 24px; height: 24px; border-radius: 6px; border: 1.5px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; font-size: 13px; color: transparent; }
-.ex-picker-item.selected-in-picker .ex-picker-check { background: #ffd700; border-color: #ffd700; color: #0a0a0a; }
-.ex-picker-footer { padding: 12px 16px; border-top: 1px solid rgba(255,255,255,0.07); background: #111; flex-shrink: 0; }
-.picker-done-btn { width: 100%; padding: 14px; background: #ffd700; border: none; border-radius: 12px; font-weight: 800; font-size: 14px; cursor: pointer; color: #0a0a0a; transition: all 0.2s; }
+.ex-picker-item.selected-in-picker .ex-picker-check { background: var(--gold); border-color: var(--gold); color: #0a0a0a; }
+.ex-picker-footer { padding: 12px 16px; border-top: 1px solid rgba(255,255,255,0.07); background: #0a0a0a; flex-shrink: 0; }
+.picker-done-btn { width: 100%; padding: 15px; background: var(--gold-grad); border: none; border-radius: 12px; font-weight: 800; font-size: 14px; cursor: pointer; color: #1a1300; transition: all 0.2s; }
 .picker-done-btn:disabled { opacity: 0.35; cursor: not-allowed; }
-.picker-done-btn:not(:disabled):hover { opacity: 0.9; }
+.picker-done-btn:not(:disabled):hover { opacity: 0.92; }
 
 /* EMPTY */
 .empty-state { text-align: center; padding: 50px 20px; color: rgba(255,255,255,0.4); }
-.empty-state-icon { font-size: 48px; margin-bottom: 12px; }
-.empty-state h3 { font-size: 16px; font-weight: 700; color: #ffd700; margin-bottom: 6px; }
+.empty-state-icon { margin-bottom: 14px; display: flex; justify-content: center; opacity: 0.4; }
+.empty-state-icon svg { stroke: var(--gold); }
+.empty-state h3 { font-size: 16px; font-weight: 700; color: var(--gold); margin-bottom: 6px; }
 .empty-state p { font-size: 13px; }
+
+/* EMPTY (big, with + badge — rasmga mos) */
+.empty-big { text-align: center; padding: 36px 20px 30px; }
+.empty-big-icon { position: relative; width: 96px; height: 96px; margin: 0 auto 18px; cursor: pointer; transition: transform 0.2s; }
+.empty-big-icon:hover { transform: scale(1.05); }
+.empty-big-icon .main-svg { width: 96px; height: 96px; color: rgba(255,215,0,0.5); }
+.empty-big-icon .plus-badge { position: absolute; bottom: -2px; right: -2px; width: 38px; height: 38px; border-radius: 50%; background: var(--gold-grad); display: flex; align-items: center; justify-content: center; color: #1a1300; box-shadow: 0 4px 14px rgba(255,215,0,0.4); }
+.empty-big h3 { font-size: 18px; font-weight: 800; color: #fff; margin-bottom: 8px; }
+.empty-big p { font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.5; }
+
+@media (max-width: 360px) {
+    .page-title { font-size: 12px; letter-spacing: 1.5px; }
+    .favorites-content { padding: 14px 10px 100px; }
+}
 </style>
 {% endblock %}
 
@@ -98,7 +142,9 @@ body { background: #0a0a0a; font-family: -apple-system, BlinkMacSystemFont, 'Seg
     <div class="ex-picker-header">
         <input type="text" class="ex-picker-search" id="exSearchInput"
                placeholder="{% trans 'Search exercises...' %}" oninput="filterExercises(this.value)">
-        <button class="ex-picker-close" onclick="closeExPicker()">✕</button>
+        <button class="ex-picker-close" onclick="closeExPicker()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
     </div>
     <div class="ex-picker-list" id="exPickerList">
         {% for ex in all_exercises %}
@@ -110,7 +156,7 @@ body { background: #0a0a0a; font-family: -apple-system, BlinkMacSystemFont, 'Seg
              data-thumb="{% if ex.thumbnail %}{{ ex.thumbnail.url }}{% endif %}"
              onclick="toggleExercise({{ ex.id }})">
             <div class="ex-picker-thumb">
-                {% if ex.thumbnail %}<img src="{{ ex.thumbnail.url }}" alt="{{ ex.name }}">{% else %}💪{% endif %}
+                {% if ex.thumbnail %}<img src="{{ ex.thumbnail.url }}" alt="{{ ex.name }}">{% else %}<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5h11v11h-11z"/><path d="M2 9v6M22 9v6M6.5 12H2M22 12h-4.5"/></svg>{% endif %}
             </div>
             <div class="ex-picker-info">
                 <div class="ex-picker-name">{{ ex.name }}</div>
@@ -129,7 +175,12 @@ body { background: #0a0a0a; font-family: -apple-system, BlinkMacSystemFont, 'Seg
 
 <!-- HEADER -->
 <div class="page-header">
-    <h1 class="page-title">⭐ {% trans "MY FAVORITES" %}</h1>
+    <h1 class="page-title">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+            <path d="M12 2l2.9 6.3 6.9.7-5.1 4.6 1.4 6.8L12 17.8 5.9 20.4l1.4-6.8L2.2 9l6.9-.7L12 2z"/>
+        </svg>
+        {% trans "MY FAVORITES" %}
+    </h1>
 </div>
 
 <div class="favorites-content">
@@ -142,8 +193,22 @@ body { background: #0a0a0a; font-family: -apple-system, BlinkMacSystemFont, 'Seg
 
     <!-- PROGRAMS TAB -->
     <div id="tabPrograms">
-        <a href="{% url 'custom_program_create' %}" class="create-program-btn">
-            + {% trans "Create Program" %}
+        <a href="{% if user.profile.is_premium %}{% url 'custom_program_create' %}{% else %}{% url 'premium' %}{% endif %}" class="create-program-btn">
+            <span class="cp-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+            </span>
+            <span class="cp-text">
+                <span class="cp-title">
+                    {% trans "Create Program" %}
+                    {% if not user.profile.is_premium %}
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    {% endif %}
+                </span>
+                <span class="cp-sub">{% trans "Build and save your own workout" %}</span>
+            </span>
+            <span class="cp-arrow">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+            </span>
         </a>
 
         {% for program in custom_programs %}
@@ -161,23 +226,48 @@ body { background: #0a0a0a; font-family: -apple-system, BlinkMacSystemFont, 'Seg
                 {% endif %}
                 <div class="program-card-image-overlay"></div>
             </div>
-            <button class="program-menu-btn" onclick="toggleMenu(event, {{ program.id }})">⋯</button>
+            <button class="program-menu-btn" onclick="toggleMenu(event, {{ program.id }})">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>
+            </button>
             <div class="program-dropdown" id="menu{{ program.id }}">
-                <button class="dropdown-item" onclick="editProgram(event, {{ program.id }})">✏️ {% trans "Edit Program" %}</button>
-                <button class="dropdown-item delete" onclick="deleteProgram(event, {{ program.id }})">🗑️ {% trans "Delete Program" %}</button>
+                <button class="dropdown-item" onclick="editProgram(event, {{ program.id }})">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+                    {% trans "Edit Program" %}
+                </button>
+                <button class="dropdown-item delete" onclick="deleteProgram(event, {{ program.id }})">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+                    {% trans "Delete Program" %}
+                </button>
             </div>
             <div class="program-card-body">
                 <div class="program-card-name">{{ program.name }}</div>
                 <div class="program-card-meta">
-                    <span class="program-meta-tag">🎯 {{ program.get_goal_display }}</span>
-                    <span class="program-meta-tag">📅 6 {% trans "weeks" %}</span>
-                    <span class="program-meta-tag">📋 {{ program.plans.count }} {% trans "plan" %}</span>
+                    <span class="program-meta-tag">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>
+                        {{ program.get_goal_display }}
+                    </span>
+                    <span class="program-meta-tag">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                        6 {% trans "weeks" %}
+                    </span>
+                    <span class="program-meta-tag">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 7h8M8 11h8M8 15h5"/></svg>
+                        {{ program.plans.count }} {% trans "plan" %}
+                    </span>
                 </div>
             </div>
         </div>
         {% empty %}
-        <div class="empty-state">
-            <div class="empty-state-icon">📋</div>
+        <div class="empty-big">
+            <a href="{% if user.profile.is_premium %}{% url 'custom_program_create' %}{% else %}{% url 'premium' %}{% endif %}" class="empty-big-icon" style="text-decoration:none;">
+                <svg class="main-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/>
+                    <path d="M12 11l.9 2 2.1.3-1.5 1.4.4 2.1-1.9-1-1.9 1 .4-2.1L9 13.3l2.1-.3z"/>
+                </svg>
+                <span class="plus-badge">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+                </span>
+            </a>
             <h3>{% trans "No custom programs yet" %}</h3>
             <p>{% trans "Create your first program!" %}</p>
         </div>
@@ -189,7 +279,16 @@ body { background: #0a0a0a; font-family: -apple-system, BlinkMacSystemFont, 'Seg
 
         <!-- ADD EXERCISES BUTTON -->
         <button class="add-exercises-btn" onclick="openExPicker()">
-            + {% trans "Add Exercises" %}
+            <span class="cp-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+            </span>
+            <span class="cp-text">
+                <span class="cp-title">{% trans "Add Exercises" %}</span>
+                <span class="cp-sub">{% trans "Pick from the exercise library" %}</span>
+            </span>
+            <span class="cp-arrow">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+            </span>
         </button>
 
         <!-- FAVORITES LIST -->
@@ -200,18 +299,30 @@ body { background: #0a0a0a; font-family: -apple-system, BlinkMacSystemFont, 'Seg
                     {% if fav.exercise.thumbnail %}
                         <img src="{{ fav.exercise.thumbnail.url }}" alt="{{ fav.exercise.name }}" class="favorite-thumbnail">
                     {% else %}
-                        <div class="favorite-thumbnail" style="display:flex;align-items:center;justify-content:center;font-size:24px;">💪</div>
+                        <div class="favorite-thumbnail" style="display:flex;align-items:center;justify-content:center;color:#ffd700;">
+                            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5h11v11h-11z"/><path d="M2 9v6M22 9v6M6.5 12H2M22 12h-4.5"/></svg>
+                        </div>
                     {% endif %}
                     <div>
                         <div class="favorite-title">{{ fav.exercise.name }}</div>
                         <div class="favorite-meta">{{ fav.exercise.primary_body_part }}</div>
                     </div>
                 </a>
-                <button class="unfavorite-btn" data-exercise-id="{{ fav.exercise.id }}">❤️</button>
+                <button class="unfavorite-btn" data-exercise-id="{{ fav.exercise.id }}">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 21s-6.7-4.35-9.33-8.5C.9 9.5 2.2 5.5 5.8 5.5c2 0 3.3 1.3 4.2 2.6.9-1.3 2.2-2.6 4.2-2.6 3.6 0 4.9 4 3.13 7-2.63 4.15-9.33 8.5-9.33 8.5z"/></svg>
+                </button>
             </div>
             {% empty %}
-            <div class="empty-state" id="emptyExercises">
-                <div class="empty-state-icon">💪</div>
+            <div class="empty-big" id="emptyExercises">
+                <div class="empty-big-icon" onclick="openExPicker()">
+                    <svg class="main-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/>
+                        <path d="M12 11l.9 2 2.1.3-1.5 1.4.4 2.1-1.9-1-1.9 1 .4-2.1L9 13.3l2.1-.3z"/>
+                    </svg>
+                    <span class="plus-badge">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+                    </span>
+                </div>
                 <h3>{% trans "No favorites yet" %}</h3>
                 <p>{% trans "Add exercises to your favorites!" %}</p>
             </div>
@@ -384,14 +495,14 @@ async function confirmAddFavorites() {
                 <a href="/${LANG}/exercises/detail/${exId}/" class="item-link-wrapper">
                     ${thumb
                         ? `<img src="${thumb}" alt="${name}" class="favorite-thumbnail">`
-                        : `<div class="favorite-thumbnail" style="display:flex;align-items:center;justify-content:center;font-size:24px;">💪</div>`
+                        : `<div class="favorite-thumbnail" style="display:flex;align-items:center;justify-content:center;color:#ffd700;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5h11v11h-11z"/><path d="M2 9v6M22 9v6M6.5 12H2M22 12h-4.5"/></svg></div>`
                     }
                     <div>
                         <div class="favorite-title">${name}</div>
                         <div class="favorite-meta">${muscle}</div>
                     </div>
                 </a>
-                <button class="unfavorite-btn" data-exercise-id="${exId}">❤️</button>
+                <button class="unfavorite-btn" data-exercise-id="${exId}"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 21s-6.7-4.35-9.33-8.5C.9 9.5 2.2 5.5 5.8 5.5c2 0 3.3 1.3 4.2 2.6.9-1.3 2.2-2.6 4.2-2.6 3.6 0 4.9 4 3.13 7-2.63 4.15-9.33 8.5-9.33 8.5z"/></svg></button>
             `;
             document.getElementById('favoritesList').appendChild(favEl);
 

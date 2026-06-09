@@ -6,7 +6,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Active Workout - {{ workout.title }}</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700;900&display=swap');
 
@@ -21,8 +20,8 @@
             --gold: #ffd700;
             --gold2: #ffb300;
             --red: #ff4757;
-            --bg: #0a0a0a; /* qora */
-            --bg2: #111111; /* card background */
+            --bg: #000000; /* pure qora */
+            --bg2: #0a0a0a; /* card background */
             --border: rgba(255, 215, 0, 0.12);
             --muted: rgba(255, 255, 255, 0.45);
             --card-bg: rgba(255, 255, 255, 0.04);
@@ -57,12 +56,11 @@
             display: flex;
             align-items: center;
             padding: 0 var(--side-space);
-            background: rgba(10, 10, 10, 0.98);
+            background: rgba(0, 0, 0, 0.98);
             backdrop-filter: blur(16px);
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
 
-        /* exit chapda, timer o'ngda mustaqil; title absolute markazda */
         .header-side {
             display: flex;
             align-items: center;
@@ -80,10 +78,13 @@
         }
 
         .exit-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
             background: rgba(255, 255, 255, 0.07);
-            border: 1.5px solid rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             color: rgba(255, 255, 255, 0.7);
-            padding: 6px 14px;
+            padding: 7px 14px;
             border-radius: 10px;
             font-size: 11px;
             font-weight: 700;
@@ -92,8 +93,8 @@
             cursor: pointer;
             flex-shrink: 0;
         }
+        .exit-btn svg { flex-shrink: 0; }
 
-        /* title header markazida (home bilan bir hil) */
         .header-center {
             position: absolute;
             left: 50%;
@@ -115,7 +116,6 @@
             text-overflow: ellipsis;
         }
 
-        /* timer - boshqa pagelardagi gold gradient text bilan bir xil */
         .floating-timer {
             font-family: 'Bebas Neue', sans-serif;
             font-size: 20px;
@@ -135,12 +135,12 @@
             pointer-events: none;
         }
 
-        /* ===== PROGRESS (segmented - har exercise = 1 segment) ===== */
+        /* ===== PROGRESS (segmented) ===== */
         .progress-section {
             position: sticky;
             top: 52px;
             z-index: 199;
-            background: rgba(10, 10, 10, 0.98);
+            background: rgba(0, 0, 0, 0.98);
             backdrop-filter: blur(16px);
             padding: 8px var(--side-space);
             border-bottom: 1px solid rgba(255, 255, 255, 0.04);
@@ -202,7 +202,6 @@
             margin: 0 auto;
         }
 
-        /* exercise name - gold gradient (boshqa sahifa sarlavhalari bilan bir xil) */
         .exercise-name {
             font-size: clamp(18px, 5.5vw, 22px);
             font-weight: 900;
@@ -251,7 +250,6 @@
             display: block;
         }
 
-        /* fullscreen button (home bilan bir hil, chap yuqorida) */
         .fullscreen-btn {
             position: absolute;
             top: 10px;
@@ -275,17 +273,13 @@
             height: 18px;
         }
 
-        /* =========================================================
-           CSS FULLSCREEN — VERTICAL to'liq ekran (portret)
-           Tugma bosilganda media-container butun ekranni egallaydi,
-           video object-fit: contain bo'lib vertikal (portret) ko'rinadi.
-           ========================================================= */
+        /* ===== CSS FULLSCREEN — VERTICAL ===== */
         .exercise-media-container.css-fullscreen {
             position: fixed;
             inset: 0;
             width: 100vw;
             height: 100vh;
-            height: 100dvh;          /* mobil brauzer adres paneli hisobga olinadi */
+            height: 100dvh;
             aspect-ratio: auto;
             z-index: 9999;
             border-radius: 0;
@@ -300,10 +294,9 @@
         .exercise-media-container.css-fullscreen .exercise-video {
             width: 100%;
             height: 100%;
-            object-fit: contain;     /* vertical/portret - kesilmaydi, to'liq ko'rinadi */
+            object-fit: contain;
         }
 
-        /* fullscreen holatda tugma chiqish (X) ikonkasiga aylanadi, kattaroq joyda */
         .exercise-media-container.css-fullscreen .fullscreen-btn {
             top: 16px;
             left: 16px;
@@ -396,7 +389,6 @@
             opacity: 1;
         }
 
-        /* set-card: active workout indikatori - to'liq gold (A variant, saqlandi) */
         .set-card {
             width: 100%;
             border-radius: 14px;
@@ -412,7 +404,7 @@
 
         .set-card.done {
             background: rgba(255, 215, 0, 0.09);
-            border: 1.5px solid rgba(255, 215, 0, 0.2);
+            border: 1px solid rgba(255, 215, 0, 0.2);
             box-shadow: none;
         }
 
@@ -637,9 +629,10 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 22px;
+            color: var(--gold);
             flex-shrink: 0;
         }
+        .next-up-thumb-placeholder svg { flex-shrink: 0; }
 
         .next-up-info {
             flex: 1;
@@ -680,7 +673,7 @@
         .nextup-panel {
             width: 100%;
             max-width: 500px;
-            background: #111111;
+            background: #0a0a0a;
             border: 1px solid var(--border);
             border-bottom: none;
             border-radius: 24px 24px 0 0;
@@ -718,9 +711,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 64px;
-            opacity: 0.3;
+            color: rgba(255, 215, 0, 0.3);
         }
+        .nextup-modal-placeholder svg { flex-shrink: 0; }
 
         .nextup-modal-body {
             padding: 16px 20px 24px;
@@ -763,8 +756,8 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: #0a0a0a;
-            border-top: 1px solid rgba(255, 215, 0, 0.1);
+            background: #000000;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
             padding: 10px var(--side-space) 14px;
             z-index: 200;
         }
@@ -779,8 +772,8 @@
         .pause-btn {
             flex: 1;
             height: 52px;
-            background: rgba(255, 255, 255, 0.08);
-            border: 1.5px solid rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 14px;
             color: #fff;
             font-size: 14px;
@@ -790,15 +783,15 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+            gap: 7px;
         }
+        .pause-btn svg { flex-shrink: 0; }
 
         .pause-btn:hover {
             background: rgba(255, 255, 255, 0.12);
             border-color: rgba(255, 255, 255, 0.25);
         }
 
-        /* NEXT tugma - boshqa pagelardagi primary gold gradient bilan bir xil */
         .next-ex-btn {
             flex: 1;
             height: 52px;
@@ -843,7 +836,7 @@
         .rest-panel {
             width: 100%;
             max-width: 500px;
-            background: #111111;
+            background: #0a0a0a;
             border: 1px solid var(--border);
             border-bottom: none;
             border-radius: 28px 28px 0 0;
@@ -857,7 +850,6 @@
             transform: translateY(0);
         }
 
-        /* rest title - gold gradient (boshqa sarlavhalar bilan bir xil) */
         .rest-title {
             font-size: 36px;
             font-weight: 900;
@@ -883,7 +875,6 @@
             margin-bottom: 22px;
         }
 
-        /* rest circle kattaroq, raqam markazda (home bilan bir hil) */
         .rest-circle {
             position: relative;
             width: 210px;
@@ -924,7 +915,7 @@
 
         .rest-skip-btn {
             background: transparent;
-            border: 1.5px solid rgba(255, 215, 0, 0.2);
+            border: 1px solid rgba(255, 215, 0, 0.2);
             color: var(--gold);
             padding: 9px 26px;
             border-radius: 14px;
@@ -959,7 +950,7 @@
         .desc-panel {
             width: 100%;
             max-width: 500px;
-            background: #111111;
+            background: #0a0a0a;
             border: 1px solid var(--border);
             border-top: none;
             border-radius: 0 0 24px 24px;
@@ -1007,7 +998,7 @@
         .exit-modal {
             position: fixed;
             inset: 0;
-            background: rgba(5, 7, 18, 0.88);
+            background: rgba(0, 0, 0, 0.88);
             backdrop-filter: blur(12px);
             display: flex;
             align-items: center;
@@ -1027,7 +1018,7 @@
         .exit-content {
             width: 100%;
             max-width: 360px;
-            background: #111111;
+            background: #0a0a0a;
             border: 1px solid rgba(255, 215, 0, 0.18);
             border-radius: 24px;
             padding: 30px 22px;
@@ -1040,7 +1031,6 @@
             transform: scale(1);
         }
 
-        /* exit title - gold gradient */
         .exit-content h3 {
             font-size: 22px;
             font-weight: 900;
@@ -1078,7 +1068,6 @@
             text-transform: uppercase;
         }
 
-        /* save tugma - primary gold gradient */
         .btn-save {
             background: var(--gold-grad);
             color: #0a0d1a;
@@ -1100,7 +1089,7 @@
         /* ===== VERY SMALL PHONES ===== */
         @media (max-width: 360px) {
             :root {
-                --side-space: 10px;   /* ⬅️➡️ kichik telefonda ozgina kamroq */
+                --side-space: 10px;
             }
         }
     </style>
@@ -1110,7 +1099,10 @@
 <!-- HEADER -->
 <div class="session-header">
     <div class="header-side left">
-        <button class="exit-btn" onclick="showExitModal()">{% trans "EXIT" %}</button>
+        <button class="exit-btn" onclick="showExitModal()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            {% trans "EXIT" %}
+        </button>
     </div>
     <div class="header-center">
         <div class="header-day-name">{{ workout.title|default:_("Workout") }}</div>
@@ -1166,7 +1158,9 @@
     <div class="next-up-section" id="nextUpSection" style="display:none;">
         <div class="next-up-label">{% trans "Next Up" %}</div>
         <div class="next-up-card" onclick="openNextupModal()">
-            <div class="next-up-thumb-placeholder" id="nextUpThumb">?</div>
+            <div class="next-up-thumb-placeholder" id="nextUpThumb">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5h11v11h-11z"/><path d="M2 9v6M22 9v6M6.5 12H2M22 12h-4.5"/></svg>
+            </div>
             <div class="next-up-info">
                 <div class="next-up-name" id="nextUpName"></div>
                 <div class="next-up-dur" id="nextUpDur"></div>
@@ -1179,7 +1173,7 @@
 <div class="bottom-bar">
     <div class="action-buttons">
         <button class="pause-btn" id="pauseBtn" onclick="togglePause()">
-            <span id="pauseIcon"><i class="fas fa-pause"></i></span>
+            <span id="pauseIcon"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" stroke="none"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg></span>
             <span id="pauseText">{% trans "Pause" %}</span>
         </button>
         <button class="next-ex-btn" onclick="skipToNextExercise()">
@@ -1271,8 +1265,7 @@
         complete: "{{ workout_complete_url|default:'' }}",
         start: "{{ workout_start_url|default:'' }}"
     };
-    // Eslatma: toggleFullscreen va boshqa funksiyalar active_workout_v3.js ichida.
-    // Bu yerda qayta e'lon qilmaymiz (aks holda "already declared" xatosi chiqadi).
+    // Eslatma: toggleFullscreen va boshqa funksiyalar active_workout_v4.js ichida.
 </script>
 <script src="{% static 'js/active_workout_v4.js' %}"></script>
 </body>

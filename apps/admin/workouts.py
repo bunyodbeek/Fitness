@@ -9,7 +9,7 @@ import nested_admin
 from apps.models import (
 	Plan, Program, WorkoutExercise, Week, Exercise, Workout,
 )
-from apps.models.workouts import HomeWorkout, GymWorkout, ProgressionSetting, HomeProgressionSetting
+from apps.models.workouts import HomeWorkout, GymWorkout, ProgressionSetting, HomeProgressionSetting, IndividualProgram
 
 
 # ─────────────────────────────────────────────
@@ -479,28 +479,105 @@ class PlanAdmin(admin.ModelAdmin):
 # ─────────────────────────────────────────────
 @admin.register(Program)
 class ProgramAdmin(admin.ModelAdmin):
-	list_display = ("id", "name", "workout_type", "level", "goal", "plan_count", "is_active", "is_premium")
-	list_filter = ("workout_type", "level", "goal", "is_active", "is_premium")
+	list_display = ("id", "name", "type", "workout_type", "level", "goal", "plan_count", "is_active", "is_premium", "recommendation_key")
+	list_filter = ("type", "workout_type", "level", "goal", "is_active", "is_premium")
 	search_fields = ("name",)
-	
+
 	fieldsets = (
 		(None, {"fields": ("name", "name_uz", "name_ru", "image")}),
 		(_("Sozlamalar"),
-		 {"fields": ("workout_type", "level", "goal", "type", "is_active", "is_premium", "is_template")}),
+		 {"fields": ("workout_type", "level", "goal", "type", "is_active", "is_premium", "is_template"),
+		  "description": (
+			  "⭐ Tavsiya uchun: type=Admin, is_active=True, goal va level ni to'g'ri tanlang. "
+			  "Yangi foydalanuvchiga avtomatik shu program tavsiya qilinadi."
+		  )}),
 		(_("Tavsif"), {"fields": ("description", "description_uz", "description_ru"), "classes": ("collapse",)}),
 	)
-	
+
 	def plan_count(self, obj):
 		count = obj.plans.count()
 		if count == 0:
 			return format_html('<span style="color:#e74c3c;">Plan yo\'q!</span>')
 		return format_html('<span style="color:#27ae60;">✓ {} plan</span>', count)
-	
+
+	plan_count.short_description = "Planlar"
+
+	def recommendation_key(self, obj):
+		if obj.type != "admin":
+			return "—"
+		return format_html(
+			'<code style="font-size:11px;color:#2980b9;">{} | {} | {}</code>',
+			obj.workout_type, obj.goal, obj.level,
+		)
+
+	recommendation_key.short_description = "Tavsiya kaliti"
+
+
+# ─────────────────────────────────────────────
+# 9. IndividualProgram Admin (tavsiya programmalar)
+# ─────────────────────────────────────────────
+class PlanInline(admin.TabularInline):
+	model = Plan
+	extra = 1
+	fields = ("name", "order", "weeks_count", "progression_config", "go_to_plan")
+	readonly_fields = ("go_to_plan",)
+	show_change_link = False
+	verbose_name = "Plan"
+	verbose_name_plural = "Planlar"
+
+	def go_to_plan(self, obj):
+		if obj.id:
+			url = reverse("admin:apps_plan_change", args=[obj.id])
+			return format_html(
+				'<a href="{}" style="background:#1a73e8;color:white;padding:4px 12px;'
+				'border-radius:4px;text-decoration:none;font-size:12px;">→ Haftalar va mashqlar</a>',
+				url,
+			)
+		return format_html('<span style="color:#999;">Avval saqlang</span>')
+
+	go_to_plan.short_description = "Boshqarish"
+
+
+@admin.register(IndividualProgram)
+class IndividualProgramAdmin(admin.ModelAdmin):
+	list_display = ("id", "name", "workout_type", "level", "goal", "plan_count", "is_active")
+	list_filter = ("workout_type", "level", "goal", "is_active")
+	search_fields = ("name",)
+	inlines = [PlanInline]
+
+	fieldsets = (
+		(None, {"fields": ("name", "name_uz", "name_ru", "image")}),
+		(_("Sozlamalar"), {
+			"fields": ("workout_type", "level", "goal", "is_active", "is_premium"),
+			"description": (
+				"⭐ Bu programma oddiy ro'yxatda ko'rinmaydi. "
+				"Yangi foydalanuvchi ro'yxatdan o'tganda, uning "
+				"level + goal + workout_type ga mos kelgani tavsiya qilinadi."
+			),
+		}),
+		(_("Tavsif"), {"fields": ("description", "description_uz", "description_ru"), "classes": ("collapse",)}),
+	)
+
+	def get_queryset(self, request):
+		return super().get_queryset(request).filter(is_individual=True)
+
+	def save_model(self, request, obj, form, change):
+		obj.is_individual = True
+		obj.type = Program.ProgramType.ADMIN
+		obj.is_template = True
+		super().save_model(request, obj, form, change)
+
+	def plan_count(self, obj):
+		count = obj.plans.count()
+		if count == 0:
+			return format_html('<span style="color:#e74c3c;">Plan yo\'q!</span>')
+		return format_html('<span style="color:#27ae60;">✓ {} plan</span>', count)
+
 	plan_count.short_description = "Planlar"
 
 
 # ─────────────────────────────────────────────
-# 9. ProgressionSetting Admin
+# 10. ProgressionSetting Admin
 # ─────────────────────────────────────────────
 
 # ─────────────────────────────────────────────

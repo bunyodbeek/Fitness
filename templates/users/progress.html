@@ -12,34 +12,39 @@
         box-sizing: border-box;
     }
 
+    :root {
+        --gold: #ffd700;
+        --gold-grad: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
+        --card-bg: rgba(255,255,255,0.04);
+        --card-border: rgba(255,255,255,0.07);
+    }
+
     body {
-        background: #0b0303;
+        background: #000000;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         min-height: 100vh;
         position: relative;
         overflow-x: hidden;
     }
 
-    /* ===== COMPACT HEADER ===== */
+    /* ===== HEADER ===== */
     .page-header {
-        background: #0b0303;
-        backdrop-filter: blur(10px);
-        padding: 12px 16px;
+        background: rgba(0, 0, 0, 0.95);
+        backdrop-filter: blur(12px);
+        padding: 14px 16px;
         display: flex;
         align-items: center;
         justify-content: space-between;
         position: sticky;
         top: 0;
         z-index: 100;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-        border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     }
 
     .back-btn {
         background: none;
         border: none;
-        color: #ffd700;
-        font-size: 24px;
+        color: var(--gold);
         cursor: pointer;
         padding: 0;
         width: 32px;
@@ -47,26 +52,28 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: all 0.3s ease;
-        font-weight: 700;
+        transition: transform 0.3s ease;
     }
+    .back-btn svg { flex-shrink: 0; }
 
     .back-btn:hover {
-        transform: translateX(-3px) scale(1.1);
+        transform: translateX(-3px);
     }
 
     .page-title {
-        color: white;
-        font-size: 16px;
+        color: var(--gold);
+        font-size: 13px;
         font-weight: 800;
-        letter-spacing: 3px;
+        letter-spacing: 2px;
         text-transform: uppercase;
         flex: 1;
         text-align: center;
-        background: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
     }
+    .page-title svg { flex-shrink: 0; }
 
     .header-spacer {
         width: 32px;
@@ -74,8 +81,7 @@
 
     /* ===== CONTAINER ===== */
     .container {
-        padding: 16px 12px;
-        padding-bottom: 90px;
+        padding: 16px 12px 90px;
         position: relative;
         z-index: 1;
         max-width: 600px;
@@ -93,55 +99,41 @@
     }
 
     @keyframes slideInUp {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 
-    .period-selector::-webkit-scrollbar {
-        height: 3px;
-    }
-
-    .period-selector::-webkit-scrollbar-thumb {
-        background: rgba(255, 215, 0, 0.3);
-        border-radius: 10px;
-    }
+    .period-selector::-webkit-scrollbar { display: none; }
 
     .period-btn {
-        padding: 8px 16px;
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.08));
-        border: 1px solid rgba(255, 215, 0, 0.15);
-        border-radius: 16px;
-        color: rgba(255, 255, 255, 0.7);
-        font-weight: 600;
+        padding: 9px 16px;
+        background: var(--card-bg);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        color: rgba(255, 255, 255, 0.55);
+        font-weight: 700;
         font-size: 11px;
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: all 0.25s ease;
         white-space: nowrap;
         text-transform: uppercase;
         letter-spacing: 0.5px;
+        flex-shrink: 0;
     }
 
     .period-btn:hover {
-        background: linear-gradient(135deg, rgba(255, 215, 0, 0.12), rgba(243, 156, 18, 0.12));
         border-color: rgba(255, 215, 0, 0.3);
-        color: #ffd700;
+        color: var(--gold);
     }
 
     .period-btn.active {
-        background: linear-gradient(135deg, #ffd700 0%, #f39c12 100%);
-        border-color: #ffd700;
-        color: #1a1a2e;
-        box-shadow: 0 3px 12px rgba(255, 215, 0, 0.3);
-        transform: translateY(-1px);
+        background: rgba(255, 215, 0, 0.12);
+        border-color: rgba(255, 215, 0, 0.25);
+        color: var(--gold);
+        box-shadow: inset 0 0 0 1px rgba(255, 215, 0, 0.25);
     }
 
-    /* ===== STATS GRID ===== */
+    /* ===== STATS — horizontal rows ===== */
     .stats-grid {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
@@ -150,15 +142,28 @@
     }
 
     .stat-card {
-        background: linear-gradient(135deg, rgba(255, 215, 0, 0.12) 0%, rgba(255, 215, 0, 0.06) 100%);
-        backdrop-filter: blur(10px);
-        border-radius: 14px;
-        padding: 16px;
-        text-align: center;
-        border: 1.5px solid rgba(255, 215, 0, 0.2);
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        background: var(--card-bg);
+        border-radius: 16px;
+        padding: 14px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border: 1px solid var(--card-border);
         transition: all 0.3s ease;
         animation: slideInUp 0.5s ease backwards;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: var(--gold-grad);
+        opacity: 0.7;
     }
 
     .stat-card:nth-child(1) { animation-delay: 0.05s; }
@@ -168,27 +173,38 @@
 
     .stat-card:hover {
         transform: translateY(-3px);
-        border-color: rgba(255, 215, 0, 0.4);
-        box-shadow: 0 8px 25px rgba(255, 215, 0, 0.15);
+        border-color: rgba(255, 215, 0, 0.35);
     }
 
     .stat-icon {
-        font-size: 28px;
-        margin-bottom: 8px;
+        width: 42px;
+        height: 42px;
+        flex-shrink: 0;
+        border-radius: 12px;
+        background: rgba(255, 215, 0, 0.10);
+        border: 1px solid rgba(255, 215, 0, 0.22);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--gold);
+    }
+    .stat-icon svg { flex-shrink: 0; }
+
+    .stat-body {
+        min-width: 0;
     }
 
     .stat-value {
-        font-size: 24px;
+        font-size: 22px;
         font-weight: 900;
-        background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 4px;
+        color: var(--gold);
+        line-height: 1.1;
+        margin-bottom: 2px;
     }
 
     .stat-label {
         font-size: 10px;
-        color: rgba(255, 255, 255, 0.7);
+        color: rgba(255, 255, 255, 0.55);
         text-transform: uppercase;
         letter-spacing: 0.5px;
         font-weight: 600;
@@ -196,13 +212,11 @@
 
     /* ===== CHART SECTION ===== */
     .chart-section {
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
-        backdrop-filter: blur(10px);
-        border-radius: 14px;
+        background: var(--card-bg);
+        border-radius: 16px;
         padding: 16px;
         margin-bottom: 20px;
-        border: 1.5px solid rgba(255, 215, 0, 0.15);
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        border: 1px solid var(--card-border);
         animation: slideInUp 0.5s ease backwards;
         animation-delay: 0.25s;
     }
@@ -215,7 +229,7 @@
     }
 
     .chart-title {
-        font-size: 14px;
+        font-size: 13px;
         font-weight: 700;
         color: white;
         text-transform: uppercase;
@@ -223,22 +237,22 @@
     }
 
     .chart-filter {
-        background: rgba(255, 215, 0, 0.15);
-        border: 1px solid rgba(255, 215, 0, 0.3);
-        color: #ffd700;
+        background: rgba(255, 215, 0, 0.10);
+        border: 1px solid rgba(255, 215, 0, 0.25);
+        color: var(--gold);
         padding: 6px 12px;
-        border-radius: 12px;
+        border-radius: 10px;
         font-size: 10px;
-        font-weight: 600;
+        font-weight: 700;
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: all 0.25s ease;
         text-transform: uppercase;
         letter-spacing: 0.5px;
     }
 
     .chart-filter:hover {
-        background: rgba(255, 215, 0, 0.25);
-        border-color: #ffd700;
+        background: rgba(255, 215, 0, 0.16);
+        border-color: var(--gold);
     }
 
     .chart-container {
@@ -258,16 +272,17 @@
 
     .chart-bar {
         flex: 1;
-        background: linear-gradient(to top, #ffd700, #ffed4e);
+        background: var(--gold-grad);
         border-radius: 6px 6px 0 0;
         position: relative;
-        transition: all 0.3s ease;
+        transition: height 0.4s ease, opacity 0.3s ease, transform 0.3s ease;
         cursor: pointer;
-        min-height: 15px;
+        min-height: 6px;
+        opacity: 0.85;
     }
 
     .chart-bar:hover {
-        background: linear-gradient(to top, #ffed4e, #fff176);
+        opacity: 1;
         transform: translateY(-3px);
     }
 
@@ -277,7 +292,7 @@
         top: -20px;
         left: 50%;
         transform: translateX(-50%);
-        color: white;
+        color: var(--gold);
         font-size: 11px;
         font-weight: 700;
         opacity: 0;
@@ -301,21 +316,9 @@
         font-weight: 600;
     }
 
-    /* ===== MEASUREMENTS SECTION ===== */
-    .measurements-section {
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
-        backdrop-filter: blur(10px);
-        border-radius: 14px;
-        padding: 16px;
-        margin-bottom: 20px;
-        border: 1.5px solid rgba(255, 215, 0, 0.15);
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        animation: slideInUp 0.5s ease backwards;
-        animation-delay: 0.3s;
-    }
-
+    /* ===== SECTION TITLE ===== */
     .section-title {
-        font-size: 14px;
+        font-size: 13px;
         font-weight: 700;
         color: white;
         margin-bottom: 14px;
@@ -327,170 +330,34 @@
     }
 
     .section-icon {
-        font-size: 18px;
-    }
-
-    .measurement-item {
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        padding: 12px 0;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        color: var(--gold);
     }
-
-    .measurement-item:last-child {
-        border-bottom: none;
-        padding-bottom: 0;
-    }
-
-    .measurement-info {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        flex: 1;
-    }
-
-    .measurement-icon {
-        width: 36px;
-        height: 36px;
-        background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.1));
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 18px;
-        flex-shrink: 0;
-    }
-
-    .measurement-details {
-        flex: 1;
-        min-width: 0;
-    }
-
-    .measurement-name {
-        font-size: 13px;
-        color: white;
-        font-weight: 600;
-        margin-bottom: 2px;
-    }
-
-    .measurement-date {
-        font-size: 10px;
-        color: rgba(255, 255, 255, 0.5);
-    }
-
-    .measurement-value-wrapper {
-        text-align: right;
-    }
-
-    .measurement-value {
-        font-size: 15px;
-        font-weight: 700;
-        color: #ffd700;
-        display: block;
-        margin-bottom: 2px;
-    }
-
-    .measurement-change {
-        font-size: 11px;
-        font-weight: 600;
-    }
-
-    .measurement-change.positive {
-        color: #2ecc71;
-    }
-
-    .measurement-change.negative {
-        color: #e74c3c;
-    }
-
-    /* ===== ACHIEVEMENTS SECTION ===== */
-    .achievements-section {
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
-        backdrop-filter: blur(10px);
-        border-radius: 14px;
-        padding: 16px;
-        margin-bottom: 20px;
-        border: 1.5px solid rgba(255, 215, 0, 0.15);
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        animation: slideInUp 0.5s ease backwards;
-        animation-delay: 0.35s;
-    }
-
-    .achievements-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 10px;
-    }
-
-    .achievement-badge {
-        aspect-ratio: 1;
-        background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 215, 0, 0.05));
-        border-radius: 12px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-        padding: 12px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        border: 1.5px solid rgba(255, 215, 0, 0.25);
-    }
-
-    .achievement-badge:hover {
-        transform: translateY(-3px);
-        background: linear-gradient(135deg, rgba(255, 215, 0, 0.25), rgba(255, 215, 0, 0.1));
-        border-color: #ffd700;
-        box-shadow: 0 6px 20px rgba(255, 215, 0, 0.2);
-    }
-
-    .achievement-badge.locked {
-        opacity: 0.3;
-        cursor: default;
-    }
-
-    .achievement-badge.locked:hover {
-        transform: none;
-        box-shadow: none;
-    }
-
-    .achievement-icon {
-        font-size: 28px;
-    }
-
-    .achievement-name {
-        font-size: 10px;
-        color: white;
-        font-weight: 600;
-        text-align: center;
-        line-height: 1.3;
-    }
+    .section-icon svg { flex-shrink: 0; }
 
     /* ===== WORKOUT HISTORY ===== */
     .history-section {
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
-        backdrop-filter: blur(10px);
-        border-radius: 14px;
+        background: var(--card-bg);
+        border-radius: 16px;
         padding: 16px;
-        border: 1.5px solid rgba(255, 215, 0, 0.15);
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        border: 1px solid var(--card-border);
         animation: slideInUp 0.5s ease backwards;
         animation-delay: 0.4s;
     }
 
     .history-item {
-        background: rgba(0, 0, 0, 0.2);
+        background: rgba(0, 0, 0, 0.3);
         border-radius: 12px;
         padding: 12px;
         margin-bottom: 10px;
         cursor: pointer;
         transition: all 0.3s ease;
-        border: 1px solid transparent;
+        border: 1px solid rgba(255, 255, 255, 0.05);
     }
 
     .history-item:hover {
-        background: rgba(0, 0, 0, 0.3);
+        background: rgba(255, 215, 0, 0.04);
         border-color: rgba(255, 215, 0, 0.3);
         transform: translateX(3px);
     }
@@ -526,189 +393,69 @@
     .history-stat {
         display: flex;
         align-items: center;
-        gap: 4px;
+        gap: 5px;
         font-size: 11px;
         color: rgba(255, 255, 255, 0.6);
     }
 
     .history-stat-icon {
-        font-size: 14px;
+        display: flex;
+        align-items: center;
+        color: var(--gold);
     }
+    .history-stat-icon svg { flex-shrink: 0; }
 
     .history-stat-value {
-        color: #ffd700;
+        color: var(--gold);
         font-weight: 700;
     }
 
     /* ===== RESPONSIVE - TABLET ===== */
     @media (min-width: 500px) {
-        .page-header {
-            padding: 14px 20px;
-        }
-
-        .page-title {
-            font-size: 18px;
-        }
-
-        .container {
-            padding: 20px 16px;
-        }
-
-        .stats-grid {
-            gap: 12px;
-        }
-
-        .stat-card {
-            padding: 18px;
-        }
-
-        .stat-icon {
-            font-size: 32px;
-        }
-
-        .stat-value {
-            font-size: 26px;
-        }
-
-        .chart-section,
-        .measurements-section,
-        .achievements-section,
-        .history-section {
-            padding: 18px;
-        }
+        .page-header { padding: 16px 20px; }
+        .page-title { font-size: 14px; }
+        .container { padding: 20px 16px 90px; }
+        .stats-grid { gap: 12px; }
+        .stat-card { padding: 16px; }
+        .stat-value { font-size: 24px; }
+        .chart-section, .history-section { padding: 18px; }
     }
 
     /* ===== RESPONSIVE - DESKTOP ===== */
     @media (min-width: 768px) {
-        .page-header {
-            padding: 16px 24px;
-        }
-
-        .page-title {
-            font-size: 20px;
-            letter-spacing: 4px;
-        }
-
-        .container {
-            padding: 24px 20px;
-        }
-
-        .period-selector {
-            gap: 10px;
-        }
-
-        .period-btn {
-            padding: 10px 20px;
-            font-size: 12px;
-        }
-
-        .stats-grid {
-            gap: 14px;
-            margin-bottom: 24px;
-        }
-
-        .stat-card {
-            padding: 20px;
-            border-radius: 16px;
-        }
-
-        .stat-icon {
-            font-size: 36px;
-        }
-
-        .stat-value {
-            font-size: 28px;
-        }
-
-        .chart-section,
-        .measurements-section,
-        .achievements-section,
-        .history-section {
-            padding: 20px;
-            border-radius: 16px;
-            margin-bottom: 24px;
-        }
-
-        .achievements-grid {
-            gap: 12px;
-        }
+        .page-header { padding: 18px 24px; }
+        .page-title { font-size: 15px; letter-spacing: 3px; }
+        .container { padding: 24px 20px 90px; }
+        .period-selector { gap: 10px; }
+        .period-btn { padding: 10px 20px; font-size: 12px; }
+        .stats-grid { gap: 14px; margin-bottom: 24px; }
+        .stat-card { padding: 18px; }
+        .stat-icon { width: 46px; height: 46px; }
+        .stat-value { font-size: 26px; }
+        .chart-section, .history-section { padding: 20px; margin-bottom: 24px; }
     }
 
     /* ===== VERY SMALL PHONES ===== */
     @media (max-width: 360px) {
-        .page-header {
-            padding: 10px 12px;
-        }
-
-        .page-title {
-            font-size: 14px;
-            letter-spacing: 2px;
-        }
-
-        .container {
-            padding: 12px 10px;
-        }
-
-        .period-selector {
-            gap: 6px;
-        }
-
-        .period-btn {
-            padding: 6px 12px;
-            font-size: 10px;
-        }
-
-        .stats-grid {
-            gap: 8px;
-        }
-
-        .stat-card {
-            padding: 14px;
-            border-radius: 12px;
-        }
-
-        .stat-icon {
-            font-size: 24px;
-        }
-
-        .stat-value {
-            font-size: 20px;
-        }
-
-        .stat-label {
-            font-size: 9px;
-        }
-
-        .chart-section,
-        .measurements-section,
-        .achievements-section,
-        .history-section {
-            padding: 14px;
-            border-radius: 12px;
-        }
-
-        .achievements-grid {
-            gap: 8px;
-        }
-
-        .achievement-icon {
-            font-size: 24px;
-        }
-
-        .achievement-name {
-            font-size: 9px;
-        }
+        .page-header { padding: 12px 12px; }
+        .page-title { font-size: 12px; letter-spacing: 1.5px; }
+        .container { padding: 12px 10px 90px; }
+        .period-selector { gap: 6px; }
+        .period-btn { padding: 7px 12px; font-size: 10px; }
+        .stats-grid { grid-template-columns: 1fr; gap: 8px; }
+        .stat-card { padding: 13px; }
+        .stat-icon { width: 40px; height: 40px; }
+        .stat-value { font-size: 22px; }
+        .stat-label { font-size: 9px; }
+        .chart-section, .history-section { padding: 14px; }
     }
 
-    /* GPU Acceleration */
     .stat-card,
     .chart-section,
-    .achievement-badge,
     .history-item {
         will-change: transform;
     }
 
-    /* Reduced motion */
     @media (prefers-reduced-motion: reduce) {
         *,
         *::before,
@@ -724,8 +471,13 @@
 {% block content %}
 <!-- Compact Header -->
 <div class="page-header">
-    <button class="back-btn" onclick="window.history.back()">‹</button>
-    <h1 class="page-title">📊 {% trans 'STATISTICS' %}</h1>
+    <button class="back-btn" onclick="window.location.href='{% url 'user_profile' %}'">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <h1 class="page-title">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="5" width="3" height="13"/></svg>
+        {% trans 'STATISTICS' %}
+    </h1>
     <div class="header-spacer"></div>
 </div>
 
@@ -742,50 +494,55 @@
     <!-- Stats Grid -->
     <div class="stats-grid">
         <div class="stat-card">
-            <div class="stat-icon">🏋️</div>
-            <div class="stat-value">{{ total_workouts|default:"0" }}</div>
-            <div class="stat-label">{% trans "Workouts" %}</div>
+            <div class="stat-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8v8M8 6v12M16 6v12M19 8v8M8 12h8"/></svg>
+            </div>
+            <div class="stat-body">
+                <div class="stat-value">{{ total_workouts|default:"0" }}</div>
+                <div class="stat-label">{% trans "Workouts" %}</div>
+            </div>
         </div>
 
         <div class="stat-card">
-            <div class="stat-icon">⏱️</div>
-            <div class="stat-value">{{ total_hours|default:"0" }}{% trans "h" %}</div>
-            <div class="stat-label">{% trans "Hours" %}</div>
+            <div class="stat-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+            </div>
+            <div class="stat-body">
+                <div class="stat-value">{{ total_hours|default:"0" }}{% trans "h" %}</div>
+                <div class="stat-label">{% trans "Hours" %}</div>
+            </div>
         </div>
 
         <div class="stat-card">
-            <div class="stat-icon">🔥</div>
-            <div class="stat-value">{{ total_calories|default:"0" }}</div>
-            <div class="stat-label">{% trans "Calories" %}</div>
+            <div class="stat-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+            </div>
+            <div class="stat-body">
+                <div class="stat-value">{{ total_calories|default:"0" }}</div>
+                <div class="stat-label">{% trans "Calories" %}</div>
+            </div>
         </div>
 
         <div class="stat-card">
-            <div class="stat-icon">💪</div>
-            <div class="stat-value">{{ total_exercises|default:"0" }}</div>
-            <div class="stat-label">{% trans "Exercises" %}</div>
+            <div class="stat-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5h11v11h-11z"/><path d="M2 9v6M22 9v6M6.5 12H2M22 12h-4.5"/></svg>
+            </div>
+            <div class="stat-body">
+                <div class="stat-value">{{ total_exercises|default:"0" }}</div>
+                <div class="stat-label">{% trans "Exercises" %}</div>
+            </div>
         </div>
     </div>
 
     <!-- Chart Section -->
+    {{ chart_data|json_script:"chartData" }}
     <div class="chart-section">
         <div class="chart-header">
             <h3 class="chart-title">{% trans "Weekly Activity" %}</h3>
-            <button class="chart-filter">{% trans "Workouts" %}</button>
+            <button class="chart-filter" id="chartFilter">{% trans "Workouts" %}</button>
         </div>
         <div class="chart-container">
-            <div class="chart-placeholder">
-                {% for day in week_data %}
-                <div class="chart-bar" style="height: {{ day.percentage }}%;" data-value="{{ day.value }}"></div>
-                {% empty %}
-                <div class="chart-bar" style="height: 45%;" data-value="3"></div>
-                <div class="chart-bar" style="height: 70%;" data-value="5"></div>
-                <div class="chart-bar" style="height: 30%;" data-value="2"></div>
-                <div class="chart-bar" style="height: 85%;" data-value="6"></div>
-                <div class="chart-bar" style="height: 55%;" data-value="4"></div>
-                <div class="chart-bar" style="height: 90%;" data-value="7"></div>
-                <div class="chart-bar" style="height: 40%;" data-value="3"></div>
-                {% endfor %}
-            </div>
+            <div class="chart-placeholder" id="chartBars"></div>
         </div>
         <div class="chart-labels">
             <span class="chart-label">{% trans "Mon" %}</span>
@@ -798,89 +555,12 @@
         </div>
     </div>
 
-    <!-- Body Measurements -->
-{#    <div class="measurements-section">#}
-{#        <h3 class="section-title">#}
-{#            <span class="section-icon">📏</span>#}
-{#            {% trans "Body Measurements" %}#}
-{#        </h3>#}
-{##}
-{#        {% for measurement in body_measurements %}#}
-{#        <div class="measurement-item">#}
-{#            <div class="measurement-info">#}
-{#                <div class="measurement-icon">{{ measurement.icon }}</div>#}
-{#                <div class="measurement-details">#}
-{#                    <div class="measurement-name">{{ measurement.name }}</div>#}
-{#                    <div class="measurement-date">{{ measurement.date }}</div>#}
-{#                </div>#}
-{#            </div>#}
-{#            <div class="measurement-value-wrapper">#}
-{#                <span class="measurement-value">{{ measurement.value }}</span>#}
-{#                <span class="measurement-change {{ measurement.change_type }}">{{ measurement.change }}</span>#}
-{#            </div>#}
-{#        </div>#}
-{#        {% empty %}#}
-{#        <div class="measurement-item">#}
-{#            <div class="measurement-info">#}
-{#                <div class="measurement-icon">⚖️</div>#}
-{#                <div class="measurement-details">#}
-{#                    <div class="measurement-name">{% trans "Weight" %}</div>#}
-{#                    <div class="measurement-date">{% trans "Not recorded" %}</div>#}
-{#                </div>#}
-{#            </div>#}
-{#            <div class="measurement-value-wrapper">#}
-{#                <span class="measurement-value">- kg</span>#}
-{#            </div>#}
-{#        </div>#}
-{#        {% endfor %}#}
-{#    </div>#}
-
-{#    <!-- Achievements -->#}
-{#    <div class="achievements-section">#}
-{#        <h3 class="section-title">#}
-{#            <span class="section-icon">🏆</span>#}
-{#            {% trans "Achievements" %}#}
-{#        </h3>#}
-{##}
-{#        <div class="achievements-grid">#}
-{#            {% for achievement in achievements %}#}
-{#            <div class="achievement-badge {% if not achievement.unlocked %}locked{% endif %}">#}
-{#                <div class="achievement-icon">{{ achievement.icon }}</div>#}
-{#                <div class="achievement-name">{{ achievement.name }}</div>#}
-{#            </div>#}
-{#            {% empty %}#}
-{#            <div class="achievement-badge">#}
-{#                <div class="achievement-icon">🔥</div>#}
-{#                <div class="achievement-name">{% trans "First Workout" %}</div>#}
-{#            </div>#}
-{#            <div class="achievement-badge locked">#}
-{#                <div class="achievement-icon">💯</div>#}
-{#                <div class="achievement-name">{% trans "100 Workouts" %}</div>#}
-{#            </div>#}
-{#            <div class="achievement-badge locked">#}
-{#                <div class="achievement-icon">⚡</div>#}
-{#                <div class="achievement-name">{% trans "Speed Master" %}</div>#}
-{#            </div>#}
-{#            <div class="achievement-badge locked">#}
-{#                <div class="achievement-icon">💪</div>#}
-{#                <div class="achievement-name">{% trans "Strong" %}</div>#}
-{#            </div>#}
-{#            <div class="achievement-badge locked">#}
-{#                <div class="achievement-icon">🎯</div>#}
-{#                <div class="achievement-name">{% trans "Goal Crusher" %}</div>#}
-{#            </div>#}
-{#            <div class="achievement-badge locked">#}
-{#                <div class="achievement-icon">👑</div>#}
-{#                <div class="achievement-name">{% trans "Champion" %}</div>#}
-{#            </div>#}
-{#            {% endfor %}#}
-{#        </div>#}
-{#    </div>#}
-
     <!-- Workout History -->
     <div class="history-section">
         <h3 class="section-title">
-            <span class="section-icon">📋</span>
+            <span class="section-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 7h8M8 11h8M8 15h5"/></svg>
+            </span>
             {% trans "Recent Workouts" %}
         </h3>
 
@@ -892,15 +572,21 @@
             </div>
             <div class="history-stats">
                 <div class="history-stat">
-                    <span class="history-stat-icon">💪</span>
+                    <span class="history-stat-icon">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5h11v11h-11z"/><path d="M2 9v6M22 9v6M6.5 12H2M22 12h-4.5"/></svg>
+                    </span>
                     <span class="history-stat-value">{{ workout.exercises }}</span> {% trans "ex" %}
                 </div>
                 <div class="history-stat">
-                    <span class="history-stat-icon">⏱️</span>
+                    <span class="history-stat-icon">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+                    </span>
                     <span class="history-stat-value">{{ workout.duration }}</span> {% trans "min" %}
                 </div>
                 <div class="history-stat">
-                    <span class="history-stat-icon">🔥</span>
+                    <span class="history-stat-icon">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+                    </span>
                     <span class="history-stat-value">{{ workout.calories }}</span> {% trans "cal" %}
                 </div>
             </div>
@@ -915,68 +601,115 @@
 {% endblock %}
 
 {% block extra_js %}
+{% trans "Workouts" as txt_workouts %}
+{% trans "Calories" as txt_calories %}
+{% trans "Hours" as txt_hours %}
 <script>
-    // Period selector
-    const allowedPeriods = new Set(['today', 'week', 'month', 'year', 'all']);
-    const currentUrl = new URL(window.location.href);
-    const urlPeriod = (currentUrl.searchParams.get('period') || 'week').toLowerCase();
-    const normalizedPeriod = allowedPeriods.has(urlPeriod) ? urlPeriod : 'week';
+    // APOSTROFDAN XAVFSIZ tarjimalar
+    const T = {
+        workouts: '{{ txt_workouts|escapejs }}',
+        calories: '{{ txt_calories|escapejs }}',
+        hours: '{{ txt_hours|escapejs }}',
+    };
 
-    document.querySelectorAll('.period-btn').forEach(btn => {
-        const btnPeriod = (btn.dataset.period || '').toLowerCase();
-        btn.classList.toggle('active', btnPeriod === normalizedPeriod);
+    function initProgressPage() {
+        // ===== CHART DATA (backend) =====
+        let chartData = { workouts: [], calories: [], hours: [] };
+        const dataEl = document.getElementById('chartData');
+        if (dataEl) {
+            try {
+                chartData = JSON.parse(dataEl.textContent);
+            } catch (e) {
+                console.error('chartData parse error', e);
+            }
+        }
 
-        btn.addEventListener('click', function() {
-            const selectedPeriod = (this.dataset.period || 'week').toLowerCase();
-            const finalPeriod = allowedPeriods.has(selectedPeriod) ? selectedPeriod : 'week';
-            const nextUrl = new URL(window.location.href);
-            nextUrl.searchParams.set('period', finalPeriod);
-            window.location.href = nextUrl.toString();
-        });
-    });
-
-    // Chart filter toggle
-    const chartFilter = document.querySelector('.chart-filter');
-    if (chartFilter) {
-        const metrics = ['{% trans "Workouts" %}', '{% trans "Calories" %}', '{% trans "Hours" %}'];
+        const metricKeys = ['workouts', 'calories', 'hours'];
+        const metricLabels = [T.workouts, T.calories, T.hours];
         let currentIndex = 0;
 
-        chartFilter.addEventListener('click', function() {
-            currentIndex = (currentIndex + 1) % metrics.length;
-            this.textContent = metrics[currentIndex];
-            // Update chart data based on metric
-            console.log('Changed metric to:', metrics[currentIndex]);
+        function renderChart(key) {
+            const series = chartData[key] || [];
+            const barsEl = document.getElementById('chartBars');
+            if (!barsEl) return;
+            barsEl.innerHTML = '';
+
+            const hasData = series.some(d => (d.percentage || 0) > 0);
+            if (!series.length || !hasData) {
+                [45, 70, 30, 85, 55, 90, 40].forEach(h => {
+                    const bar = document.createElement('div');
+                    bar.className = 'chart-bar';
+                    bar.style.height = h + '%';
+                    bar.dataset.value = '0';
+                    barsEl.appendChild(bar);
+                });
+                return;
+            }
+
+            series.forEach(d => {
+                const bar = document.createElement('div');
+                bar.className = 'chart-bar';
+                bar.style.height = (d.percentage || 0) + '%';
+                bar.dataset.value = d.value;
+                barsEl.appendChild(bar);
+            });
+        }
+
+        // boshlang'ich render
+        renderChart(metricKeys[currentIndex]);
+
+        // chart filter — bosilganda metrika almashadi va chart qayta chiziladi
+        const chartFilter = document.getElementById('chartFilter');
+        if (chartFilter) {
+            chartFilter.addEventListener('click', function() {
+                currentIndex = (currentIndex + 1) % metricKeys.length;
+                this.textContent = metricLabels[currentIndex];
+                renderChart(metricKeys[currentIndex]);
+            });
+        }
+
+        // ===== PERIOD SELECTOR =====
+        const allowedPeriods = new Set(['today', 'week', 'month', 'year', 'all']);
+        const currentUrl = new URL(window.location.href);
+        const urlPeriod = (currentUrl.searchParams.get('period') || 'week').toLowerCase();
+        const normalizedPeriod = allowedPeriods.has(urlPeriod) ? urlPeriod : 'week';
+
+        document.querySelectorAll('.period-btn').forEach(btn => {
+            const btnPeriod = (btn.dataset.period || '').toLowerCase();
+            btn.classList.toggle('active', btnPeriod === normalizedPeriod);
+
+            btn.addEventListener('click', function() {
+                const selectedPeriod = (this.dataset.period || 'week').toLowerCase();
+                const finalPeriod = allowedPeriods.has(selectedPeriod) ? selectedPeriod : 'week';
+                const nextUrl = new URL(window.location.href);
+                nextUrl.searchParams.set('period', finalPeriod);
+                window.location.href = nextUrl.toString();
+            });
+        });
+
+        // ===== HISTORY items =====
+        document.querySelectorAll('.history-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const title = this.querySelector('.history-title').textContent;
+                console.log('View workout:', title);
+            });
+        });
+
+        // ===== Touch feedback =====
+        document.querySelectorAll('.stat-card, .history-item').forEach(card => {
+            card.addEventListener('touchstart', function() {
+                this.style.transform = 'scale(0.98)';
+            });
+            card.addEventListener('touchend', function() {
+                this.style.transform = '';
+            });
         });
     }
 
-    // Achievement badges
-    document.querySelectorAll('.achievement-badge:not(.locked)').forEach(badge => {
-        badge.addEventListener('click', function() {
-            const name = this.querySelector('.achievement-name').textContent;
-            alert(`🏆 ${name}\n\n{% trans "Congratulations!" %}`);
-        });
-    });
-
-    // History items
-    document.querySelectorAll('.history-item').forEach(item => {
-        item.addEventListener('click', function() {
-            const title = this.querySelector('.history-title').textContent;
-            console.log('View workout:', title);
-            // Navigate to workout detail
-            // window.location.href = `/workouts/${workoutId}/`;
-        });
-    });
-
-    // Touch feedback
-    document.querySelectorAll('.stat-card, .history-item, .achievement-badge').forEach(card => {
-        card.addEventListener('touchstart', function() {
-            if (!this.classList.contains('locked')) {
-                this.style.transform = 'scale(0.98)';
-            }
-        });
-        card.addEventListener('touchend', function() {
-            this.style.transform = '';
-        });
-    });
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initProgressPage);
+    } else {
+        initProgressPage();
+    }
 </script>
 {% endblock %}

@@ -1,6 +1,8 @@
+import json
 import math
 
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import transaction
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
@@ -14,8 +16,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.models import Exercise, Program
+from apps.models import Exercise, Plan, Program, Week, Workout, WorkoutExercise
 from apps.models.favorites import FavoriteCollection, Favorite, UserCustomProgram, CustomProgramProgress
+from apps.models.workouts import ProgressionSetting
+from apps.services.programs import ProgramGenerationService
 from apps.services.workout_calculator import WorkoutCalculatorService
 from apps.workouts.recommendation import get_recommended_program
 
@@ -502,12 +506,6 @@ class CustomProgramCompleteView(LoginRequiredMixin, View):
 		)
 
 
-import json
-from django.db import transaction
-from apps.models import Plan, Week, Workout, WorkoutExercise
-from apps.models.workouts import ProgressionSetting
-from apps.services.programs import ProgramGenerationService
-
 
 class CustomProgramCreateView(LoginRequiredMixin, View):
 	template_name = "exercises/custom_program_create.html"
@@ -545,8 +543,17 @@ class CustomProgramCreateView(LoginRequiredMixin, View):
 				is_active=True,
 				is_template=False,
 			)
-			
-			progression = ProgressionSetting.objects.filter(key='default').first()
+
+			progression, _ = ProgressionSetting.objects.get_or_create(
+				key='default',
+				defaults={
+					'w2_weight_mult': 1.06, 'w3_weight_mult': 1.12,
+					'w4_weight_mult': 1.18, 'w5_weight_mult': 1.22, 'w6_deload_mult': 0.85,
+					'set_w2': 1, 'set_w3': 1, 'set_w4': 0, 'set_w5': 0, 'set_w6': 0,
+					'rep_w2': 0, 'rep_w3': -1, 'rep_w4': 0, 'rep_w5': -1, 'rep_w6': -2,
+					'small_threshold': 25.0, 'small_boost': 5.0,
+				}
+			)
 			plan = Plan.objects.create(
 				program=program,
 				name=name,
@@ -554,10 +561,10 @@ class CustomProgramCreateView(LoginRequiredMixin, View):
 				weeks_count=6,
 				progression_config=progression,
 			)
-			
+
 			ProgramGenerationService.ensure_plan_weeks(plan)
 			week_one = Week.objects.get(plan=plan, week_number=1)
-			
+
 			for day_data in days:
 				workout = Workout.objects.create(
 					week=week_one,
@@ -569,7 +576,7 @@ class CustomProgramCreateView(LoginRequiredMixin, View):
 					exercise = Exercise.objects.filter(id=ex_data["exercise_id"]).first()
 					if not exercise:
 						continue
-					we = WorkoutExercise.objects.create(
+					WorkoutExercise.objects.create(
 						workout=workout,
 						exercise=exercise,
 						sets=ex_data.get("sets", 3),
@@ -577,7 +584,9 @@ class CustomProgramCreateView(LoginRequiredMixin, View):
 						recommended_weight=ex_data.get("weight", 0),
 						order=ex_data.get("order", 1),
 					)
-					ProgramGenerationService.generate_progression_from_week_one(we)
+
+			# Barcha kunlarning (Day1, Day2, ...) mashqlarini hafta 2-6 ga progression bilan ko'chirish
+			ProgramGenerationService.regenerate_all_from_week_one(plan)
 		
 		return JsonResponse({
 			"success": True,
@@ -689,24 +698,20 @@ class CustomProgramEditSaveView(LoginRequiredMixin, View):
 			return JsonResponse({"success": False, "error": "Name required"}, status=400)
 		
 		with transaction.atomic():
-			# Program update
 			program.name = name
 			program.goal = goal
 			program.save(update_fields=['name', 'goal'])
-			
-			# Plan va weeks tozalash, qayta yaratish
+
 			plan = program.plans.first()
 			if plan:
-				# Week 1 workouts o'chirish
 				week_one = plan.weeks.filter(week_number=1).first()
 				if week_one:
 					week_one.workouts.all().delete()
-				
-				# W2-W6 workouts o'chirish
+
 				plan.weeks.exclude(week_number=1).delete()
 				ProgramGenerationService.ensure_plan_weeks(plan)
-				week_one = plan.weeks.get(plan=plan, week_number=1)
-				
+				week_one = plan.weeks.get(week_number=1)
+
 				for day_data in days:
 					workout = Workout.objects.create(
 						week=week_one,
@@ -718,7 +723,7 @@ class CustomProgramEditSaveView(LoginRequiredMixin, View):
 						exercise = Exercise.objects.filter(id=ex_data["exercise_id"]).first()
 						if not exercise:
 							continue
-						we = WorkoutExercise.objects.create(
+						WorkoutExercise.objects.create(
 							workout=workout,
 							exercise=exercise,
 							sets=ex_data.get("sets", 3),
@@ -726,7 +731,9 @@ class CustomProgramEditSaveView(LoginRequiredMixin, View):
 							recommended_weight=ex_data.get("weight", 0),
 							order=ex_data.get("order", 1),
 						)
-						ProgramGenerationService.generate_progression_from_week_one(we)
+
+				# Barcha kunlarning mashqlarini hafta 2-6 ga progression bilan ko'chirish
+				ProgramGenerationService.regenerate_all_from_week_one(plan)
 		
 		return JsonResponse({
 			"success": True,

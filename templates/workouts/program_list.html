@@ -12,195 +12,132 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --gold: #ffd700;
+            --gold-grad: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
+            --side-space: 12px;
+        }
+
         body {
-            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            background: #000000;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             min-height: 100vh;
             position: relative;
             overflow-x: hidden;
         }
 
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: radial-gradient(circle at 20% 50%, rgba(255, 215, 0, 0.05) 0%, transparent 50%),
-            radial-gradient(circle at 80% 80%, rgba(255, 107, 107, 0.05) 0%, transparent 50%),
-            radial-gradient(circle at 40% 90%, rgba(78, 205, 196, 0.05) 0%, transparent 50%);
-            animation: particleFloat 15s ease-in-out infinite;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        @keyframes particleFloat {
-            0%, 100% {
-                transform: translate(0, 0) scale(1);
-            }
-            33% {
-                transform: translate(30px, -30px) scale(1.1);
-            }
-            66% {
-                transform: translate(-20px, 20px) scale(0.9);
-            }
-        }
-
-        /* ===== HEADER ===== */
+        /* ===== PAGE TITLE (asosiy header base.html da, tegilmadi) ===== */
         .page-header {
-            background: linear-gradient(135deg, rgba(15, 52, 96, 0.95) 0%, rgba(22, 33, 62, 0.95) 100%);
-            backdrop-filter: blur(10px);
-            padding: 12px 16px;
+            padding: 14px 16px 6px;
             display: flex;
             align-items: center;
             justify-content: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+            gap: 8px;
+            position: relative;
+            z-index: 12;
+        }
+
+        .page-header .star {
+            color: var(--gold);
+            font-size: 14px;
+            line-height: 1;
         }
 
         .page-title {
-            color: white;
-            font-size: 16px;
+            color: var(--gold);
+            font-size: 13px;
             font-weight: 800;
-            letter-spacing: 3px;
+            letter-spacing: 2px;
             text-transform: uppercase;
-            text-align: center;
-            background: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
         }
 
-        /* ===== MODE SWITCH - griddan TASHQARIDA ===== */
+        /* ===== MODE SWITCH (gold pills) ===== */
         .mode-switch-wrapper {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 10px 12px 0;
+            padding: 4px var(--side-space) 0;
             position: relative;
             z-index: 12;
-        }
-
-        .mode-switch {
-            display: flex;
-            gap: 10px;
-        }
-
-        .mode-pill {
-            flex: 1;
-            text-align: center;
-            padding: 10px 12px;
-            border-radius: 999px;
-            text-decoration: none;
-            text-transform: uppercase;
-            font-size: 12px;
-            letter-spacing: 1px;
-            font-weight: 700;
-            color: rgba(255, 255, 255, 0.8);
-            border: 1px solid rgba(255, 215, 0, 0.25);
-            background: rgba(255, 255, 255, 0.04);
-            transition: all 0.3s ease;
-        }
-
-        .mode-pill.active {
-            color: #111;
-            background: linear-gradient(135deg, #ffd700 0%, #ffb800 100%);
-            border-color: #ffd700;
-            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.3);
-        }
-
-        /* ===== CONTAINER - faqat cardlar uchun ===== */
-        .container {
-            padding: 14px 12px 90px;
-            position: relative;
-            z-index: 12;
-            max-width: 1200px;
-            margin: 0 auto;
         }
 
         .mode-switch {
             display: flex;
             gap: 10px;
             margin-bottom: 16px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 5px;
+            border-radius: 14px;
         }
 
         .mode-pill {
             flex: 1;
             text-align: center;
-            padding: 10px 12px;
-            border-radius: 999px;
+            padding: 12px 12px;
+            border-radius: 10px;
             text-decoration: none;
             text-transform: uppercase;
             font-size: 12px;
             letter-spacing: 1px;
             font-weight: 700;
-            color: rgba(255, 255, 255, 0.8);
-            border: 1px solid rgba(255, 215, 0, 0.25);
-            background: rgba(255, 255, 255, 0.04);
+            color: rgba(255, 255, 255, 0.55);
+            transition: all 0.25s ease;
         }
 
         .mode-pill.active {
-            color: #111;
-            background: linear-gradient(135deg, #ffd700 0%, #ffb800 100%);
-            border-color: #ffd700;
-            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.3);
+            color: #ffd700;
+            background: rgba(255, 215, 0, 0.12);
+            box-shadow: inset 0 0 0 1px rgba(255, 215, 0, 0.25);
         }
 
-        /* ===== COMPACT PROGRAM CARD ===== */
+        /* ===== CONTAINER ===== */
+        .container {
+            padding: 4px var(--side-space) 96px;
+            position: relative;
+            z-index: 12;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* ===== PROGRAM CARD (pure black, separated) ===== */
         .program-card {
-            background: linear-gradient(135deg,
-            rgba(255, 255, 255, 0.08) 0%,
-            rgba(255, 255, 255, 0.03) 100%);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 215, 0, 0.15);
-            border-radius: 16px;
+            position: relative;
+            display: block;
+            margin-bottom: 16px;
+            border-radius: 18px;
             overflow: hidden;
-            margin-bottom: 14px;
             cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             text-decoration: none;
             color: inherit;
-            display: block;
-            position: relative;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            background: #0a0a0a;
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+            border-color 0.3s ease;
+
             animation: slideInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             opacity: 0;
             animation-fill-mode: forwards;
-        }
-
-        .program-card::before {
-            content: '';
-            position: absolute;
-            top: -100%;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(
-                    45deg,
-                    transparent 0%,
-                    rgba(255, 255, 255, 0.08) 50%,
-                    transparent 100%
-            );
-            transition: all 0.5s ease;
-            z-index: 1;
-            pointer-events: none;
-        }
-
-        .program-card:hover::before {
-            top: 100%;
-            left: 100%;
         }
 
         .program-card:active {
             transform: scale(0.98);
         }
 
+        @media (hover: hover) {
+            .program-card:hover {
+                border-color: rgba(255, 215, 0, 0.35);
+            }
+
+            .program-card:hover .program-image {
+                transform: scale(1.06);
+            }
+        }
+
         @keyframes slideInUp {
             from {
                 opacity: 0;
-                transform: translateY(30px);
+                transform: translateY(24px);
             }
             to {
                 opacity: 1;
@@ -213,7 +150,7 @@
         }
 
         .program-card:nth-child(2) {
-            animation-delay: 0.1s;
+            animation-delay: 0.10s;
         }
 
         .program-card:nth-child(3) {
@@ -221,7 +158,7 @@
         }
 
         .program-card:nth-child(4) {
-            animation-delay: 0.2s;
+            animation-delay: 0.20s;
         }
 
         .program-card:nth-child(5) {
@@ -229,13 +166,13 @@
         }
 
         .program-card:nth-child(6) {
-            animation-delay: 0.3s;
+            animation-delay: 0.30s;
         }
 
         /* ===== PROGRAM HEADER (rasm) ===== */
         .program-header {
             position: relative;
-            height: 120px;
+            height: 132px;
             overflow: hidden;
         }
 
@@ -244,12 +181,7 @@
             height: 100%;
             object-fit: cover;
             transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            filter: brightness(0.8);
-        }
-
-        .program-card:hover .program-image {
-            transform: scale(1.1);
-            filter: brightness(0.9);
+            filter: brightness(0.78);
         }
 
         /* ===== TITLE OVERLAY ===== */
@@ -259,25 +191,25 @@
             left: 0;
             right: 0;
             background: linear-gradient(to top,
-            rgba(0, 0, 0, 0.9) 0%,
-            rgba(0, 0, 0, 0.5) 60%,
+            rgba(0, 0, 0, 0.95) 0%,
+            rgba(0, 0, 0, 0.55) 55%,
             transparent 100%);
-            padding: 30px 14px 12px;
+            padding: 32px 14px 12px;
             color: white;
             z-index: 2;
         }
 
         .program-title-overlay h2 {
-            font-size: 16px;
+            font-size: 17px;
             font-weight: 800;
             margin-bottom: 4px;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
-            letter-spacing: 0.5px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+            letter-spacing: 0.3px;
         }
 
         .program-title-overlay p {
             font-size: 11px;
-            color: #ffd700;
+            color: var(--gold);
             font-weight: 600;
             display: flex;
             align-items: center;
@@ -288,11 +220,11 @@
         .program-info {
             padding: 12px 14px 14px;
             position: relative;
-            z-index: 2;
+            z-index: 6;
         }
 
         .program-description {
-            color: rgba(255, 255, 255, 0.7);
+            color: rgba(255, 255, 255, 0.6);
             font-size: 12px;
             line-height: 1.6;
             margin-bottom: 12px;
@@ -303,31 +235,33 @@
             overflow: hidden;
         }
 
-        /* ===== META ITEMS ===== */
+        /* ===== META ITEMS (gold-outline chips) ===== */
         .program-meta {
             display: flex;
-            gap: 6px;
-            font-size: 10px;
-            flex-wrap: wrap;
+            align-items: center;
+            padding: 0;
         }
 
         .meta-item {
+            flex: 1; /* equal thirds */
             display: flex;
             align-items: center;
-            gap: 4px;
-            color: rgba(255, 255, 255, 0.9);
-            background: linear-gradient(135deg,
-            rgba(255, 215, 0, 0.15) 0%,
-            rgba(255, 215, 0, 0.08) 100%);
-            padding: 6px 10px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 215, 0, 0.2);
-            font-weight: 600;
-            font-size: 10px;
+            justify-content: center;
+            gap: 7px;
+            color: #ffd700;
+            font-size: 25px;
+            font-weight: 700;
+            background: none;
+            border: none;
+            padding: 8px 4px;
         }
 
-        .meta-item span {
-            font-size: 11px;
+        .meta-item svg {
+            flex-shrink: 0;
+        }
+
+        meta-item + .meta-item {
+            border-left: 5px solid rgba(255, 255, 255, 0.10);
         }
 
         /* ===== EMPTY STATE ===== */
@@ -350,11 +284,15 @@
         }
 
         .empty-state-icon {
-            font-size: 60px;
-            margin-bottom: 20px;
-            filter: grayscale(100%);
-            opacity: 0.5;
+            margin-bottom: 18px;
+            display: flex;
+            justify-content: center;
+            opacity: 0.4;
             animation: float 3s ease-in-out infinite;
+        }
+
+        .empty-state-icon svg {
+            stroke: var(--gold);
         }
 
         @keyframes float {
@@ -362,7 +300,7 @@
                 transform: translateY(0);
             }
             50% {
-                transform: translateY(-15px);
+                transform: translateY(-12px);
             }
         }
 
@@ -370,55 +308,158 @@
             font-size: 20px;
             font-weight: 800;
             margin-bottom: 10px;
-            background: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--gold);
         }
 
         .empty-state p {
             font-size: 14px;
-            color: rgba(255, 255, 255, 0.5);
+            color: rgba(255, 255, 255, 0.45);
         }
 
-        .lock-overlay {
+        /* ===== BADGES ===== */
+        .lock-overlay,
+        .for-you-badge {
             position: absolute;
             top: 12px;
-            right: 12px;
-            z-index: 4;
-            padding: 6px 12px;
+            z-index: 6;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 11px;
             border-radius: 20px;
-            background: rgba(13, 15, 24, 0.92);
-            border: 1px solid #ffd700;
-            color: #ffd700;
+            background: rgba(0, 0, 0, 0.65);
+            -webkit-backdrop-filter: blur(8px);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 215, 0, 0.55);
+            color: var(--gold);
             font-size: 11px;
             font-weight: 700;
             letter-spacing: 0.5px;
         }
 
+        .lock-overlay svg, .for-you-badge svg {
+            flex-shrink: 0;
+        }
+
+        .lock-overlay {
+            right: 12px;
+        }
+
+        .for-you-badge {
+            left: 12px;
+        }
+
+        /* ===== RECOMMEND OVERLAY ===== */
+        .recommend-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: none;
+            align-items: flex-end;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.7);
+            -webkit-backdrop-filter: blur(6px);
+            backdrop-filter: blur(6px);
+        }
+
+        .recommend-overlay.show {
+            display: flex;
+        }
+
+        .recommend-card {
+            width: min(560px, 94vw);
+            background: #0a0a0a;
+            color: #f5f5f5;
+            border: 1px solid rgba(255, 215, 0, 0.4);
+            border-bottom: none;
+            border-radius: 24px 24px 0 0;
+            padding: 22px 18px 26px;
+            transform: translateY(120%);
+            animation: recommendSlideUp .4s ease forwards;
+            box-shadow: 0 -12px 40px rgba(0, 0, 0, .7);
+        }
+
+        .recommend-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--gold);
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .recommend-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--gold);
+            margin-bottom: 8px;
+        }
+
+        .recommend-desc {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.75);
+            margin-bottom: 14px;
+            line-height: 1.5;
+        }
+
+        .recommend-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .recommend-btn {
+            flex: 1;
+            border: none;
+            border-radius: 12px;
+            padding: 13px 14px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .recommend-btn.primary {
+            background: var(--gold-grad);
+            color: #1a1300;
+        }
+
+        .recommend-btn.secondary {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 215, 0, 0.5);
+            color: var(--gold);
+        }
+
+        @keyframes recommendSlideUp {
+            to {
+                transform: translateY(0);
+            }
+        }
+
         /* ===== RESPONSIVE - TABLET (500px+) ===== */
         @media (min-width: 500px) {
             .page-header {
-                padding: 14px 20px;
+                padding: 16px 20px 6px;
             }
 
             .page-title {
-                font-size: 18px;
+                font-size: 14px;
             }
 
             .mode-switch-wrapper {
-                padding: 16px 16px 0;
+                padding: 8px 16px 0;
             }
 
             .container {
-                padding: 14px 16px 90px;
+                padding: 4px 16px 96px;
             }
 
             .program-header {
-                height: 140px;
+                height: 150px;
             }
 
             .program-title-overlay h2 {
-                font-size: 18px;
+                font-size: 19px;
             }
 
             .program-description {
@@ -426,33 +467,30 @@
             }
 
             .meta-item {
-                font-size: 11px;
-                padding: 7px 12px;
+                font-size: 12px;
             }
         }
 
         /* ===== RESPONSIVE - DESKTOP (768px+) ===== */
         @media (min-width: 768px) {
             .page-header {
-                padding: 16px 24px;
+                padding: 18px 24px 6px;
             }
 
             .page-title {
-                font-size: 20px;
-                letter-spacing: 4px;
+                font-size: 15px;
+                letter-spacing: 3px;
             }
 
-            /* mode-switch desktop - to'liq kenglkda, gridga tegmaydi */
             .mode-switch-wrapper {
-                padding: 10px 10px 0;
+                padding: 8px 10px 0;
             }
 
-            /* container - 2 ustunli grid, faqat cardlar */
             .container {
                 display: grid;
                 grid-template-columns: repeat(2, 1fr);
                 gap: 20px;
-                padding: 16px 20px 90px;
+                padding: 8px 20px 96px;
             }
 
             .program-card {
@@ -460,7 +498,7 @@
             }
 
             .program-header {
-                height: 160px;
+                height: 170px;
             }
 
             .program-title-overlay h2 {
@@ -475,126 +513,25 @@
                 font-size: 14px;
             }
 
-            .meta-item {
-                font-size: 12px;
-                padding: 8px 14px;
-            }
-
             .empty-state {
                 grid-column: 1 / -1;
-            }
-        }
-
-        .for-you-badge {
-            position: absolute;
-            top: 12px;
-            left: 12px;
-            z-index: 3;
-            padding: 6px 12px;
-            border-radius: 20px;
-            background: rgba(13, 15, 24, 0.92);
-            border: 1px solid #ffd700;
-            color: #ffd700;
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: .6px;
-        }
-
-        .recommend-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 9999;
-            display: none;
-            align-items: flex-end;
-            justify-content: center;
-            background: rgba(0, 0, 0, 0.75);
-            backdrop-filter: blur(4px);
-        }
-
-        .recommend-overlay.show {
-            display: flex;
-        }
-
-        .recommend-card {
-            width: min(560px, 94vw);
-            background: #0d0f18;
-            color: #f5f5f5;
-            border: 1px solid #ffd700;
-            border-radius: 22px 22px 0 0;
-            padding: 22px 18px 18px;
-            transform: translateY(120%);
-            animation: recommendSlideUp .4s ease forwards;
-            box-shadow: 0 -12px 32px rgba(0, 0, 0, .5);
-        }
-
-        .recommend-label {
-            color: #ffd700;
-            font-size: 12px;
-            font-weight: 800;
-            letter-spacing: 1px;
-            margin-bottom: 10px;
-        }
-
-        .recommend-title {
-            font-size: 24px;
-            font-weight: 800;
-            color: #ffd700;
-            margin-bottom: 8px;
-        }
-
-        .recommend-desc {
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.85);
-            margin-bottom: 14px;
-            line-height: 1.5;
-        }
-
-        .recommend-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .recommend-btn {
-            flex: 1;
-            border: none;
-            border-radius: 12px;
-            padding: 12px 14px;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        .recommend-btn.primary {
-            background: #ffd700;
-            color: #0d0f18;
-        }
-
-        .recommend-btn.secondary {
-            background: transparent;
-            border: 1px solid #ffd700;
-            color: #ffd700;
-        }
-
-        @keyframes recommendSlideUp {
-            to {
-                transform: translateY(0);
             }
         }
 
         /* ===== RESPONSIVE - LARGE DESKTOP (1024px+) ===== */
         @media (min-width: 1024px) {
             .mode-switch-wrapper {
-                padding: 24px 24px 0;
+                padding: 16px 24px 0;
             }
 
             .container {
                 grid-template-columns: repeat(3, 1fr);
-                gap: 10px;
-                padding: 10px 24px 90px;
+                gap: 16px;
+                padding: 8px 24px 96px;
             }
 
             .program-header {
-                height: 180px;
+                height: 190px;
             }
 
             .program-title-overlay h2 {
@@ -605,32 +542,32 @@
         /* ===== VERY SMALL PHONES (360px-) ===== */
         @media (max-width: 360px) {
             .page-header {
-                padding: 10px 12px;
+                padding: 12px 12px 4px;
             }
 
             .page-title {
-                font-size: 14px;
-                letter-spacing: 2px;
+                font-size: 12px;
+                letter-spacing: 1.5px;
             }
 
             .mode-switch-wrapper {
-                padding: 10px 10px 0;
+                padding: 4px 10px 0;
             }
 
             .container {
-                padding: 5px 8px 90px;
+                padding: 4px 10px 96px;
             }
 
             .program-header {
-                height: 100px;
+                height: 110px;
             }
 
             .program-title-overlay {
-                padding: 25px 12px 10px;
+                padding: 28px 12px 10px;
             }
 
             .program-title-overlay h2 {
-                font-size: 14px;
+                font-size: 15px;
             }
 
             .program-title-overlay p {
@@ -647,25 +584,20 @@
             }
 
             .meta-item {
-                font-size: 9px;
-                padding: 5px 8px;
-                gap: 3px;
-            }
-
-            .meta-item span {
                 font-size: 10px;
+                padding: 5px 9px;
+                gap: 4px;
             }
         }
     </style>
 {% endblock %}
 
 {% block content %}
-    <!-- Header -->
     <div class="page-header">
+        <span class="star">★</span>
         <h1 class="page-title">{% trans 'WORKOUTS' %}</h1>
     </div>
 
-    <!-- MODE SWITCH - containerdan TASHQARIDA, har doim to'liq kenglikda -->
     <div class="mode-switch-wrapper">
         <div class="mode-switch">
             <a href="{% url 'program_list' %}?type=gym"
@@ -675,11 +607,11 @@
         </div>
     </div>
 
-    <!-- CARDS CONTAINER - desktop da grid -->
     <div class="container">
         {% if programs %}
             {% for program in programs %}
                 <a href="
+
 
 
                         {% if is_home_mode %}{% url 'home_program_detail' program.id %}{% else %}{% url 'gym_program_detail' program.id %}{% endif %}"
@@ -694,24 +626,24 @@
 
                         {% if program.is_premium and not request.user.profile.is_premium %}
                             <div class="lock-overlay">
-                                🔒 {% trans 'Premium' %}
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="11" width="18" height="11" rx="2"/>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                                </svg>
+                                {% trans 'Premium' %}
                             </div>
                         {% endif %}
                         {% if program == recommended_program %}
-                            <div class="for-you-badge">⭐ {% trans 'FOR YOU' %}</div>
+                            <div class="for-you-badge">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                                    <path d="M12 2l2.9 6.3 6.9.7-5.1 4.6 1.4 6.8L12 17.8 5.9 20.4l1.4-6.8L2.2 9l6.9-.7L12 2z"/>
+                                </svg>
+                                {% trans 'FOR YOU' %}
+                            </div>
                         {% endif %}
                         <div class="program-title-overlay">
                             <h2>{{ program.title }}</h2>
-                            <p>
-                                🎯
-                                {% if is_home_mode %}
-                                    {% blocktrans count plan_count=program.plans.count %}{{ plan_count }} Plan
-                                        {% plural %}{{ plan_count }} Plans{% endblocktrans %}
-                                {% else %}
-                                    {% blocktrans count plan_count=program.plans.count %}{{ plan_count }} Plan
-                                        {% plural %}{{ plan_count }} Plans{% endblocktrans %}
-                                {% endif %}
-                            </p>
                         </div>
                     </div>
 
@@ -719,22 +651,42 @@
                         <p class="program-description">{{ program.description|truncatewords:18|default:"Transform your body with this scientifically designed training program." }}</p>
                         <div class="program-meta">
                             <span class="meta-item">
-                                <span>📅</span>
-
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                     stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12"
+                                                                                                          cy="12"
+                                                                                                          r="1"/>
+                                </svg>
+                                {% blocktrans count plan_count=program.plans.count %}{{ plan_count }} Plan
+                                    {% plural %}{{ plan_count }} Plans{% endblocktrans %}
+                            </span>
+                            <span class="meta-item">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                     stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>
+                                </svg>
                                 {{ program.plans.first.weeks_count|default:"6" }}{% trans "w" %}
                             </span>
                             <span class="meta-item">
-                                <span>🏋️</span>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                     stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M5 8v8M8 6v12M16 6v12M19 8v8M8 12h8"/>
+                                </svg>
                                 {{ program.plans.first.days_per_week|default:"1" }}{% trans "d/week" %}
                             </span>
-
                         </div>
                     </div>
                 </a>
             {% endfor %}
         {% else %}
             <div class="empty-state">
-                <div class="empty-state-icon">🏋️</div>
+                <div class="empty-state-icon">
+                    <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                         stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6.5 6.5h11v11h-11z"/>
+                        <path d="M2 9v6M22 9v6M6.5 12H2M22 12h-4.5"/>
+                    </svg>
+                </div>
                 <h3>{% trans 'No programs yet' %}</h3>
                 <p>{% trans 'New programs will be added soon' %}</p>
             </div>
@@ -744,7 +696,12 @@
     {% if recommended_program and show_recommendation_once %}
         <div id="recommendedOverlay" class="recommend-overlay" data-program-id="{{ recommended_program.id }}">
             <div class="recommend-card">
-                <div class="recommend-label">⭐ RECOMMENDED FOR YOU</div>
+                <div class="recommend-label">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                        <path d="M12 2l2.9 6.3 6.9.7-5.1 4.6 1.4 6.8L12 17.8 5.9 20.4l1.4-6.8L2.2 9l6.9-.7L12 2z"/>
+                    </svg>
+                    RECOMMENDED FOR YOU
+                </div>
                 <div class="recommend-title">{{ recommended_program.title }}</div>
                 <p class="recommend-desc">{{ recommended_program.description|default:"Top match based on your profile."|truncatewords:28 }}</p>
                 <div class="recommend-actions">
@@ -759,7 +716,6 @@
 
 {% block extra_js %}
     <script>
-        // Keep only one mode switch (last one) if duplicated by cached/legacy markup
         const modeSwitches = document.querySelectorAll('.mode-switch');
         if (modeSwitches.length > 1) {
             modeSwitches.forEach((el, index) => {
@@ -769,7 +725,6 @@
             });
         }
 
-        // Smooth scroll behavior
         document.querySelectorAll('.program-card').forEach(card => {
             card.addEventListener('touchstart', function () {
                 this.style.transform = 'scale(0.98)';

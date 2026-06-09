@@ -6,7 +6,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% trans "Language settings" %}</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -14,84 +13,81 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --gold: #ffd700;
+            --gold-grad: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
+        }
+
         body {
-            background: #0a0a0a;
+            background: #000000;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             min-height: 100vh;
             color: #ffffff;
             overflow-x: hidden;
         }
 
-        /* ===== HEADER — workouts sahifasidek ===== */
+        /* ===== HEADER ===== */
         .page-header {
-            background: #0a0a0a;
-            padding: 16px 20px 12px;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(12px);
+            padding: 14px 16px;
             display: flex;
             align-items: center;
             position: sticky;
             top: 0;
             z-index: 100;
-            border-bottom: 1px solid rgba(255, 215, 0, 0.08);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
 
         .back-btn {
             background: none;
             border: none;
-            color: #ffd700;
-            font-size: 26px;
+            color: var(--gold);
             cursor: pointer;
             padding: 0;
-            width: 36px;
-            height: 36px;
+            width: 32px;
+            height: 32px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 700;
             flex-shrink: 0;
             text-decoration: none;
             transition: transform 0.2s ease;
         }
+        .back-btn svg { flex-shrink: 0; }
 
         .back-btn:hover {
             transform: translateX(-3px);
         }
 
-        /* ✅ WORKOUTS sahifasidek — letter-spacing, gradient text */
         .page-title {
             flex: 1;
             text-align: center;
-            font-size: 16px;
-            font-weight: 700;
-            letter-spacing: 4px;
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 2px;
             text-transform: uppercase;
-            background: linear-gradient(135deg, #ffd700 0%, #ffb300 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: var(--gold);
             margin: 0 8px;
         }
 
-        /* spacer — title markazda turishi uchun */
         .header-spacer {
-            width: 36px;
+            width: 32px;
             flex-shrink: 0;
         }
 
         /* ===== CONTENT ===== */
         .settings-content {
-            padding: 20px 16px 100px;
+            padding: 20px 12px 100px;
             max-width: 600px;
             margin: 0 auto;
         }
 
         .page-subtitle {
             font-size: 18px;
-            font-weight: 700;
+            font-weight: 800;
             margin-bottom: 8px;
-            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: var(--gold);
             letter-spacing: 0.5px;
         }
 
@@ -135,9 +131,8 @@
             border-radius: 14px;
             padding: 13px 16px;
             cursor: pointer;
-            /* ✅ animatsiya yo'q — faqat hover transition */
-            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-            border: 1.5px solid rgba(255, 215, 0, 0.12);
+            transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+            border: 1px solid rgba(255, 255, 255, 0.07);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -148,22 +143,21 @@
             margin-bottom: 0;
         }
 
-        /* ✅ hover — faqat ozgina scale */
         .language-item:hover {
-            transform: scale(1.02);
+            transform: translateY(-2px);
             border-color: rgba(255, 215, 0, 0.35);
-            box-shadow: 0 4px 20px rgba(255, 215, 0, 0.1);
+            background: rgba(255, 255, 255, 0.06);
         }
 
         .language-item:active {
-            transform: scale(1.005);
+            transform: scale(0.995);
         }
 
-        /* ✅ active — tanlangan holat */
+        /* active — tanlangan holat (gold-tint) */
         .language-item.active {
-            border-color: rgba(255, 215, 0, 0.5);
-            background: rgba(255, 215, 0, 0.06);
-            box-shadow: 0 4px 20px rgba(255, 215, 0, 0.12);
+            border-color: rgba(255, 215, 0, 0.25);
+            background: rgba(255, 215, 0, 0.12);
+            box-shadow: inset 0 0 0 1px rgba(255, 215, 0, 0.25);
         }
 
         .language-left {
@@ -175,26 +169,30 @@
         .language-icon {
             width: 38px;
             height: 38px;
-            border-radius: 10px;
-            background: linear-gradient(135deg, #ffd700 0%, #f39c12 100%);
+            border-radius: 11px;
+            background: rgba(255, 215, 0, 0.10);
+            border: 1px solid rgba(255, 215, 0, 0.22);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            color: var(--gold);
             flex-shrink: 0;
-            box-shadow: 0 0 12px rgba(255, 215, 0, 0.3);
-            transition: transform 0.2s ease;
+            transition: all 0.2s ease;
         }
 
-        .language-item:hover .language-icon {
-            transform: scale(1.07);
+        .language-item:hover .language-icon,
+        .language-item.active .language-icon {
+            background: rgba(255, 215, 0, 0.16);
         }
 
         .language-text {
             font-size: 14px;
             font-weight: 700;
             color: #ffffff;
-            margin-bottom: 3px;
+            margin-bottom: 0;
             letter-spacing: 0.3px;
         }
 
@@ -204,20 +202,19 @@
             letter-spacing: 0.5px;
         }
 
-        /* ✅ TICK — faqat active da ko'rinadi */
+        /* TICK — faqat active da ko'rinadi */
         .language-check {
             width: 28px;
             height: 28px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
-            color: #ffd700;
-            /* default: ko'rinmaydi */
+            color: var(--gold);
             opacity: 0;
             transform: scale(0.6);
             transition: opacity 0.2s ease, transform 0.2s ease;
         }
+        .language-check svg { flex-shrink: 0; }
 
         .language-item.active .language-check {
             opacity: 1;
@@ -231,27 +228,28 @@
         /* ===== SAVE BUTTON ===== */
         .bottom-button {
             width: 100%;
-            background: linear-gradient(135deg, #ffd700 0%, #f39c12 100%);
+            background: var(--gold-grad);
             border: none;
             border-radius: 14px;
-            padding: 14px 16px;
+            padding: 15px 16px;
             cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            transition: transform 0.2s ease, opacity 0.2s ease;
             box-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
-            color: #1a1a2e;
+            color: #1a1300;
             font-size: 14px;
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
+        .bottom-button svg { flex-shrink: 0; }
 
         .bottom-button:hover {
-            transform: scale(1.02);
-            box-shadow: 0 6px 28px rgba(255, 215, 0, 0.4);
+            transform: translateY(-1px);
+            opacity: 0.92;
         }
 
         .bottom-button:active {
@@ -260,31 +258,31 @@
 
         /* ===== RESPONSIVE ===== */
         @media (min-width: 500px) {
-            .page-title    { font-size: 18px; }
+            .page-title    { font-size: 14px; }
             .page-subtitle { font-size: 20px; }
             .language-text { font-size: 15px; }
-            .bottom-button { font-size: 15px; padding: 15px 20px; }
+            .bottom-button { font-size: 15px; padding: 16px 20px; }
         }
 
         @media (min-width: 768px) {
-            .page-header   { padding: 18px 28px 14px; }
-            .page-title    { font-size: 20px; letter-spacing: 5px; }
+            .page-header   { padding: 18px 24px; }
+            .page-title    { font-size: 15px; letter-spacing: 3px; }
             .settings-content { padding: 24px 24px 100px; }
             .page-subtitle { font-size: 22px; }
             .language-item { padding: 16px 20px; border-radius: 16px; }
-            .language-icon { width: 44px; height: 44px; font-size: 20px; border-radius: 12px; }
+            .language-icon { width: 44px; height: 44px; font-size: 14px; border-radius: 12px; }
             .language-text { font-size: 16px; }
             .bottom-button { padding: 16px 28px; font-size: 15px; }
         }
 
         @media (max-width: 360px) {
-            .page-title    { font-size: 13px; letter-spacing: 2.5px; }
-            .settings-content { padding: 14px 12px 90px; }
+            .page-title    { font-size: 12px; letter-spacing: 1.5px; }
+            .settings-content { padding: 14px 10px 90px; }
             .language-item { padding: 11px 13px; border-radius: 12px; margin-bottom: 8px; }
-            .language-icon { width: 34px; height: 34px; font-size: 16px; border-radius: 9px; }
+            .language-icon { width: 34px; height: 34px; font-size: 12px; border-radius: 9px; }
             .language-text { font-size: 13px; }
             .language-subtitle { font-size: 10px; }
-            .bottom-button { font-size: 13px; padding: 12px; border-radius: 12px; }
+            .bottom-button { font-size: 13px; padding: 13px; border-radius: 12px; }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -296,9 +294,10 @@
 </head>
 <body>
 
-<!-- ✅ WORKOUTS sahifasidek header -->
 <div class="page-header">
-    <a href="{% url 'settings' %}" class="back-btn">‹</a>
+    <a href="{% url 'settings' %}" class="back-btn">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </a>
     <h1 class="page-title">{% trans "LANGUAGE SETTINGS" %}</h1>
     <div class="header-spacer"></div>
 </div>
@@ -329,20 +328,19 @@
                         {% if current_language == lang.code %}checked{% endif %}
                     >
                     <div class="language-left">
-                        <div class="language-icon">🌐</div>
+                        <div class="language-icon">{{ lang.code|upper }}</div>
                         <div>
                             <div class="language-text">{{ lang.name }}</div>
-                            <div class="language-subtitle">{{ lang.code|upper }}</div>
                         </div>
                     </div>
-                    <!-- ✅ tick faqat active da ko'rinadi (CSS bilan) -->
-                    <div class="language-check">✓</div>
+                    <div class="language-check">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+                    </div>
                 </label>
             {% endfor %}
         </div>
 
         <button type="submit" class="bottom-button">
-            <i class="fas fa-save"></i>
             <span>{% trans "Save" %}</span>
         </button>
     </form>

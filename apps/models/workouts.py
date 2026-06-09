@@ -53,7 +53,13 @@ class Program(CreatedBaseModel):
 	level = CharField(max_length=20, choices=Level.choices, default=Level.BEGINNER)
 	goal = CharField(max_length=20, choices=Goal.choices, default=Goal.GENERAL)
 	is_template = BooleanField(default=True)
-	
+	is_individual = BooleanField(
+		default=False,
+		verbose_name="Individual (tavsiya)",
+		help_text="Belgilansa, bu programma oddiy ro'yxatda ko'rinmaydi. "
+		          "Faqat yangi foydalanuvchiga tavsiya sifatida beriladi.",
+	)
+
 	# Backward-compatible fields kept for current templates/admin screens
 	image = ImageField(upload_to="programs/", blank=True, null=True)
 	is_active = BooleanField(default=True)
@@ -115,6 +121,14 @@ class Plan(CreatedBaseModel):
 		if week:
 			return week.workouts.count()
 		return 0
+
+
+class IndividualProgram(Program):
+	"""Admin uchun proxy — tavsiya programmalarini alohida boshqarish."""
+	class Meta:
+		proxy = True
+		verbose_name = "Individual Program"
+		verbose_name_plural = "Individual Programs"
 
 
 class Edition(Plan):

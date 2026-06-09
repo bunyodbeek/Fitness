@@ -13,62 +13,37 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --gold: #ffd700;
+            --gold-grad: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
+        }
+
         body {
-            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            background: #000000;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             min-height: 100vh;
             position: relative;
             overflow-x: hidden;
         }
 
-        /* Animated background particles */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: radial-gradient(circle at 20% 50%, rgba(255, 215, 0, 0.05) 0%, transparent 50%),
-            radial-gradient(circle at 80% 80%, rgba(255, 107, 107, 0.05) 0%, transparent 50%),
-            radial-gradient(circle at 40% 90%, rgba(78, 205, 196, 0.05) 0%, transparent 50%);
-            animation: particleFloat 15s ease-in-out infinite;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        @keyframes particleFloat {
-            0%, 100% {
-                transform: translate(0, 0) scale(1);
-            }
-            33% {
-                transform: translate(30px, -30px) scale(1.1);
-            }
-            66% {
-                transform: translate(-20px, 20px) scale(0.9);
-            }
-        }
-
-        /* ===== COMPACT HEADER ===== */
+        /* ===== HEADER (back + title + spacer) ===== */
         .page-header {
-            background: linear-gradient(135deg, rgba(15, 52, 96, 0.95) 0%, rgba(22, 33, 62, 0.95) 100%);
-            backdrop-filter: blur(10px);
-            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(12px);
+            padding: 14px 16px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
 
         .back-btn {
             background: none;
             border: none;
-            color: #ffd700;
-            font-size: 24px;
+            color: var(--gold);
             cursor: pointer;
             padding: 0;
             width: 32px;
@@ -76,44 +51,42 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s ease;
-            font-weight: 700;
+            transition: transform 0.3s ease;
         }
+        .back-btn svg { flex-shrink: 0; }
 
         .back-btn:hover {
-            transform: translateX(-3px) scale(1.1);
+            transform: translateX(-3px);
         }
 
         .page-title {
-            color: white;
-            font-size: 16px;
+            color: var(--gold);
+            font-size: 13px;
             font-weight: 800;
-            letter-spacing: 3px;
+            letter-spacing: 2px;
             text-transform: uppercase;
             flex: 1;
             text-align: center;
-            background: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
+        .page-title svg { flex-shrink: 0; }
 
         .header-spacer {
             width: 32px;
         }
 
-        /* =========================================================
-           ⬅️➡️ EKRAN CHETIDAN SPACING (ong-chap)
-           Faqat shu --side-space ni o'zgartir, hamma element birga suriladi.
-           Mobile = 12px (program_list bilan bir xil)
-           ========================================================= */
+        /* ===== CONTAINER ===== */
         .container {
-            --side-space: 12px;      /* ⬅️➡️ ong-chap chetdan space */
+            --side-space: 12px;
 
             position: relative;
             z-index: 1;
             max-width: 600px;
             margin: 0 auto;
-            padding: 0 var(--side-space) 90px;
+            padding: 12px var(--side-space) 90px;
         }
 
         /* ===== PROGRAM HEADER ===== */
@@ -122,7 +95,8 @@
             height: 120px;
             overflow: hidden;
             margin-bottom: 0;
-            border-radius: 14px;   /* card kabi yumaloq, qolganlar bilan bir xil */
+            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.07);
         }
 
         .program-header-image {
@@ -140,7 +114,7 @@
         .placeholder-image {
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 215, 0, 0.1) 100%);
+            background: rgba(255, 215, 0, 0.08);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -162,9 +136,7 @@
         .program-logo {
             font-size: 18px;
             font-weight: 900;
-            background: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--gold);
             margin-bottom: 2px;
             letter-spacing: 1px;
         }
@@ -175,30 +147,22 @@
             font-weight: 500;
         }
 
-        /* ===== STATS BAR =====
-           ⬇️⬆️ Bloklar orasidagi vertikal spacing shu margin dan boshqariladi.
-           margin: <TEPA> 0 <PAST>; (ong-chap 0 - container side-space ishlaydi) */
+        /* ===== STATS BAR ===== */
         .stats-bar {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.04);
             padding: 12px;
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 8px;
-            border: 1.5px solid rgba(255, 215, 0, 0.15);
-            margin: 12px 0 12px;   /* ⬆️ program-header ostidagi space | ⬇️ program-info ustidagi space */
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            margin: 12px 0 12px;
             border-radius: 14px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             animation: fadeIn 0.5s ease;
         }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .stat-item {
@@ -210,16 +174,14 @@
         }
 
         .stat-item:hover {
-            background: rgba(255, 215, 0, 0.12);
+            background: rgba(255, 215, 0, 0.1);
             transform: translateY(-2px);
         }
 
         .stat-value {
             font-size: 18px;
             font-weight: 900;
-            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--gold);
             margin-bottom: 4px;
         }
 
@@ -231,25 +193,20 @@
             letter-spacing: 0.5px;
         }
 
-        /* ===== PROGRAM INFO =====
-           margin: 0 0 <PAST>;  (ong-chap 0, faqat pastdagi space) */
+        /* ===== PROGRAM INFO ===== */
         .program-info {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.04);
             padding: 14px;
-            margin: 0 0 12px;   /* ⬇️ "ABOUT" ostidagi (Choose Your Plan ustidagi) space */
+            margin: 0 0 12px;
             border-radius: 14px;
-            border: 1.5px solid rgba(255, 215, 0, 0.15);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.07);
             animation: fadeIn 0.6s ease;
         }
 
         .info-title {
             font-size: 12px;
             font-weight: 800;
-            background: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--gold);
             margin-bottom: 8px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -258,13 +215,13 @@
         .info-text {
             font-size: 11px;
             line-height: 1.6;
-            color: rgba(255, 255, 255, 0.75);
+            color: rgba(255, 255, 255, 0.7);
             margin-bottom: 0;
         }
 
         .info-highlight {
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.12), rgba(255, 215, 0, 0.06));
-            border-left: 2px solid #ffd700;
+            background: rgba(255, 215, 0, 0.08);
+            border-left: 2px solid var(--gold);
             padding: 10px 12px;
             border-radius: 8px;
             font-size: 10px;
@@ -273,29 +230,24 @@
         }
 
         .info-highlight strong {
-            color: #ffd700;
+            color: var(--gold);
             font-weight: 700;
         }
 
-        /* ===== SECTION TITLE ("CHOOSE YOUR PLAN") =====
-           ⬆️⬇️ Bu yozuvning TEPA va PAST spacingi shu padding dan boshqariladi.
-           padding: <TEPA> 14px <PAST>;  (kichraytirish uchun shu 2 raqamni o'zgartir) */
+        /* ===== SECTION TITLE ===== */
         .section-title {
-            padding: 4px 14px 8px;   /* ⬆️ tepasi | ⬇️ pasti — kichraytirildi */
+            padding: 4px 14px 8px;
             margin: 0;
             font-size: 12px;
             font-weight: 800;
-            background: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--gold);
             text-transform: uppercase;
             letter-spacing: 1px;
             text-align: center;
             animation: fadeIn 0.7s ease;
         }
 
-        /* ===== EDITIONS LIST =====
-           gap = cardlar orasidagi space (program_list bilan bir xil 14px) */
+        /* ===== EDITIONS LIST ===== */
         .editions-list {
             padding: 0;
             display: flex;
@@ -305,8 +257,7 @@
 
         /* ===== EDITION CARD ===== */
         .edition-card {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.04);
             padding: 12px 14px;
             display: flex;
             align-items: center;
@@ -314,51 +265,26 @@
             text-decoration: none;
             color: inherit;
             transition: all 0.3s ease;
-            border: 1.5px solid rgba(255, 215, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.07);
             border-radius: 14px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             animation: slideInUp 0.5s ease backwards;
         }
 
         @keyframes slideInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .edition-card:nth-child(1) {
-            animation-delay: 0.05s;
-        }
-
-        .edition-card:nth-child(2) {
-            animation-delay: 0.1s;
-        }
-
-        .edition-card:nth-child(3) {
-            animation-delay: 0.15s;
-        }
-
-        .edition-card:nth-child(4) {
-            animation-delay: 0.2s;
-        }
-
-        .edition-card:nth-child(5) {
-            animation-delay: 0.25s;
-        }
-
-        .edition-card:nth-child(6) {
-            animation-delay: 0.3s;
-        }
+        .edition-card:nth-child(1) { animation-delay: 0.05s; }
+        .edition-card:nth-child(2) { animation-delay: 0.1s; }
+        .edition-card:nth-child(3) { animation-delay: 0.15s; }
+        .edition-card:nth-child(4) { animation-delay: 0.2s; }
+        .edition-card:nth-child(5) { animation-delay: 0.25s; }
+        .edition-card:nth-child(6) { animation-delay: 0.3s; }
 
         .edition-card:hover {
-            border-color: rgba(255, 215, 0, 0.4);
+            border-color: rgba(255, 215, 0, 0.35);
             transform: translateX(4px);
-            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.2);
         }
 
         .edition-card:active {
@@ -375,39 +301,14 @@
             justify-content: center;
             font-size: 16px;
             font-weight: 800;
-            color: white;
+            color: #1a1300;
+            background: var(--gold-grad);
             flex-shrink: 0;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
             transition: all 0.3s ease;
         }
 
         .edition-card:hover .edition-number {
             transform: scale(1.08);
-        }
-
-        /* Edition Colors */
-        .edition-1 {
-            background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
-        }
-
-        .edition-2 {
-            background: linear-gradient(135deg, #8B5CF6 0%, #A855F7 100%);
-        }
-
-        .edition-3 {
-            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
-        }
-
-        .edition-4 {
-            background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
-        }
-
-        .edition-5 {
-            background: linear-gradient(135deg, #EC4899 0%, #DB2777 100%);
-        }
-
-        .edition-6 {
-            background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
         }
 
         .edition-content {
@@ -431,16 +332,26 @@
             font-weight: 500;
         }
 
-        .edition-arrow {
-            font-size: 20px;
-            color: rgba(255, 215, 0, 0.5);
-            transition: all 0.3s ease;
+        .edition-premium {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 9px;
             font-weight: 700;
+            color: var(--gold);
+            margin-top: 4px;
         }
 
+        .edition-arrow {
+            color: rgba(255, 215, 0, 0.5);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-shrink: 0;
+        }
+        .edition-arrow svg { flex-shrink: 0; }
 
         .edition-card:hover .edition-arrow {
-            color: #ffd700;
+            color: var(--gold);
             transform: translateX(4px);
         }
 
@@ -453,19 +364,18 @@
         }
 
         .empty-state .icon {
-            font-size: 50px;
             margin-bottom: 15px;
-            filter: grayscale(100%);
-            opacity: 0.5;
+            display: flex;
+            justify-content: center;
+            opacity: 0.4;
         }
+        .empty-state .icon svg { stroke: var(--gold); }
 
         .empty-state h3 {
             font-size: 16px;
             font-weight: 700;
             margin-bottom: 6px;
-            background: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--gold);
         }
 
         .empty-state p {
@@ -475,274 +385,70 @@
 
         /* ===== RESPONSIVE - TABLET ===== */
         @media (min-width: 500px) {
-            .page-header {
-                padding: 14px 20px;
-            }
-
-            .page-title {
-                font-size: 18px;
-            }
-
-            .program-header {
-                height: 140px;
-            }
-
-            .program-logo {
-                font-size: 22px;
-            }
-
-            .program-subtitle {
-                font-size: 11px;
-            }
-
-            .stats-bar {
-                padding: 14px;
-                margin: 14px 0 14px;   /* ong-chap 0 — har doim bir xil */
-                gap: 10px;
-            }
-
-            .stat-value {
-                font-size: 20px;
-            }
-
-            .stat-label {
-                font-size: 10px;
-            }
-
-            .program-info {
-                padding: 16px;
-                margin: 0 0 14px;   /* ong-chap 0 — har doim bir xil */
-            }
-
-            .info-title {
-                font-size: 13px;
-            }
-
-            .info-text {
-                font-size: 12px;
-            }
-
-            .section-title {
-                font-size: 13px;
-            }
-
-            .editions-list {
-                padding: 0;
-                gap: 14px;
-            }
-
-            .edition-card {
-                padding: 14px 16px;
-            }
-
-            .edition-number {
-                width: 40px;
-                height: 40px;
-                font-size: 18px;
-            }
-
-            .edition-title {
-                font-size: 14px;
-            }
-
-            .edition-meta {
-                font-size: 11px;
-            }
+            .page-header { padding: 16px 20px; }
+            .page-title { font-size: 14px; }
+            .program-header { height: 140px; }
+            .program-logo { font-size: 22px; }
+            .program-subtitle { font-size: 11px; }
+            .stats-bar { padding: 14px; margin: 14px 0 14px; gap: 10px; }
+            .stat-value { font-size: 20px; }
+            .stat-label { font-size: 10px; }
+            .program-info { padding: 16px; margin: 0 0 14px; }
+            .info-title { font-size: 13px; }
+            .info-text { font-size: 12px; }
+            .section-title { font-size: 13px; }
+            .editions-list { padding: 0; gap: 14px; }
+            .edition-card { padding: 14px 16px; }
+            .edition-number { width: 40px; height: 40px; font-size: 18px; }
+            .edition-title { font-size: 14px; }
+            .edition-meta { font-size: 11px; }
         }
 
         /* ===== RESPONSIVE - DESKTOP ===== */
         @media (min-width: 768px) {
-            .page-header {
-                padding: 16px 24px;
-            }
-
-            .page-title {
-                font-size: 20px;
-                letter-spacing: 4px;
-            }
-
-            .program-header {
-                height: 160px;
-            }
-
-            .program-logo {
-                font-size: 26px;
-            }
-
-            .program-subtitle {
-                font-size: 12px;
-            }
-
-            .stats-bar {
-                padding: 16px;
-                margin: 16px 0 16px;   /* ong-chap 0 — har doim bir xil */
-                gap: 12px;
-            }
-
-            .stat-value {
-                font-size: 24px;
-            }
-
-            .stat-label {
-                font-size: 11px;
-            }
-
-            .program-info {
-                padding: 18px;
-                margin: 0 0 16px;   /* ong-chap 0 — har doim bir xil */
-            }
-
-            .info-title {
-                font-size: 14px;
-            }
-
-            .info-text {
-                font-size: 13px;
-            }
-
-            .info-highlight {
-                font-size: 11px;
-                padding: 12px 14px;
-            }
-
-            .section-title {
-                font-size: 14px;
-                margin: 0;
-            }
-
-            .editions-list {
-                padding: 0;
-                gap: 14px;
-            }
-
-            .edition-card {
-                padding: 16px 18px;
-            }
-
-            .edition-number {
-                width: 44px;
-                height: 44px;
-                font-size: 20px;
-                border-radius: 12px;
-            }
-
-            .edition-title {
-                font-size: 16px;
-            }
-
-            .edition-meta {
-                font-size: 12px;
-            }
-
-            .edition-arrow {
-                font-size: 22px;
-            }
+            .page-header { padding: 18px 24px; }
+            .page-title { font-size: 15px; letter-spacing: 3px; }
+            .program-header { height: 160px; }
+            .program-logo { font-size: 26px; }
+            .program-subtitle { font-size: 12px; }
+            .stats-bar { padding: 16px; margin: 16px 0 16px; gap: 12px; }
+            .stat-value { font-size: 24px; }
+            .stat-label { font-size: 11px; }
+            .program-info { padding: 18px; margin: 0 0 16px; }
+            .info-title { font-size: 14px; }
+            .info-text { font-size: 13px; }
+            .info-highlight { font-size: 11px; padding: 12px 14px; }
+            .section-title { font-size: 14px; margin: 0; }
+            .editions-list { padding: 0; gap: 14px; }
+            .edition-card { padding: 16px 18px; }
+            .edition-number { width: 44px; height: 44px; font-size: 20px; border-radius: 12px; }
+            .edition-title { font-size: 16px; }
+            .edition-meta { font-size: 12px; }
         }
 
         /* ===== VERY SMALL PHONES ===== */
         @media (max-width: 360px) {
-            .container {
-                --side-space: 10px;   /* ⬅️➡️ kichik telefonda ozgina kamroq */
-            }
-
-            .page-header {
-                padding: 10px 12px;
-            }
-
-            .page-title {
-                font-size: 14px;
-                letter-spacing: 2px;
-            }
-
-            .back-btn {
-                width: 28px;
-                height: 28px;
-                font-size: 20px;
-            }
-
-            .program-header {
-                height: 100px;
-            }
-
-            .program-logo {
-                font-size: 16px;
-            }
-
-            .program-subtitle {
-                font-size: 9px;
-            }
-
-            .stats-bar {
-                padding: 10px;
-                margin: 10px 0 10px;   /* ong-chap 0 — har doim bir xil */
-                gap: 6px;
-            }
-
-            .stat-item {
-                padding: 8px 4px;
-            }
-
-            .stat-value {
-                font-size: 16px;
-            }
-
-            .stat-label {
-                font-size: 8px;
-            }
-
-            .program-info {
-                padding: 12px;
-                margin: 0 0 10px;   /* ong-chap 0 — har doim bir xil */
-            }
-
-            .info-title {
-                font-size: 11px;
-            }
-
-            .info-text {
-                font-size: 10px;
-                margin-bottom: 0;
-            }
-
-            .info-highlight {
-                font-size: 9px;
-                padding: 8px 10px;
-            }
-
-            .section-title {
-                font-size: 11px;
-                padding: 4px 12px 8px;
-                margin: 0;
-            }
-
-            .editions-list {
-                padding: 0;
-                gap: 8px;
-            }
-
-            .edition-card {
-                padding: 10px 12px;
-                gap: 10px;
-            }
-
-            .edition-number {
-                width: 32px;
-                height: 32px;
-                font-size: 14px;
-                border-radius: 8px;
-            }
-
-            .edition-title {
-                font-size: 12px;
-            }
-
-            .edition-meta {
-                font-size: 9px;
-            }
-
-            .edition-arrow {
-                font-size: 18px;
-            }
+            .container { --side-space: 10px; }
+            .page-header { padding: 12px 12px; }
+            .page-title { font-size: 12px; letter-spacing: 1.5px; }
+            .back-btn { width: 28px; height: 28px; }
+            .program-header { height: 100px; }
+            .program-logo { font-size: 16px; }
+            .program-subtitle { font-size: 9px; }
+            .stats-bar { padding: 10px; margin: 10px 0 10px; gap: 6px; }
+            .stat-item { padding: 8px 4px; }
+            .stat-value { font-size: 16px; }
+            .stat-label { font-size: 8px; }
+            .program-info { padding: 12px; margin: 0 0 10px; }
+            .info-title { font-size: 11px; }
+            .info-text { font-size: 10px; margin-bottom: 0; }
+            .info-highlight { font-size: 9px; padding: 8px 10px; }
+            .section-title { font-size: 11px; padding: 4px 12px 8px; margin: 0; }
+            .editions-list { padding: 0; gap: 8px; }
+            .edition-card { padding: 10px 12px; gap: 10px; }
+            .edition-number { width: 32px; height: 32px; font-size: 14px; border-radius: 8px; }
+            .edition-title { font-size: 12px; }
+            .edition-meta { font-size: 9px; }
         }
 
         /* GPU Acceleration */
@@ -766,8 +472,13 @@
 {% endblock %}
 {% block content %}
     <div class="page-header">
-        <button class="back-btn" onclick="goBack()">&#8592;</button>
-        <h1 class="page-title">&#127947; {% trans 'PLANS' %}</h1>
+        <button class="back-btn" onclick="goBack()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <h1 class="page-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8v8M8 6v12M16 6v12M19 8v8M8 12h8"/></svg>
+            {% trans 'PLANS' %}
+        </h1>
         <div class="header-spacer"></div>
     </div>
 
@@ -821,14 +532,21 @@
                             {{ plan.weeks.first.workouts.count|default:"?" }}{% trans "d/week" %}
                         </div>
                         {% if plan.is_premium %}
-                            <div class="edition-premium">&#9733; {% trans "Premium" %}</div>
+                            <div class="edition-premium">
+                                <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l2.9 6.3 6.9.7-5.1 4.6 1.4 6.8L12 17.8 5.9 20.4l1.4-6.8L2.2 9l6.9-.7L12 2z"/></svg>
+                                {% trans "Premium" %}
+                            </div>
                         {% endif %}
                     </div>
-                    <div class="edition-arrow">&#8250;</div>
+                    <div class="edition-arrow">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+                    </div>
                 </a>
             {% empty %}
                 <div class="empty-state">
-                    <div class="icon">&#127947;</div>
+                    <div class="icon">
+                        <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8v8M8 6v12M16 6v12M19 8v8M8 12h8"/></svg>
+                    </div>
                     <h3>{% trans 'No plans available' %}</h3>
                     <p>{% trans 'Check back later for workout plans' %}</p>
                 </div>

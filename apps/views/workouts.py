@@ -52,7 +52,8 @@ class ProgramListView(ListView):
 		qs = Program.objects.filter(
 			is_active=True,
 			workout_type=workout_type,
-			type=Program.ProgramType.ADMIN,  # ← shu qatorni qo'shing
+			type=Program.ProgramType.ADMIN,
+			is_individual=False,
 		).prefetch_related('plans__weeks__workouts')
 		if not self.request.user.is_authenticated or not hasattr(self.request.user, "profile"):
 			return qs

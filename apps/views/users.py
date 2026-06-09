@@ -365,25 +365,52 @@ class ProgressView(LoginRequiredMixin, TemplateView):
         )
         total_hours = round(total_duration / 3600, 1)
 
+        # ===== CHART: oxirgi 7 kun, har bir metrika (period filtridan mustaqil) =====
         start_of_week = today - timedelta(days=6)
-        daily_counts = []
+        daily_workouts = []
+        daily_calories = []
+        daily_hours = []
+
         for day_offset in range(7):
             day = start_of_week + timedelta(days=day_offset)
-            count = (
-                workout_progress_qs.filter(completed_at__date=day).count()
-                + custom_progress_qs.filter(created_at__date=day).count()
-            )
-            daily_counts.append(count)
-        max_count = max(daily_counts) if daily_counts else 0
-        week_data = [
-            {
-                'value': count,
-                'percentage': int((count / max_count) * 100) if max_count else 0
-            }
-            for count in daily_counts
-        ]
 
-        recent_workouts = []
+            w_qs = WorkoutProgress.objects.filter(
+                user=profile, status=WorkoutProgress.Status.COMPLETED,
+                completed_at__date=day,
+            )
+            c_qs = CustomProgramProgress.objects.filter(
+                user=profile, created_at__date=day,
+            )
+
+            count = w_qs.count() + c_qs.count()
+
+            cals = (
+                self._finite_number(w_qs.aggregate(s=Sum('total_calories'))['s'])
+                + self._finite_number(c_qs.aggregate(s=Sum('total_calories'))['s'])
+            )
+            secs = (
+                self._finite_number(w_qs.aggregate(s=Sum('total_duration_seconds'))['s'])
+                + self._finite_number(c_qs.aggregate(s=Sum('total_duration_seconds'))['s'])
+            )
+
+            daily_workouts.append(count)
+            daily_calories.append(int(cals))
+            daily_hours.append(round(secs / 3600, 1))
+
+        def to_series(values):
+            mx = max(values) if values else 0
+            return [
+                {'value': v, 'percentage': int((v / mx) * 100) if mx else 0}
+                for v in values
+            ]
+
+        chart_data = {
+            'workouts': to_series(daily_workouts),
+            'calories': to_series(daily_calories),
+            'hours': to_series(daily_hours),
+        }
+
+        # ===== Recent workouts =====
         recent_items = []
 
         for progress in workout_progress_qs.order_by('-completed_at')[:5]:
@@ -429,7 +456,7 @@ class ProgressView(LoginRequiredMixin, TemplateView):
             'total_calories': total_calories,
             'total_hours': total_hours,
             'total_exercises': total_exercises,
-            'week_data': week_data,
+            'chart_data': chart_data,
             'body_measurements': body_measurements,
             'recent_workouts': recent_workouts,
         })

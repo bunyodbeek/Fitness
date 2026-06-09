@@ -13,58 +13,38 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --gold: #ffd700;
+            --gold-grad: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
+            --green: #10b981;
+        }
+
         body {
-            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            background: #000000;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             min-height: 100vh;
             position: relative;
             overflow-x: hidden;
         }
 
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background: radial-gradient(circle at 15% 40%, rgba(255, 215, 0, 0.06) 0%, transparent 50%),
-            radial-gradient(circle at 85% 70%, rgba(255, 107, 107, 0.05) 0%, transparent 50%),
-            radial-gradient(circle at 50% 95%, rgba(78, 205, 196, 0.04) 0%, transparent 50%);
-            animation: bgFloat 18s ease-in-out infinite;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        @keyframes bgFloat {
-            0%, 100% {
-                transform: translate(0, 0) scale(1);
-            }
-            33% {
-                transform: translate(20px, -20px) scale(1.05);
-            }
-            66% {
-                transform: translate(-15px, 15px) scale(0.95);
-            }
-        }
-
         /* ===== Header ===== */
         .page-header {
-            background: linear-gradient(135deg, rgba(15, 52, 96, 0.95) 0%, rgba(22, 33, 62, 0.95) 100%);
-            backdrop-filter: blur(10px);
-            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(12px);
+            padding: 14px 16px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
 
         .back-btn {
             background: none;
             border: none;
-            color: #ffd700;
-            font-size: 22px;
+            color: var(--gold);
             cursor: pointer;
             padding: 0;
             width: 32px;
@@ -72,24 +52,22 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: transform 0.2s ease;
-            font-weight: 700;
+            transition: transform 0.3s ease;
         }
+        .back-btn svg { flex-shrink: 0; }
 
         .back-btn:hover {
-            transform: scale(1.2);
+            transform: translateX(-3px);
         }
 
         .page-title {
-            font-size: 16px;
+            font-size: 13px;
             font-weight: 800;
-            letter-spacing: 3px;
+            letter-spacing: 2px;
             text-transform: uppercase;
             flex: 1;
             text-align: center;
-            background: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--gold);
         }
 
         .header-spacer {
@@ -98,29 +76,25 @@
 
         /* =========================================================
            ⬅️➡️ EKRAN CHETIDAN SPACING (ong-chap)
-           Faqat shu --side-space ni o'zgartir, hamma element birga suriladi.
-           Mobile = 12px (boshqa pagelar bilan bir xil)
            ========================================================= */
         .container {
-            --side-space: 12px;      /* ⬅️➡️ ong-chap chetdan space */
+            --side-space: 12px;
 
             position: relative;
             z-index: 1;
             max-width: 640px;
             margin: 0 auto;
-            padding: 0 var(--side-space) 90px;
+            padding: 12px var(--side-space) 90px;
         }
 
-        /* ===== Week Hero Banner =====
-           margin: <TEPA> 0 0;  (ong-chap 0 — container side-space ishlaydi) */
+        /* ===== Week Hero Banner ===== */
         .week-hero {
-            margin: 12px 0 0;   /* ⬆️ headerdan keyingi birinchi space */
+            margin: 0 0 12px;
             border-radius: 18px;
             overflow: hidden;
             position: relative;
-            background: linear-gradient(135deg, #0f3460 0%, #16213e 100%);
-            border: 1.5px solid rgba(255, 215, 0, 0.2);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+            background: #0a0a0a;
+            border: 1px solid rgba(255, 255, 255, 0.07);
         }
 
         .week-hero-inner {
@@ -132,18 +106,17 @@
             z-index: 1;
         }
 
-        /* Large week number badge */
         .week-badge {
             width: 64px;
             height: 64px;
             border-radius: 18px;
-            background: linear-gradient(135deg, #ffd700 0%, #ff9500 100%);
+            background: var(--gold-grad);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
-            box-shadow: 0 4px 16px rgba(255, 215, 0, 0.4);
+            box-shadow: 0 4px 16px rgba(255, 215, 0, 0.3);
         }
 
         .week-badge-label {
@@ -159,7 +132,7 @@
         .week-badge-num {
             font-size: 28px;
             font-weight: 900;
-            color: #000;
+            color: #1a1300;
             line-height: 1;
         }
 
@@ -199,17 +172,13 @@
             color: rgba(255, 255, 255, 0.6);
             font-weight: 600;
         }
+        .hero-stat svg { flex-shrink: 0; color: var(--gold); }
 
-        .hero-stat-icon {
-            font-size: 12px;
-        }
-
-        /* ===== Progress bar =====
-           margin: <TEPA> 0 0;  (ong-chap 0) */
+        /* ===== Progress bar ===== */
         .progress-section {
-            margin: 12px 0 0;   /* ⬆️ hero/headerdan keyingi space */
+            margin: 0 0 0;
             background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.07);
             border-radius: 14px;
             padding: 12px 14px;
         }
@@ -232,7 +201,7 @@
         .progress-value {
             font-size: 11px;
             font-weight: 800;
-            color: #ffd700;
+            color: var(--gold);
         }
 
         .progress-bar-track {
@@ -244,25 +213,22 @@
 
         .progress-bar-fill {
             height: 100%;
-            background: linear-gradient(90deg, #ffd700, #10b981);
+            background: var(--gold-grad);
             border-radius: 999px;
             transition: width 0.8s ease;
         }
 
-        /* ===== Section title ("TRAINING DAYS") =====
-           ⬆️⬇️ Tepa va past spacing shu padding dan boshqariladi.
-           padding: <TEPA> 0 <PAST>;  (ong-chap 0) */
+        /* ===== Section title ===== */
         .section-title {
             font-size: 11px;
             font-weight: 800;
             color: rgba(255, 255, 255, 0.4);
             text-transform: uppercase;
             letter-spacing: 1.5px;
-            padding: 14px 0 8px;   /* ⬆️ progress ostidagi | ⬇️ kartalar ustidagi */
+            padding: 14px 0 8px;
         }
 
-        /* ===== Day Cards =====
-           gap = cardlar orasidagi space */
+        /* ===== Day Cards ===== */
         .days-list {
             padding: 0;
             display: flex;
@@ -278,10 +244,8 @@
             color: inherit;
             padding: 12px 14px;
             border-radius: 14px;
-            border: 1.5px solid rgba(255, 215, 0, 0.12);
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
-            backdrop-filter: blur(8px);
-            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            background: rgba(255, 255, 255, 0.04);
             transition: all 0.25s ease;
             position: relative;
             overflow: hidden;
@@ -294,7 +258,7 @@
             top: 0;
             bottom: 0;
             width: 3px;
-            background: linear-gradient(180deg, #ffd700, #ff9500);
+            background: var(--gold-grad);
             border-radius: 0 2px 2px 0;
             opacity: 0;
             transition: opacity 0.25s ease;
@@ -303,7 +267,6 @@
         .day-card:hover {
             border-color: rgba(255, 215, 0, 0.35);
             transform: translateX(5px);
-            box-shadow: 0 6px 22px rgba(255, 215, 0, 0.15);
         }
 
         .day-card:hover::before {
@@ -312,12 +275,12 @@
 
         /* Completed state */
         .day-card.completed {
-            border-color: rgba(16, 185, 129, 0.35);
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(5, 150, 105, 0.03) 100%);
+            border-color: rgba(16, 185, 129, 0.3);
+            background: rgba(16, 185, 129, 0.06);
         }
 
         .day-card.completed::before {
-            background: linear-gradient(180deg, #10b981, #059669);
+            background: var(--green);
             opacity: 1;
         }
 
@@ -331,12 +294,12 @@
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.15) 0%, rgba(255, 149, 0, 0.1) 100%);
-            border: 1.5px solid rgba(255, 215, 0, 0.25);
+            background: rgba(255, 215, 0, 0.10);
+            border: 1px solid rgba(255, 215, 0, 0.25);
         }
 
         .day-card.completed .day-circle {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.1) 100%);
+            background: rgba(16, 185, 129, 0.12);
             border-color: rgba(16, 185, 129, 0.4);
         }
 
@@ -357,12 +320,12 @@
         .day-circle-num {
             font-size: 20px;
             font-weight: 900;
-            color: #ffd700;
+            color: var(--gold);
             line-height: 1;
         }
 
         .day-card.completed .day-circle-num {
-            color: #10b981;
+            color: var(--green);
         }
 
         /* Day content */
@@ -389,22 +352,20 @@
         }
 
         .day-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
             font-size: 9px;
             font-weight: 700;
-            padding: 2px 7px;
+            padding: 3px 8px;
             border-radius: 999px;
             text-transform: uppercase;
             letter-spacing: 0.4px;
             background: rgba(255, 215, 0, 0.1);
-            color: rgba(255, 215, 0, 0.7);
+            color: rgba(255, 215, 0, 0.8);
             border: 1px solid rgba(255, 215, 0, 0.2);
         }
-
-        .day-tag.exercises {
-            background: rgba(99, 102, 241, 0.12);
-            color: rgba(165, 180, 252, 0.8);
-            border-color: rgba(99, 102, 241, 0.25);
-        }
+        .day-tag svg { flex-shrink: 0; }
 
         /* Right side */
         .day-right {
@@ -416,6 +377,9 @@
         }
 
         .completed-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
             font-size: 9px;
             font-weight: 700;
             text-transform: uppercase;
@@ -423,15 +387,16 @@
             padding: 3px 9px;
             border-radius: 999px;
             background: rgba(16, 185, 129, 0.15);
-            color: #10b981;
+            color: var(--green);
             border: 1px solid rgba(16, 185, 129, 0.35);
         }
+        .completed-badge svg { flex-shrink: 0; }
 
         .day-arrow {
-            font-size: 18px;
             color: rgba(255, 215, 0, 0.4);
-            font-weight: 700;
+            display: flex;
         }
+        .day-arrow svg { flex-shrink: 0; }
 
         .day-card.completed .day-arrow {
             color: rgba(16, 185, 129, 0.5);
@@ -445,15 +410,18 @@
         }
 
         .empty-icon {
-            font-size: 48px;
-            margin-bottom: 12px;
-            opacity: 0.5;
+            margin-bottom: 14px;
+            display: flex;
+            justify-content: center;
+            opacity: 0.4;
         }
+        .empty-icon svg { stroke: var(--gold); }
 
         .empty-state h3 {
             font-size: 16px;
             font-weight: 700;
             margin-bottom: 6px;
+            color: var(--gold);
         }
 
         .empty-state p {
@@ -480,15 +448,15 @@
         {% for i in "123456789" %}
             .day-card:nth-child({{ forloop.counter }}) {
                 animation-delay: {{ forloop.counter0 }}0ms;
-            {# 0ms, 10ms, 20ms... very subtle stagger #}
             }
         {% endfor %}
 
         /* ===== VERY SMALL PHONES ===== */
         @media (max-width: 360px) {
             .container {
-                --side-space: 10px;   /* ⬅️➡️ kichik telefonda ozgina kamroq */
+                --side-space: 10px;
             }
+            .page-title { font-size: 12px; letter-spacing: 1.5px; }
         }
     </style>
 {% endblock %}
@@ -496,7 +464,9 @@
 {% block content %}
 
    <div class="page-header">
-<button class="back-btn" onclick="window.location.href='{% if is_home_mode %}{% url 'home_plan_weeks' week.plan.id %}{% else %}{% url 'gym_plan_weeks' week.plan.id %}{% endif %}'">        &#8592;</button>
+<button class="back-btn" onclick="window.location.href='{% if is_home_mode %}{% url 'home_plan_weeks' week.plan.id %}{% else %}{% url 'gym_plan_weeks' week.plan.id %}{% endif %}'">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
     <h1 class="page-title">{% trans "Week" %} {{ week.week_number }}</h1>
     <div class="header-spacer"></div>
 </div>
@@ -546,6 +516,7 @@
                         </div>
                         <div class="day-meta">
                         <span class="day-tag exercises">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8v8M8 6v12M16 6v12M19 8v8M8 12h8"/></svg>
                             {{ workout.exercise_count }} {% trans "exercises" %}
                         </span>
                         </div>
@@ -554,16 +525,23 @@
                     <!-- Right side -->
                     <div class="day-right">
                         {% if workout.id in completed_workout_ids %}
-                            <span class="completed-badge">? {% trans "Done" %}</span>
+                            <span class="completed-badge">
+                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+                                {% trans "Done" %}
+                            </span>
                         {% else %}
-                            <span class="day-arrow">&#8250;</span>
+                            <span class="day-arrow">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+                            </span>
                         {% endif %}
                     </div>
 
                 </a>
             {% empty %}
                 <div class="empty-state">
-                    <div class="empty-icon">??</div>
+                    <div class="empty-icon">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8v8M8 6v12M16 6v12M19 8v8M8 12h8"/></svg>
+                    </div>
                     <h3>{% trans "No workouts yet" %}</h3>
                     <p>{% trans "This week has no training days configured" %}</p>
                 </div>
