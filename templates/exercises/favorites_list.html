@@ -66,17 +66,125 @@ body { background: #000000; font-family: -apple-system, BlinkMacSystemFont, 'Seg
 .create-program-btn .cp-sub { font-size: 11px; color: rgba(255,255,255,0.5); font-weight: 400; }
 .create-program-btn .cp-arrow { color: rgba(255,215,0,0.6); flex-shrink: 0; display: flex; }
 
-/* PROGRAM CARD */
-.program-card { position: relative; background: #0a0a0a; border: 1px solid var(--card-border); border-radius: 18px; overflow: hidden; margin-bottom: 16px; cursor: pointer; transition: transform 0.25s, border-color 0.25s; text-decoration: none; display: block; color: inherit; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
-.program-card:hover { border-color: rgba(255,215,0,0.35); transform: translateY(-2px); }
-.program-card-image { width: 100%; height: 130px; background: #1a1a1a; position: relative; overflow: hidden; }
-.program-card-image img { width: 100%; height: 100%; object-fit: cover; }
-.program-card-image-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.65)); }
-.program-card-body { padding: 14px; }
-.program-card-name { font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 8px; }
-.program-card-meta { display: flex; gap: 6px; flex-wrap: wrap; }
-.program-meta-tag { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; padding: 5px 11px; border-radius: 10px; background: rgba(255,215,0,0.08); border: 1px solid rgba(255,215,0,0.22); color: var(--gold); }
-.program-meta-tag svg { flex-shrink: 0; }
+/* =========================================================
+   PROGRAM CARD (program_list.html bilan bir xil — RTF dizayn)
+   rasm to'liq, title overlay ustida, meta pastki strip
+   ========================================================= */
+.program-card {
+    position: relative;
+    display: block;
+    height: 220px;
+    overflow: hidden;
+    border-radius: 14px;
+    background: #101010;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    margin-bottom: 16px;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s ease;
+}
+
+.program-card:hover { border-color: rgba(255, 215, 0, 0.35); }
+.program-card:hover .program-card-image img { transform: scale(1.06); }
+.program-card:active { transform: scale(0.98); }
+
+/* IMAGE — to'liq kartochkani egallaydi */
+.program-card-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background: #1a1a1a;
+    overflow: hidden;
+}
+
+.program-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.82) contrast(1.05);
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* OVERLAY (qorong'i gradient) */
+.program-card-image-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg,
+        rgba(0, 0, 0, 0.02) 0%,
+        rgba(0, 0, 0, 0.08) 35%,
+        rgba(0, 0, 0, 0.90) 100%);
+    z-index: 1;
+}
+
+/* BODY — title rasm ustida */
+.program-card-body {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 0 18px 64px;
+    z-index: 3;
+}
+
+.program-card-name {
+    font-size: 28px;
+    line-height: 1.05;
+    font-weight: 800;
+    letter-spacing: -1px;
+    color: #fff;
+    margin-bottom: 8px;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
+}
+
+/* META — pastki strip */
+.program-card-meta {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 48px;
+    z-index: 4;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    flex-wrap: nowrap;
+    padding: 0;
+    gap: 0;
+}
+
+.program-meta-tag {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 0;
+    border-radius: 0;
+    background: none;
+    border: none;
+    color: #fff;
+    min-width: 0;
+    white-space: nowrap;
+}
+
+.program-meta-tag:not(:last-child) {
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.program-meta-tag svg {
+    flex-shrink: 0;
+    color: #ffd700;
+    stroke: #ffd700;
+}
 
 /* 3 DOTS */
 .program-menu-btn { position: absolute; top: 10px; right: 10px; width: 32px; height: 32px; background: rgba(0,0,0,0.65); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.15); border-radius: 9px; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10; transition: background 0.2s; }
@@ -157,6 +265,12 @@ body { background: #000000; font-family: -apple-system, BlinkMacSystemFont, 'Seg
 @media (max-width: 360px) {
     .page-title { font-size: 12px; letter-spacing: 1.5px; }
     .favorites-content { padding: 14px 10px 100px; }
+    .program-card { height: 185px; }
+    .program-card-body { padding: 0 14px 56px; }
+    .program-card-name { font-size: 23px; }
+    .program-card-meta { height: 42px; }
+    .program-meta-tag { font-size: 11px; gap: 5px; }
+    .program-meta-tag svg { width: 14px; height: 14px; }
 }
 
 /* IMPORT BTN */
@@ -344,20 +458,20 @@ body { background: #000000; font-family: -apple-system, BlinkMacSystemFont, 'Seg
             </div>
             <div class="program-card-body">
                 <div class="program-card-name">{{ program.name }}</div>
-                <div class="program-card-meta">
-                    <span class="program-meta-tag">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>
-                        {{ program.get_goal_display }}
-                    </span>
-                    <span class="program-meta-tag">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-                        6 {% trans "weeks" %}
-                    </span>
-                    <span class="program-meta-tag">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 7h8M8 11h8M8 15h5"/></svg>
-                        {{ program.plans.count }} {% trans "plan" %}
-                    </span>
-                </div>
+            </div>
+            <div class="program-card-meta">
+                <span class="program-meta-tag">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>
+                    {{ program.get_goal_display }}
+                </span>
+                <span class="program-meta-tag">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                    6{% trans "w" %}
+                </span>
+                <span class="program-meta-tag">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8v8M8 6v12M16 6v12M19 8v8M8 12h8"/></svg>
+                    {{ program.plans.count }} {% trans "plan" %}
+                </span>
             </div>
         </div>
         {% empty %}
