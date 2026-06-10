@@ -62,6 +62,11 @@ from apps.views.handbook import (
 )
 from apps.views.workouts import WeekDetailView
 from apps.views.favorite import CustomProgramCreateView, CustomProgramDeleteView, CustomProgramDetailView
+from apps.views.share import (
+    GenerateShareLinkView,
+    ImportProgramEntryView,
+    ImportProgramPreviewView,
+)
 
 urlpatterns = [
 	path('', AnimationView.as_view(), name='animation'),
@@ -170,6 +175,11 @@ urlpatterns = [
 	path('favorites/custom-program/<int:pk>/edit/', CustomProgramEditView.as_view(), name='custom_program_edit'),
 	path('favorites/custom-program/<int:pk>/edit/save/', CustomProgramEditSaveView.as_view(),
 	     name='custom_program_edit_save'),
+	# Program share & import
+	path('programs/share/<int:pk>/generate/', GenerateShareLinkView.as_view(), name='program_share_generate'),
+	path('programs/import/', ImportProgramEntryView.as_view(), name='program_import_entry'),
+	path('programs/import/<str:token>/', ImportProgramPreviewView.as_view(), name='program_import_preview'),
+
 	path('premium/', PremiumView.as_view(), name='premium'),
 	path('premium/tariffs/', TariffSelectView.as_view(), name='tariff_select'),
 	path('premium/tariffs/<int:plan_id>/method/', PaymentMethodView.as_view(), name='payment_method'),

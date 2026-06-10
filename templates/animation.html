@@ -23,9 +23,25 @@
   <source src="{% static 'apps/videos/INTRO.mp4' %}" type="video/mp4">
 </video>
 
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script>
+  var _defaultUrl = "{% url 'program_list' %}";
+
+  (function() {
+    try {
+      var startParam = window.Telegram && window.Telegram.WebApp
+        ? (window.Telegram.WebApp.initDataUnsafe || {}).start_param || ''
+        : '';
+      if (startParam.indexOf('import_') === 0) {
+        var token = startParam.slice(7).toUpperCase();
+        var lang = window.location.pathname.match(/^\/(en|ru|uz)\//)?.[1] || 'uz';
+        _defaultUrl = '/' + lang + '/programs/import/' + token + '/';
+      }
+    } catch(e) {}
+  })();
+
   document.getElementById('introVideo').addEventListener('ended', function() {
-    window.location.href = "{% url 'program_list' %}";
+    window.location.href = _defaultUrl;
   });
 </script>
 

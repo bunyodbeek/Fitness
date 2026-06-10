@@ -65,7 +65,8 @@ class Program(CreatedBaseModel):
 	is_active = BooleanField(default=True)
 	is_premium = BooleanField(_("Premium"), default=False)
 	workout_type = CharField(max_length=10, choices=WorkoutType.choices, default=WorkoutType.GYM)
-	
+	share_token = CharField(max_length=8, unique=True, null=True, blank=True, db_index=True)
+
 	class Meta:
 		verbose_name = "Program"
 		verbose_name_plural = "Programs"

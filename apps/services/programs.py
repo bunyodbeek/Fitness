@@ -4,6 +4,7 @@ from django.db import transaction
 
 from apps.models import Plan, Program, Week, Workout, WorkoutExercise
 from apps.models.workouts import ProgressionSetting, HomeProgressionSetting
+from apps.utils.tokens import generate_share_token
 from apps.workouts.recommendation import get_recommended_program
 
 try:
@@ -257,6 +258,123 @@ class UserProgramService:
             is_active=True,
             assigned_once=True,
         )
+
+    @staticmethod
+    @transaction.atomic
+    def clone_program(source_program: Program, new_owner) -> Program:
+        """
+        Deep-copy source_program and all its Plans/Weeks/Workouts/WorkoutExercises
+        for new_owner.  Used by the share-link import flow.
+        Global catalog objects (Exercise, ProgressionSetting) are referenced, not cloned.
+        source_week_one links are intentionally left None so the copy is independent.
+        """
+        from django.db import IntegrityError
+
+        cloned = Program.objects.create(
+            name=source_program.name,
+            name_uz=source_program.name_uz,
+            name_ru=source_program.name_ru,
+            description=source_program.description,
+            description_uz=source_program.description_uz,
+            description_ru=source_program.description_ru,
+            type=Program.ProgramType.CUSTOM,
+            created_by=new_owner,
+            level=source_program.level,
+            goal=source_program.goal,
+            is_template=False,
+            is_individual=False,
+            image=source_program.image,
+            is_active=True,
+            is_premium=False,
+            workout_type=source_program.workout_type,
+            share_token=None,
+        )
+
+        source_plans = (
+            source_program.plans
+            .prefetch_related(
+                "weeks__workouts__workout_exercises__exercise",
+            )
+            .order_by("order")
+        )
+
+        for source_plan in source_plans:
+            plan = Plan.objects.create(
+                program=cloned,
+                name=source_plan.name,
+                name_uz=source_plan.name_uz,
+                name_ru=source_plan.name_ru,
+                description=source_plan.description,
+                description_uz=source_plan.description_uz,
+                description_ru=source_plan.description_ru,
+                order=source_plan.order,
+                weeks_count=source_plan.weeks_count,
+                is_premium=False,
+                is_4_week=source_plan.is_4_week,
+                progression_config=source_plan.progression_config,
+            )
+            ProgramGenerationService.ensure_plan_weeks(plan)
+
+            week_map: dict[int, Week] = {
+                w.week_number: w for w in plan.weeks.all()
+            }
+
+            for source_week in source_plan.weeks.order_by("week_number"):
+                target_week = week_map.get(source_week.week_number)
+                if not target_week:
+                    continue
+
+                for source_workout in source_week.workouts.order_by("day_number", "id"):
+                    target_workout = Workout.objects.create(
+                        week=target_week,
+                        day_number=source_workout.day_number,
+                        title=source_workout.title,
+                        title_uz=source_workout.title_uz,
+                        title_ru=source_workout.title_ru,
+                        description=source_workout.description,
+                        description_uz=source_workout.description_uz,
+                        description_ru=source_workout.description_ru,
+                        rounds=source_workout.rounds,
+                        apply_to_all_weeks=source_workout.apply_to_all_weeks,
+                    )
+
+                    exercises = list(
+                        source_workout.workout_exercises.order_by("order", "id")
+                    )
+                    WorkoutExercise.objects.bulk_create([
+                        WorkoutExercise(
+                            workout=target_workout,
+                            exercise=we.exercise,
+                            sets=we.sets,
+                            reps=we.reps,
+                            recommended_weight=we.recommended_weight,
+                            order=we.order,
+                            minutes=we.minutes,
+                            source_week_one=None,
+                        )
+                        for we in exercises
+                    ])
+
+        return cloned
+
+    @staticmethod
+    def get_or_create_share_token(program: Program) -> str:
+        """Lazily create and persist a share token for the given program."""
+        from django.db import IntegrityError
+
+        if program.share_token:
+            return program.share_token
+
+        for _ in range(10):
+            token = generate_share_token()
+            if not Program.objects.filter(share_token=token).exists():
+                program.share_token = token
+                program.save(update_fields=["share_token"])
+                return token
+        # Fallback: let DB uniqueness constraint catch a collision (very unlikely)
+        program.share_token = generate_share_token()
+        program.save(update_fields=["share_token"])
+        return program.share_token
 
     @staticmethod
     @transaction.atomic
