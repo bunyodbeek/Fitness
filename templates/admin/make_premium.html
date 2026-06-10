@@ -1,0 +1,41 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block content %}
+<h1>{% trans "Grant Premium Subscription" %}</h1>
+
+<p>
+    {% blocktrans count count=queryset.count %}
+        Select a plan to grant premium to <strong>{{ count }}</strong> user.
+    {% plural %}
+        Select a plan to grant premium to <strong>{{ count }}</strong> users.
+    {% endblocktrans %}
+</p>
+
+<form method="post">
+    {% csrf_token %}
+    {% for obj in queryset %}
+        <input type="hidden" name="{{ action_checkbox_name }}" value="{{ obj.pk }}">
+    {% endfor %}
+    <input type="hidden" name="action" value="make_premium">
+    <input type="hidden" name="apply" value="1">
+
+    <fieldset class="module aligned">
+        <div class="form-row">
+            <div>
+                <label for="{{ form.plan.id_for_label }}">{{ form.plan.label }}:</label>
+                {{ form.plan }}
+                {% if form.plan.errors %}
+                    <p class="errornote">{{ form.plan.errors }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </fieldset>
+
+    <div style="margin-top: 1em;">
+        <input type="submit" value="{% trans 'Grant Premium' %}" class="default">
+        &nbsp;
+        <a href="{% url 'admin:apps_userprofile_changelist' %}">{% trans 'Cancel' %}</a>
+    </div>
+</form>
+{% endblock %}
