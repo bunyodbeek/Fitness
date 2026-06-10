@@ -1,8 +1,9 @@
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse
+from django.utils.translation import get_language
 from django.utils.translation import gettext as _
 from django.views import View
 from django.views.generic import TemplateView
@@ -23,9 +24,15 @@ class GenerateShareLinkView(LoginRequiredMixin, View):
             return JsonResponse({"error": _("Forbidden")}, status=403)
 
         token = UserProgramService.get_or_create_share_token(program)
-        share_url = request.build_absolute_uri(
-            reverse("program_import_preview", args=[token])
-        )
+
+        bot_username = getattr(settings, "TELEGRAM_BOT_USERNAME", "")
+        if bot_username:
+            share_url = f"https://t.me/{bot_username}?startapp=import_{token}"
+        else:
+            # Fallback to direct HTTPS link if bot username not configured
+            lang = get_language() or "uz"
+            share_url = f"{settings.WEBAPP_URL}/{lang}/programs/import/{token}/"
+
         return JsonResponse({"token": token, "url": share_url})
 
 
@@ -44,6 +51,7 @@ class ImportProgramPreviewView(LoginRequiredMixin, View):
 
     def get(self, request, token):
         program = self._get_program(token)
+        profile = getattr(request.user, "profile", None)
 
         plan_count = program.plans.count()
         day_count = sum(
@@ -52,13 +60,12 @@ class ImportProgramPreviewView(LoginRequiredMixin, View):
             for week in plan.weeks.filter(week_number=1)
         )
         exercise_count = sum(
-            we_count
+            workout.workout_exercises.count()
             for plan in program.plans.prefetch_related(
                 "weeks__workouts__workout_exercises"
             )
             for week in plan.weeks.filter(week_number=1)
             for workout in week.workouts.all()
-            for we_count in [workout.workout_exercises.count()]
         )
 
         owner = program.created_by
@@ -71,12 +78,17 @@ class ImportProgramPreviewView(LoginRequiredMixin, View):
             "day_count": day_count,
             "exercise_count": exercise_count,
             "owner_name": owner_name,
+            "is_premium": bool(profile and profile.is_premium),
         }
         return render(request, "workouts/import_preview.html", context)
 
     def post(self, request, token):
-        program = self._get_program(token)
         profile = request.user.profile
+        if not profile.is_premium:
+            lang = get_language() or "uz"
+            return redirect(f"/{lang}/premium/")
+
+        program = self._get_program(token)
         cloned = UserProgramService.clone_program(program, profile)
         messages.success(request, _("Program successfully imported!"))
         return redirect("program_detail", pk=cloned.pk)

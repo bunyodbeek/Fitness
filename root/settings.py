@@ -12,6 +12,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN') or os.getenv('BOT_TOKEN')
 TELEGRAM_BOT_REDIRECT_URL=os.getenv('TELEGRAM_BOT_REDIRECT_URL')
 WEBAPP_URL = 'https://www.shredzville.com'
+TELEGRAM_BOT_USERNAME = os.getenv('TELEGRAM_BOT_USERNAME', '')
 
 SECRET_KEY = 'django-insecure-test-key-for-development-12345'
 
