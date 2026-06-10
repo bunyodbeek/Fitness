@@ -218,14 +218,10 @@ class TelegramAuthAPIView(APIView):
                 user = profile.user
                 login(request, user)
 
-                if not profile.onboarding_completed:
-                    profile.onboarding_completed = True
-                    profile.save(update_fields=['onboarding_completed'])
-
                 return Response({
                     'success': True,
                     'redirect': reverse_lazy('animation'),
-                    'onboarding_completed': True,
+                    'onboarding_completed': profile.onboarding_completed,
                     'user_id': user.id
                 })
 
