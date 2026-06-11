@@ -2079,3 +2079,19 @@ msgstr "Увеличение мышечной массы"
 #: apps/models/workouts.py:55
 msgid "General fitness"
 msgstr "Общий фитнес"
+
+#: templates/users/profile_detail.html
+msgid "%(counter)s day"
+msgid_plural "%(counter)s days"
+msgstr[0] "%(counter)s день"
+msgstr[1] "%(counter)s дня"
+msgstr[2] "%(counter)s дней"
+msgstr[3] "%(counter)s дня"
+
+#: templates/users/profile_detail.html
+msgid "Last day today"
+msgstr "Сегодня последний день"
+
+#: templates/users/profile_detail.html
+msgid "Inactive"
+msgstr "Неактивна"
