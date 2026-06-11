@@ -3,7 +3,7 @@
 {% load static %}
 {% load i18n %}
 
-{% block title %}{{ category.title }} - {% trans "All Items" %}{% endblock %}
+{% block title %}{{ category.display_title }} - {% trans "All Items" %}{% endblock %}
 
 {% block extra_css %}
     <style>
@@ -631,11 +631,7 @@
                 ←
             </button>
             <h1 class="page-title">
-                {% if category.title_uz %}
-                    {{ category.title_uz }}
-                {% else %}
-                    {{ category.title }}
-                {% endif %} - {% trans "All" %}
+                {{ category.display_title }} - {% trans "All" %}
             </h1>
         </div>
         <div class="header-actions">
@@ -673,11 +669,7 @@
                     <button class="filter-pill"
                             data-subcategory="{{ subcategory.slug }}"
                             onclick="filterBySubcategory('{{ subcategory.slug }}')">
-                        {% if subcategory.title_uz %}
-                            {{ subcategory.title_uz }}
-                        {% else %}
-                            {{ subcategory.title }}
-                        {% endif %}
+                        {{ subcategory.display_title }}
                     </button>
                 {% endfor %}
             </div>
@@ -693,11 +685,7 @@
                 <div class="subcategory-section" data-subcategory="{{ group.grouper.slug }}">
                     <div class="subcategory-header">
                         <h2 class="subcategory-name">
-                            {% if group.grouper.title_uz %}
-                                {{ group.grouper.title_uz }}
-                            {% else %}
-                                {{ group.grouper.title }}
-                            {% endif %}
+                            {{ group.grouper.display_title }}
                         </h2>
                         <span class="subcategory-count">{{ group.list|length }}</span>
                     </div>
@@ -707,13 +695,13 @@
                            class="item-card"
                            data-item-id="{{ item.id }}"
                            data-subcategory="{{ item.subcategory.slug }}"
-                           data-title="{{ item.title|lower }} {% if item.title_uz %}{{ item.title_uz|lower }}{% endif %} {% if item.tags %}{{ item.tags|lower }}{% endif %}">
+                           data-title="{{ item.title|lower }} {% if item.title_uz %}{{ item.title_uz|lower }} {% endif %}{% if item.title_ru %}{{ item.title_ru|lower }} {% endif %}{% if item.title_en %}{{ item.title_en|lower }} {% endif %}{% if item.tags %}{{ item.tags|lower }}{% endif %}">
 
                             <!-- Item Image -->
                             <div class="item-image-wrapper">
                                 {% if item.main_image %}
                                     <img src="{{ item.main_image.url }}"
-                                         alt="{{ item.title }}"
+                                         alt="{{ item.display_title }}"
                                          class="item-image"
                                          loading="lazy"
                                          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
@@ -726,16 +714,12 @@
                             <!-- Item Info -->
                             <div class="item-info">
                                 <div class="item-title">
-                                    {% if item.title_uz %}
-                                        {{ item.title_uz }}
-                                    {% else %}
-                                        {{ item.title }}
-                                    {% endif %}
+                                    {{ item.display_title }}
                                 </div>
 
-                                {% if item.short_description %}
+                                {% if item.display_short_description %}
                                     <div class="item-description">
-                                        {{ item.short_description }}
+                                        {{ item.display_short_description }}
                                     </div>
                                 {% endif %}
 

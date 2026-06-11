@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load i18n %}
 
-{% block title %}{{ item.title }}{% endblock %}
+{% block title %}{{ item.display_title }}{% endblock %}
 
 {% block bottom_nav %}{% endblock %}
 
@@ -311,7 +311,7 @@ body {
     <button class="back-btn" onclick="history.back()">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
     </button>
-    <h1 class="page-title">{{ item.title }}</h1>
+    <h1 class="page-title">{{ item.display_title }}</h1>
     <div class="header-spacer"></div>
 </div>
 
@@ -326,7 +326,7 @@ body {
                     <source src="{{ item.video.url }}">
                 </video>
             {% elif item.main_image %}
-                <img src="{{ item.main_image.url }}" alt="{{ item.title }}" class="main-image"
+                <img src="{{ item.main_image.url }}" alt="{{ item.display_title }}" class="main-image"
                      onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
                 <div class="main-image-placeholder" style="display:none;">
                     <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
@@ -341,7 +341,7 @@ body {
 
     <!-- Title -->
     <div class="title-section">
-        <h2 class="item-title">{{ item.title }}</h2>
+        <h2 class="item-title">{{ item.display_title }}</h2>
         <div class="item-meta-bar">
             <div class="meta-item">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -350,22 +350,22 @@ body {
             {% if subcategory %}
                 <div class="meta-item">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg>
-                    {{ subcategory.title }}
+                    {{ subcategory.display_title }}
                 </div>
             {% elif category %}
                 <div class="meta-item">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg>
-                    {{ category.title }}
+                    {{ category.display_title }}
                 </div>
             {% endif %}
         </div>
     </div>
 
     <!-- Description -->
-    {% if item.description %}
+    {% if item.display_description %}
         <div class="description-section">
             <div class="description-title">{% trans "Description" %}</div>
-            <div class="description-text">{{ item.description|safe }}</div>
+            <div class="description-text">{{ item.display_description|safe }}</div>
         </div>
     {% endif %}
 
@@ -410,7 +410,7 @@ body {
                        class="related-item">
                         <div class="related-image-wrapper">
                             {% if related.main_image %}
-                                <img src="{{ related.main_image.url }}" alt="{{ related.title }}"
+                                <img src="{{ related.main_image.url }}" alt="{{ related.display_title }}"
                                      class="related-image" loading="lazy"
                                      onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
                                 <div class="related-placeholder" style="display:none;">
@@ -422,7 +422,7 @@ body {
                                 </div>
                             {% endif %}
                         </div>
-                        <div class="related-title">{{ related.title }}</div>
+                        <div class="related-title">{{ related.display_title }}</div>
                     </a>
                 {% endfor %}
             </div>

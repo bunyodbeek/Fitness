@@ -645,14 +645,14 @@
         {% if search_query %}
             {% if items %}
                 {% for item in items %}
-                    <a href="{% url 'handbook_item_detail' item.subcategory.category.slug item.subcategory.slug item.slug %}" 
+                    <a href="{% if item.subcategory %}{% url 'handbook_item_detail' item.category.slug item.subcategory.slug item.slug %}{% else %}{% url 'handbook_item_direct' item.category.slug item.slug %}{% endif %}"
                        class="item-card">
                         
                         <!-- Item Image -->
                         <div class="item-image-wrapper">
                             {% if item.main_image %}
-                                <img src="{{ item.main_image.url }}" 
-                                     alt="{{ item.title }}" 
+                                <img src="{{ item.main_image.url }}"
+                                     alt="{{ item.display_title }}"
                                      class="item-image"
                                      loading="lazy"
                                      onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
@@ -665,34 +665,24 @@
                         <!-- Item Info -->
                         <div class="item-info">
                             <div class="item-title">
-                                {% if item.title_uz %}
-                                    {{ item.title_uz }}
-                                {% else %}
-                                    {{ item.title }}
-                                {% endif %}
+                                {{ item.display_title }}
                             </div>
 
                             <div class="item-breadcrumb">
                                 <span>
-                                    {% if item.subcategory.category.title_uz %}
-                                        {{ item.subcategory.category.title_uz }}
-                                    {% else %}
-                                        {{ item.subcategory.category.title }}
-                                    {% endif %}
+                                    {{ item.category.display_title }}
                                 </span>
-                                <span class="breadcrumb-separator">›</span>
-                                <span>
-                                    {% if item.subcategory.title_uz %}
-                                        {{ item.subcategory.title_uz }}
-                                    {% else %}
-                                        {{ item.subcategory.title }}
-                                    {% endif %}
-                                </span>
+                                {% if item.subcategory %}
+                                    <span class="breadcrumb-separator">›</span>
+                                    <span>
+                                        {{ item.subcategory.display_title }}
+                                    </span>
+                                {% endif %}
                             </div>
-                            
-                            {% if item.short_description %}
+
+                            {% if item.display_short_description %}
                                 <div class="item-description">
-                                    {{ item.short_description }}
+                                    {{ item.display_short_description }}
                                 </div>
                             {% endif %}
 

@@ -271,17 +271,13 @@
             {% for category in categories %}
                 <a href="{% url 'handbook_subcategories' category.slug %}" class="category-card">
                     {% if category.cover_image %}
-	  <img src="{{ category.cover_image.url }}" alt="{{ category.title }}" class="category-image" loading="lazy">
+	  <img src="{{ category.cover_image.url }}" alt="{{ category.display_title }}" class="category-image" loading="lazy">
 	{% else %}
-  	<img src="{% static 'img/placeholder.jpg' %}" alt="{{ category.title }}" class="category-image" loading="lazy">
+  	<img src="{% static 'img/placeholder.jpg' %}" alt="{{ category.display_title }}" class="category-image" loading="lazy">
 	{% endif %}
 
                     <div class="category-title">
-                        {% if category.title_uz %}
-                            {{ category.title_uz }}
-                        {% else %}
-                            {{ category.title }}
-                        {% endif %}
+                        {{ category.display_title }}
                     </div>
                 </a>
             {% endfor %}

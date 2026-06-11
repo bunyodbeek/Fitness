@@ -2,7 +2,7 @@
 {% load i18n %}
 
 {% block title %}
-    {% if subcategory %}{{ subcategory.title }}{% else %}{{ category.title }}{% endif %}
+    {% if subcategory %}{{ subcategory.display_title }}{% else %}{{ category.display_title }}{% endif %}
 {% endblock %}
 
 {% block extra_css %}
@@ -135,9 +135,9 @@ body {
     <button class="back-btn" onclick="history.back()">←</button>
     <h1 class="page-title">
         {% if subcategory %}
-            {{ subcategory.title }}
+            {{ subcategory.display_title }}
         {% else %}
-            {{ category.title }}
+            {{ category.display_title }}
         {% endif %}
     </h1>
     <div class="header-spacer"></div>
@@ -157,18 +157,18 @@ body {
         {% for item in items %}
             <a href="{% if subcategory %}{% url 'handbook_item_detail' category.slug subcategory.slug item.slug %}{% else %}{% url 'handbook_item_direct' category.slug item.slug %}{% endif %}"
                class="item-card"
-               data-title="{{ item.title|lower }}{% if item.title_uz %} {{ item.title_uz|lower }}{% endif %}">
+               data-title="{{ item.title|lower }}{% if item.title_uz %} {{ item.title_uz|lower }}{% endif %}{% if item.title_ru %} {{ item.title_ru|lower }}{% endif %}{% if item.title_en %} {{ item.title_en|lower }}{% endif %}">
                 <div class="item-image-wrapper">
                     {% if item.main_image %}
-                        <img src="{{ item.main_image.url }}" alt="{{ item.title }}" class="item-image" loading="lazy">
+                        <img src="{{ item.main_image.url }}" alt="{{ item.display_title }}" class="item-image" loading="lazy">
                     {% else %}
                         <div class="item-fallback">💪</div>
                     {% endif %}
                 </div>
                 <div class="item-info">
-                    <div class="item-title">{{ item.title }}</div>
-                    {% if item.short_description %}
-                        <div class="item-subtitle">{{ item.short_description|truncatewords:8 }}</div>
+                    <div class="item-title">{{ item.display_title }}</div>
+                    {% if item.display_short_description %}
+                        <div class="item-subtitle">{{ item.display_short_description|truncatewords:8 }}</div>
                     {% endif %}
                 </div>
                 <div class="item-arrow">›</div>

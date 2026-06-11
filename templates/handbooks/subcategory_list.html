@@ -3,7 +3,7 @@
 {% load static %}
 {% load i18n %}
 
-{% block title %}{{ category.title }} - {% trans "Handbook" %}{% endblock %}
+{% block title %}{{ category.display_title }} - {% trans "Handbook" %}{% endblock %}
 
 {% block extra_css %}
     <style>
@@ -413,11 +413,7 @@
     <div class="page-header">
         <button class="back-btn" onclick="goBack()">←</button>
         <h1 class="page-title">
-            {% if category.title_uz %}
-                {{ category.title_uz }}
-            {% else %}
-                {{ category.title }}
-            {% endif %}
+            {{ category.display_title }}
         </h1>
         <div class="header-actions">
             <button class="header-icon" onclick="toggleFilter()">🔍</button>
@@ -440,13 +436,13 @@
     <div class="subcategories-container" id="subcategoriesContainer">
         {% if subcategories %}
             {% for subcategory in subcategories %}
-                <a href="{% url 'handbook_items' category.slug subcategory.slug %}" 
+                <a href="{% url 'handbook_items' category.slug subcategory.slug %}"
                    class="subcategory-item"
-                   data-title="{{ subcategory.title|lower }} {% if subcategory.title_uz %}{{ subcategory.title_uz|lower }}{% endif %}">
+                   data-title="{{ subcategory.title|lower }} {% if subcategory.title_uz %}{{ subcategory.title_uz|lower }} {% endif %}{% if subcategory.title_ru %}{{ subcategory.title_ru|lower }} {% endif %}{% if subcategory.title_en %}{{ subcategory.title_en|lower }}{% endif %}">
                     <div class="subcategory-image-wrapper">
                         {% if subcategory.image %}
-                            <img src="{{ subcategory.image.url }}" 
-                                 alt="{{ subcategory.title }}" 
+                            <img src="{{ subcategory.image.url }}"
+                                 alt="{{ subcategory.display_title }}"
                                  class="subcategory-image"
                                  loading="lazy">
                         {% else %}
@@ -455,11 +451,7 @@
                     </div>
                     <div class="subcategory-info">
                         <div class="subcategory-title">
-                            {% if subcategory.title_uz %}
-                                {{ subcategory.title_uz }}
-                            {% else %}
-                                {{ subcategory.title }}
-                            {% endif %}
+                            {{ subcategory.display_title }}
                         </div>
                         <div class="subcategory-count">
                             {{ subcategory.items.count }} {% trans "items" %}

@@ -2,10 +2,23 @@
 from django.db import models
 from django.db.models import Q
 from django.utils.text import slugify
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_lazy as _, get_language
 from django.core.validators import FileExtensionValidator
 
 from apps.models.base import CreatedBaseModel
+
+
+def localized_field(instance, field):
+	"""
+	Aktiv tilga mos `<field>_<lang>` qiymatini qaytaradi.
+	Til qiymati bo'sh bo'lsa, asosiy (base) maydonga qaytadi.
+	Masalan lang='ru' bo'lsa: title_ru -> title.
+	"""
+	lang = (get_language() or 'uz').split('-')[0]
+	value = getattr(instance, f"{field}_{lang}", None)
+	if value:
+		return value
+	return getattr(instance, field)
 
 
 def unique_slugify(instance, base_value, slug_field="slug", scope_q=None, max_len=250):
@@ -68,7 +81,15 @@ class HandbookCategory(CreatedBaseModel):
 		if not self.slug:
 			self.slug = unique_slugify(self, self.title, max_len=250)
 		super().save(*args, **kwargs)
-	
+
+	@property
+	def display_title(self):
+		return localized_field(self, 'title')
+
+	@property
+	def display_description(self):
+		return localized_field(self, 'description')
+
 	def __str__(self):
 		return self.title
 
@@ -111,7 +132,15 @@ class HandbookSubCategory(CreatedBaseModel):
 			scope = Q(category_id=self.category_id)
 			self.slug = unique_slugify(self, self.title, scope_q=scope, max_len=250)
 		super().save(*args, **kwargs)
-	
+
+	@property
+	def display_title(self):
+		return localized_field(self, 'title')
+
+	@property
+	def display_description(self):
+		return localized_field(self, 'description')
+
 	def __str__(self):
 		return f"{self.category.title} - {self.title}"
 class HandbookItem(CreatedBaseModel):
@@ -182,6 +211,18 @@ class HandbookItem(CreatedBaseModel):
                 scope = Q(category_id=self.category_id)
             self.slug = unique_slugify(self, self.title, scope_q=scope, max_len=350)
         super().save(*args, **kwargs)
+
+    @property
+    def display_title(self):
+        return localized_field(self, 'title')
+
+    @property
+    def display_short_description(self):
+        return localized_field(self, 'short_description')
+
+    @property
+    def display_description(self):
+        return localized_field(self, 'description')
 
     def clean(self):
         from django.core.exceptions import ValidationError

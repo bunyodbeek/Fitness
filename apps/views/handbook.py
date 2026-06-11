@@ -60,8 +60,14 @@ class HandbookCategoryDetailView(View):
             if search:
                 items = items.filter(
                     Q(title__icontains=search) |
+                    Q(title_uz__icontains=search) |
+                    Q(title_ru__icontains=search) |
+                    Q(title_en__icontains=search) |
                     Q(tags__icontains=search) |
-                    Q(short_description__icontains=search)
+                    Q(short_description__icontains=search) |
+                    Q(short_description_uz__icontains=search) |
+                    Q(short_description_ru__icontains=search) |
+                    Q(short_description_en__icontains=search)
                 )
             from django.shortcuts import render
             return render(request, 'handbooks/item_list.html', {
@@ -98,8 +104,14 @@ class HandbookSubCategoryDetailView(View):
         if search:
             items = items.filter(
                 Q(title__icontains=search) |
+                Q(title_uz__icontains=search) |
+                Q(title_ru__icontains=search) |
+                Q(title_en__icontains=search) |
                 Q(tags__icontains=search) |
-                Q(short_description__icontains=search)
+                Q(short_description__icontains=search) |
+                Q(short_description_uz__icontains=search) |
+                Q(short_description_ru__icontains=search) |
+                Q(short_description_en__icontains=search)
             )
 
         from django.shortcuts import render
@@ -168,9 +180,17 @@ class HandbookSearchView(ListView):
             .filter(is_active=True)
             .filter(
                 Q(title__icontains=query) |
+                Q(title_uz__icontains=query) |
+                Q(title_ru__icontains=query) |
+                Q(title_en__icontains=query) |
                 Q(tags__icontains=query) |
                 Q(short_description__icontains=query) |
-                Q(description__icontains=query)
+                Q(short_description_uz__icontains=query) |
+                Q(short_description_ru__icontains=query) |
+                Q(short_description_en__icontains=query) |
+                Q(description__icontains=query) |
+                Q(description_uz__icontains=query) |
+                Q(description_ru__icontains=query)
             )
             .select_related('subcategory', 'subcategory__category', 'category')
             .order_by('-view_count', 'order', 'title')
