@@ -351,15 +351,15 @@ body { background: #000000; font-family: -apple-system, BlinkMacSystemFont, 'Seg
         <div class="ex-picker-item {% if ex.id in favorite_exercise_ids %}already-added{% endif %}"
              id="pickerItem{{ ex.id }}"
              data-id="{{ ex.id }}"
-             data-name="{{ ex.name|escapejs }}"
+             data-name="{{ ex.display_name|escapejs }}"
              data-muscle="{{ ex.primary_body_part }}"
              data-thumb="{% if ex.thumbnail %}{{ ex.thumbnail.url }}{% endif %}"
              onclick="toggleExercise({{ ex.id }})">
             <div class="ex-picker-thumb">
-                {% if ex.thumbnail %}<img src="{{ ex.thumbnail.url }}" alt="{{ ex.name }}">{% else %}<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5h11v11h-11z"/><path d="M2 9v6M22 9v6M6.5 12H2M22 12h-4.5"/></svg>{% endif %}
+                {% if ex.thumbnail %}<img src="{{ ex.thumbnail.url }}" alt="{{ ex.display_name }}">{% else %}<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5h11v11h-11z"/><path d="M2 9v6M22 9v6M6.5 12H2M22 12h-4.5"/></svg>{% endif %}
             </div>
             <div class="ex-picker-info">
-                <div class="ex-picker-name">{{ ex.name }}</div>
+                <div class="ex-picker-name">{{ ex.display_name }}</div>
                 <div class="ex-picker-meta">{{ ex.primary_body_part }}</div>
             </div>
             <div class="ex-picker-check">✓</div>
@@ -429,11 +429,11 @@ body { background: #000000; font-family: -apple-system, BlinkMacSystemFont, 'Seg
              onclick="openProgram(event, '{% url 'custom_program_detail' program.id %}')">
             <div class="program-card-image">
                 {% if program.image %}
-                    <img src="{{ program.image.url }}" alt="{{ program.name }}">
+                    <img src="{{ program.image.url }}" alt="{{ program.display_name }}">
                 {% else %}
                     {% with first_ex=program.plans.first.weeks.first.workouts.first.workout_exercises.first.exercise %}
                     {% if first_ex and first_ex.thumbnail %}
-                        <img src="{{ first_ex.thumbnail.url }}" alt="{{ program.name }}">
+                        <img src="{{ first_ex.thumbnail.url }}" alt="{{ program.display_name }}">
                     {% endif %}
                     {% endwith %}
                 {% endif %}
@@ -457,7 +457,7 @@ body { background: #000000; font-family: -apple-system, BlinkMacSystemFont, 'Seg
                 </button>
             </div>
             <div class="program-card-body">
-                <div class="program-card-name">{{ program.name }}</div>
+                <div class="program-card-name">{{ program.display_name }}</div>
             </div>
             <div class="program-card-meta">
                 <span class="program-meta-tag">
@@ -514,14 +514,14 @@ body { background: #000000; font-family: -apple-system, BlinkMacSystemFont, 'Seg
             <div class="favorite-item" id="favItem{{ fav.exercise.id }}">
                 <a href="{% url 'exercise_detail' fav.exercise_id %}" class="item-link-wrapper">
                     {% if fav.exercise.thumbnail %}
-                        <img src="{{ fav.exercise.thumbnail.url }}" alt="{{ fav.exercise.name }}" class="favorite-thumbnail">
+                        <img src="{{ fav.exercise.thumbnail.url }}" alt="{{ fav.exercise.display_name }}" class="favorite-thumbnail">
                     {% else %}
                         <div class="favorite-thumbnail" style="display:flex;align-items:center;justify-content:center;color:#ffd700;">
                             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5h11v11h-11z"/><path d="M2 9v6M22 9v6M6.5 12H2M22 12h-4.5"/></svg>
                         </div>
                     {% endif %}
                     <div>
-                        <div class="favorite-title">{{ fav.exercise.name }}</div>
+                        <div class="favorite-title">{{ fav.exercise.display_name }}</div>
                         <div class="favorite-meta">{{ fav.exercise.primary_body_part }}</div>
                     </div>
                 </a>

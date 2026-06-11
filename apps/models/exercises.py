@@ -19,7 +19,7 @@ from django.db.models import (
     TextChoices,
     TextField,
 )
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_lazy as _, get_language
 from PIL import Image
 
 
@@ -141,6 +141,24 @@ class Exercise(CreatedBaseModel):
                 t.start()
         except Exception as e:
             print("Start video convert error:", e)
+
+    @property
+    def display_name(self):
+        lang = (get_language() or "en").split("-")[0]
+        if lang == "uz" and self.name_uz:
+            return self.name_uz
+        if lang == "ru" and self.name_ru:
+            return self.name_ru
+        return self.name
+
+    @property
+    def display_description(self):
+        lang = (get_language() or "en").split("-")[0]
+        if lang == "uz" and self.description_uz:
+            return self.description_uz
+        if lang == "ru" and self.description_ru:
+            return self.description_ru
+        return self.description
 
     def __str__(self):
         return self.name or f"Exercise #{self.pk}"

@@ -13,9 +13,18 @@ from django.db.models import (
 	TextField, PositiveIntegerField,
 )
 from django.db.models.fields import DateTimeField
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_lazy as _, get_language
 
 from apps.models import Exercise
+
+
+def localized_field(instance, field, default_lang='en'):
+	"""Aktiv tilga mos `<field>_<lang>` qiymatini qaytaradi, bo'sh bo'lsa base maydonga qaytadi."""
+	lang = (get_language() or default_lang).split('-')[0]
+	value = getattr(instance, f"{field}_{lang}", None)
+	if value:
+		return value
+	return getattr(instance, field)
 from apps.models.base import CreatedBaseModel
 
 
@@ -43,10 +52,10 @@ class Program(CreatedBaseModel):
 		ADVANCED = "advanced", "Advanced"
 	
 	class Goal(TextChoices):
-		FAT_LOSS = "fat_loss", "Fat loss"
-		MUSCLE_GAIN = "muscle_gain", "Muscle gain"
-		RECOMPOSITION = "recomposition", "Recomposition"
-		GENERAL = "general", "General fitness"
+		FAT_LOSS = "fat_loss", _("Fat loss")
+		MUSCLE_GAIN = "muscle_gain", _("Muscle gain")
+		RECOMPOSITION = "recomposition", _("Recomposition")
+		GENERAL = "general", _("General fitness")
 	
 	type = CharField(max_length=20, choices=ProgramType.choices, default=ProgramType.ADMIN)
 	created_by = ForeignKey("apps.UserProfile", SET_NULL, null=True, blank=True, related_name="created_programs")
@@ -73,7 +82,15 @@ class Program(CreatedBaseModel):
 	
 	def __str__(self):
 		return self.name
-	
+
+	@property
+	def display_name(self):
+		return localized_field(self, 'name')
+
+	@property
+	def display_description(self):
+		return localized_field(self, 'description')
+
 	@property
 	def title(self):
 		return self.name

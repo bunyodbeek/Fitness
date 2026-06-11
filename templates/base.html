@@ -93,8 +93,46 @@
             box-shadow: 0 0 18px rgba(255, 215, 0, 0.25);
         }
 
+        /* =========================================================
+           UNIFIED PAGE HEADER — barcha sahifalarda bir xil
+           (favorites uslubi: blur + low opacity + fixed/sticky)
+           Har bir sahifadagi alohida .page-header CSS'ini bekor qiladi,
+           shu sababli header'lar bir xil ko'rinish va bir xil o'lchamda.
+           ========================================================= */
         .page-header {
-            background: transparent !important;
+            position: sticky !important;
+            top: 0 !important;
+            z-index: 100 !important;
+            min-height: 54px !important;
+            padding: 8px 16px !important;
+            background: rgba(0, 0, 0, 0.6) !important;
+            -webkit-backdrop-filter: blur(14px) !important;
+            backdrop-filter: blur(14px) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+            box-shadow: none !important;
+            align-items: center !important;
+        }
+
+        /* Sarlavha — bir xil tipografiya (gold, 13px, uppercase) */
+        .page-header .page-title,
+        .page-title {
+            font-size: 13px !important;
+            font-weight: 800 !important;
+            letter-spacing: 2px !important;
+            text-transform: uppercase !important;
+            color: #ffd700 !important;
+            -webkit-text-fill-color: #ffd700 !important;
+            background: none !important;
+        }
+
+        /* Orqaga tugmasi — bir xil o'lcham */
+        .page-header .back-btn {
+            width: 34px !important;
+            height: 34px !important;
+            min-width: 34px !important;
+            font-size: 20px !important;
+            color: #ffd700 !important;
+            flex-shrink: 0;
         }
 
         /* ===== SEARCH BAR (glass) ===== */

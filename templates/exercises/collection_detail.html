@@ -13,10 +13,10 @@
 {% endblock %}
 
 {% block content %}
-<div class="top-nav">
+<div class="page-header" style="display:flex; justify-content:space-between;">
     <button class="back-btn" onclick="history.back()">‹</button>
-    <h1>{{ collection.name }}</h1>
-    <button class="action-btn" onclick="addExercises()">+</button>
+    <h1 class="page-title">{{ collection.name }}</h1>
+    <button class="back-btn" onclick="addExercises()">+</button>
 </div>
 
 <div class="container">

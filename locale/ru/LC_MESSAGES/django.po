@@ -2067,3 +2067,15 @@ msgstr "Начать тренировку"
 #~ msgstr[1] "%(plan_count)s плана"
 #~ msgstr[2] "%(plan_count)s планов"
 #~ msgstr[3] "%(plan_count)s планов"
+
+#: apps/models/workouts.py:55
+msgid "Fat loss"
+msgstr "Потеря жира"
+
+#: apps/models/workouts.py:55
+msgid "Muscle gain"
+msgstr "Увеличение мышечной массы"
+
+#: apps/models/workouts.py:55
+msgid "General fitness"
+msgstr "Общий фитнес"

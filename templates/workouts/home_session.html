@@ -43,13 +43,13 @@
             left: 0;
             right: 0;
             z-index: 100;
-            background: rgba(0, 0, 0, 0.98);
-            backdrop-filter: blur(16px);
+            background: rgba(0, 0, 0, 0.6);
+            -webkit-backdrop-filter: blur(14px);
+            backdrop-filter: blur(14px);
             padding: 0 var(--side-space);
             display: flex;
             align-items: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-            height: 52px;
+            height: 54px;
         }
 
         .header-side {
@@ -124,14 +124,15 @@
         /* ===== PROGRESS ===== */
         .progress-section {
             position: fixed;
-            top: 52px;
+            top: 54px;
             left: 0;
             right: 0;
             z-index: 99;
-            background: rgba(0, 0, 0, 0.98);
-            backdrop-filter: blur(16px);
+            background: rgba(0, 0, 0, 0.6);
+            -webkit-backdrop-filter: blur(14px);
+            backdrop-filter: blur(14px);
             padding: 8px var(--side-space);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
 
         .progress-info {
@@ -182,7 +183,7 @@
         /* ===== SCROLL CONTAINER ===== */
         .scroll-wrap {
             position: fixed;
-            top: 96px;
+            top: 98px;
             bottom: 80px;
             left: 0;
             right: 0;
@@ -371,7 +372,7 @@
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.25s;
-            padding-top: 52px;
+            padding-top: 54px;
         }
 
         .desc-overlay.active {
@@ -389,7 +390,7 @@
             overflow: hidden;
             transform: translateY(-20px);
             transition: transform 0.3s cubic-bezier(0.34, 1.4, 0.64, 1);
-            max-height: calc(100vh - 52px);
+            max-height: calc(100vh - 54px);
             display: flex;
             flex-direction: column;
         }
@@ -779,8 +780,9 @@
             left: 0;
             right: 0;
             z-index: 200;
-            background: rgba(0, 0, 0, 0.98);
-            backdrop-filter: blur(16px);
+            background: rgba(0, 0, 0, 0.6);
+            -webkit-backdrop-filter: blur(14px);
+            backdrop-filter: blur(14px);
             border-top: 1px solid rgba(255, 255, 255, 0.06);
             padding: 12px var(--side-space) 20px;
             display: flex;

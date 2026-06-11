@@ -2056,3 +2056,15 @@ msgstr "Mashg'ulotni boshlash"
 #~ msgid "%(plan_count)s Plan"
 #~ msgid_plural "%(plan_count)s Plans"
 #~ msgstr[0] "%(plan_count)s ta reja"
+
+#: apps/models/workouts.py:55
+msgid "Fat loss"
+msgstr "Yog' yo'qotish"
+
+#: apps/models/workouts.py:55
+msgid "Muscle gain"
+msgstr "Mushak yig'ish"
+
+#: apps/models/workouts.py:55
+msgid "General fitness"
+msgstr "Umumiy fitnes"
