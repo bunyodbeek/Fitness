@@ -634,7 +634,7 @@ msgstr "Mashqlar — Tana qismlari"
 #: templates/exercises/custom_program_create.html:148
 #: templates/exercises/favorites_list.html:146
 msgid "Create Program"
-msgstr "mashg'ulot yaratish"
+msgstr "Mashg'ulot yaratish"
 
 #: templates/exercises/custom_program_create.html:116
 #: templates/exercises/exercise_list.html:804
@@ -1748,7 +1748,7 @@ msgstr "Dam olishni o'tkazish"
 
 #: templates/workouts/active_workout.html:1230
 msgid "Finish Workout?"
-msgstr "Mashg'ulotni yakunlash"
+msgstr "Mashg'ulotni yakunlash?"
 
 #: templates/workouts/active_workout.html:1231
 msgid "You have not completed all exercises."

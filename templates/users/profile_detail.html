@@ -139,38 +139,6 @@ body {
     margin-bottom: 0;
 }
 
-/* ===== DAYS COUNTDOWN STRIP (30, 29, 28 ...) ===== */
-.days-countdown {
-    display: flex;
-    gap: 6px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    padding: 2px 2px;
-    justify-content: flex-start;
-}
-.days-countdown::-webkit-scrollbar { display: none; }
-.day-pill {
-    flex: 0 0 auto;
-    min-width: 34px;
-    height: 34px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 10px;
-    font-size: 13px;
-    font-weight: 700;
-    color: rgba(255,255,255,0.45);
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.08);
-}
-.day-pill.current {
-    color: #1a1300;
-    background: var(--gold-grad);
-    border-color: transparent;
-    box-shadow: 0 0 12px rgba(255,215,0,0.4);
-}
-
 /* ===== MENU ===== */
 .menu-section {
     display: flex;
@@ -279,7 +247,6 @@ body {
             <div class="subscription-label">{% trans 'Until the end of the subscription' %}</div>
             {% if days_remaining > 0 %}
                 <div class="subscription-days">{% blocktrans count counter=days_remaining %}{{ counter }} day{% plural %}{{ counter }} days{% endblocktrans %}</div>
-                <div class="days-countdown" id="daysCountdown"></div>
             {% else %}
                 <div class="subscription-days subscription-days--text">{% trans 'Last day today' %}</div>
             {% endif %}
@@ -384,21 +351,5 @@ body {
 
     </div>
 </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Kunlar sanog'i: joriy kundan 1 gacha pasayib boradi (30, 29, 28 ...)
-    const daysRemaining = parseInt("{{ days_remaining|default:0 }}", 10) || 0;
-    const strip = document.getElementById('daysCountdown');
-    if (strip && daysRemaining > 0) {
-        const maxPills = Math.min(daysRemaining, 30);
-        let html = '';
-        for (let d = daysRemaining; d > daysRemaining - maxPills; d--) {
-            html += '<div class="day-pill' + (d === daysRemaining ? ' current' : '') + '">' + d + '</div>';
-        }
-        strip.innerHTML = html;
-    }
-});
-</script>
 
 {% endblock %}
