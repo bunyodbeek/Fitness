@@ -64,23 +64,10 @@ class ExercisesByMuscleView(ListView):
             ).values_list('exercise_id', flat=True)
             for exercise in context['exercises']:
                 exercise.is_favorited = exercise.id in favorite_ids
-                # Til bo'yicha nom
-                if lang == 'uz' and exercise.name_uz:
-                    exercise.display_name = exercise.name_uz
-                elif lang == 'ru' and exercise.name_ru:
-                    exercise.display_name = exercise.name_ru
-                else:
-                    exercise.display_name = exercise.name
             context['collections'] = user_profile.favorite_collections.all()
         else:
             for exercise in context['exercises']:
                 exercise.is_favorited = False
-                if lang == 'uz' and exercise.name_uz:
-                    exercise.display_name = exercise.name_uz
-                elif lang == 'ru' and exercise.name_ru:
-                    exercise.display_name = exercise.name_ru
-                else:
-                    exercise.display_name = exercise.name
 
         return context
 

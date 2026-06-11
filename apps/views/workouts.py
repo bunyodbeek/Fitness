@@ -199,19 +199,9 @@ class WorkoutDetailView(DetailView):
 			workout=workout,
 		).select_related('exercise').order_by('order')
 		
-		# Til bo'yicha nom va mushak guruhi
-		from django.utils.translation import get_language
-		lang = (get_language() or 'en').split('-')[0]
-		
+		# Mushak guruhi (nom endi Exercise.display_name property orqali keladi)
 		for item in workout_exercises:
 			ex = item.exercise
-			if lang == 'uz' and ex.name_uz:
-				ex.display_name = ex.name_uz
-			elif lang == 'ru' and ex.name_ru:
-				ex.display_name = ex.name_ru
-			else:
-				ex.display_name = ex.name
-			
 			ex.display_body_part = ex.get_primary_body_part_display()
 		
 		active_type = workout.week.plan.program.workout_type
