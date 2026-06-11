@@ -99,7 +99,9 @@
            Har bir sahifadagi alohida .page-header CSS'ini bekor qiladi,
            shu sababli header'lar bir xil ko'rinish va bir xil o'lchamda.
            ========================================================= */
-        .page-header {
+        .page-header,
+        .cp-header,
+        .edition-header {
             position: sticky !important;
             top: 0 !important;
             z-index: 100 !important;
@@ -115,7 +117,9 @@
 
         /* Sarlavha — bir xil tipografiya (gold, 13px, uppercase) */
         .page-header .page-title,
-        .page-title {
+        .page-title,
+        .cp-header .cp-title,
+        .edition-header h1 {
             font-size: 13px !important;
             font-weight: 800 !important;
             letter-spacing: 2px !important;
@@ -126,7 +130,9 @@
         }
 
         /* Orqaga tugmasi — bir xil o'lcham */
-        .page-header .back-btn {
+        .page-header .back-btn,
+        .cp-header .cp-back-btn,
+        .edition-header .back-btn {
             width: 34px !important;
             height: 34px !important;
             min-width: 34px !important;
@@ -183,7 +189,7 @@
             display: flex;
             justify-content: space-around;
             align-items: center;
-            padding: 8px 4px;
+            padding: 4px 4px;
             box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.5);
             z-index: 100;
             border: 1px solid rgba(255, 215, 0, 0.18);
@@ -202,7 +208,7 @@
             text-decoration: none;
             font-weight: 600;
             transition: all 0.25s ease;
-            padding: 8px 2px;
+            padding: 4px 4px;
             border-radius: 14px;
             position: relative;
             min-width: 0;

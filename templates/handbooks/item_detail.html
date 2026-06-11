@@ -119,6 +119,27 @@ body {
 }
 .main-image-placeholder svg { flex-shrink: 0; }
 
+/* Views badge — rasm ustida, o'ng pastki burchak */
+.image-views-badge {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(0, 0, 0, 0.6);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 215, 0, 0.25);
+    border-radius: 20px;
+    padding: 5px 11px;
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(255, 215, 0, 0.95);
+}
+.image-views-badge svg { flex-shrink: 0; stroke: #ffd700; }
+
 /* ===== TITLE ===== */
 .title-section {
     padding: 16px 0 0;
@@ -336,29 +357,18 @@ body {
                     <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
                 </div>
             {% endif %}
+
+            <!-- Views badge — rasmning o'ng pastki burchagida -->
+            <div class="image-views-badge">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                {{ item.view_count }} {% trans "views" %}
+            </div>
         </div>
     </div>
 
     <!-- Title -->
     <div class="title-section">
         <h2 class="item-title">{{ item.display_title }}</h2>
-        <div class="item-meta-bar">
-            <div class="meta-item">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                {{ item.view_count }} {% trans "views" %}
-            </div>
-            {% if subcategory %}
-                <div class="meta-item">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg>
-                    {{ subcategory.display_title }}
-                </div>
-            {% elif category %}
-                <div class="meta-item">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg>
-                    {{ category.display_title }}
-                </div>
-            {% endif %}
-        </div>
     </div>
 
     <!-- Description -->
