@@ -256,6 +256,12 @@ class ProfileView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         profile, created = UserProfile.objects.get_or_create(user=self.request.user)
         context['user_profile'] = profile
+
+        # Obuna holati va qolgan kunlar (profil kartochkasi uchun)
+        subscription = getattr(profile, 'subscription', None)
+        is_active = bool(subscription and subscription.is_valid)
+        context['subscription_active'] = is_active
+        context['days_remaining'] = subscription.days_remaining() if is_active else 0
         return context
 
 
