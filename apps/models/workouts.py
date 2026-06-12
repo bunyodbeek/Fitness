@@ -76,6 +76,18 @@ class Program(CreatedBaseModel):
 	workout_type = CharField(max_length=10, choices=WorkoutType.choices, default=WorkoutType.GYM)
 	share_token = CharField(max_length=8, unique=True, null=True, blank=True, db_index=True)
 
+	# One-time (single-session) program: links straight to a workout, never tracked
+	# in progress / completion / recommendations, excluded from category sections.
+	is_one_time = BooleanField(
+		default=False,
+		verbose_name="One-time workout",
+		help_text="Belgilansa, bu programma bitta mashg'ulot sifatida ishlaydi: "
+		          "progress saqlanmaydi, kategoriyalarda va tavsiyada ko'rinmaydi.",
+	)
+
+	# Atomik incrementlanadigan ochilishlar soni — "POPULAR" badge uchun.
+	view_count = PositiveIntegerField(default=0, db_index=True, verbose_name="Ochilishlar soni")
+
 	class Meta:
 		verbose_name = "Program"
 		verbose_name_plural = "Programs"
@@ -94,6 +106,17 @@ class Program(CreatedBaseModel):
 	@property
 	def title(self):
 		return self.name
+
+	@property
+	def first_workout(self):
+		"""Birinchi mashg'ulot (one-time programma uchun: bog'lanadigan yagona workout)."""
+		plan = self.plans.order_by("order", "id").first()
+		if not plan:
+			return None
+		week = plan.weeks.order_by("week_number").first()
+		if not week:
+			return None
+		return week.workouts.order_by("day_number", "id").first()
 
 
 class Plan(CreatedBaseModel):
@@ -147,6 +170,14 @@ class IndividualProgram(Program):
 		proxy = True
 		verbose_name = "Individual Program"
 		verbose_name_plural = "Individual Programs"
+
+
+class OneTimeProgram(Program):
+	"""Admin uchun proxy — bir martalik (one-time) programmalarni alohida boshqarish."""
+	class Meta:
+		proxy = True
+		verbose_name = "One-time program"
+		verbose_name_plural = "One-time programs"
 
 
 class Edition(Plan):

@@ -6,6 +6,7 @@
 {% block bottom_nav %}{% endblock %}
 
 {% block extra_css %}
+    {% include 'workouts/_program_card_styles.html' %}
     <style>
         * {
             margin: 0;
@@ -193,8 +194,13 @@
             letter-spacing: 0.5px;
         }
 
-        /* ===== PROGRAM INFO ===== */
-        .program-info {
+        /* ===== TOP PROGRAM CARD (non-clickable header) ===== */
+        .top-program-card {
+            margin: 0 0 12px;
+        }
+
+        /* ===== PROGRAM INFO (about box) ===== */
+        .about-card {
             background: rgba(255, 255, 255, 0.04);
             padding: 14px;
             margin: 0 0 12px;
@@ -393,7 +399,7 @@
             .stats-bar { padding: 14px; margin: 14px 0 14px; gap: 10px; }
             .stat-value { font-size: 20px; }
             .stat-label { font-size: 10px; }
-            .program-info { padding: 16px; margin: 0 0 14px; }
+            .about-card { padding: 16px; margin: 0 0 14px; }
             .info-title { font-size: 13px; }
             .info-text { font-size: 12px; }
             .section-title { font-size: 13px; }
@@ -414,7 +420,7 @@
             .stats-bar { padding: 16px; margin: 16px 0 16px; gap: 12px; }
             .stat-value { font-size: 24px; }
             .stat-label { font-size: 11px; }
-            .program-info { padding: 18px; margin: 0 0 16px; }
+            .about-card { padding: 18px; margin: 0 0 16px; }
             .info-title { font-size: 14px; }
             .info-text { font-size: 13px; }
             .info-highlight { font-size: 11px; padding: 12px 14px; }
@@ -439,7 +445,7 @@
             .stat-item { padding: 8px 4px; }
             .stat-value { font-size: 16px; }
             .stat-label { font-size: 8px; }
-            .program-info { padding: 12px; margin: 0 0 10px; }
+            .about-card { padding: 12px; margin: 0 0 10px; }
             .info-title { font-size: 11px; }
             .info-text { font-size: 10px; margin-bottom: 0; }
             .info-highlight { font-size: 9px; padding: 8px 10px; }
@@ -483,33 +489,11 @@
     </div>
 
     <div class="container">
-        <div class="program-header">
-            {% if program.image %}
-                <img src="{{ program.image.url }}" alt="{{ program.name }}" class="program-header-image">
-            {% else %}
-                <div class="placeholder-image">{{ program.name|slice:":3"|upper }}</div>
-            {% endif %}
-            <div class="program-header-overlay">
-                <div class="program-logo">{{ program.name|upper }}</div>
-            </div>
+        <div class="top-program-card">
+            {% include 'workouts/_program_card.html' with card_url='' card_image=program.image card_title=program.display_name show_plans=True plan_count=plans|length weeks=plans.first.weeks_count days=plans.first.weeks.first.workouts.count is_premium=program.is_premium user_is_premium=request.user.profile.is_premium %}
         </div>
 
-        <div class="stats-bar">
-            <div class="stat-item">
-                <div class="stat-value">{{ plans|length }}</div>
-                <div class="stat-label">{% trans "Plans" %}</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value">{{ plans.first.weeks_count|default:"6" }}</div>
-                <div class="stat-label">{% trans "Weeks" %}</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value">{{ plans.first.weeks.first.workouts.count|default:"?" }}</div>
-                <div class="stat-label">{% trans "Days/Week" %}</div>
-            </div>
-        </div>
-
-        <div class="program-info">
+        <div class="about-card">
             <h2 class="info-title">{% trans "About this program" %}</h2>
             <p class="info-text">
                 {{ program.description|default:"Transform your body with this comprehensive workout program designed for all fitness levels."|truncatewords:25 }}

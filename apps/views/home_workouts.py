@@ -15,7 +15,7 @@ from apps.services import UserProgramService
 from apps.services.programs import ProgramGenerationService
 from apps.workouts.recommendation import get_recommended_program
 from apps.utils.home_progression import calculate_home_week_exercise
-from apps.views.workouts import WorkoutCompleteView
+from apps.views.workouts import WorkoutCompleteView, build_programs_page_context
 
 
 def get_active_mode(request):
@@ -36,55 +36,12 @@ class WorkoutModeSwitchView(View):
 		return redirect('gym_program_list')
 
 
-class HomeProgramListView(ListView):
+class HomeProgramListView(TemplateView):
 	template_name = 'workouts/program_list.html'
-	context_object_name = 'programs'
-	
-	def get_queryset(self):
-		qs = Program.objects.filter(
-			is_active=True, workout_type=WorkoutType.HOME
-		).prefetch_related('plans__weeks__workouts')
-		if not self.request.user.is_authenticated or not hasattr(self.request.user, "profile"):
-			return qs
-		
-		profile = self.request.user.profile
-		completed_workout_ids = set(
-			WorkoutProgress.objects.filter(
-				user=profile,
-				status=WorkoutProgress.Status.COMPLETED,
-			).values_list("workout_id", flat=True)
-		)
-		
-		filtered_programs = []
-		for program in qs:
-			workout_ids = [
-				w.id
-				for plan in program.plans.all()
-				for week in plan.weeks.all()
-				for w in week.workouts.all()
-			]
-			if workout_ids and all(wid in completed_workout_ids for wid in workout_ids):
-				continue
-			filtered_programs.append(program)
-		
-		recommended = get_recommended_program(profile, workout_type=WorkoutType.HOME)
-		if recommended:
-			filtered_programs.sort(key=lambda p: (p.id != recommended.id, p.id))
-		return filtered_programs
-	
+
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		context['active_workout_type'] = WorkoutType.HOME
-		context['is_home_mode'] = True
-		recommended = (
-			get_recommended_program(self.request.user.profile, workout_type=WorkoutType.HOME)
-			if self.request.user.is_authenticated and hasattr(self.request.user, "profile")
-			else None
-		)
-		if recommended and all(p.id != recommended.id for p in context.get("programs", [])):
-			recommended = None
-		context['recommended_program'] = recommended
-		context['show_recommendation_once'] = bool(self.request.session.pop('show_recommendation_once', False))
+		context.update(build_programs_page_context(self.request, WorkoutType.HOME))
 		return context
 
 

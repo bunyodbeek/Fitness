@@ -9,7 +9,8 @@ import nested_admin
 from apps.models import (
 	Plan, Program, WorkoutExercise, Week, Exercise, Workout,
 )
-from apps.models.workouts import HomeWorkout, GymWorkout, ProgressionSetting, HomeProgressionSetting, IndividualProgram
+from apps.models.workouts import HomeWorkout, GymWorkout, ProgressionSetting, HomeProgressionSetting, IndividualProgram, \
+	OneTimeProgram
 
 
 # ─────────────────────────────────────────────
@@ -479,8 +480,8 @@ class PlanAdmin(admin.ModelAdmin):
 # ─────────────────────────────────────────────
 @admin.register(Program)
 class ProgramAdmin(admin.ModelAdmin):
-	list_display = ("id", "name", "type", "workout_type", "level", "goal", "plan_count", "is_active", "is_premium", "recommendation_key")
-	list_filter = ("type", "workout_type", "level", "goal", "is_active", "is_premium")
+	list_display = ("id", "name", "type", "workout_type", "level", "goal", "plan_count", "view_count", "is_active", "is_premium", "recommendation_key")
+	list_filter = ("type", "workout_type", "level", "goal", "is_active", "is_premium", "is_one_time")
 	search_fields = ("name",)
 
 	fieldsets = (
@@ -493,6 +494,10 @@ class ProgramAdmin(admin.ModelAdmin):
 		  )}),
 		(_("Tavsif"), {"fields": ("description", "description_uz", "description_ru"), "classes": ("collapse",)}),
 	)
+
+	def get_queryset(self, request):
+		# Bir martalik (one-time) programmalar alohida bo'limda boshqariladi.
+		return super().get_queryset(request).filter(is_one_time=False)
 
 	def plan_count(self, obj):
 		count = obj.plans.count()
@@ -574,6 +579,50 @@ class IndividualProgramAdmin(admin.ModelAdmin):
 		return format_html('<span style="color:#27ae60;">✓ {} plan</span>', count)
 
 	plan_count.short_description = "Planlar"
+
+
+# ─────────────────────────────────────────────
+# 9b. OneTimeProgram Admin (bir martalik programmalar)
+# ─────────────────────────────────────────────
+@admin.register(OneTimeProgram)
+class OneTimeProgramAdmin(admin.ModelAdmin):
+	list_display = ("id", "name", "workout_type", "level", "linked_workout", "is_active")
+	list_filter = ("workout_type", "level", "is_active")
+	search_fields = ("name",)
+	inlines = [PlanInline]
+
+	fieldsets = (
+		(None, {"fields": ("name", "name_uz", "name_ru", "image")}),
+		(_("Sozlamalar"), {
+			"fields": ("workout_type", "level", "is_active", "is_premium"),
+			"description": (
+				"⚡ Bir martalik mashg'ulot. Oddiy ro'yxatda 'ONE-TIME WORKOUT' kartochkasi sifatida "
+				"ko'rinadi va bosilganda to'g'ridan-to'g'ri workout sahifasiga o'tadi. "
+				"Progress saqlanmaydi, kategoriyalarda va tavsiyada qatnashmaydi. "
+				"Pastda bitta Plan qo'shing, keyin uni edit qilib bitta hafta + bitta kun (workout) kiriting."
+			),
+		}),
+		(_("Tavsif"), {"fields": ("description", "description_uz", "description_ru"), "classes": ("collapse",)}),
+	)
+
+	def get_queryset(self, request):
+		return super().get_queryset(request).filter(is_one_time=True)
+
+	def save_model(self, request, obj, form, change):
+		obj.is_one_time = True
+		obj.type = Program.ProgramType.ADMIN
+		obj.is_individual = False
+		obj.is_template = True
+		super().save_model(request, obj, form, change)
+
+	def linked_workout(self, obj):
+		workout = obj.first_workout
+		if not workout:
+			return format_html('<span style="color:#e74c3c;">Workout yo\'q!</span>')
+		url = reverse("admin:apps_workout_change", args=[workout.id])
+		return format_html('<a href="{}">{}</a>', url, workout)
+
+	linked_workout.short_description = "Bog'langan workout"
 
 
 # ─────────────────────────────────────────────

@@ -307,42 +307,25 @@
 
 <div class="container">
     <!-- Plan banner -->
-    <div class="plan-header">
-        {% if plan.program.image %}
-            <img src="{{ plan.program.image.url }}" alt="{{ plan.program.name }}" class="plan-header-image">
-        {% else %}
-            <div class="plan-header-placeholder"></div>
-        {% endif %}
-        <div class="plan-header-overlay">
-            <div class="plan-title">{{ plan.name|upper }}</div>
-            <div class="plan-subtitle">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-                {{ weeks|length }} {% trans "Weeks" %}
-                <span class="dot-sep">&bull;</span>
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8v8M8 6v12M16 6v12M19 8v8M8 12h8"/></svg>
-                {{ plan.days_per_week }} {% trans "Days/Week" %}
-            </div>
-        </div>
-    </div>
+    {#    <div class="plan-header">#}
+    {#        {% if plan.program.image %}#}
+    {#            <img src="{{ plan.program.image.url }}" alt="{{ plan.program.name }}" class="plan-header-image">#}
+    {#        {% else %}#}
+    {#            <div class="plan-header-placeholder"></div>#}
+    {#        {% endif %}#}
+    {#        <div class="plan-header-overlay">#}
+    {#            <div class="plan-title">{{ plan.name|upper }}</div>#}
+    {#            <div class="plan-subtitle">#}
+    {#                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>#}
+    {#                {{ weeks|length }} {% trans "Weeks" %}#}
+    {#                <span class="dot-sep">&bull;</span>#}
+    {#                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8v8M8 6v12M16 6v12M19 8v8M8 12h8"/></svg>#}
+    {#                {{ plan.days_per_week }} {% trans "Days/Week" %}#}
+    {#            </div>#}
+    {#        </div>#}
+    {#    </div>#}
+    {##}
 
-    <!-- Stats -->
-    <div class="stats-bar">
-        <div class="stat-item">
-            <div class="stat-icon">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-            </div>
-            <div class="stat-value">{{ weeks|length }}</div>
-            <div class="stat-label">{% trans "Weeks" %}</div>
-        </div>
-
-        <div class="stat-item">
-            <div class="stat-icon">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8v8M8 6v12M16 6v12M19 8v8M8 12h8"/></svg>
-            </div>
-            <div class="stat-value">{{ plan.days_per_week }}</div>
-            <div class="stat-label">{% trans "Days/Week" %}</div>
-        </div>
-    </div>
 
     <!-- Weeks list -->
     <div class="weeks-list">
