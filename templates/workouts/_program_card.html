@@ -1,0 +1,90 @@
+{% load i18n %}{% comment %}
+Single "big" program card — shared between the programs grid view and the
+plans (edition_list) plan list, so they stay visually identical.
+
+Expected context (pass via {% include ... with %}):
+  card_url         - destination href (required)
+  card_image       - an ImageField (falsy => letter placeholder)
+  card_title       - bold title shown over the image
+  card_description - short gray description (optional)
+  weeks            - duration number (e.g. 6) -> "6w"
+  days             - frequency number (e.g. 3) -> "3d/week"
+  show_plans       - bool, show a plans-count meta slot (programs only)
+  plan_count       - number of plans (when show_plans)
+  is_premium       - bool, program/plan is premium
+  user_is_premium  - bool, current user has premium
+  show_foryou      - bool, render gold "FOR YOU" badge
+  show_popular     - bool, render orange "POPULAR" badge
+  (card_url empty/omitted => card renders as a non-clickable <div>)
+{% endcomment %}
+{% if card_url %}<a href="{{ card_url }}" class="program-card">{% else %}<div class="program-card program-card--static">{% endif %}
+    {% if card_image %}
+        <img src="{{ card_image.url }}" alt="{{ card_title }}" class="program-image">
+    {% else %}
+        <div class="program-image-placeholder">{{ card_title|slice:":3"|upper }}</div>
+    {% endif %}
+
+    <div class="program-overlay"></div>
+
+    {% if is_premium and not user_is_premium %}
+        <div class="card-lock-badge">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            {% trans 'Premium' %}
+        </div>
+    {% elif show_popular %}
+        <div class="card-popular-badge">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                <path d="M12 2c1 4-2 5-2 8a4 4 0 0 0 8 0c0-1-.4-2-1-3 2 1 4 4 4 7a7 7 0 1 1-14 0c0-4 3-6 5-9z"/>
+            </svg>
+            {% trans 'POPULAR' %}
+        </div>
+    {% endif %}
+
+    {% if show_foryou %}
+        <div class="card-foryou-badge">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                <path d="M12 2l2.9 6.3 6.9.7-5.1 4.6 1.4 6.8L12 17.8 5.9 20.4l1.4-6.8L2.2 9l6.9-.7L12 2z"/>
+            </svg>
+            {% trans 'FOR YOU' %}
+        </div>
+    {% endif %}
+
+    <div class="program-title-overlay">
+        <h2>{{ card_title }}</h2>
+        {% if card_description %}
+            <p class="program-description">{{ card_description }}</p>
+        {% endif %}
+    </div>
+
+    <div class="program-info">
+        <div class="program-meta">
+            {% if show_plans %}
+                <span class="meta-item">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                         stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>
+                    </svg>
+                    {{ plan_count|default:"1" }} {% trans "Plans" %}
+                </span>
+            {% endif %}
+            <span class="meta-item">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>
+                </svg>
+                {{ weeks|default:"6" }}{% trans "w" %}
+            </span>
+            <span class="meta-item">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 8v8M8 6v12M16 6v12M19 8v8M8 12h8"/>
+                </svg>
+                {{ days|default:"1" }}{% trans "d/week" %}
+            </span>
+        </div>
+    </div>
+{% if card_url %}</a>{% else %}</div>{% endif %}
