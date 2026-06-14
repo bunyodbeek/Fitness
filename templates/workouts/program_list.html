@@ -466,6 +466,7 @@
             color: #fff;
             line-height: 1.1;
             text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
+            margin-bottom: 8px;
         }
 
         .cat-sub {
@@ -544,6 +545,7 @@
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
+                margin-bottom: 2px;
             }
 
             .cat-sub {
@@ -778,7 +780,7 @@
                         <section class="cat-section">
                             <div class="cat-header">
                                 <span class="cat-title"><span class="emoji">{{ cat.emoji }}</span>{{ cat.label }}</span>
-                                <span class="cat-tagline">{{ cat.tagline }}</span>
+{#                                <span class="cat-tagline">{{ cat.tagline }}</span>#}
                             </div>
                             <div class="cat-scroll">
                                 {% for program in cat.programs %}
