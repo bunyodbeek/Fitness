@@ -1900,10 +1900,9 @@ msgstr "MASHG'ULOTLAR"
 #: templates/exercises/favorites_list.html:418
 #: templates/workouts/import_entry.html:4
 #: templates/workouts/import_entry.html:47
-#, fuzzy
-#| msgid "Favorite Program"
+
 msgid "Import Program"
-msgstr "Sevimli mashg'ulot"
+msgstr "Mashg'ulot yuklash"
 
 #: templates/exercises/favorites_list.html:446
 msgid "Edit Program"

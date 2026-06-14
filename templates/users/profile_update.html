@@ -395,6 +395,10 @@
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
 
+            {# unit_system is required on the model but intentionally not shown;
+               submit it as hidden so the form stays valid on save. #}
+            {{ form.unit_system.as_hidden }}
+
             {% if form.non_field_errors %}
                 <div class="non-field-errors">{{ form.non_field_errors }}</div>
             {% endif %}
