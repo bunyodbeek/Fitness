@@ -80,16 +80,21 @@
             border-radius: 16px;
             background: #0d0d0d;
             border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+            box-shadow: 0 10px ch40px rgba(0, 0, 0, 0.45);
             text-decoration: none;
             color: inherit;
             animation: slideInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             opacity: 0;
             animation-fill-mode: forwards;
         }
-        .hero-card:active { transform: scale(0.99); }
 
-        .hero-card--recommended { border: 1px solid rgba(255, 215, 0, 0.45); }
+        .hero-card:active {
+            transform: scale(0.99);
+        }
+
+        .hero-card--recommended {
+            border: 1px solid rgba(255, 215, 0, 0.45);
+        }
 
         .hero-bg {
             position: absolute;
@@ -129,7 +134,10 @@
             border: 1px solid rgba(255, 215, 0, 0.3);
             color: #ffd700;
         }
-        .hero-badge svg { flex-shrink: 0; }
+
+        .hero-badge svg {
+            flex-shrink: 0;
+        }
 
         .hero-badge--neutral {
             background: rgba(255, 255, 255, 0.08);
@@ -173,9 +181,22 @@
             color: rgba(255, 255, 255, 0.75);
             flex-wrap: wrap;
         }
-        .hero-inforow .info-chunk { display: inline-flex; align-items: center; gap: 5px; }
-        .hero-inforow svg { color: #ffd700; stroke: #ffd700; flex-shrink: 0; }
-        .hero-inforow .sep { color: rgba(255, 255, 255, 0.3); }
+
+        .hero-inforow .info-chunk {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .hero-inforow svg {
+            color: #ffd700;
+            stroke: #ffd700;
+            flex-shrink: 0;
+        }
+
+        .hero-inforow .sep {
+            color: rgba(255, 255, 255, 0.3);
+        }
 
         .hero-bottom {
             display: flex;
@@ -186,7 +207,13 @@
             padding-top: 6px;
         }
 
-        .hero-progress-wrap { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px; }
+        .hero-progress-wrap {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
 
         .hero-progress-top {
             display: flex;
@@ -198,7 +225,10 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-        .hero-progress-top .pct { color: #ffd700; }
+
+        .hero-progress-top .pct {
+            color: #ffd700;
+        }
 
         .hero-progress-bar {
             height: 6px;
@@ -206,7 +236,12 @@
             background: rgba(255, 255, 255, 0.12);
             overflow: hidden;
         }
-        .hero-progress-fill { height: 100%; background: #ffd700; border-radius: 999px; }
+
+        .hero-progress-fill {
+            height: 100%;
+            background: #ffd700;
+            border-radius: 999px;
+        }
 
         .hero-cta {
             flex-shrink: 0;
@@ -223,7 +258,10 @@
             border-radius: 12px;
             box-shadow: 0 6px 20px rgba(255, 215, 0, 0.3);
         }
-        .hero-cta svg { flex-shrink: 0; }
+
+        .hero-cta svg {
+            flex-shrink: 0;
+        }
 
         /* ===== EXPLORE HEADER + VIEW TOGGLE ===== */
         .explore-header {
@@ -242,7 +280,11 @@
             letter-spacing: 0.5px;
         }
 
-        .view-toggle { display: flex; gap: 4px; }
+        .view-toggle {
+            display: flex;
+            gap: 4px;
+        }
+
         .view-toggle button {
             background: transparent;
             border: none;
@@ -254,17 +296,42 @@
             border-radius: 8px;
             transition: color 0.2s;
         }
-        .view-toggle button.active { color: #ffd700; }
-        .view-toggle svg { width: 22px; height: 22px; }
+
+        .view-toggle button.active {
+            color: #ffd700;
+        }
+
+        .view-toggle svg {
+            width: 22px;
+            height: 22px;
+        }
 
         /* ===== EXPLORE ROOT (list <-> grid) ===== */
-        .explore-list { display: flex; flex-direction: column; gap: 18px; }
-        .explore-grid { display: flex; flex-direction: column; gap: 16px; }
-        .explore-root.mode-list .explore-grid { display: none; }
-        .explore-root.mode-grid .explore-list { display: none; }
+        .explore-list {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .explore-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .explore-root.mode-list .explore-grid {
+            display: none;
+        }
+
+        .explore-root.mode-grid .explore-list {
+            display: none;
+        }
 
         /* ===== CATEGORY SECTION ===== */
-        .cat-section { display: flex; flex-direction: column; }
+        .cat-section {
+            display: flex;
+            flex-direction: column;
+        }
 
         .cat-header {
             display: flex;
@@ -284,7 +351,10 @@
             text-transform: uppercase;
             letter-spacing: 0.3px;
         }
-        .cat-title .emoji { font-size: 17px; }
+
+        .cat-title .emoji {
+            font-size: 17px;
+        }
 
         .cat-tagline {
             font-size: 11px;
@@ -304,14 +374,18 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
-        .cat-scroll::-webkit-scrollbar { display: none; }
 
-        /* ~2.6 cards visible -> partial card hints horizontal scroll */
+        .cat-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* 3 cards fit per row; more than 3 -> horizontal scroll */
         .cat-card {
-            flex: 0 0 calc((100% - 24px) / 2.6);
+            flex: 0 0 calc((100% - 24px) / 3);
             scroll-snap-align: start;
             position: relative;
             display: block;
+            aspect-ratio: 16 / 10;
             border-radius: 14px;
             overflow: hidden;
             background: #101010;
@@ -319,19 +393,39 @@
             text-decoration: none;
             color: inherit;
         }
-        .cat-card:active { transform: scale(0.98); }
 
-        .cat-card-img { position: relative; width: 100%; aspect-ratio: 4 / 3; overflow: hidden; }
-        .cat-card-img img { width: 100%; height: 100%; object-fit: cover; }
+        .cat-card:active {
+            transform: scale(0.98);
+        }
+
+        .cat-card-img {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+        }
+
+        .cat-card-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
         .cat-card-img .ph {
-            width: 100%; height: 100%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 26px; font-weight: 900; color: rgba(255, 215, 0, 0.45);
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            font-weight: 900;
+            color: rgba(255, 215, 0, 0.45);
             background: rgba(255, 215, 0, 0.06);
         }
+
         .cat-card-img .grad {
-            position: absolute; inset: 0;
-            background: linear-gradient(180deg, transparent 55%, rgba(0, 0, 0, 0.65) 100%);
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.5) 55%, rgba(0, 0, 0, 0.88) 100%);
         }
 
         .cat-popular {
@@ -352,19 +446,39 @@
             border-radius: 999px;
             box-shadow: 0 3px 10px rgba(255, 159, 10, 0.4);
         }
-        .cat-popular svg { flex-shrink: 0; }
 
-        .cat-card-body { padding: 10px 11px 12px; }
-        .cat-freq { font-size: 18px; font-weight: 800; color: #fff; line-height: 1.1; }
+        .cat-popular svg {
+            flex-shrink: 0;
+        }
+
+        .cat-card-body {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 2;
+            padding: 10px 12px 16px;
+        }
+
+        .cat-freq {
+            font-size: 18px;
+            font-weight: 800;
+            color: #fff;
+            line-height: 1.1;
+            text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
+        }
+
         .cat-sub {
             font-size: 12px;
-            color: rgba(255, 255, 255, 0.6);
+            color: rgba(255, 255, 255, 0.75);
             margin-top: 2px;
+            text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
             display: -webkit-box;
             -webkit-line-clamp: 1;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
+
         .cat-duration-pill {
             display: inline-block;
             margin-top: 9px;
@@ -383,18 +497,45 @@
             padding: 60px 20px;
             color: white;
         }
-        .empty-state-icon { margin-bottom: 18px; display: flex; justify-content: center; opacity: 0.4; }
-        .empty-state-icon svg { stroke: #ffd700; }
-        .empty-state h3 { font-size: 20px; font-weight: 800; margin-bottom: 10px; color: #ffd700; }
-        .empty-state p { font-size: 14px; color: rgba(255, 255, 255, 0.45); }
+
+        .empty-state-icon {
+            margin-bottom: 18px;
+            display: flex;
+            justify-content: center;
+            opacity: 0.4;
+        }
+
+        .empty-state-icon svg {
+            stroke: #ffd700;
+        }
+
+        .empty-state h3 {
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            color: #ffd700;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.45);
+        }
 
         /* ===== RESPONSIVE ===== */
         @media (min-width: 700px) {
-            .cat-card { flex: 0 0 calc((100% - 36px) / 3.4); }
+            .cat-card {
+                flex: 0 0 calc((100% - 48px) / 4);
+            }
         }
+
         @media (max-width: 360px) {
-            .hero-name { font-size: 27px; }
-            .programs-page { padding: 4px 10px 110px; }
+            .hero-name {
+                font-size: 27px;
+            }
+
+            .programs-page {
+                padding: 4px 10px 110px;
+            }
         }
     </style>
 {% endblock %}
@@ -419,7 +560,8 @@
         {% if recommended_card %}
             {% with rp=recommended_card.program prog=recommended_card.progress %}
                 <a href="{{ recommended_card.url }}" class="hero-card hero-card--recommended">
-                    {% if rp.image %}<div class="hero-bg" style="background-image:url('{{ rp.image.url }}')"></div>{% endif %}
+                    {% if rp.image %}
+                        <div class="hero-bg" style="background-image:url('{{ rp.image.url }}')"></div>{% endif %}
                     <div class="hero-grad"></div>
                     <div class="hero-content">
                         <span class="hero-badge">
@@ -429,7 +571,8 @@
                             {% trans 'RECOMMENDED FOR YOU' %}
                         </span>
                         <div class="hero-name">{{ rp.display_name }}</div>
-                        <div class="hero-meta">{{ rp.get_level_display }} &bull; {{ rp.plans.first.days_per_week|default:"3" }}x/{% trans "week" %}</div>
+                        <div class="hero-meta">{{ rp.get_level_display }}
+                            &bull; {{ rp.plans.first.days_per_week|default:"3" }}x/{% trans "week" %}</div>
                         {% if rp.display_description %}
                             <div class="hero-desc">{{ rp.display_description|truncatewords:18 }}</div>
                         {% endif %}
@@ -437,24 +580,42 @@
                         <div class="hero-inforow">
                             {% if prog.started %}
                                 <span class="info-chunk">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-                                    {% blocktrans with w=prog.current_week t=prog.total_weeks %}Week {{ w }} of {{ t }}{% endblocktrans %}
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                         stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3"
+                                                                                                                 y="4"
+                                                                                                                 width="18"
+                                                                                                                 height="18"
+                                                                                                                 rx="2"/><path
+                                            d="M16 2v4M8 2v4M3 10h18"/></svg>
+                                    {% blocktrans with w=prog.current_week t=prog.total_weeks %}Week {{ w }} of
+                                        {{ t }}{% endblocktrans %}
                                 </span>
                                 {% if prog.next_workout_title %}
                                     <span class="sep">|</span>
                                     <span class="info-chunk">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8v8M8 6v12M16 6v12M19 8v8M8 12h8"/></svg>
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                             stroke="currentColor" stroke-width="1.9" stroke-linecap="round"
+                                             stroke-linejoin="round"><path
+                                                d="M5 8v8M8 6v12M16 6v12M19 8v8M8 12h8"/></svg>
                                         {% trans 'Today' %}: {{ prog.next_workout_title }}
                                     </span>
                                 {% endif %}
                             {% else %}
                                 <span class="info-chunk">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                         stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3"
+                                                                                                                 y="4"
+                                                                                                                 width="18"
+                                                                                                                 height="18"
+                                                                                                                 rx="2"/><path
+                                            d="M16 2v4M8 2v4M3 10h18"/></svg>
                                     {{ rp.plans.first.weeks_count|default:"6" }} {% trans "weeks" %}
                                 </span>
                                 <span class="sep">|</span>
                                 <span class="info-chunk">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8v8M8 6v12M16 6v12M19 8v8M8 12h8"/></svg>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                         stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path
+                                            d="M5 8v8M8 6v12M16 6v12M19 8v8M8 12h8"/></svg>
                                     {{ rp.plans.first.days_per_week|default:"3" }}x/{% trans "week" %}
                                 </span>
                             {% endif %}
@@ -473,13 +634,17 @@
                                 </div>
                                 <span class="hero-cta">
                                     {% trans 'CONTINUE' %}
-                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                         stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path
+                                            d="M9 6l6 6-6 6"/></svg>
                                 </span>
                             {% else %}
                                 <span></span>
                                 <span class="hero-cta">
                                     {% trans 'START' %}
-                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                         stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path
+                                            d="M9 6l6 6-6 6"/></svg>
                                 </span>
                             {% endif %}
                         </div>
@@ -492,21 +657,30 @@
         {% for item in one_time_cards %}
             {% with op=item.program %}
                 <a href="{{ item.url }}" class="hero-card hero-card--onetime">
-                    {% if op.image %}<div class="hero-bg" style="background-image:url('{{ op.image.url }}')"></div>{% endif %}
+                    {% if op.image %}
+                        <div class="hero-bg" style="background-image:url('{{ op.image.url }}')"></div>{% endif %}
                     <div class="hero-grad"></div>
                     <div class="hero-content">
                         <span class="hero-badge hero-badge--neutral">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12"
+                                                                                                         r="9"/><path
+                                    d="M12 7v5l3 2"/></svg>
                             {% trans 'ONE-TIME WORKOUT' %}
                         </span>
                         <div class="hero-name">{{ op.display_name }}</div>
-                        <div class="hero-meta">{{ op.get_level_display }}{% if op.plans.first %} &bull; {{ op.plans.first.days_per_week|default:"1" }}x/{% trans "week" %}{% endif %}</div>
+                        <div class="hero-meta">{{ op.get_level_display }}{% if op.plans.first %} &bull;
+                            {{ op.plans.first.days_per_week|default:"1" }}x/{% trans "week" %}{% endif %}</div>
                         {% if op.display_description %}
                             <div class="hero-desc">{{ op.display_description|truncatewords:18 }}</div>
                         {% endif %}
                         <div class="hero-inforow">
                             <span class="info-chunk">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                     stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12"
+                                                                                                               cy="12"
+                                                                                                               r="9"/><path
+                                        d="M12 7v5l3 2"/></svg>
                                 {% trans 'Single session' %}
                             </span>
                         </div>
@@ -514,7 +688,9 @@
                             <span></span>
                             <span class="hero-cta">
                                 {% trans 'START WORKOUT' %}
-                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                     stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path
+                                        d="M9 6l6 6-6 6"/></svg>
                             </span>
                         </div>
                     </div>
@@ -528,10 +704,24 @@
                 <span class="title">{% trans 'EXPLORE PROGRAMS' %}</span>
                 <div class="view-toggle" role="group" aria-label="{% trans 'View mode' %}">
                     <button type="button" id="viewBtnList" aria-label="{% trans 'List view' %}">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                             stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="7" height="7" rx="1"/>
+                            <rect x="14" y="3" width="7" height="7" rx="1"/>
+                            <rect x="3" y="14" width="7" height="7" rx="1"/>
+                            <rect x="14" y="14" width="7" height="7" rx="1"/>
+                        </svg>
                     </button>
                     <button type="button" id="viewBtnGrid" aria-label="{% trans 'Grid view' %}">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                             stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="8" y1="6" x2="21" y2="6"/>
+                            <line x1="8" y1="12" x2="21" y2="12"/>
+                            <line x1="8" y1="18" x2="21" y2="18"/>
+                            <line x1="3" y1="6" x2="3.01" y2="6"/>
+                            <line x1="3" y1="12" x2="3.01" y2="12"/>
+                            <line x1="3" y1="18" x2="3.01" y2="18"/>
+                        </svg>
                     </button>
                 </div>
             </div>
@@ -547,7 +737,9 @@
                             </div>
                             <div class="cat-scroll">
                                 {% for program in cat.programs %}
-                                    <a href="{% if is_home_mode %}{% url 'home_program_detail' program.id %}{% else %}{% url 'gym_program_detail' program.id %}{% endif %}" class="cat-card">
+                                    <a href="
+                                            {% if is_home_mode %}{% url 'home_program_detail' program.id %}{% else %}{% url 'gym_program_detail' program.id %}{% endif %}"
+                                       class="cat-card">
                                         <div class="cat-card-img">
                                             {% if program.image %}
                                                 <img src="{{ program.image.url }}" alt="{{ program.display_name }}">
@@ -557,7 +749,9 @@
                                             <div class="grad"></div>
                                             {% if cat.popular_id and program.id == cat.popular_id %}
                                                 <span class="cat-popular">
-                                                    <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2c1 4-2 5-2 8a4 4 0 0 0 8 0c0-1-.4-2-1-3 2 1 4 4 4 7a7 7 0 1 1-14 0c0-4 3-6 5-9z"/></svg>
+                                                    <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"
+                                                         stroke="none"><path
+                                                            d="M12 2c1 4-2 5-2 8a4 4 0 0 0 8 0c0-1-.4-2-1-3 2 1 4 4 4 7a7 7 0 1 1-14 0c0-4 3-6 5-9z"/></svg>
                                                     {% trans 'POPULAR' %}
                                                 </span>
                                             {% endif %}
@@ -584,7 +778,8 @@
         {% elif not recommended_card and not one_time_cards %}
             <div class="empty-state">
                 <div class="empty-state-icon">
-                    <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                         stroke-linecap="round" stroke-linejoin="round">
                         <path d="M6.5 6.5h11v11h-11z"/>
                         <path d="M2 9v6M22 9v6M6.5 12H2M22 12h-4.5"/>
                     </svg>
@@ -625,16 +820,25 @@
             }
 
             let saved = 'list';
-            try { saved = localStorage.getItem(KEY) || 'list'; } catch (e) {}
+            try {
+                saved = localStorage.getItem(KEY) || 'list';
+            } catch (e) {
+            }
             apply(saved === 'grid' ? 'grid' : 'list');
 
             if (btnList) btnList.addEventListener('click', function () {
                 apply('list');
-                try { localStorage.setItem(KEY, 'list'); } catch (e) {}
+                try {
+                    localStorage.setItem(KEY, 'list');
+                } catch (e) {
+                }
             });
             if (btnGrid) btnGrid.addEventListener('click', function () {
                 apply('grid');
-                try { localStorage.setItem(KEY, 'grid'); } catch (e) {}
+                try {
+                    localStorage.setItem(KEY, 'grid');
+                } catch (e) {
+                }
             });
         })();
     </script>

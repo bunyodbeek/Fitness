@@ -24,73 +24,46 @@
 			background: var(--bg);
 			color: var(--text);
 			font-family: 'Inter', sans-serif;
-			min-height: 100vh;
-			padding: 0 0 110px;
-			overflow-x: hidden;
+			height: 100vh;
+			height: 100dvh;
+			display: flex;
+			flex-direction: column;
+			padding: 0;
+			overflow: hidden;
 		}
 
-		/* ===== STANDART HEADER (boshqa pagelar bilan bir xil) ===== */
-		.page-header {
-			background: rgba(0, 0, 0, 0.95);
-			backdrop-filter: blur(12px);
-			padding: 14px var(--side-space);
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-			position: sticky;
-			top: 0;
+		/* ===== CLOSE (X) BUTTON ===== */
+		.close-btn {
+			position: absolute;
+			top: calc(10px + env(safe-area-inset-top));
+			right: var(--side-space);
 			z-index: 100;
-			border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-		}
-		.back-btn {
-			background: none;
-			border: none;
+			background: rgba(255, 255, 255, 0.06);
+			border: 1px solid var(--border);
 			color: var(--gold);
 			cursor: pointer;
-			padding: 0;
-			width: 32px;
-			height: 32px;
+			width: 36px;
+			height: 36px;
+			border-radius: 50%;
 			display: flex;
 			align-items: center;
 			justify-content: center;
-			transition: transform 0.3s ease;
-			flex-shrink: 0;
+			transition: transform 0.2s ease;
 		}
-		.back-btn svg { flex-shrink: 0; }
-		.back-btn:hover { transform: translateX(-3px); }
-		.header-title-wrap {
-			flex: 1;
-			text-align: center;
-			min-width: 0;
-		}
-		.page-title {
-			color: var(--gold);
-			font-size: 13px;
-			font-weight: 800;
-			letter-spacing: 2px;
-			text-transform: uppercase;
-			line-height: 1.2;
-		}
-		.page-subtitle {
-			font-size: 10px;
-			color: var(--text-dim);
-			margin-top: 2px;
-			white-space: nowrap;
-			overflow: hidden;
-			text-overflow: ellipsis;
-		}
-		.header-spacer { width: 32px; flex-shrink: 0; }
+		.close-btn svg { flex-shrink: 0; }
+		.close-btn:active { transform: scale(0.92); }
 
 		/* ===== HERO ===== */
 		.hero {
 			position: relative;
-			padding: 36px 24px 24px;
+			flex-shrink: 0;
+			padding: 32px 24px 16px;
 			text-align: center;
 			background: radial-gradient(circle at 50% 0%, rgba(255, 215, 0, 0.12), transparent 60%);
 		}
 		.crown {
-			width: 76px; height: 76px;
-			margin: 0 auto 16px;
+			width: 68px; height: 68px;
+			margin: 0 auto 12px;
 			border-radius: 50%;
 			display: flex; align-items: center; justify-content: center;
 			background: rgba(255, 215, 0, 0.10);
@@ -119,16 +92,23 @@
 
 		/* ===== BENEFITS ===== */
 		.benefits {
-			padding: 8px var(--side-space) 0;
+			flex: 1;
+			min-height: 0;
+			padding: 4px var(--side-space) 0;
 			max-width: 520px;
+			width: 100%;
 			margin: 0 auto;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			gap: 8px;
+			overflow-y: auto;
 		}
 		.benefit {
 			display: flex;
 			align-items: flex-start;
 			gap: 12px;
-			padding: 14px 16px;
-			margin-bottom: 10px;
+			padding: 11px 14px;
 			background: var(--card);
 			border: 1px solid var(--border);
 			border-radius: 14px;
@@ -147,9 +127,8 @@
 
 		/* ===== FOOTER ===== */
 		.footer {
-			position: fixed;
-			bottom: 0; left: 0; right: 0;
-			padding: 12px var(--side-space) calc(14px + env(safe-area-inset-bottom));
+			flex-shrink: 0;
+			padding: 10px var(--side-space) calc(20px + env(safe-area-inset-bottom));
 			background: linear-gradient(180deg, transparent, var(--bg) 35%);
 		}
 		/* start workout uslubidagi tugma */
@@ -181,7 +160,8 @@
 		.btn-ghost {
 			display: block;
 			text-align: center;
-			margin: 10px auto 0;
+			margin: 4px auto 0;
+			padding: 6px 0;
 			color: var(--text-dim);
 			font-size: 13px;
 			text-decoration: none;
@@ -200,17 +180,10 @@
 	</style>
 </head>
 <body>
-	<!-- STANDART HEADER -->
-	<div class="page-header">
-		<button class="back-btn" onclick="goBack()">
-			<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-		</button>
-		<div class="header-title-wrap">
-			<div class="page-title">Premium</div>
-			<div class="page-subtitle">Barcha imkoniyatlarni oching</div>
-		</div>
-		<div class="header-spacer"></div>
-	</div>
+	<!-- CLOSE (X) -->
+	<button class="close-btn" onclick="goBack()" aria-label="Yopish">
+		<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+	</button>
 
 	<div class="hero">
 		<div class="crown">
