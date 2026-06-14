@@ -547,7 +547,7 @@ msgid "Unknown"
 msgstr ""
 
 msgid "Program successfully imported!"
-msgstr ""
+msgstr "Dastur muvaffaqiyatli import qilindi!"
 
 msgid "Language saved successfully!"
 msgstr "Til muvaffaqiyatli saqlandi!"
@@ -679,7 +679,7 @@ msgstr "Haftalar"
 #, python-format
 msgid "%(weeks)s week"
 msgid_plural "%(weeks)s weeks"
-msgstr[0] ""
+msgstr[0] "%(weeks)s hafta"
 
 msgid "Days/week"
 msgstr "Kun/Hafta"
@@ -807,16 +807,16 @@ msgid "Share Program"
 msgstr "Mashg'ulotni saqlash"
 
 msgid "Share Code"
-msgstr ""
+msgstr "Ulashish kodi"
 
 msgid "Copy"
-msgstr ""
+msgstr "Nusxalash"
 
 msgid "Copy Code"
-msgstr ""
+msgstr "Kodni nusxalash"
 
 msgid "Close"
-msgstr ""
+msgstr "Yopish"
 
 msgid "MY FAVORITES"
 msgstr "MENING SEVIMLILARIM"
@@ -825,7 +825,7 @@ msgid "PROGRAMS"
 msgstr "MASHG'ULOTLAR"
 
 msgid "Build and save your own workout"
-msgstr ""
+msgstr "O'z mashg'ulotingizni yarating va saqlang"
 
 #, fuzzy
 #| msgid "Favorite Program"
@@ -833,7 +833,7 @@ msgid "Import Program"
 msgstr "Sevimli mashg'ulot"
 
 msgid "Paste a share code or link"
-msgstr ""
+msgstr "Kod yoki havolani joylashtiring"
 
 msgid "Edit Program"
 msgstr "mashg'ulotni tahrirlash"
@@ -857,7 +857,7 @@ msgid "Add Exercises"
 msgstr "Mashqlar qo'shish"
 
 msgid "Pick from the exercise library"
-msgstr ""
+msgstr "Mashqlar kutubxonasidan tanlang"
 
 msgid "No favorites yet"
 msgstr "Hozircha sevimlilar yo'q"
@@ -875,13 +875,13 @@ msgid "Adding..."
 msgstr "Qo'shilmoqda..."
 
 msgid "Copied!"
-msgstr ""
+msgstr "Nusxalandi!"
 
 msgid "Copy failed"
-msgstr ""
+msgstr "Nusxalab bo'lmadi"
 
 msgid "Error generating link"
-msgstr ""
+msgstr "Havola yaratishda xatolik"
 
 msgid "All Items"
 msgstr "Barcha elementlar"
@@ -1550,10 +1550,10 @@ msgid "Import a Program"
 msgstr "Sevimli mashg'ulot"
 
 msgid "Paste a share code (e.g. A7K2M9X4) or the full share link."
-msgstr ""
+msgstr "Ulashish kodini (masalan, A7K2M9X4) yoki to'liq havolani joylashtiring."
 
 msgid "Share Code or Link"
-msgstr ""
+msgstr "Kod yoki havola"
 
 #, fuzzy
 #| msgid "Create Program"
@@ -1561,7 +1561,7 @@ msgid "Preview Program"
 msgstr "Mashg'ulot yaratish"
 
 msgid "Accepted formats:"
-msgstr ""
+msgstr "Qabul qilinadigan formatlar:"
 
 #, fuzzy
 #| msgid "for"
@@ -1579,7 +1579,7 @@ msgid "Preview"
 msgstr "Ko‘rib chiqish"
 
 msgid "By"
-msgstr ""
+msgstr "Muallif"
 
 #, fuzzy
 #| msgid "Days/week"
@@ -1587,10 +1587,10 @@ msgid "Days/wk"
 msgstr "Kun/Hafta"
 
 msgid "Level"
-msgstr ""
+msgstr "Daraja"
 
 msgid "Type"
-msgstr ""
+msgstr "Turi"
 
 #, fuzzy
 #| msgid "About this program"
@@ -1598,13 +1598,13 @@ msgid "Import this program"
 msgstr "Mashg'ulot haqida"
 
 msgid "A full independent copy will be added to your programs."
-msgstr ""
+msgstr "To'liq mustaqil nusxa dasturlaringizga qo'shiladi."
 
 msgid "Get Premium to Import"
-msgstr ""
+msgstr "Import uchun Premium oling"
 
 msgid "Import feature is available for Premium members."
-msgstr ""
+msgstr "Import funksiyasi Premium a'zolar uchun mavjud."
 
 #, fuzzy
 #| msgid "Submitting..."

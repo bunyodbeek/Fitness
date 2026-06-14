@@ -549,7 +549,7 @@ msgid "Unknown"
 msgstr ""
 
 msgid "Program successfully imported!"
-msgstr ""
+msgstr "Программа успешно импортирована!"
 
 msgid "Language saved successfully!"
 msgstr "Язык успешно сохранён!"
@@ -684,10 +684,10 @@ msgstr "Недели"
 #, python-format
 msgid "%(weeks)s week"
 msgid_plural "%(weeks)s weeks"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
+msgstr[0] "%(weeks)s неделя"
+msgstr[1] "%(weeks)s недели"
+msgstr[2] "%(weeks)s недель"
+msgstr[3] "%(weeks)s недели"
 
 msgid "Days/week"
 msgstr "Дн/Нед"
@@ -815,16 +815,16 @@ msgid "Share Program"
 msgstr "Сохранить программу"
 
 msgid "Share Code"
-msgstr ""
+msgstr "Код для обмена"
 
 msgid "Copy"
-msgstr ""
+msgstr "Копировать"
 
 msgid "Copy Code"
-msgstr ""
+msgstr "Копировать код"
 
 msgid "Close"
-msgstr ""
+msgstr "Закрыть"
 
 msgid "MY FAVORITES"
 msgstr "МОЁ ИЗБРАННОЕ"
@@ -833,7 +833,7 @@ msgid "PROGRAMS"
 msgstr "ПРОГРАММЫ"
 
 msgid "Build and save your own workout"
-msgstr ""
+msgstr "Создайте и сохраните свою тренировку"
 
 #, fuzzy
 #| msgid "Favorite Program"
@@ -841,7 +841,7 @@ msgid "Import Program"
 msgstr "Избранная программа"
 
 msgid "Paste a share code or link"
-msgstr ""
+msgstr "Вставьте код или ссылку"
 
 msgid "Edit Program"
 msgstr "Редактировать программу"
@@ -865,7 +865,7 @@ msgid "Add Exercises"
 msgstr "Добавить упражнения"
 
 msgid "Pick from the exercise library"
-msgstr ""
+msgstr "Выберите из библиотеки упражнений"
 
 msgid "No favorites yet"
 msgstr "Пока нет избранного"
@@ -883,13 +883,13 @@ msgid "Adding..."
 msgstr "Добавление..."
 
 msgid "Copied!"
-msgstr ""
+msgstr "Скопировано!"
 
 msgid "Copy failed"
-msgstr ""
+msgstr "Не удалось скопировать"
 
 msgid "Error generating link"
-msgstr ""
+msgstr "Ошибка при создании ссылки"
 
 msgid "All Items"
 msgstr "Все материалы"
@@ -1561,10 +1561,10 @@ msgid "Import a Program"
 msgstr "Избранная программа"
 
 msgid "Paste a share code (e.g. A7K2M9X4) or the full share link."
-msgstr ""
+msgstr "Вставьте код для обмена (например, A7K2M9X4) или полную ссылку."
 
 msgid "Share Code or Link"
-msgstr ""
+msgstr "Код или ссылка"
 
 #, fuzzy
 #| msgid "Create Program"
@@ -1572,7 +1572,7 @@ msgid "Preview Program"
 msgstr "Создать программу"
 
 msgid "Accepted formats:"
-msgstr ""
+msgstr "Допустимые форматы:"
 
 #, fuzzy
 #| msgid "for"
@@ -1590,7 +1590,7 @@ msgid "Preview"
 msgstr "Просмотрите"
 
 msgid "By"
-msgstr ""
+msgstr "Автор"
 
 #, fuzzy
 #| msgid "Days/week"
@@ -1598,10 +1598,10 @@ msgid "Days/wk"
 msgstr "Дн/Нед"
 
 msgid "Level"
-msgstr ""
+msgstr "Уровень"
 
 msgid "Type"
-msgstr ""
+msgstr "Тип"
 
 #, fuzzy
 #| msgid "About this program"
@@ -1609,13 +1609,13 @@ msgid "Import this program"
 msgstr "Об этой программе"
 
 msgid "A full independent copy will be added to your programs."
-msgstr ""
+msgstr "Полная независимая копия будет добавлена в ваши программы."
 
 msgid "Get Premium to Import"
-msgstr ""
+msgstr "Оформите Premium для импорта"
 
 msgid "Import feature is available for Premium members."
-msgstr ""
+msgstr "Функция импорта доступна для Premium-подписчиков."
 
 #, fuzzy
 #| msgid "Submitting..."
