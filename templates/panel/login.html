@@ -1,0 +1,70 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'uz' }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% trans "Admin Login" %} · SHREDZ VILLE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #000; color: #fff; font-family: 'Inter', sans-serif;
+            min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;
+            background-image: radial-gradient(circle at 50% 0%, rgba(255,215,0,0.08), transparent 55%);
+        }
+        .login-card {
+            width: 100%; max-width: 380px;
+            background: #0d0d0d; border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 20px; padding: 36px 30px;
+        }
+        .login-logo {
+            width: 56px; height: 56px; border-radius: 14px; margin: 0 auto 18px;
+            background: linear-gradient(135deg, #ffd700, #ff9f0a);
+            display: flex; align-items: center; justify-content: center;
+            color: #000; font-weight: 900; font-size: 26px;
+        }
+        h1 { text-align: center; font-size: 19px; font-weight: 800; }
+        .sub { text-align: center; color: #8b8f99; font-size: 13px; margin: 6px 0 26px; }
+        label { display: block; font-size: 12.5px; font-weight: 600; color: #8b8f99; margin-bottom: 6px; }
+        .field { margin-bottom: 16px; }
+        input {
+            width: 100%; padding: 12px 14px; border-radius: 11px;
+            background: #0f0f0f; border: 1px solid rgba(255,255,255,0.12);
+            color: #fff; font-size: 14px; font-family: inherit;
+        }
+        input:focus { outline: none; border-color: #ffd700; }
+        button {
+            width: 100%; margin-top: 8px; padding: 13px; border: none; border-radius: 11px;
+            background: linear-gradient(135deg, #ffd700, #ff9f0a); color: #000;
+            font-weight: 800; font-size: 14px; letter-spacing: 0.5px; text-transform: uppercase; cursor: pointer;
+        }
+        button:hover { opacity: 0.92; }
+        .errors { background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.3); color: #f87171;
+            border-radius: 10px; padding: 10px 13px; font-size: 13px; margin-bottom: 18px; }
+    </style>
+</head>
+<body>
+    <form class="login-card" method="post">
+        {% csrf_token %}
+        <div class="login-logo">S</div>
+        <h1>SHREDZ VILLE</h1>
+        <div class="sub">{% trans "Admin Panel" %}</div>
+
+        {% if form.non_field_errors %}
+            <div class="errors">{% for e in form.non_field_errors %}{{ e }}{% endfor %}</div>
+        {% endif %}
+
+        <div class="field">
+            <label for="id_username">{% trans "Username" %}</label>
+            {{ form.username }}
+        </div>
+        <div class="field">
+            <label for="id_password">{% trans "Password" %}</label>
+            {{ form.password }}
+        </div>
+        <input type="hidden" name="next" value="{{ next }}">
+        <button type="submit">{% trans "Log in" %}</button>
+    </form>
+</body>
+</html>

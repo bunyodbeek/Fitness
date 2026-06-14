@@ -1,0 +1,111 @@
+{% extends 'panel/base.html' %}
+{% load i18n %}
+
+{% block content %}
+    {% if messages %}
+        {% for m in messages %}<div class="card" style="margin-bottom:16px;border-color:rgba(52,211,153,0.3);color:var(--green);">{{ m }}</div>{% endfor %}
+    {% endif %}
+
+    {% if breadcrumbs %}
+    <div class="muted" style="font-size:12.5px;margin-bottom:14px;display:flex;gap:7px;flex-wrap:wrap;">
+        {% for b in breadcrumbs %}
+            {% if b.url %}<a href="{{ b.url }}" style="color:var(--gold);">{{ b.label }}</a>{% else %}<span>{{ b.label }}</span>{% endif %}
+            {% if not forloop.last %}<span>/</span>{% endif %}
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="page-head">
+        <h2>{{ obj_title }}</h2>
+        <div style="display:flex;gap:10px;">
+            {% if obj_edit_url %}<a href="{{ obj_edit_url }}" class="btn">{% trans "Edit" %}</a>{% endif %}
+            {% if back_url %}<a href="{{ back_url }}" class="btn">{% trans "Back" %}</a>{% endif %}
+        </div>
+    </div>
+
+    {% if obj_meta %}
+    <div class="card" style="margin-bottom:18px;display:flex;flex-wrap:wrap;gap:28px;">
+        {% for m in obj_meta %}
+        <div>
+            <div class="muted" style="font-size:11px;text-transform:uppercase;letter-spacing:0.6px;">{{ m.label }}</div>
+            <div style="font-weight:700;margin-top:4px;">{{ m.value }}</div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if notice %}
+    <div class="card" style="margin-bottom:18px;border-color:rgba(255,215,0,0.3);color:var(--gold);font-size:13px;">{{ notice }}</div>
+    {% endif %}
+
+    <div class="page-head">
+        <h2 style="font-size:16px;">{{ child_title }}</h2>
+        {% if child_add_url %}
+        <a href="{{ child_add_url }}" class="btn btn-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            {{ child_add_label|default:_("Add") }}
+        </a>
+        {% endif %}
+    </div>
+
+    <div class="card" style="padding:0;overflow:hidden;">
+        <table class="table">
+            <thead><tr>
+                {% for col in child_columns %}<th>{{ col }}</th>{% endfor %}
+                <th style="text-align:right;">{% trans "Actions" %}</th>
+            </tr></thead>
+            <tbody>
+                {% for row in child_rows %}
+                <tr>
+                    {% for cell in row.cells %}
+                        <td>{% if forloop.first and row.open_url %}<a href="{{ row.open_url }}" style="color:var(--gold);font-weight:600;">{{ cell }}</a>{% else %}{{ cell }}{% endif %}</td>
+                    {% endfor %}
+                    <td style="text-align:right;white-space:nowrap;">
+                        {% if row.open_url %}<a href="{{ row.open_url }}" class="btn" style="padding:6px 10px;">{% trans "Open" %}</a>{% endif %}
+                        {% if row.edit_url %}<a href="{{ row.edit_url }}" class="btn" style="padding:6px 10px;">{% trans "Edit" %}</a>{% endif %}
+                        {% if row.delete_url %}<a href="{{ row.delete_url }}" class="btn btn-danger" style="padding:6px 10px;">{% trans "Delete" %}</a>{% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="20" class="muted" style="text-align:center;padding:36px;">{% trans "Nothing here yet." %}</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if child2_title %}
+    <div class="page-head" style="margin-top:26px;">
+        <h2 style="font-size:16px;">{{ child2_title }}</h2>
+        {% if child2_add_url %}
+        <a href="{{ child2_add_url }}" class="btn btn-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            {{ child2_add_label|default:_("Add") }}
+        </a>
+        {% endif %}
+    </div>
+    <div class="card" style="padding:0;overflow:hidden;">
+        <table class="table">
+            <thead><tr>
+                {% for col in child2_columns %}<th>{{ col }}</th>{% endfor %}
+                <th style="text-align:right;">{% trans "Actions" %}</th>
+            </tr></thead>
+            <tbody>
+                {% for row in child2_rows %}
+                <tr>
+                    {% for cell in row.cells %}
+                        <td>{% if forloop.first and row.open_url %}<a href="{{ row.open_url }}" style="color:var(--gold);font-weight:600;">{{ cell }}</a>{% else %}{{ cell }}{% endif %}</td>
+                    {% endfor %}
+                    <td style="text-align:right;white-space:nowrap;">
+                        {% if row.open_url %}<a href="{{ row.open_url }}" class="btn" style="padding:6px 10px;">{% trans "Open" %}</a>{% endif %}
+                        {% if row.edit_url %}<a href="{{ row.edit_url }}" class="btn" style="padding:6px 10px;">{% trans "Edit" %}</a>{% endif %}
+                        {% if row.delete_url %}<a href="{{ row.delete_url }}" class="btn btn-danger" style="padding:6px 10px;">{% trans "Delete" %}</a>{% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="20" class="muted" style="text-align:center;padding:36px;">{% trans "Nothing here yet." %}</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+{% endblock %}

@@ -110,10 +110,8 @@
             gap: 12px;
         }
 
-        .search-wrapper {
-            position: relative;
-            flex: 1;
-        }
+
+
 
         .search-input {
             width: 100%;
@@ -641,22 +639,7 @@
         </div>
     </div>
 
-    <!-- Search & Filter -->
-    <div class="search-filter-container">
-        <div class="search-filter-wrapper">
-            <div class="search-wrapper">
-                <span class="search-icon">🔍</span>
-                <input type="text"
-                       class="search-input"
-                       id="searchInput"
-                       placeholder="{% trans 'Search' %}..."
-                       autocomplete="off">
-            </div>
-            <button class="filter-btn" id="featuredFilter" onclick="toggleFeatured()">
-                ⭐ {% trans "Featured" %}
-            </button>
-        </div>
-    </div>
+    
 
     <!-- Subcategory Filter Pills -->
     {% if subcategories %}

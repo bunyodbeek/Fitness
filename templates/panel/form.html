@@ -1,0 +1,30 @@
+{% extends 'panel/base.html' %}
+{% load i18n %}
+
+{% block content %}
+    <div class="page-head">
+        <h2>{{ page_title }}</h2>
+        <a href="{{ cancel_url }}" class="btn">{% trans "Back" %}</a>
+    </div>
+
+    <div class="card" style="max-width:680px;">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <div class="form-errors" style="margin-bottom:16px;">{{ form.non_field_errors }}</div>
+            {% endif %}
+            {% for field in form %}
+                <div class="form-row">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} *{% endif %}</label>
+                    {{ field }}
+                    {% if field.help_text %}<div class="muted" style="font-size:12px;margin-top:4px;">{{ field.help_text }}</div>{% endif %}
+                    {% if field.errors %}<div class="form-errors">{{ field.errors }}</div>{% endif %}
+                </div>
+            {% endfor %}
+            <div style="display:flex;gap:10px;margin-top:22px;">
+                <button type="submit" class="btn btn-primary">{% trans "Save" %}</button>
+                <a href="{{ cancel_url }}" class="btn">{% trans "Cancel" %}</a>
+            </div>
+        </form>
+    </div>
+{% endblock %}

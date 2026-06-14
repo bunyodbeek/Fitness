@@ -1,0 +1,17 @@
+{% extends 'panel/base.html' %}
+{% load i18n %}
+
+{% block content %}
+    <div class="page-head">
+        <h2>{{ obj_title }}</h2>
+        <a href="{{ back_url }}" class="btn">{% trans "Back" %}</a>
+    </div>
+    <div class="card" style="max-width:640px;display:flex;flex-direction:column;gap:16px;">
+        {% for m in obj_meta %}
+        <div style="display:flex;justify-content:space-between;gap:20px;border-bottom:1px solid var(--border);padding-bottom:12px;">
+            <span class="muted">{{ m.label }}</span>
+            <span style="font-weight:600;text-align:right;">{{ m.value }}</span>
+        </div>
+        {% endfor %}
+    </div>
+{% endblock %}

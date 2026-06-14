@@ -1,0 +1,17 @@
+{% extends 'panel/base.html' %}
+{% load i18n %}
+
+{% block content %}
+    <div class="page-head"><h2>{{ page_title }}</h2></div>
+    <div class="card" style="max-width:520px;">
+        <p style="font-size:15px;margin-bottom:8px;">{% trans "Are you sure you want to delete this item?" %}</p>
+        <p class="muted" style="margin-bottom:22px;">{{ object }}</p>
+        <form method="post">
+            {% csrf_token %}
+            <div style="display:flex;gap:10px;">
+                <button type="submit" class="btn btn-danger">{% trans "Delete" %}</button>
+                <a href="{{ cancel_url }}" class="btn">{% trans "Cancel" %}</a>
+            </div>
+        </form>
+    </div>
+{% endblock %}

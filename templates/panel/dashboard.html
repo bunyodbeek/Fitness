@@ -1,0 +1,153 @@
+{% extends 'panel/base.html' %}
+{% load i18n %}
+
+{% block extra_css %}
+<style>
+    .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-bottom: 24px; }
+    .stat-card { position: relative; overflow: hidden; }
+    .stat-card .stat-icon {
+        width: 42px; height: 42px; border-radius: 11px; margin-bottom: 14px;
+        background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.25);
+        display: flex; align-items: center; justify-content: center; color: var(--gold);
+    }
+    .stat-card .stat-value { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; }
+    .stat-card .stat-label { color: var(--dim); font-size: 13px; margin-top: 3px; }
+    .stat-change { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 700; margin-top: 10px; }
+    .stat-change.up { color: var(--green); }
+    .stat-change.down { color: var(--red); }
+
+    .grid-2 { display: grid; grid-template-columns: 1.6fr 1fr; gap: 18px; margin-bottom: 18px; }
+    .section-title { font-size: 15px; font-weight: 800; margin-bottom: 18px; }
+
+    .chart { display: flex; align-items: flex-end; gap: 14px; height: 180px; padding-top: 10px; }
+    .chart-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; height: 100%; }
+    .chart-bar-wrap { flex: 1; width: 100%; display: flex; align-items: flex-end; justify-content: center; }
+    .chart-bar {
+        width: 60%; min-height: 4px; border-radius: 6px 6px 0 0;
+        background: linear-gradient(180deg, rgba(255,215,0,0.5), rgba(255,215,0,0.12));
+    }
+    .chart-bar.today { background: linear-gradient(180deg, var(--gold), #ff9f0a); }
+    .chart-label { font-size: 11px; color: var(--dim); font-weight: 600; }
+    .chart-val { font-size: 11px; color: var(--text); font-weight: 700; }
+
+    .prog-row { margin-bottom: 16px; }
+    .prog-row:last-child { margin-bottom: 0; }
+    .prog-top { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 7px; }
+    .prog-top .pct { color: var(--gold); font-weight: 700; }
+    .prog-bar { height: 7px; border-radius: 999px; background: rgba(255,255,255,0.07); overflow: hidden; }
+    .prog-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--gold), #ff9f0a); }
+
+    .timeline-item { display: flex; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--border); }
+    .timeline-item:last-child { border-bottom: none; }
+    .timeline-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--gold); margin-top: 5px; flex-shrink: 0; }
+    .timeline-item .t-main { font-size: 13.5px; }
+    .timeline-item .t-sub { font-size: 12px; color: var(--dim); margin-top: 2px; }
+
+    @media (max-width: 1100px) { .stat-grid { grid-template-columns: repeat(2, 1fr); } .grid-2 { grid-template-columns: 1fr; } }
+    @media (max-width: 560px) { .stat-grid { grid-template-columns: 1fr; } }
+</style>
+{% endblock %}
+
+{% block content %}
+    <!-- STAT CARDS -->
+    <div class="stat-grid">
+        {% for s in stats %}
+        <div class="card stat-card">
+            <div class="stat-icon">
+                {% if s.icon == 'users' %}
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                {% elif s.icon == 'star' %}
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l2.9 6.3 6.9.7-5.1 4.6 1.4 6.8L12 17.8 5.9 20.4l1.4-6.8L2.2 9l6.9-.7L12 2z"/></svg>
+                {% elif s.icon == 'money' %}
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                {% else %}
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                {% endif %}
+            </div>
+            <div class="stat-value">{{ s.value }}</div>
+            <div class="stat-label">{{ s.label }}</div>
+            <div class="stat-change {% if s.change >= 0 %}up{% else %}down{% endif %}">
+                {% if s.change >= 0 %}
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>+{{ s.change }}%
+                {% else %}
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>{{ s.change }}%
+                {% endif %}
+                <span class="muted" style="font-weight:500;">{% trans "vs last month" %}</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- CHART + POPULAR PROGRAMS -->
+    <div class="grid-2">
+        <div class="card">
+            <div class="section-title">{% trans "Weekly activity" %}</div>
+            <div class="chart">
+                {% for d in weekly_activity %}
+                <div class="chart-col">
+                    <span class="chart-val">{{ d.value }}</span>
+                    <div class="chart-bar-wrap">
+                        <div class="chart-bar {% if d.is_today %}today{% endif %}" style="height: {{ d.height }}%;"></div>
+                    </div>
+                    <span class="chart-label">{{ d.label }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="card">
+            <div class="section-title">{% trans "Popular programs" %}</div>
+            {% for p in popular_programs %}
+            <div class="prog-row">
+                <div class="prog-top">
+                    <span>{{ p.name }}</span>
+                    <span class="pct">{{ p.percent }}%</span>
+                </div>
+                <div class="prog-bar"><div class="prog-fill" style="width: {{ p.percent }}%;"></div></div>
+            </div>
+            {% empty %}
+            <p class="muted">{% trans "No programs yet." %}</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- RECENT USERS + ACTIVITY -->
+    <div class="grid-2">
+        <div class="card" style="padding:0;overflow:hidden;">
+            <div class="section-title" style="padding:20px 20px 0;">{% trans "Recent users" %}</div>
+            <table class="table" style="margin-top:14px;">
+                <thead><tr><th>{% trans "Name" %}</th><th>{% trans "Joined" %}</th><th>{% trans "Status" %}</th></tr></thead>
+                <tbody>
+                {% for u in recent_users %}
+                    <tr>
+                        <td>{{ u.name }}</td>
+                        <td class="muted">{{ u.created_at|timesince }} {% trans "ago" %}</td>
+                        <td>
+                            {% if u.is_premium %}
+                                <span class="badge badge-premium">{% trans "Premium" %}</span>
+                            {% else %}
+                                <span class="badge badge-free">{% trans "Free" %}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="3" class="muted" style="text-align:center;padding:30px;">{% trans "No users yet." %}</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="card">
+            <div class="section-title">{% trans "Recent activity" %}</div>
+            {% for a in recent_activity %}
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div>
+                    <div class="t-main">{% trans "Completed a workout" %}{% if a.workout.title %}: {{ a.workout.title }}{% endif %}</div>
+                    <div class="t-sub">{{ a.user.name }} · {{ a.completed_at|timesince }} {% trans "ago" %}</div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="muted">{% trans "No activity yet." %}</p>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

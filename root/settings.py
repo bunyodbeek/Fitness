@@ -21,11 +21,8 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
-	'jazzmin',
-	'nested_admin',
-	
-	'django.contrib.admin',
-	
+	# NOTE: Django's default admin (and jazzmin/nested_admin) are intentionally
+	# removed. The project uses a custom admin panel under /manage/ (apps.panel).
 	'django.contrib.auth',
 	
 	'django.contrib.contenttypes',

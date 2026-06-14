@@ -1,0 +1,75 @@
+{% extends 'panel/base.html' %}
+{% load i18n %}
+
+{% block content %}
+    {% if messages %}
+        {% for m in messages %}<div class="card" style="margin-bottom:16px;border-color:rgba(52,211,153,0.3);color:var(--green);">{{ m }}</div>{% endfor %}
+    {% endif %}
+
+    <div class="page-head">
+        <h2>{{ page_title }}</h2>
+        <div style="display:flex;gap:10px;align-items:center;">
+            {% if searchable %}
+            <form method="get" style="display:flex;gap:8px;">
+                <input type="text" name="q" value="{{ search_q }}" placeholder="{% trans 'Search...' %}"
+                       style="padding:9px 13px;border-radius:10px;background:var(--panel-2);border:1px solid var(--border-strong);color:var(--text);font-size:13px;width:200px;">
+            </form>
+            {% endif %}
+            {% if create_url %}
+            <a href="{{ create_url }}" class="btn btn-primary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                {{ create_label|default:_("Add") }}
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card" style="padding:0;overflow:hidden;">
+        <table class="table">
+            <thead>
+                <tr>
+                    {% for col in columns %}<th>{{ col }}</th>{% endfor %}
+                    {% if edit_url_name or delete_url_name or rows.0.edit_url or rows.0.delete_url %}<th style="text-align:right;">{% trans "Actions" %}</th>{% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                <tr>
+                    {% for cell in row.cells %}
+                        <td>{% if forloop.first and row.open_url %}<a href="{{ row.open_url }}" style="color:var(--gold);font-weight:600;">{{ cell }}</a>{% else %}{{ cell }}{% endif %}</td>
+                    {% endfor %}
+                    <td style="text-align:right;white-space:nowrap;">
+                        {% if row.open_url %}
+                        <a href="{{ row.open_url }}" class="btn" style="padding:6px 10px;">{% trans "Open" %}</a>
+                        {% endif %}
+                        {% if row.edit_url %}
+                        <a href="{{ row.edit_url }}" class="btn" style="padding:6px 10px;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                        </a>
+                        {% endif %}
+                        {% if row.delete_url %}
+                        <a href="{{ row.delete_url }}" class="btn btn-danger" style="padding:6px 10px;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="20" class="muted" style="text-align:center;padding:40px;">{% trans "Nothing here yet." %}</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if is_paginated %}
+    <div style="display:flex;justify-content:center;gap:10px;margin-top:20px;align-items:center;">
+        {% if page_obj.has_previous %}
+            <a class="btn" href="?page={{ page_obj.previous_page_number }}{% if search_q %}&q={{ search_q }}{% endif %}">{% trans "Prev" %}</a>
+        {% endif %}
+        <span class="muted">{% blocktrans with n=page_obj.number t=page_obj.paginator.num_pages %}Page {{ n }} of {{ t }}{% endblocktrans %}</span>
+        {% if page_obj.has_next %}
+            <a class="btn" href="?page={{ page_obj.next_page_number }}{% if search_q %}&q={{ search_q }}{% endif %}">{% trans "Next" %}</a>
+        {% endif %}
+    </div>
+    {% endif %}
+{% endblock %}
