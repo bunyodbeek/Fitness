@@ -44,8 +44,8 @@ class ProgramForm(forms.ModelForm):
         fields = [
             "name", "name_uz", "name_ru",
             "description", "description_uz", "description_ru",
-            "image", "workout_type", "level", "goal", "type",
-            "is_active", "is_premium", "is_template", "is_individual", "is_one_time",
+            "image", "workout_type", "level", "goal",
+            "is_active", "is_premium",
         ]
 
 
@@ -99,10 +99,14 @@ class WeekForm(forms.ModelForm):
 
 
 class WorkoutForm(forms.ModelForm):
-    """Workout (day) create/edit (week is set from the URL)."""
+    """Workout (day) create/edit (week is set from the URL).
+
+    `day_number` is auto-assigned (next free day) and `apply_to_all_weeks` is set
+    automatically for week-1 days, so admins can add as many days as they want.
+    """
     class Meta:
         model = Workout
-        fields = ["day_number", "title", "title_uz", "title_ru", "rounds", "apply_to_all_weeks"]
+        fields = ["title", "title_uz", "title_ru", "rounds"]
 
 
 class WorkoutExerciseForm(forms.ModelForm):

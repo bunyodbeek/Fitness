@@ -33,18 +33,24 @@ def _yesno(flag):
     return format_html('<span class="badge badge-free">{}</span>', _("No"))
 
 
-def _mode_tabs(active):
-    """Gym/Home filter tabs for the Plans & Programs lists (?mode=)."""
-    return [
+def _mode_tabs(active, include_user=False):
+    """Gym/Home (and optionally User) filter tabs for the Plans & Programs lists."""
+    tabs = [
         {"label": _("All"), "url": "?", "active": not active},
         {"label": _("Gym"), "url": "?mode=gym", "active": active == "gym"},
         {"label": _("Home"), "url": "?mode=home", "active": active == "home"},
     ]
+    if include_user:
+        tabs.append({"label": _("User"), "url": "?mode=user", "active": active == "user"})
+    return tabs
 
 
-def _current_mode(request):
+def _current_mode(request, allow_user=False):
     mode = (request.GET.get("mode") or "").lower()
-    return mode if mode in {WorkoutType.GYM, WorkoutType.HOME} else ""
+    valid = {WorkoutType.GYM, WorkoutType.HOME}
+    if allow_user:
+        valid = valid | {"user"}
+    return mode if mode in valid else ""
 
 
 # ───────────────────────── parent-scoped create base ─────────────────────────
@@ -77,15 +83,22 @@ class ProgramListView(PanelListView):
     create_label = _("Add program")
 
     def get_queryset(self):
-        qs = super().get_queryset().order_by("-created_at")
-        mode = _current_mode(self.request)
-        if mode:
+        qs = super().get_queryset()
+        mode = _current_mode(self.request, allow_user=True)
+        if mode == "user":
+            # User-created (custom) programs — kept apart from admin content.
+            return qs.filter(type=Program.ProgramType.CUSTOM).order_by("-created_at")
+        # Admin programs only; individual & one-time live in their own sections.
+        qs = qs.filter(
+            type=Program.ProgramType.ADMIN, is_individual=False, is_one_time=False,
+        )
+        if mode in {WorkoutType.GYM, WorkoutType.HOME}:
             qs = qs.filter(workout_type=mode)
-        return qs
+        return qs.order_by("-created_at")
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx["tabs"] = _mode_tabs(_current_mode(self.request))
+        ctx["tabs"] = _mode_tabs(_current_mode(self.request, allow_user=True), include_user=True)
         return ctx
 
     def get_row_cells(self, obj):
@@ -334,8 +347,17 @@ class WorkoutCreateView(_ScopedCreateView):
     page_title = _("Add day")
     success_message = _("Day created. Now add exercises.")
 
+    def form_valid(self, form):
+        week = self.get_parent()
+        # Auto-number the day (next free) so many days can be added freely, and
+        # auto-enable progression copy for week-1 days (applies to every day).
+        last = week.workouts.order_by("-day_number").first()
+        form.instance.day_number = (last.day_number + 1) if last else 1
+        form.instance.apply_to_all_weeks = (week.week_number == 1)
+        return super().form_valid(form)
+
     def get_success_url(self):
-        return reverse("panel:workout_detail", args=[self.object.pk])
+        return reverse("panel:workout_builder", args=[self.object.pk])
 
     def get_cancel_url(self):
         return reverse("panel:week_detail", args=[self.kwargs["week_pk"]])
@@ -631,6 +653,7 @@ class _ModeWorkoutsListView(PlanListView):
         return (
             Plan.objects.filter(
                 program__workout_type=self.forced_mode,
+                program__type=Program.ProgramType.ADMIN,
                 program__is_individual=False,
                 program__is_one_time=False,
             )
