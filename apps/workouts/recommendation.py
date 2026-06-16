@@ -62,18 +62,17 @@ def get_recommended_program(user_profile, workout_type: str | None = None) -> Pr
     if workout_type in {"gym", "home"}:
         base_filter["workout_type"] = workout_type
 
-    # Avval individual (tavsiya) programmalar ichidan qidirish
-    individual = Program.objects.filter(**base_filter, is_individual=True).order_by("is_premium", "id").first()
+    # Tavsiya FAQAT individual (tavsiya) programmalar ichidan beriladi.
+    individual = Program.objects.filter(
+        **base_filter, is_individual=True, is_one_time=False,
+    ).order_by("is_premium", "id").first()
     if individual:
         return individual
 
-    # Keyin oddiy admin programmalar ichidan
-    regular = Program.objects.filter(**base_filter, is_individual=False).order_by("is_premium", "id").first()
-    if regular:
-        return regular
-
-    # Hech narsa topilmasa — istalgan individual programma (workout_type bo'yicha)
-    fallback_qs = Program.objects.filter(is_active=True, type=Program.ProgramType.ADMIN, is_individual=True)
+    # Maqsad/daraja bo'yicha mos kelmasa — istalgan individual programma (workout_type bo'yicha).
+    fallback_qs = Program.objects.filter(
+        is_active=True, type=Program.ProgramType.ADMIN, is_individual=True, is_one_time=False,
+    )
     if workout_type in {"gym", "home"}:
         fallback = fallback_qs.filter(workout_type=workout_type).first()
         if fallback:

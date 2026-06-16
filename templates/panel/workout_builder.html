@@ -72,8 +72,8 @@
             {% for b in breadcrumbs %}{% if b.url %}<a href="{{ b.url }}" style="color:var(--gold);">{{ b.label }}</a>{% else %}{{ b.label }}{% endif %}{% if not forloop.last %} · {% endif %}{% endfor %}
         </div>
         <h2>{{ obj_title }}
-            <span class="badge {% if is_home %}badge-green{% else %}badge-premium{% endif %}" style="margin-left:8px;">
-                {% if is_home %}{% trans "HOME · rounds / time" %}{% else %}{% trans "GYM · sets / reps" %}{% endif %}
+            <span class="badge {% if show_home_inputs %}badge-green{% else %}badge-premium{% endif %}" style="margin-left:8px;">
+                {% if is_one_time %}{% trans "ONE-TIME · sets / reps" %}{% elif is_home %}{% trans "HOME · rounds / time" %}{% else %}{% trans "GYM · sets / reps" %}{% endif %}
             </span>
         </h2>
     </div>
@@ -101,10 +101,15 @@
             </div>
         </div>
 
-        <!-- RIGHT: day settings -->
+        <!-- RIGHT: settings -->
         <div class="card">
-            <b style="display:block;margin-bottom:14px;">{% trans "Day settings" %}</b>
+            <b style="display:block;margin-bottom:14px;">{% if is_one_time %}{% trans "One-time settings" %}{% else %}{% trans "Day settings" %}</b>{% endif %}
 
+            {% if is_one_time %}
+            <div class="muted" style="font-size:12px;margin-bottom:14px;">
+                {% trans "A single-session program: just exercises with sets / reps / weight. No weeks or progression." %}
+            </div>
+            {% else %}
             <div class="form-row">
                 <label>{% trans "Progression rule" %}</label>
                 <select name="progression_id">
@@ -119,7 +124,7 @@
                 </div>
             </div>
 
-            {% if is_home %}
+            {% if show_home_inputs %}
             <div class="form-row">
                 <label>{% trans "Rounds (this day)" %}</label>
                 <input type="number" name="rounds" min="1" value="{{ workout.rounds|default:1 }}">
@@ -133,8 +138,9 @@
             {% if week.week_number != 1 %}
             <div class="muted" style="font-size:11px;">{% trans "Note: weeks 2..N are auto-generated from week 1. Editing here is manual." %}</div>
             {% endif %}
+            {% endif %}
 
-            <button type="submit" class="btn btn-primary" style="width:100%;margin-top:8px;">{% trans "Save day" %}</button>
+            <button type="submit" class="btn btn-primary" style="width:100%;margin-top:8px;">{% if is_one_time %}{% trans "Save program" %}{% else %}{% trans "Save day" %}{% endif %}</button>
         </div>
     </div>
 </form>
@@ -177,7 +183,7 @@
 
 {{ added_json|json_script:"addedData" }}
 <script>
-    const IS_HOME = {{ is_home|yesno:"true,false" }};
+    const IS_HOME = {{ show_home_inputs|yesno:"true,false" }};
     let ADDED = JSON.parse(document.getElementById('addedData').textContent || '[]');
     // normalize id key
     ADDED = ADDED.map(x => ({

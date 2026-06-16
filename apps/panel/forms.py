@@ -49,6 +49,29 @@ class ProgramForm(forms.ModelForm):
         ]
 
 
+class IndividualProgramForm(forms.ModelForm):
+    """Individual (recommended) program. `is_individual` is forced in the view.
+    Goal / level / workout_type drive the first-login recommendation match."""
+    class Meta:
+        model = Program
+        fields = [
+            "name", "name_uz", "name_ru",
+            "description", "description_uz", "description_ru",
+            "image", "workout_type", "level", "goal", "is_active", "is_premium",
+        ]
+
+
+class OneTimeProgramForm(forms.ModelForm):
+    """One-time (single session) program — just a name + image. Exercises (with
+    sets / reps / weight) are added afterwards in the builder; no plan/week/days."""
+    class Meta:
+        model = Program
+        fields = [
+            "name", "name_uz", "name_ru", "description",
+            "image", "workout_type", "is_active", "is_premium",
+        ]
+
+
 class PlanForm(forms.ModelForm):
     """Plan create/edit. Program is chosen here (Plans is its own section).
 

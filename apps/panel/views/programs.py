@@ -17,7 +17,10 @@ from django.views.generic import DetailView, TemplateView
 from apps.models import Exercise, Plan, Program, Week, Workout, WorkoutExercise
 from apps.models.exercises import MuscleGroup
 from apps.models.workouts import HomeProgressionSetting, ProgressionSetting, WorkoutType
-from apps.panel.forms import PlanForm, ProgramForm, WeekForm, WorkoutExerciseForm, WorkoutForm
+from apps.panel.forms import (
+    IndividualProgramForm, OneTimeProgramForm, PlanForm, ProgramForm,
+    WeekForm, WorkoutExerciseForm, WorkoutForm,
+)
 from apps.panel.mixins import StaffRequiredMixin
 from apps.panel.views.base import PanelContextMixin
 from apps.panel.views.crud import PanelCreateView, PanelDeleteView, PanelListView, PanelUpdateView
@@ -156,6 +159,13 @@ class PlanCreateView(PanelCreateView):
     page_title = _("Add plan")
     success_url = reverse_lazy("panel:plans")
     success_message = _("Plan created. Weeks were generated automatically.")
+
+    def get_initial(self):
+        initial = super().get_initial()
+        program_id = self.request.GET.get("program")
+        if program_id:
+            initial["program"] = program_id
+        return initial
 
     def form_valid(self, form):
         response = super().form_valid(form)
@@ -463,7 +473,11 @@ class WorkoutBuilderView(StaffRequiredMixin, PanelContextMixin, TemplateView):
         week = wo.week
         plan = week.plan
         program = plan.program
+        is_one_time = program.is_one_time
         is_home = program.workout_type == WorkoutType.HOME
+        # One-time programs always use gym-style inputs (sets / reps / weight) and
+        # have no weeks / progression.
+        show_home_inputs = is_home and not is_one_time
 
         added = list(wo.workout_exercises.select_related("exercise").all())
         ctx["added_json"] = [
@@ -479,59 +493,77 @@ class WorkoutBuilderView(StaffRequiredMixin, PanelContextMixin, TemplateView):
             }
             for we in added
         ]
-        ctx.update({
-            "workout": wo,
-            "week": week,
-            "plan": plan,
-            "program": program,
-            "is_home": is_home,
-            "page_title": _("Build day"),
-            "obj_title": wo.title or f"{_('Day')} {wo.day_number}",
-            "back_url": reverse("panel:workout_detail", args=[wo.pk]),
-            "breadcrumbs": [
+        if is_one_time:
+            back_url = reverse("panel:onetime")
+            breadcrumbs = [
+                {"label": _("One-time programs"), "url": back_url},
+                {"label": program.name},
+            ]
+        else:
+            back_url = reverse("panel:workout_detail", args=[wo.pk])
+            breadcrumbs = [
                 {"label": _("Plans"), "url": reverse("panel:plans")},
                 {"label": plan.name, "url": reverse("panel:plan_detail", args=[plan.pk])},
                 {"label": week.display_name, "url": reverse("panel:week_detail", args=[week.pk])},
                 {"label": wo.title or f"{_('Day')} {wo.day_number}",
                  "url": reverse("panel:workout_detail", args=[wo.pk])},
                 {"label": _("Build")},
-            ],
+            ]
+
+        ctx.update({
+            "workout": wo,
+            "week": week,
+            "plan": plan,
+            "program": program,
+            "is_home": is_home,
+            "is_one_time": is_one_time,
+            "show_home_inputs": show_home_inputs,
+            "page_title": program.name if is_one_time else _("Build day"),
+            "obj_title": program.name if is_one_time else (wo.title or f"{_('Day')} {wo.day_number}"),
+            "back_url": back_url,
+            "breadcrumbs": breadcrumbs,
             "exercises": Exercise.objects.filter(
                 workout_type=program.workout_type
             ).order_by("name"),
             "body_parts": MuscleGroup.choices,
         })
-        if is_home:
-            ctx["progressions"] = HomeProgressionSetting.objects.all()
-            ctx["current_progression_id"] = plan.home_progression_config_id
-        else:
-            ctx["progressions"] = ProgressionSetting.objects.all()
-            ctx["current_progression_id"] = plan.progression_config_id
+        if not is_one_time:
+            if is_home:
+                ctx["progressions"] = HomeProgressionSetting.objects.all()
+                ctx["current_progression_id"] = plan.home_progression_config_id
+            else:
+                ctx["progressions"] = ProgressionSetting.objects.all()
+                ctx["current_progression_id"] = plan.progression_config_id
         return ctx
 
     def post(self, request, *args, **kwargs):
         wo = self.get_workout()
         plan = wo.week.plan
-        is_home = plan.program.workout_type == WorkoutType.HOME
+        program = plan.program
+        is_one_time = program.is_one_time
+        is_home = program.workout_type == WorkoutType.HOME
+        # One-time → gym-style inputs, no progression/weeks.
+        save_home_inputs = is_home and not is_one_time
 
-        # 1) Plan progression (saved BEFORE exercises so the generation signal
-        #    uses the freshly chosen rule).
-        prog_id = request.POST.get("progression_id") or None
-        if is_home:
-            plan.home_progression_config_id = prog_id
-            plan.save(update_fields=["home_progression_config"])
-        else:
-            plan.progression_config_id = prog_id
-            plan.save(update_fields=["progression_config"])
+        if not is_one_time:
+            # 1) Plan progression (saved BEFORE exercises so the generation signal
+            #    uses the freshly chosen rule).
+            prog_id = request.POST.get("progression_id") or None
+            if is_home:
+                plan.home_progression_config_id = prog_id
+                plan.save(update_fields=["home_progression_config"])
+            else:
+                plan.progression_config_id = prog_id
+                plan.save(update_fields=["progression_config"])
 
-        # 2) Day-level fields: apply-to-all-weeks (+ rounds for home).
-        wo.apply_to_all_weeks = bool(request.POST.get("apply_to_all_weeks"))
-        if is_home:
-            try:
-                wo.rounds = max(1, int(request.POST.get("rounds") or wo.rounds or 1))
-            except (TypeError, ValueError):
-                pass
-        wo.save()
+            # 2) Day-level fields: apply-to-all-weeks (+ rounds for home).
+            wo.apply_to_all_weeks = bool(request.POST.get("apply_to_all_weeks"))
+            if is_home:
+                try:
+                    wo.rounds = max(1, int(request.POST.get("rounds") or wo.rounds or 1))
+                except (TypeError, ValueError):
+                    pass
+            wo.save()
 
         # 3) Exercises (create/update + delete removed).
         try:
@@ -547,7 +579,7 @@ class WorkoutBuilderView(StaffRequiredMixin, PanelContextMixin, TemplateView):
                 continue
             submitted_ids.append(eid)
             defaults = {"order": i}
-            if is_home:
+            if save_home_inputs:
                 defaults.update({"minutes": _to_int(row.get("minutes")), "sets": 0, "reps": 0})
             else:
                 defaults.update({
@@ -564,6 +596,9 @@ class WorkoutBuilderView(StaffRequiredMixin, PanelContextMixin, TemplateView):
             WorkoutExercise.objects.filter(source_week_one=we).delete()
             we.delete()
 
+        if is_one_time:
+            messages.success(request, _("One-time program saved."))
+            return redirect("panel:onetime")
         messages.success(request, _("Day saved."))
         return redirect("panel:workout_detail", pk=wo.pk)
 
@@ -580,3 +615,225 @@ def _to_float(value):
         return float(value)
     except (TypeError, ValueError):
         return 0.0
+
+
+# ───────────────────────── Gym / Home workout sections ─────────────────────────
+
+class _ModeWorkoutsListView(PlanListView):
+    """Plans for one mode (gym/home), excluding individual & one-time programs.
+
+    These are the primary entry points for building normal workouts: pick a
+    plan → week → day → the visual builder.
+    """
+    forced_mode = None
+
+    def get_queryset(self):
+        return (
+            Plan.objects.filter(
+                program__workout_type=self.forced_mode,
+                program__is_individual=False,
+                program__is_one_time=False,
+            )
+            .select_related("program")
+            .order_by("program__name", "order")
+        )
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx.pop("tabs", None)  # mode is fixed by the section
+        return ctx
+
+
+class GymWorkoutsListView(_ModeWorkoutsListView):
+    forced_mode = WorkoutType.GYM
+    nav_active = "gym_workouts"
+    page_title = _("Gym Workouts")
+    create_label = _("Add gym plan")
+
+
+class HomeWorkoutsListView(_ModeWorkoutsListView):
+    forced_mode = WorkoutType.HOME
+    nav_active = "home_workouts"
+    page_title = _("Home Workouts")
+    create_label = _("Add home plan")
+
+
+# ───────────────────────── Individual (recommended) programs ─────────────────────────
+
+class IndividualProgramListView(ProgramListView):
+    nav_active = "individual"
+    page_title = _("Individual programs")
+    create_url_name = "panel:individual_add"
+    edit_url_name = "panel:individual_edit"
+    delete_url_name = "panel:individual_delete"
+    open_url_name = "panel:program_plans"
+    create_label = _("Add individual program")
+
+    def get_queryset(self):
+        return Program.objects.filter(is_individual=True).order_by("-created_at")
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx.pop("tabs", None)
+        return ctx
+
+
+class IndividualProgramCreateView(PanelCreateView):
+    model = Program
+    form_class = IndividualProgramForm
+    nav_active = "individual"
+    page_title = _("Add individual program")
+    success_url = reverse_lazy("panel:individual")
+    success_message = _("Individual program created. Now add a plan and build its weeks.")
+
+    def form_valid(self, form):
+        form.instance.is_individual = True
+        form.instance.is_one_time = False
+        return super().form_valid(form)
+
+
+class IndividualProgramUpdateView(PanelUpdateView):
+    model = Program
+    form_class = IndividualProgramForm
+    nav_active = "individual"
+    page_title = _("Edit individual program")
+    success_url = reverse_lazy("panel:individual")
+
+    def get_queryset(self):
+        return Program.objects.filter(is_individual=True)
+
+    def form_valid(self, form):
+        form.instance.is_individual = True
+        return super().form_valid(form)
+
+
+class IndividualProgramDeleteView(PanelDeleteView):
+    model = Program
+    nav_active = "individual"
+    page_title = _("Delete individual program")
+    success_url = reverse_lazy("panel:individual")
+
+    def get_queryset(self):
+        return Program.objects.filter(is_individual=True)
+
+
+# ───────────────────────── One-time programs (single session) ─────────────────────────
+
+def _ensure_single_workout(program):
+    """A one-time program hides the plan/week/day structure: behind the scenes it
+    is one plan → one week → one day. Create it lazily and return that day."""
+    plan = program.plans.order_by("order", "id").first()
+    if plan is None:
+        plan = Plan.objects.create(
+            program=program, name=program.name or "One-time", order=1, weeks_count=1,
+        )
+    week = plan.weeks.order_by("week_number").first()
+    if week is None:
+        week = Week.objects.create(plan=plan, week_number=1)
+    workout = week.workouts.order_by("day_number", "id").first()
+    if workout is None:
+        workout = Workout.objects.create(week=week, day_number=1, title=program.name or "")
+    return workout
+
+
+class OneTimeProgramListView(ProgramListView):
+    nav_active = "onetime"
+    page_title = _("One-time programs")
+    columns = [_("Name"), _("Mode"), _("Exercises"), _("Active")]
+    create_url_name = "panel:onetime_add"
+    open_url_name = "panel:onetime_builder"
+    delete_url_name = "panel:onetime_delete"
+    edit_url_name = None
+    create_label = _("Add one-time program")
+
+    def get_queryset(self):
+        return Program.objects.filter(is_one_time=True).order_by("-created_at")
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx.pop("tabs", None)
+        return ctx
+
+    def get_row_cells(self, obj):
+        workout = obj.first_workout
+        ex_count = workout.workout_exercises.count() if workout else 0
+        return [obj.name, obj.get_workout_type_display(), ex_count, _yesno(obj.is_active)]
+
+
+class OneTimeProgramCreateView(PanelCreateView):
+    model = Program
+    form_class = OneTimeProgramForm
+    nav_active = "onetime"
+    page_title = _("Add one-time program")
+    success_url = reverse_lazy("panel:onetime")
+    success_message = _("One-time program created. Now add exercises.")
+
+    def form_valid(self, form):
+        form.instance.is_one_time = True
+        form.instance.is_individual = False
+        response = super().form_valid(form)
+        # Scaffold the hidden single day, then go straight to the builder.
+        workout = _ensure_single_workout(self.object)
+        return redirect("panel:workout_builder", pk=workout.pk)
+
+
+class OneTimeProgramDeleteView(PanelDeleteView):
+    model = Program
+    nav_active = "onetime"
+    page_title = _("Delete one-time program")
+    success_url = reverse_lazy("panel:onetime")
+
+    def get_queryset(self):
+        return Program.objects.filter(is_one_time=True)
+
+
+class OneTimeBuilderRedirectView(StaffRequiredMixin, PanelContextMixin, TemplateView):
+    """Open a one-time program straight in the exercise builder (its single day)."""
+
+    def get(self, request, *args, **kwargs):
+        program = get_object_or_404(Program, pk=self.kwargs["pk"], is_one_time=True)
+        workout = _ensure_single_workout(program)
+        return redirect("panel:workout_builder", pk=workout.pk)
+
+
+# ───────────────────────── Program → plans drill-down ─────────────────────────
+
+class ProgramPlansView(StaffRequiredMixin, PanelContextMixin, DetailView):
+    """Show one program's plans (used by the Individual section to build them)."""
+    model = Program
+    template_name = "panel/detail.html"
+    nav_active = "individual"
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        pr = self.object
+        is_individual = pr.is_individual
+        ctx["page_title"] = pr.name
+        ctx["obj_title"] = pr.name
+        ctx["obj_edit_url"] = reverse(
+            "panel:individual_edit" if is_individual else "panel:program_edit", args=[pr.pk]
+        )
+        back = reverse("panel:individual") if is_individual else reverse("panel:programs")
+        ctx["back_url"] = back
+        ctx["breadcrumbs"] = [
+            {"label": _("Individual programs") if is_individual else _("Programs"), "url": back},
+            {"label": pr.name},
+        ]
+        ctx["obj_meta"] = [
+            {"label": _("Mode"), "value": pr.get_workout_type_display()},
+            {"label": _("Goal"), "value": pr.get_goal_display()},
+            {"label": _("Level"), "value": pr.get_level_display()},
+        ]
+        ctx["child_title"] = _("Plans")
+        ctx["child_add_url"] = reverse("panel:plan_add") + f"?program={pr.pk}"
+        ctx["child_add_label"] = _("Add plan")
+        ctx["child_columns"] = [_("Name"), _("Weeks")]
+        ctx["child_rows"] = [
+            {
+                "cells": [pl.name, pl.weeks_count],
+                "open_url": reverse("panel:plan_detail", args=[pl.pk]),
+                "delete_url": reverse("panel:plan_delete", args=[pl.pk]),
+            }
+            for pl in pr.plans.order_by("order", "id")
+        ]
+        return ctx

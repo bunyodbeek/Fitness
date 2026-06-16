@@ -52,6 +52,23 @@ urlpatterns = [
     path("programs/<int:pk>/edit/", pr.ProgramUpdateView.as_view(), name="program_edit"),
     path("programs/<int:pk>/delete/", pr.ProgramDeleteView.as_view(), name="program_delete"),
 
+    # Workout sections (mode-scoped plan lists → builder)
+    path("gym-workouts/", pr.GymWorkoutsListView.as_view(), name="gym_workouts"),
+    path("home-workouts/", pr.HomeWorkoutsListView.as_view(), name="home_workouts"),
+
+    # Individual (recommended) programs
+    path("individual/", pr.IndividualProgramListView.as_view(), name="individual"),
+    path("individual/add/", pr.IndividualProgramCreateView.as_view(), name="individual_add"),
+    path("individual/<int:pk>/edit/", pr.IndividualProgramUpdateView.as_view(), name="individual_edit"),
+    path("individual/<int:pk>/delete/", pr.IndividualProgramDeleteView.as_view(), name="individual_delete"),
+    path("programs/<int:pk>/plans/", pr.ProgramPlansView.as_view(), name="program_plans"),
+
+    # One-time programs (single session: name + exercises, no weeks)
+    path("one-time/", pr.OneTimeProgramListView.as_view(), name="onetime"),
+    path("one-time/add/", pr.OneTimeProgramCreateView.as_view(), name="onetime_add"),
+    path("one-time/<int:pk>/builder/", pr.OneTimeBuilderRedirectView.as_view(), name="onetime_builder"),
+    path("one-time/<int:pk>/delete/", pr.OneTimeProgramDeleteView.as_view(), name="onetime_delete"),
+
     # Plans (own section: Plan -> Week -> Workout -> WorkoutExercise)
     path("plans/", pr.PlanListView.as_view(), name="plans"),
     path("plans/add/", pr.PlanCreateView.as_view(), name="plan_add"),
