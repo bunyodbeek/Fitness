@@ -14,7 +14,7 @@
         html, body { height: 100%; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            background: #000000;
             color: #ffffff;
             display: flex;
             justify-content: center;
@@ -28,21 +28,17 @@
             position: fixed;
             inset: 0;
             background:
-                radial-gradient(circle at 20% 50%, rgba(255, 215, 0, 0.05) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(255, 107, 107, 0.05) 0%, transparent 50%),
-                radial-gradient(circle at 40% 10%, rgba(78, 205, 196, 0.04) 0%, transparent 50%);
+                radial-gradient(circle at 50% 0%, rgba(255, 215, 0, 0.06) 0%, transparent 55%);
             pointer-events: none;
             z-index: 0;
         }
         .container {
             width: 100%;
             max-width: 640px;
-            background: linear-gradient(135deg, rgba(15, 52, 96, 0.6) 0%, rgba(22, 33, 62, 0.6) 100%);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            background: #0a0a0a;
             border-radius: 20px;
             padding: 24px 20px;
-            border: 1.5px solid rgba(255, 215, 0, 0.12);
+            border: 1px solid rgba(255, 215, 0, 0.14);
             box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
             position: relative;
             z-index: 1;
@@ -57,7 +53,7 @@
         }
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #ffd700, #f39c12);
+            background: #ffd700;
             width: 0%;
             transition: width .3s ease;
             box-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
@@ -66,10 +62,7 @@
             font-size: 22px;
             margin-bottom: 18px;
             text-align: center;
-            background: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: #ffd700;
             font-weight: 800;
             letter-spacing: 0.5px;
         }
@@ -97,12 +90,15 @@
             box-shadow: 0 4px 16px rgba(255, 215, 0, 0.15);
         }
         .option-btn.selected {
-            background: linear-gradient(135deg, #ffd700 0%, #f39c12 100%);
-            color: #0a0e27;
+            background: #ffd700;
+            color: #0a0a0a;
             border-color: #ffd700;
             transform: none;
             box-shadow: 0 4px 20px rgba(255, 215, 0, 0.35);
         }
+        .option-btn small { color: rgba(255, 255, 255, 0.5); }
+        .option-btn.selected small { color: #0a0a0a; }
+        .option-btn * { pointer-events: none; }
         .option-btn.outline {
             background: transparent;
             border: 1.5px solid rgba(255, 215, 0, 0.3);
@@ -110,8 +106,8 @@
             font-weight: 600;
         }
         .option-btn.outline.selected {
-            background: linear-gradient(135deg, #ffd700 0%, #f39c12 100%);
-            color: #0a0e27;
+            background: #ffd700;
+            color: #0a0a0a;
             border-color: #ffd700;
         }
         .weight-input {
@@ -156,8 +152,8 @@
         }
         .stats { font-size: 30px; font-weight: 700; color: #ffd700; margin-top: 12px; }
         .continue-btn {
-            background: linear-gradient(135deg, #ffd700 0%, #f39c12 100%);
-            color: #0a0e27;
+            background: #ffd700;
+            color: #0a0a0a;
             border: none;
             padding: 14px 24px;
             border-radius: 14px;
@@ -191,8 +187,8 @@
     <div class="question active" data-step="1">
         <h1>{% trans "Where will you train?" %}</h1>
         <div class="options" id="workoutTypeOptions">
-            <button class="option-btn" data-value="gym">{% trans "Gym" %}</button>
-            <button class="option-btn" data-value="home">{% trans "Home" %}</button>
+            <button type="button" class="option-btn" data-value="gym">{% trans "Gym" %}</button>
+            <button type="button" class="option-btn" data-value="home">{% trans "Home" %}</button>
         </div>
     </div>
 
@@ -200,8 +196,8 @@
     <div class="question" data-step="2">
         <h1>{% trans "Let's start with the basics" %}</h1>
         <div class="options" id="genderOptions">
-            <button class="option-btn" data-value="male">{% trans "Male" %}</button>
-            <button class="option-btn" data-value="female">{% trans "Female" %}</button>
+            <button type="button" class="option-btn" data-value="male">{% trans "Male" %}</button>
+            <button type="button" class="option-btn" data-value="female">{% trans "Female" %}</button>
         </div>
     </div>
 
@@ -209,11 +205,11 @@
     <div class="question" data-step="3">
         <h1>{% trans "How would you describe your gym experience?" %}</h1>
         <div class="options" id="expOptions">
-            <button class="option-btn" data-value="beginner">
-                {% trans "Beginner" %}<br><small style="font-weight:400; color:#1e272e">{% trans "Training for less than 6 mos" %}</small>
+            <button type="button" class="option-btn" data-value="beginner">
+                {% trans "Beginner" %}<br><small style="font-weight:400">{% trans "Training for less than 6 mos" %}</small>
             </button>
-            <button class="option-btn" data-value="advanced">
-                {% trans "Advanced" %}<br><small style="font-weight:400; color:#1e272e">{% trans "Training for more than 2 yrs" %}</small>
+            <button type="button" class="option-btn" data-value="advanced">
+                {% trans "Advanced" %}<br><small style="font-weight:400">{% trans "Training for more than 2 yrs" %}</small>
             </button>
         </div>
     </div>
@@ -222,9 +218,9 @@
     <div class="question" data-step="4">
         <h1>{% trans "What's your current fitness objective?" %}</h1>
         <div class="options" id="goalOptions">
-            <button class="option-btn" data-value="get_shape">{% trans "Get in shape" %}</button>
-            <button class="option-btn" data-value="lose_weight">{% trans "Lose weight" %}</button>
-            <button class="option-btn" data-value="gain_muscle">{% trans "Gain muscle" %}</button>
+            <button type="button" class="option-btn" data-value="get_shape">{% trans "Get in shape" %}</button>
+            <button type="button" class="option-btn" data-value="lose_weight">{% trans "Lose weight" %}</button>
+            <button type="button" class="option-btn" data-value="gain_muscle">{% trans "Gain muscle" %}</button>
         </div>
     </div>
 
@@ -232,9 +228,9 @@
     <div class="question" data-step="5">
         <h1>{% trans "How many days per week would you like to work out?" %}</h1>
         <div class="options" id="daysOptions">
-            <button class="option-btn" data-value="2">{% trans "2 days" %}</button>
-            <button class="option-btn" data-value="3">{% trans "3 days" %}</button>
-            <button class="option-btn" data-value="4">{% trans "4 days" %}</button>
+            <button type="button" class="option-btn" data-value="2">{% trans "2 days" %}</button>
+            <button type="button" class="option-btn" data-value="3">{% trans "3 days" %}</button>
+            <button type="button" class="option-btn" data-value="4">{% trans "4 days" %}</button>
         </div>
     </div>
 
@@ -244,7 +240,7 @@
         <input id="weightInput" type="number" class="weight-input" placeholder="63" value="63" min="30" max="250"/>
         <div class="unit">{% trans "Kilograms" %}</div>
         <div style="text-align:center;">
-            <button class="option-btn" id="weightNext">{% trans "Next" %}</button>
+            <button type="button" class="option-btn" id="weightNext">{% trans "Next" %}</button>
         </div>
     </div>
 

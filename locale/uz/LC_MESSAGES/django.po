@@ -2843,7 +2843,7 @@ msgstr "Saqlamasdan chiqish"
 
 #: templates/workouts/active_workout.html:1232
 msgid "Return to Workout"
-msgstr "Oxirgi mashg'ulotlar"
+msgstr "Mashgulotga qaytish"
 
 #: templates/workouts/active_workout.html:1249
 msgid "Did It"
@@ -3010,10 +3010,9 @@ msgid "Total time"
 msgstr "Umumiy vaqt"
 
 #: templates/workouts/import_entry.html:56
-#, fuzzy
-#| msgid "Favorite Program"
+
 msgid "Import a Program"
-msgstr "Sevimli mashg'ulot"
+msgstr "Mashgulotni yuklash"
 
 #: templates/workouts/import_entry.html:57
 msgid "Paste a share code (e.g. A7K2M9X4) or the full share link."
@@ -3024,30 +3023,26 @@ msgid "Share Code or Link"
 msgstr "Kod yoki havola"
 
 #: templates/workouts/import_entry.html:64
-#, fuzzy
-#| msgid "Create Program"
+
 msgid "Preview Program"
-msgstr "Mashg'ulot yaratish"
+msgstr "Mashg'ulot ko'rish"
 
 #: templates/workouts/import_entry.html:67
 msgid "Accepted formats:"
 msgstr "Qabul qilinadigan formatlar:"
 
 #: templates/workouts/import_entry.html:67
-#, fuzzy
-#| msgid "for"
+
 msgid "or"
-msgstr "uchun"
+msgstr "yoki"
 
 #: templates/workouts/import_preview.html:4
-#, fuzzy
-#| msgid "Support"
+
 msgid "Import"
-msgstr "Qo'llab-quvvatlash"
+msgstr "Import"
 
 #: templates/workouts/import_preview.html:70
-#, fuzzy
-#| msgid "Review"
+
 msgid "Preview"
 msgstr "Ko‘rib chiqish"
 
@@ -3056,16 +3051,14 @@ msgid "By"
 msgstr "Muallif"
 
 #: templates/workouts/import_preview.html:95
-#, fuzzy
-#| msgid "Days/week"
+
 msgid "Days/wk"
 msgstr "Kun/Hafta"
 
 #: templates/workouts/import_preview.html:123
-#, fuzzy
-#| msgid "About this program"
+
 msgid "Import this program"
-msgstr "Mashg'ulot haqida"
+msgstr "Import qilish"
 
 #: templates/workouts/import_preview.html:126
 msgid "A full independent copy will be added to your programs."

@@ -296,11 +296,7 @@
         }
 
         .exercise-image-wrap.css-fullscreen .fullscreen-btn {
-            top: 16px;
-            left: 16px;
-            width: 44px;
-            height: 44px;
-            background: rgba(0, 0, 0, 0.65);
+            display: none;
         }
 
         body.fs-lock {
@@ -1352,7 +1348,9 @@
 
     document.addEventListener('click', function (e) {
         const fsEl = document.querySelector('.exercise-image-wrap.css-fullscreen');
-        if (fsEl && !e.target.closest('.fullscreen-btn')) {
+        if (fsEl) {
+            e.preventDefault();
+            e.stopPropagation();
             fsEl.classList.remove('css-fullscreen');
             document.body.classList.remove('fs-lock');
         }
