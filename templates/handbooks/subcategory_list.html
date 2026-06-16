@@ -92,73 +92,8 @@
             -webkit-text-fill-color: transparent;
         }
 
-        .header-actions {
-            display: flex;
-            gap: 12px;
-        }
-
-        .header-icon {
-            background: rgba(255, 215, 0, 0.1);
-            border: 1.5px solid rgba(255, 215, 0, 0.3);
-            color: #ffd700;
-            font-size: 18px;
-            cursor: pointer;
-            padding: 0;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border-radius: 10px;
-        }
-
-        .header-icon:hover {
-            background: rgba(255, 215, 0, 0.2);
-            border-color: #ffd700;
-            transform: scale(1.05);
-        }
-
-        .header-icon:active {
-            background: rgba(255, 215, 0, 0.3);
-            transform: scale(0.95);
-        }
 
 
-
-
-
-        .search-input {
-            width: 100%;
-            padding: 12px 16px 12px 44px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 215, 0, 0.2);
-            border-radius: 12px;
-            color: #ffffff;
-            font-size: 14px;
-            transition: all 0.3s ease;
-        }
-
-        .search-input:focus {
-            outline: none;
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 215, 0, 0.5);
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
-        }
-
-        .search-input::placeholder {
-            color: rgba(255, 255, 255, 0.4);
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: rgba(255, 215, 0, 0.6);
-            font-size: 16px;
-            pointer-events: none;
-        }
 
         /* Subcategories Container */
         .subcategories-container {
@@ -264,31 +199,6 @@
 
         .empty-state p {
             font-size: 14px;
-            color: rgba(255, 255, 255, 0.5);
-        }
-
-        /* No results state */
-        .no-results {
-            text-align: center;
-            padding: 60px 20px;
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        .no-results-icon {
-            font-size: 40px;
-            margin-bottom: 12px;
-            opacity: 0.5;
-        }
-
-        .no-results h3 {
-            font-size: 16px;
-            margin-bottom: 6px;
-            color: rgba(255, 255, 255, 0.7);
-            font-weight: 500;
-        }
-
-        .no-results p {
-            font-size: 13px;
             color: rgba(255, 255, 255, 0.5);
         }
 
@@ -404,12 +314,7 @@
         <h1 class="page-title">
             {{ category.display_title }}
         </h1>
-        <div class="header-actions">
-            <button class="header-icon" onclick="toggleFilter()">🔍</button>
-        </div>
     </div>
-
-    <!-- Search Bar -->
 
     <!-- Subcategories List -->
     <div class="subcategories-container" id="subcategoriesContainer">
@@ -448,12 +353,6 @@
         {% endif %}
     </div>
 
-    <!-- No Results Template (hidden by default) -->
-    <div class="no-results" id="noResults" style="display: none;">
-        <div class="no-results-icon">🔍</div>
-        <h3>{% trans "Hech narsa topilmadi" %}</h3>
-        <p>{% trans "Boshqa kalit so'z bilan qidiring" %}</p>
-    </div>
 {% endblock %}
 
 {% block extra_js %}
@@ -474,43 +373,6 @@
         function goBack() {
             window.history.back();
         }
-
-        // Filter toggle
-        function toggleFilter() {
-            const searchInput = document.getElementById('searchInput');
-            searchInput.focus();
-        }
-
-        // Search functionality
-        const searchInput = document.getElementById('searchInput');
-        const subcategoriesContainer = document.getElementById('subcategoriesContainer');
-        const noResults = document.getElementById('noResults');
-        const allItems = document.querySelectorAll('.subcategory-item');
-
-        searchInput.addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase().trim();
-            let visibleCount = 0;
-
-            allItems.forEach(item => {
-                const title = item.getAttribute('data-title');
-                
-                if (title.includes(searchTerm)) {
-                    item.style.display = 'flex';
-                    visibleCount++;
-                } else {
-                    item.style.display = 'none';
-                }
-            });
-
-            // Show/hide no results message
-            if (visibleCount === 0 && searchTerm !== '') {
-                subcategoriesContainer.style.display = 'none';
-                noResults.style.display = 'block';
-            } else {
-                subcategoriesContainer.style.display = 'block';
-                noResults.style.display = 'none';
-            }
-        });
 
         // Touch feedback
         document.querySelectorAll('.subcategory-item').forEach(item => {

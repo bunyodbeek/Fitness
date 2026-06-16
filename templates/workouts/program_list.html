@@ -207,42 +207,6 @@
             padding-top: 6px;
         }
 
-        .hero-progress-wrap {
-            flex: 1;
-            min-width: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .hero-progress-top {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 11px;
-            font-weight: 600;
-            color: rgba(255, 255, 255, 0.6);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .hero-progress-top .pct {
-            color: #ffd700;
-        }
-
-        .hero-progress-bar {
-            height: 6px;
-            border-radius: 999px;
-            background: rgba(255, 255, 255, 0.12);
-            overflow: hidden;
-        }
-
-        .hero-progress-fill {
-            height: 100%;
-            background: #ffd700;
-            border-radius: 999px;
-        }
-
         .hero-cta {
             flex-shrink: 0;
             display: inline-flex;
@@ -315,6 +279,12 @@
         }
 
         .explore-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .grid-group {
             display: flex;
             flex-direction: column;
             gap: 16px;
@@ -665,15 +635,7 @@
 
                         <div class="hero-bottom">
                             {% if prog.started %}
-                                <div class="hero-progress-wrap">
-                                    <div class="hero-progress-top">
-                                        <span>{% trans 'Progress' %}</span>
-                                        <span class="pct">{{ prog.percent }}%</span>
-                                    </div>
-                                    <div class="hero-progress-bar">
-                                        <div class="hero-progress-fill" style="width: {{ prog.percent }}%"></div>
-                                    </div>
-                                </div>
+                                <span></span>
                                 <span class="hero-cta">
                                     {% trans 'CONTINUE' %}
                                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -789,7 +751,7 @@
                                             <div class="grad"></div>
                                             {% if cat.popular_id and program.id == cat.popular_id %}
                                                 <span class="cat-popular">
-                                                    'top'
+                                                    top
                                                 </span>
                                             {% endif %}
                                         </div>
@@ -805,10 +767,17 @@
                     {% endfor %}
                 </div>
 
-                {# ----- GRID ("plitka") VIEW: full-width stacked cards ----- #}
+                {# ----- LIST VIEW: full-width stacked cards, grouped by category ----- #}
                 <div class="explore-grid">
-                    {% for program in explore_programs %}
-                        {% include 'workouts/_program_card.html' with card_url=program.detail_url card_image=program.image card_title=program.display_name card_description=program.display_description|truncatewords:18 weeks=program.plans.first.weeks_count days=program.plans.first.days_per_week show_plans=True plan_count=program.plans.count is_premium=program.is_premium user_is_premium=request.user.profile.is_premium show_foryou=program.is_recommended %}
+                    {% for cat in categories %}
+                        <section class="grid-group">
+                            <div class="cat-header">
+                                <span class="cat-title">{{ cat.label }}</span>
+                            </div>
+                            {% for program in cat.programs %}
+                                {% include 'workouts/_program_card.html' with card_url=program.detail_url card_image=program.image card_title=program.display_name card_description=program.display_description|truncatewords:18 weeks=program.plans.first.weeks_count days=program.plans.first.days_per_week show_plans=True plan_count=program.plans.count is_premium=program.is_premium user_is_premium=request.user.profile.is_premium show_foryou=program.is_recommended show_popular=program.is_popular %}
+                            {% endfor %}
+                        </section>
                     {% endfor %}
                 </div>
             </div>

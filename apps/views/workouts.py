@@ -186,6 +186,10 @@ def build_programs_page_context(request, workout_type):
 			continue
 		popular = max(programs, key=lambda p: p.view_count)
 		popular_id = popular.id if popular.view_count > 0 else None
+		# Grid ("list") rejimida ham "top" belgisini ko'rsatish uchun
+		# har bir programmaga is_popular biriktiramiz.
+		for p in programs:
+			p.is_popular = popular_id is not None and p.id == popular_id
 		categories.append({
 			"goal": goal_value,
 			"label": dict(Program.Goal.choices)[goal_value],

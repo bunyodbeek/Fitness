@@ -44,27 +44,6 @@ body {
 
 .header-spacer { width: 32px; }
 
-.search-container {
-    padding: 12px 16px 8px;
-    background: rgba(10,10,10,0.97);
-    position: sticky; top: 52px; z-index: 99;
-}
-
-.search-wrapper {
-    display: flex; align-items: center; gap: 10px;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 12px; padding: 10px 14px;
-}
-
-.search-icon { font-size: 16px; color: rgba(255,255,255,0.4); }
-
-.search-input {
-    flex: 1; background: none; border: none; outline: none;
-    color: #fff; font-size: 14px;
-}
-.search-input::placeholder { color: rgba(255,255,255,0.35); }
-
 .items-container {
     padding: 8px 16px 100px;
     max-width: 600px; margin: 0 auto;
@@ -118,14 +97,6 @@ body {
 .empty-state-icon { font-size: 48px; margin-bottom: 12px; }
 .empty-state h3 { font-size: 16px; font-weight: 700; color: #ffd700; margin-bottom: 6px; }
 .empty-state p { font-size: 13px; }
-
-.no-results {
-    text-align: center; padding: 40px 20px;
-    color: rgba(255,255,255,0.4);
-}
-.no-results-icon { font-size: 40px; margin-bottom: 10px; }
-.no-results h3 { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 4px; }
-.no-results p { font-size: 13px; }
 </style>
 {% endblock %}
 
@@ -143,14 +114,7 @@ body {
     <div class="header-spacer"></div>
 </div>
 
-<div class="search-container">
-    <div class="search-wrapper">
-        <span class="search-icon">🔍</span>
-        <input type="text" class="search-input" id="searchInput"
-               placeholder="{% trans 'Search' %}..."
-               autocomplete="off">
-    </div>
-</div>
+
 
 <div class="items-container" id="itemsContainer">
     {% if items %}
@@ -182,26 +146,5 @@ body {
         </div>
     {% endif %}
 </div>
-
-<div class="no-results" id="noResults" style="display:none;">
-    <div class="no-results-icon">🔍</div>
-    <h3>{% trans "Hech narsa topilmadi" %}</h3>
-    <p>{% trans "Boshqa kalit so'z bilan qidiring" %}</p>
-</div>
-
-<script>
-document.getElementById('searchInput').addEventListener('input', function() {
-    const q = this.value.toLowerCase().trim();
-    const cards = document.querySelectorAll('.item-card');
-    let visible = 0;
-    cards.forEach(card => {
-        const match = card.dataset.title.includes(q);
-        card.style.display = match ? 'flex' : 'none';
-        if (match) visible++;
-    });
-    document.getElementById('noResults').style.display = visible === 0 && q ? 'block' : 'none';
-    document.getElementById('itemsContainer').style.display = visible === 0 && q ? 'none' : 'block';
-});
-</script>
 
 {% endblock %}

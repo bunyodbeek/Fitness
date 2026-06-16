@@ -2003,6 +2003,7 @@ msgstr "Hech narsa topilmadi"
 
 #: templates/handbooks/category_items.html:733
 #: templates/handbooks/item_list.html:189
+
 #: templates/handbooks/subcategory_list.html:455
 msgid "Boshqa kalit so'z bilan qidiring"
 msgstr "Boshqa kalit so'z bilan qidiring"
@@ -3161,7 +3162,7 @@ msgstr "Plitka ko'rinishi"
 
 #: templates/workouts/program_list.html:794
 msgid "top"
-msgstr "Yuqori"
+msgstr "top"
 
 #: templates/workouts/program_list.html:826
 msgid "No programs yet"
