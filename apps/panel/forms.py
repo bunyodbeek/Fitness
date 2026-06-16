@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 from apps.models import Exercise, Plan, Program, User, UserProfile, Week, Workout, WorkoutExercise
 from apps.models.handbook import HandbookCategory, HandbookItem, HandbookSubCategory
 from apps.models.payments import Subscription, SubscriptionPlan
-from apps.models.workouts import WorkoutProgress
+from apps.models.workouts import HomeProgressionSetting, ProgressionSetting, WorkoutProgress
 
 
 class UserProfileForm(forms.ModelForm):
@@ -50,12 +50,16 @@ class ProgramForm(forms.ModelForm):
 
 
 class PlanForm(forms.ModelForm):
-    """Plan create/edit. Program is chosen here (Plans is its own section)."""
+    """Plan create/edit. Program is chosen here (Plans is its own section).
+
+    Progression rule is NOT selected here anymore — it is picked later in the
+    workout builder (per the program's mode: gym vs home).
+    """
     class Meta:
         model = Plan
         fields = [
             "program", "name", "name_uz", "name_ru", "description",
-            "order", "weeks_count", "is_premium", "is_4_week", "progression_config",
+            "order", "weeks_count", "is_premium", "is_4_week",
         ]
 
 
@@ -104,6 +108,34 @@ class ExerciseForm(forms.ModelForm):
             "description", "description_ru", "description_uz",
             "primary_body_part", "thumbnail", "video",
             "calory", "duration", "recommended_weight", "workout_type",
+        ]
+
+
+# ───────────────────────── Content: progression rules ─────────────────────────
+
+class ProgressionSettingForm(forms.ModelForm):
+    """Gym progression (sets / reps / weight growth per week). Also used by
+    custom programs (same rules as gym)."""
+    class Meta:
+        model = ProgressionSetting
+        fields = [
+            "key",
+            "w2_weight_mult", "w3_weight_mult", "w4_weight_mult", "w5_weight_mult", "w6_deload_mult",
+            "set_w2", "set_w3", "set_w4", "set_w5", "set_w6",
+            "rep_w2", "rep_w3", "rep_w4", "rep_w5", "rep_w6",
+            "small_threshold", "small_boost",
+        ]
+
+
+class HomeProgressionSettingForm(forms.ModelForm):
+    """Home progression (rounds / time / rest growth per week)."""
+    class Meta:
+        model = HomeProgressionSetting
+        fields = [
+            "key",
+            "round_w2", "round_w3", "round_w4",
+            "duration_w2", "duration_w3", "duration_w4",
+            "rest_between_rounds", "rest_w2", "rest_w3", "rest_w4",
         ]
 
 

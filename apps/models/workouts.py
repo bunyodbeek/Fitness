@@ -139,6 +139,15 @@ class Plan(CreatedBaseModel):
 		blank=True,
 		verbose_name="Progression Rules"
 	)
+	# Home plans use a separate progression model (rounds / time). Gym plans use
+	# `progression_config` above; custom programs reuse the gym rules.
+	home_progression_config = ForeignKey(
+		"apps.HomeProgressionSetting",
+		SET_NULL,
+		null=True,
+		blank=True,
+		verbose_name="Home Progression Rules"
+	)
 	
 	class Meta:
 		ordering = ["order", "id"]

@@ -143,7 +143,7 @@ def admin_panel(message):
 	keyboard = InlineKeyboardMarkup()
 	if int(message.from_user.id) == int(ADMIN_ID):
 		keyboard.add(
-			InlineKeyboardButton(text="Admin Panelga o'tish!", url=f"{WEBAPP_URL}/admin/"))
+			InlineKeyboardButton(text="Admin Panelga o'tish!", url=f"{WEBAPP_URL}/manage/"))
 		bot.send_message(chat_id=message.chat.id, text="Admin panelga xush kelibsiz!", reply_markup=keyboard)
 	else:
 		bot.send_message(chat_id=message.chat.id, text="⚠️ Bu bo'lim faqat adminlar uchun!")

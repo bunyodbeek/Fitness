@@ -3,6 +3,40 @@ from django.shortcuts import redirect
 from urllib.parse import urlparse
 
 
+class TelegramFrameMiddleware:
+    """
+    Telegram mini app sahifalari Telegram klientida (iframe/webview) ochilishi kerak.
+    Standart `X-Frame-Options: DENY` esa har qanday frame'ni bloklab, mini app
+    "ochilmaydi". Shu sababli mini app sahifalari uchun X-Frame-Options'ni olib
+    tashlab, faqat Telegram (va o'zimiz) frame qila olishiga CSP orqali ruxsat beramiz.
+    /admin esa himoyalangan (SAMEORIGIN) qoladi.
+    """
+
+    FRAME_ANCESTORS = (
+        "frame-ancestors 'self' https://web.telegram.org "
+        "https://*.telegram.org https://telegram.org tg:;"
+    )
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        response = self.get_response(request)
+
+        if request.path.startswith("/admin"):
+            response["X-Frame-Options"] = "SAMEORIGIN"
+        else:
+            # X-Frame-Options uchinchi tomon (Telegram) origin'iga ruxsat bera olmaydi,
+            # shuning uchun uni olib tashlab, CSP frame-ancestors ishlatamiz.
+            try:
+                del response["X-Frame-Options"]
+            except KeyError:
+                pass
+            response["Content-Security-Policy"] = self.FRAME_ANCESTORS
+
+        return response
+
+
 class TelegramLoginRedirectMiddleware:
     """
     If an anonymous browser user hits a LoginRequired view, Django returns a redirect

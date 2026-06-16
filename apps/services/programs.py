@@ -138,7 +138,8 @@ class ProgramGenerationService:
     @staticmethod
     def generate_home_progression_from_week_one(instance: WorkoutExercise):
         plan = instance.workout.week.plan
-        setting = HomeProgressionSetting.objects.first()
+        # Prefer the rule the admin picked for this plan; fall back to the first.
+        setting = plan.home_progression_config or HomeProgressionSetting.objects.first()
 
         if not setting:
             setting = HomeProgressionSetting.objects.create(key="default")

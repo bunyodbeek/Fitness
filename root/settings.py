@@ -62,8 +62,10 @@ MIDDLEWARE = [
 	'apps.middleware.TelegramLoginRedirectMiddleware',
 	
 	'django.contrib.messages.middleware.MessageMiddleware',
-	
-	'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+	# Telegram mini app frame'da (iframe/webview) ochilishi uchun X-Frame-Options'ni
+	# boshqaradi. Standart XFrameOptionsMiddleware o'rniga ishlatiladi.
+	'apps.middleware.TelegramFrameMiddleware',
 
 ]
 

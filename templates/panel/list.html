@@ -24,6 +24,14 @@
         </div>
     </div>
 
+    {% if tabs %}
+    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+        {% for tab in tabs %}
+        <a href="{{ tab.url }}" class="btn {% if tab.active %}btn-primary{% endif %}" style="padding:8px 16px;">{{ tab.label }}</a>
+        {% endfor %}
+    </div>
+    {% endif %}
+
     <div class="card" style="padding:0;overflow:hidden;">
         <table class="table">
             <thead>

@@ -11,6 +11,7 @@ from apps.panel.views import subscriptions as sub
 from apps.panel.views import tracking as tr
 from apps.panel.views import programs as pr
 from apps.panel.views import exercises as ex
+from apps.panel.views import progression as prog
 from apps.panel.views import handbook as hb
 from apps.panel.views import payments as pay
 from apps.panel.views import reports as rep
@@ -62,6 +63,7 @@ urlpatterns = [
     path("weeks/<int:pk>/delete/", pr.WeekDeleteView.as_view(), name="week_delete"),
     path("weeks/<int:week_pk>/workouts/add/", pr.WorkoutCreateView.as_view(), name="workout_add"),
     path("workouts/<int:pk>/", pr.WorkoutDetailView.as_view(), name="workout_detail"),
+    path("workouts/<int:pk>/builder/", pr.WorkoutBuilderView.as_view(), name="workout_builder"),
     path("workouts/<int:pk>/edit/", pr.WorkoutUpdateView.as_view(), name="workout_edit"),
     path("workouts/<int:pk>/delete/", pr.WorkoutDeleteView.as_view(), name="workout_delete"),
     path("workouts/<int:workout_pk>/exercises/add/", pr.WorkoutExerciseCreateView.as_view(), name="we_add"),
@@ -73,6 +75,16 @@ urlpatterns = [
     path("exercises/add/", ex.ExerciseCreateView.as_view(), name="exercise_add"),
     path("exercises/<int:pk>/edit/", ex.ExerciseUpdateView.as_view(), name="exercise_edit"),
     path("exercises/<int:pk>/delete/", ex.ExerciseDeleteView.as_view(), name="exercise_delete"),
+
+    # Progression rules (gym + home)
+    path("progression/", prog.ProgressionListView.as_view(), name="progression"),
+    path("progression/add/", prog.ProgressionCreateView.as_view(), name="progression_add"),
+    path("progression/<int:pk>/edit/", prog.ProgressionUpdateView.as_view(), name="progression_edit"),
+    path("progression/<int:pk>/delete/", prog.ProgressionDeleteView.as_view(), name="progression_delete"),
+    path("progression/home/", prog.HomeProgressionListView.as_view(), name="progression_home"),
+    path("progression/home/add/", prog.HomeProgressionCreateView.as_view(), name="progression_home_add"),
+    path("progression/home/<int:pk>/edit/", prog.HomeProgressionUpdateView.as_view(), name="progression_home_edit"),
+    path("progression/home/<int:pk>/delete/", prog.HomeProgressionDeleteView.as_view(), name="progression_home_delete"),
 
     # Handbook
     path("handbook/", hb.HandbookListView.as_view(), name="handbook"),

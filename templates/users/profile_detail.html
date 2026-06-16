@@ -197,6 +197,22 @@ body {
     .subscription-days { font-size: 26px; }
     .menu-text { font-size: 13px; }
 }
+
+/* ===== PC / desktop (sichqonchali qurilma): mini app PCda ochilsa —
+   tabiiy balandlik va kerak bo'lsa scroll. Mobilda esa scroll yo'q, o'zgarmaydi. ===== */
+@media (pointer: fine) {
+    body {
+        height: auto;
+        min-height: 100vh;
+        min-height: 100dvh;
+        overflow-y: auto;
+    }
+    .container {
+        height: auto;
+        min-height: calc(100dvh - 54px);
+        overflow: visible;
+    }
+}
 </style>
 {% endblock %}
 
