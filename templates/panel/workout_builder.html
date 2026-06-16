@@ -1,0 +1,297 @@
+{% extends 'panel/base.html' %}
+{% load i18n %}
+
+{% block content %}
+<style>
+    .wb-grid { display: grid; grid-template-columns: 1fr 320px; gap: 20px; align-items: start; }
+    @media (max-width: 900px) { .wb-grid { grid-template-columns: 1fr; } }
+
+    .wb-ex-card {
+        display: flex; align-items: center; gap: 12px;
+        background: var(--panel-2); border: 1px solid var(--border-strong);
+        border-radius: 12px; padding: 12px; margin-bottom: 10px;
+    }
+    .wb-thumb {
+        width: 46px; height: 46px; border-radius: 10px; background: #1a1a1a;
+        flex-shrink: 0; overflow: hidden; display: flex; align-items: center;
+        justify-content: center; color: var(--gold);
+    }
+    .wb-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .wb-ex-info { flex: 1; min-width: 0; }
+    .wb-ex-name { font-size: 13.5px; font-weight: 700; }
+    .wb-ex-meta { font-size: 11px; color: var(--dim); }
+    .wb-inputs { display: flex; gap: 8px; flex-shrink: 0; }
+    .wb-field { display: flex; flex-direction: column; gap: 3px; }
+    .wb-field label { font-size: 10px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.5px; }
+    .wb-field input {
+        width: 64px; padding: 7px 8px; border-radius: 8px; background: var(--bg);
+        border: 1px solid var(--border-strong); color: var(--text); font-size: 13px; text-align: center;
+    }
+    .wb-field input:focus { outline: none; border-color: var(--gold); }
+    .wb-remove {
+        background: none; border: none; color: var(--red); cursor: pointer;
+        padding: 6px; flex-shrink: 0; display: flex;
+    }
+    .wb-empty { text-align: center; color: var(--dim); padding: 36px 16px; }
+
+    /* picker modal */
+    .bx-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 500; display: none; }
+    .bx-modal.open { display: flex; align-items: center; justify-content: center; }
+    .bx-panel {
+        width: min(620px, 94vw); height: min(78vh, 720px); background: var(--panel);
+        border: 1px solid var(--border-strong); border-radius: 16px; display: flex;
+        flex-direction: column; overflow: hidden;
+    }
+    .bx-head { padding: 14px 16px; border-bottom: 1px solid var(--border); display: flex; gap: 10px; }
+    .bx-head select, .bx-head input {
+        padding: 9px 12px; border-radius: 10px; background: var(--panel-2);
+        border: 1px solid var(--border-strong); color: var(--text); font-size: 13px;
+    }
+    .bx-head input { flex: 1; }
+    .bx-head select:focus, .bx-head input:focus { outline: none; border-color: var(--gold); }
+    .bx-list { flex: 1; overflow-y: auto; padding: 10px 14px; }
+    .bx-item {
+        display: flex; align-items: center; gap: 12px; padding: 9px 11px; border-radius: 11px;
+        cursor: pointer; border: 1.5px solid transparent; margin-bottom: 6px;
+    }
+    .bx-item:hover { background: rgba(255,255,255,0.04); }
+    .bx-item.sel { background: rgba(255,215,0,0.08); border-color: rgba(255,215,0,0.4); }
+    .bx-item.added { opacity: 0.32; pointer-events: none; }
+    .bx-check {
+        width: 22px; height: 22px; border-radius: 6px; border: 1.5px solid var(--border-strong);
+        display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        color: transparent; font-size: 13px; font-weight: 900;
+    }
+    .bx-item.sel .bx-check { background: var(--gold); border-color: var(--gold); color: #000; }
+    .bx-foot { padding: 12px 16px; border-top: 1px solid var(--border); }
+</style>
+
+<div class="page-head">
+    <div>
+        <div class="muted" style="font-size:12px;margin-bottom:4px;">
+            {% for b in breadcrumbs %}{% if b.url %}<a href="{{ b.url }}" style="color:var(--gold);">{{ b.label }}</a>{% else %}{{ b.label }}{% endif %}{% if not forloop.last %} · {% endif %}{% endfor %}
+        </div>
+        <h2>{{ obj_title }}
+            <span class="badge {% if is_home %}badge-green{% else %}badge-premium{% endif %}" style="margin-left:8px;">
+                {% if is_home %}{% trans "HOME · rounds / time" %}{% else %}{% trans "GYM · sets / reps" %}{% endif %}
+            </span>
+        </h2>
+    </div>
+    <a href="{{ back_url }}" class="btn">{% trans "Back" %}</a>
+</div>
+
+{% if messages %}{% for m in messages %}<div class="card" style="margin-bottom:16px;border-color:rgba(52,211,153,0.3);color:var(--green);">{{ m }}</div>{% endfor %}{% endif %}
+
+<form method="post" id="builderForm">
+    {% csrf_token %}
+    <input type="hidden" name="exercises_json" id="exercisesJson">
+
+    <div class="wb-grid">
+        <!-- LEFT: added exercises -->
+        <div>
+            <div class="card">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+                    <b>{% trans "Exercises" %}</b>
+                    <button type="button" class="btn btn-primary" onclick="openPicker()" style="padding:8px 14px;">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        {% trans "Add exercise" %}
+                    </button>
+                </div>
+                <div id="addedList"></div>
+            </div>
+        </div>
+
+        <!-- RIGHT: day settings -->
+        <div class="card">
+            <b style="display:block;margin-bottom:14px;">{% trans "Day settings" %}</b>
+
+            <div class="form-row">
+                <label>{% trans "Progression rule" %}</label>
+                <select name="progression_id">
+                    <option value="">{% trans "— none —" %}</option>
+                    {% for p in progressions %}
+                    <option value="{{ p.pk }}" {% if p.pk == current_progression_id %}selected{% endif %}>{{ p.key }}</option>
+                    {% endfor %}
+                </select>
+                <div class="muted" style="font-size:11px;margin-top:5px;">
+                    {% if is_home %}{% trans "Home rule (rounds / time growth)." %}{% else %}{% trans "Gym rule (sets / reps / weight growth)." %}{% endif %}
+                    <a href="{% if is_home %}{% url 'panel:progression_home' %}{% else %}{% url 'panel:progression' %}{% endif %}" style="color:var(--gold);">{% trans "manage" %}</a>
+                </div>
+            </div>
+
+            {% if is_home %}
+            <div class="form-row">
+                <label>{% trans "Rounds (this day)" %}</label>
+                <input type="number" name="rounds" min="1" value="{{ workout.rounds|default:1 }}">
+            </div>
+            {% endif %}
+
+            <div class="form-row" style="display:flex;align-items:center;gap:8px;">
+                <input type="checkbox" name="apply_to_all_weeks" id="applyAll" {% if workout.apply_to_all_weeks %}checked{% endif %} style="width:auto;">
+                <label for="applyAll" style="margin:0;">{% trans "Apply to all weeks (auto-generate 2..N)" %}</label>
+            </div>
+            {% if week.week_number != 1 %}
+            <div class="muted" style="font-size:11px;">{% trans "Note: weeks 2..N are auto-generated from week 1. Editing here is manual." %}</div>
+            {% endif %}
+
+            <button type="submit" class="btn btn-primary" style="width:100%;margin-top:8px;">{% trans "Save day" %}</button>
+        </div>
+    </div>
+</form>
+
+<!-- PICKER MODAL -->
+<div class="bx-modal" id="bxModal">
+    <div class="bx-panel">
+        <div class="bx-head">
+            <select id="bxMuscle" onchange="filterPicker()">
+                <option value="">{% trans "All body parts" %}</option>
+                {% for val, label in body_parts %}<option value="{{ val }}">{{ label }}</option>{% endfor %}
+            </select>
+            <input type="text" id="bxSearch" placeholder="{% trans 'Search by name...' %}" oninput="filterPicker()">
+            <button type="button" class="btn" onclick="closePicker()" style="padding:8px 12px;">✕</button>
+        </div>
+        <div class="bx-list" id="bxList">
+            {% for ex in exercises %}
+            <div class="bx-item" data-id="{{ ex.id }}"
+                 data-name="{{ ex.name|lower }}"
+                 data-muscle="{{ ex.primary_body_part }}"
+                 onclick="toggleSelect({{ ex.id }})">
+                <div class="wb-thumb">
+                    {% if ex.thumbnail %}<img src="{{ ex.thumbnail.url }}" alt="">{% else %}<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5h11v11h-11z"/><path d="M2 9v6M22 9v6M6.5 12H2M22 12h-4.5"/></svg>{% endif %}
+                </div>
+                <div class="wb-ex-info">
+                    <div class="wb-ex-name">{{ ex.name }}</div>
+                    <div class="wb-ex-meta">{{ ex.get_primary_body_part_display }}</div>
+                </div>
+                <div class="bx-check">✓</div>
+            </div>
+            {% empty %}
+            <div class="wb-empty">{% trans "No exercises for this mode yet. Add some in the Exercises section." %}</div>
+            {% endfor %}
+        </div>
+        <div class="bx-foot">
+            <button type="button" class="btn btn-primary" id="bxDone" onclick="confirmPicker()" style="width:100%;" disabled>{% trans "Add selected" %}</button>
+        </div>
+    </div>
+</div>
+
+{{ added_json|json_script:"addedData" }}
+<script>
+    const IS_HOME = {{ is_home|yesno:"true,false" }};
+    let ADDED = JSON.parse(document.getElementById('addedData').textContent || '[]');
+    // normalize id key
+    ADDED = ADDED.map(x => ({
+        id: x.exercise_id, name: x.name, muscle: x.muscle, thumb: x.thumb || '',
+        sets: x.sets || 0, reps: x.reps || 0, weight: x.weight || 0, minutes: x.minutes || 0,
+    }));
+    const pickerSelected = new Set();
+
+    const PLACEHOLDER_SVG = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5h11v11h-11z"/><path d="M2 9v6M22 9v6M6.5 12H2M22 12h-4.5"/></svg>';
+
+    function esc(s) { return (s || '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+    function fieldsFor(ex) {
+        if (IS_HOME) {
+            return `<div class="wb-field"><label>{% trans "Time (min)" %}</label><input type="number" min="0" data-k="minutes" value="${ex.minutes}"></div>`;
+        }
+        return `
+            <div class="wb-field"><label>{% trans "Sets" %}</label><input type="number" min="0" data-k="sets" value="${ex.sets}"></div>
+            <div class="wb-field"><label>{% trans "Reps" %}</label><input type="number" min="0" data-k="reps" value="${ex.reps}"></div>
+            <div class="wb-field"><label>{% trans "Weight" %}</label><input type="number" min="0" step="0.5" data-k="weight" value="${ex.weight}"></div>`;
+    }
+
+    function renderAdded() {
+        const wrap = document.getElementById('addedList');
+        if (!ADDED.length) {
+            wrap.innerHTML = `<div class="wb-empty">{% trans "No exercises yet. Tap “Add exercise”." %}</div>`;
+            return;
+        }
+        wrap.innerHTML = ADDED.map(ex => `
+            <div class="wb-ex-card" data-id="${ex.id}">
+                <div class="wb-thumb">${ex.thumb ? `<img src="${ex.thumb}" alt="">` : PLACEHOLDER_SVG}</div>
+                <div class="wb-ex-info">
+                    <div class="wb-ex-name">${esc(ex.name)}</div>
+                    <div class="wb-ex-meta">${esc(ex.muscle)}</div>
+                </div>
+                <div class="wb-inputs">${fieldsFor(ex)}</div>
+                <button type="button" class="wb-remove" onclick="removeAdded(${ex.id})" title="{% trans 'Remove' %}">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
+                </button>
+            </div>`).join('');
+    }
+
+    function removeAdded(id) { ADDED = ADDED.filter(x => x.id !== id); renderAdded(); }
+
+    function openPicker() {
+        pickerSelected.clear();
+        const addedIds = new Set(ADDED.map(x => x.id));
+        document.querySelectorAll('#bxList .bx-item').forEach(it => {
+            const id = parseInt(it.dataset.id, 10);
+            it.classList.toggle('added', addedIds.has(id));
+            it.classList.remove('sel');
+        });
+        document.getElementById('bxSearch').value = '';
+        document.getElementById('bxMuscle').value = '';
+        filterPicker();
+        updateDone();
+        document.getElementById('bxModal').classList.add('open');
+    }
+    function closePicker() { document.getElementById('bxModal').classList.remove('open'); }
+
+    function filterPicker() {
+        const m = document.getElementById('bxMuscle').value;
+        const q = document.getElementById('bxSearch').value.toLowerCase().trim();
+        document.querySelectorAll('#bxList .bx-item').forEach(it => {
+            const okM = !m || it.dataset.muscle === m;
+            const okQ = !q || it.dataset.name.includes(q);
+            it.style.display = (okM && okQ) ? 'flex' : 'none';
+        });
+    }
+
+    function toggleSelect(id) {
+        if (pickerSelected.has(id)) pickerSelected.delete(id); else pickerSelected.add(id);
+        const it = document.querySelector(`#bxList .bx-item[data-id="${id}"]`);
+        if (it) it.classList.toggle('sel', pickerSelected.has(id));
+        updateDone();
+    }
+    function updateDone() {
+        const btn = document.getElementById('bxDone');
+        btn.disabled = pickerSelected.size === 0;
+        btn.textContent = pickerSelected.size ? `{% trans "Add selected" %} (${pickerSelected.size})` : `{% trans "Add selected" %}`;
+    }
+
+    function confirmPicker() {
+        pickerSelected.forEach(id => {
+            if (ADDED.some(x => x.id === id)) return;
+            const it = document.querySelector(`#bxList .bx-item[data-id="${id}"]`);
+            const img = it.querySelector('img');
+            ADDED.push({
+                id: id,
+                name: it.querySelector('.wb-ex-name').textContent,
+                muscle: it.querySelector('.wb-ex-meta').textContent,
+                thumb: img ? img.src : '',
+                sets: 0, reps: 0, weight: 0, minutes: 0,
+            });
+        });
+        closePicker();
+        renderAdded();
+    }
+
+    document.getElementById('builderForm').addEventListener('submit', function () {
+        // sync card input values into ADDED before serializing
+        document.querySelectorAll('#addedList .wb-ex-card').forEach(card => {
+            const id = parseInt(card.dataset.id, 10);
+            const ex = ADDED.find(x => x.id === id);
+            if (!ex) return;
+            card.querySelectorAll('input[data-k]').forEach(inp => {
+                ex[inp.dataset.k] = parseFloat(inp.value) || 0;
+            });
+        });
+        document.getElementById('exercisesJson').value = JSON.stringify(
+            ADDED.map(x => ({ exercise_id: x.id, sets: x.sets, reps: x.reps, weight: x.weight, minutes: x.minutes }))
+        );
+    });
+
+    renderAdded();
+</script>
+{% endblock %}
