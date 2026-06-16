@@ -26,7 +26,10 @@
         progress: 'PROGRESS',
         noDesc:   'No description available.',
     }, CFG.translations || {});
-    
+
+    // Bajarilgan set uchun tasdiq (tick) belgisi
+    const CHECK_SVG = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
+
     try {
         const p = window.location.pathname;
         if (/\/favorites\/programs\/\d+\/start\/?$/.test(p)) {
@@ -283,13 +286,13 @@ const toggleFullscreen = (e) => {
             const w    = getW(currentExIdx, i);
             const wStr = w%1===0 ? String(w) : w.toFixed(1);
             const rStr = ex.reps_max && ex.reps_max!==ex.reps
-                ? `${ex.reps}?${ex.reps_max}` : String(ex.reps);
+                ? `${ex.reps}-${ex.reps_max}` : String(ex.reps);
     
             const lr = document.createElement('div');
             lr.className='set-label-row';
             lr.innerHTML=`
                 <span class="set-label-text">${T.setOf} ${i+1} ${T.of} ${ex.sets}</span>
-                <span class="set-label-done${done?' show':''}" id="dl_${currentExIdx}_${i}">? ${T.complete}</span>
+                <span class="set-label-done${done?' show':''}" id="dl_${currentExIdx}_${i}"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><path d="M20 6L9 17l-5-5"/></svg> ${T.complete}</span>
             `;
             wr.appendChild(lr);
     
@@ -344,7 +347,7 @@ const toggleFullscreen = (e) => {
             const diCell=document.createElement('div');
             diCell.className='did-it-cell';
             diCell.id=`di_${currentExIdx}_${i}`;
-            diCell.textContent=done?'?':T.didIt;
+            if(done){ diCell.innerHTML=CHECK_SVG; } else { diCell.textContent=T.didIt; }
             if(!done) {
                 diCell.addEventListener('click', ()=>didItSet(i));
             }
@@ -405,7 +408,7 @@ const toggleFullscreen = (e) => {
                     setTimeout(() => card.classList.remove('pulse'), 700);
                 }
                 if (dl) dl.classList.add('show');
-                if (diEl) { diEl.textContent = '?'; diEl.style.pointerEvents = 'none'; }
+                if (diEl) { diEl.innerHTML = CHECK_SVG; diEl.style.pointerEvents = 'none'; }
                 if (inp && inp.tagName === 'INPUT') {
                     const val = getW(ei, i);
                     const sp = document.createElement('span');

@@ -204,7 +204,7 @@ body { background: #000000; font-family: -apple-system, BlinkMacSystemFont, 'Seg
 .add-exercises-btn .cp-icon { width: 42px; height: 42px; border-radius: 50%; background: rgba(255,215,0,0.12); border: 1px solid rgba(255,215,0,0.3); display: flex; align-items: center; justify-content: center; color: var(--gold); flex-shrink: 0; }
 .add-exercises-btn .cp-icon svg { flex-shrink: 0; }
 .add-exercises-btn .cp-text { flex: 1; min-width: 0; text-align: left; }
-.add-exercises-btn .cp-title { font-size: 14px; font-weight: 700; color: var(--gold); margin-bottom: 2px; }
+.add-exercises-btn .cp-title { font-size: 14px; font-weight: 700; color: var(--gold); margin-bottom: 2px; text-transform: uppercase }
 .add-exercises-btn .cp-sub { font-size: 11px; color: rgba(255,255,255,0.5); font-weight: 400; }
 .add-exercises-btn .cp-arrow { color: rgba(255,215,0,0.6); flex-shrink: 0; display: flex; }
 
@@ -279,7 +279,7 @@ body { background: #000000; font-family: -apple-system, BlinkMacSystemFont, 'Seg
 .import-program-btn .cp-icon { width: 42px; height: 42px; border-radius: 50%; background: rgba(255,215,0,0.08); border: 1px solid rgba(255,215,0,0.2); display: flex; align-items: center; justify-content: center; color: var(--gold); flex-shrink: 0; }
 .import-program-btn .cp-icon svg { flex-shrink: 0; }
 .import-program-btn .cp-text { flex: 1; min-width: 0; text-align: left; }
-.import-program-btn .cp-title { font-size: 14px; font-weight: 700; color: var(--gold); margin-bottom: 2px; }
+.import-program-btn .cp-title { font-size: 14px; font-weight: 700; color: var(--gold); margin-bottom: 2px; text-transform: uppercase; }
 .import-program-btn .cp-sub { font-size: 11px; color: rgba(255,255,255,0.5); font-weight: 400; text-transform: uppercase; }
 .import-program-btn .cp-arrow { color: rgba(255,215,0,0.6); flex-shrink: 0; display: flex; }
 
@@ -377,7 +377,6 @@ body { background: #000000; font-family: -apple-system, BlinkMacSystemFont, 'Seg
 <div class="page-header">
     <h1 class="page-title">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" stroke="none">
-            <path d="M12 2l2.9 6.3 6.9.7-5.1 4.6 1.4 6.8L12 17.8 5.9 20.4l1.4-6.8L2.2 9l6.9-.7L12 2z"/>
         </svg>
         {% trans "MY FAVORITES" %}
     </h1>
@@ -499,7 +498,6 @@ body { background: #000000; font-family: -apple-system, BlinkMacSystemFont, 'Seg
             </span>
             <span class="cp-text">
                 <span class="cp-title">{% trans "Add Exercises" %}</span>
-                <span class="cp-sub">{% trans "Pick from the exercise library" %}</span>
             </span>
             <span class="cp-arrow">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>

@@ -3053,7 +3053,7 @@ msgstr ""
 
 #: templates/workouts/program_list.html:794
 msgid "top"
-msgstr ""
+msgstr "top"
 
 #: templates/workouts/program_list.html:826
 msgid "No programs yet"
