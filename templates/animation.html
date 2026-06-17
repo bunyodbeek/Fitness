@@ -27,11 +27,12 @@
 <script>
   var _defaultUrl = "{% url 'program_list' %}";
 
+  var tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
+  if (tg) { try { tg.expand(); } catch (e) {} }
+
   (function() {
     try {
-      var startParam = window.Telegram && window.Telegram.WebApp
-        ? (window.Telegram.WebApp.initDataUnsafe || {}).start_param || ''
-        : '';
+      var startParam = tg ? (tg.initDataUnsafe || {}).start_param || '' : '';
       if (startParam.indexOf('import_') === 0) {
         var token = startParam.slice(7).toUpperCase();
         var lang = window.location.pathname.match(/^\/(en|ru|uz)\//)?.[1] || 'uz';
@@ -40,9 +41,41 @@
     } catch(e) {}
   })();
 
-  document.getElementById('introVideo').addEventListener('ended', function() {
-    window.location.href = _defaultUrl;
-  });
+  function getCookie(name) {
+    var value = '; ' + document.cookie;
+    var parts = value.split('; ' + name + '=');
+    if (parts.length === 2) return parts.pop().split(';').shift();
+    return null;
+  }
+
+  // Kirish nuqtasida foydalanuvchini login qilamiz, shunda sessiya o'rnatiladi va
+  // himoyalangan sahifalar (profil, premium, favorites) birinchi bosishdayoq ochiladi.
+  // Anonim POST'da DRF CSRF talab qilmaydi, lekin token bo'lsa ham yuboramiz.
+  var authPromise = (function() {
+    var telegramId = tg && tg.initDataUnsafe && tg.initDataUnsafe.user
+      ? tg.initDataUnsafe.user.id : null;
+    if (!telegramId) return Promise.resolve();
+    var csrf = getCookie('csrftoken');
+    return fetch("{% url 'telegram_auth' %}", {
+      method: 'POST',
+      headers: Object.assign({'Content-Type': 'application/json'},
+        csrf ? {'X-CSRFToken': csrf} : {}),
+      credentials: 'include',
+      body: JSON.stringify({ telegram_id: telegramId })
+    }).catch(function(e) { console.error('Auth error:', e); });
+  })();
+
+  // Sessiya o'rnatilmaguncha redirect qilmaymiz (video tugashi bilan auth tugashini
+  // ikkalasini ham kutamiz). Video umuman o'ynamasa, 6s dan keyin baribir o'tamiz.
+  var redirected = false;
+  function go() {
+    if (redirected) return;
+    redirected = true;
+    authPromise.then(function() { window.location.href = _defaultUrl; });
+  }
+
+  document.getElementById('introVideo').addEventListener('ended', go);
+  setTimeout(go, 6000);
 </script>
 
 </body>
