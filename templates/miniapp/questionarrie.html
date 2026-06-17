@@ -259,7 +259,23 @@
     </div>
 </div>
 
+{% trans "Please enter a valid weight (30 - 300 kg)." as t_weight %}
+{% trans "Error: Telegram ID not found. Please restart the bot." as t_no_id %}
+{% trans "Submitting..." as t_submitting %}
+{% trans "Unknown error from server" as t_unknown %}
+{% trans "Error:" as t_error %}
+{% trans "Network error. Please try again." as t_network %}
 <script>
+    // ---------------- Translations (apostrof-safe) ----------------
+    const T = {
+        weight:     "{{ t_weight|escapejs }}",
+        noId:       "{{ t_no_id|escapejs }}",
+        submitting: "{{ t_submitting|escapejs }}",
+        unknown:    "{{ t_unknown|escapejs }}",
+        error:      "{{ t_error|escapejs }}",
+        network:    "{{ t_network|escapejs }}",
+    };
+
     // ---------------- CSRF helper (Django) ----------------
     function getCookie(name) {
         const value = `; ${document.cookie}`;
@@ -398,8 +414,8 @@
         document.getElementById('weightNext').addEventListener('click', () => {
             const w = Number(weightInput.value || 0);
             if (!w || w < 30 || w > 300) {
-                if (tg && tg.showAlert) tg.showAlert('{% trans "Please enter a valid weight (30 - 300 kg)." %}');
-                else alert('{% trans "Please enter a valid weight (30 - 300 kg)." %}');
+                if (tg && tg.showAlert) tg.showAlert(T.weight);
+                else alert(T.weight);
                 return;
             }
             formData.weight = w;
@@ -410,14 +426,14 @@
     // -------- Submit --------
     async function submitQuestionnaire() {
         if (!formData.telegram_id) {
-            if (tg && tg.showAlert) tg.showAlert('{% trans "Error: Telegram ID not found. Please restart the bot." %}');
-            else alert('{% trans "Error: Telegram ID not found. Please restart the bot." %}');
+            if (tg && tg.showAlert) tg.showAlert(T.noId);
+            else alert(T.noId);
             return;
         }
 
         try {
             if (tg && tg.MainButton) {
-                tg.MainButton.setText('{% trans "Submitting..." %}');
+                tg.MainButton.setText(T.submitting);
                 try { tg.MainButton.showProgress(); } catch (e) {}
                 try { tg.MainButton.show(); } catch (e) {}
             }
@@ -445,14 +461,14 @@
                 return;
             }
 
-            const errMsg = data && (data.error || data.detail) ? (data.error || data.detail) : '{% trans "Unknown error from server" %}';
-            if (tg && tg.showAlert) tg.showAlert('{% trans "Error:" %} ' + errMsg);
-            else alert('{% trans "Error:" %} ' + errMsg);
+            const errMsg = data && (data.error || data.detail) ? (data.error || data.detail) : T.unknown;
+            if (tg && tg.showAlert) tg.showAlert(T.error + ' ' + errMsg);
+            else alert(T.error + ' ' + errMsg);
 
         } catch (err) {
             try { if (tg && tg.MainButton && tg.MainButton.hideProgress) tg.MainButton.hideProgress(); } catch(e){}
-            if (tg && tg.showAlert) tg.showAlert('{% trans "Network error. Please try again." %}');
-            else alert('{% trans "Network error. Please try again." %}');
+            if (tg && tg.showAlert) tg.showAlert(T.network);
+            else alert(T.network);
             console.error('Network error submitting questionnaire:', err);
         }
     }
