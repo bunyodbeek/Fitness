@@ -3201,6 +3201,42 @@ msgstr "Bu kunda mashqlar mavjud emas."
 msgid "Start Workout"
 msgstr "Mashg'ulotni boshlash"
 
+#: apps/views/payments.py
+msgid "Individual workout programs for home and gym"
+msgstr "Uy va sport zali uchun individual mashg‘ulot dasturlari"
+
+#: apps/views/payments.py
+msgid "Full access to all 10 plans inside each program"
+msgstr "Har bir dastur ichidagi barcha 10 ta rejaga to‘liq kirish"
+
+#: apps/views/payments.py
+msgid "Complete 6-week system in every gym plan"
+msgstr "Har bir sport zali rejasida to‘liq 6 haftalik tizim"
+
+#: apps/views/payments.py
+msgid "Complete 4-week system in every home workout plan"
+msgstr "Har bir uy mashg‘ulot rejasida to‘liq 4 haftalik tizim"
+
+#: apps/views/payments.py
+msgid "Free access to marathons and challenges"
+msgstr "Marafon va challenge’larga bepul kirish"
+
+#: apps/views/payments.py
+msgid "Create your own program in the Favorites section"
+msgstr "Sevimlilar bo‘limida o‘z dasturingizni yaratish imkoniyati"
+
+#: apps/views/payments.py
+msgid "Workout statistics and history"
+msgstr "Mashg‘ulot statistikasi va tarixi"
+
+#: templates/payment/premium.html
+msgid "Go Premium"
+msgstr "Premium'ga o'tish"
+
+#: templates/payment/premium.html
+msgid "Later"
+msgstr "Keyinroq"
+
 #~ msgid "Program created. Now add a plan."
 #~ msgstr "Dastur yaratildi. Endi plan qo'shing."
 

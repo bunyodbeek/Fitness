@@ -3215,6 +3215,42 @@ msgstr "На этот день нет упражнений."
 msgid "Start Workout"
 msgstr "Начать тренировку"
 
+#: apps/views/payments.py
+msgid "Individual workout programs for home and gym"
+msgstr "Индивидуальные программы тренировок для дома и зала"
+
+#: apps/views/payments.py
+msgid "Full access to all 10 plans inside each program"
+msgstr "Полный доступ ко всем 10 планам в каждой программе"
+
+#: apps/views/payments.py
+msgid "Complete 6-week system in every gym plan"
+msgstr "Полная 6-недельная система в каждом плане для зала"
+
+#: apps/views/payments.py
+msgid "Complete 4-week system in every home workout plan"
+msgstr "Полная 4-недельная система в каждом домашнем плане"
+
+#: apps/views/payments.py
+msgid "Free access to marathons and challenges"
+msgstr "Бесплатный доступ к марафонам и челленджам"
+
+#: apps/views/payments.py
+msgid "Create your own program in the Favorites section"
+msgstr "Возможность создать свою программу в разделе «Избранное»"
+
+#: apps/views/payments.py
+msgid "Workout statistics and history"
+msgstr "Статистика и история тренировок"
+
+#: templates/payment/premium.html
+msgid "Go Premium"
+msgstr "Перейти на Премиум"
+
+#: templates/payment/premium.html
+msgid "Later"
+msgstr "Позже"
+
 #~ msgid "Program created. Now add a plan."
 #~ msgstr "Программа создана. Теперь добавьте план."
 

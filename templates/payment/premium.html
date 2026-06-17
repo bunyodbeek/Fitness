@@ -1,10 +1,11 @@
-{% load static %}
+{% load static i18n %}
+{% get_current_language as LANGUAGE_CODE %}
 <!DOCTYPE html>
-<html lang="uz">
+<html lang="{{ LANGUAGE_CODE }}">
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-	<title>Premium</title>
+	<title>{% trans "Premium" %}</title>
 	<script src="https://telegram.org/js/telegram-web-app.js"></script>
 	<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 	<style>
@@ -182,7 +183,7 @@
 </head>
 <body>
 	<!-- CLOSE (X) -->
-	<button class="close-btn" onclick="goBack()" aria-label="Yopish">
+	<button class="close-btn" onclick="goBack()" aria-label="{% trans 'Close' %}">
 		<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
 	</button>
 
@@ -205,8 +206,8 @@
 	</div>
 
 	<div class="footer">
-		<a href="{% url 'tariff_select' %}" class="btn-primary">Premium'ga o'tish</a>
-		<button class="btn-ghost" onclick="goBack()">Keyinroq</button>
+		<a href="{% url 'tariff_select' %}" class="btn-primary">{% trans "Go Premium" %}</a>
+		<button class="btn-ghost" onclick="goBack()">{% trans "Later" %}</button>
 	</div>
 
 	<script>

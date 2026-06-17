@@ -3103,6 +3103,42 @@ msgstr ""
 msgid "Start Workout"
 msgstr "Start Workout"
 
+#: apps/views/payments.py
+msgid "Individual workout programs for home and gym"
+msgstr "Individual workout programs for home and gym"
+
+#: apps/views/payments.py
+msgid "Full access to all 10 plans inside each program"
+msgstr "Full access to all 10 plans inside each program"
+
+#: apps/views/payments.py
+msgid "Complete 6-week system in every gym plan"
+msgstr "Complete 6-week system in every gym plan"
+
+#: apps/views/payments.py
+msgid "Complete 4-week system in every home workout plan"
+msgstr "Complete 4-week system in every home workout plan"
+
+#: apps/views/payments.py
+msgid "Free access to marathons and challenges"
+msgstr "Free access to marathons and challenges"
+
+#: apps/views/payments.py
+msgid "Create your own program in the Favorites section"
+msgstr "Create your own program in the Favorites section"
+
+#: apps/views/payments.py
+msgid "Workout statistics and history"
+msgstr "Workout statistics and history"
+
+#: templates/payment/premium.html
+msgid "Go Premium"
+msgstr "Go Premium"
+
+#: templates/payment/premium.html
+msgid "Later"
+msgstr "Later"
+
 #~ msgid "TIL SOZLAMALARI"
 #~ msgstr "Language Settings"
 

@@ -1,19 +1,21 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
+from django.utils.translation import gettext_lazy as _
 from django.views.generic import TemplateView, View
 
 from apps.models.payments import SubscriptionPlan, Payment
 
 
+# gettext_lazy — har bir so'rovda aktiv tilga qarab tarjima qilinadi (uz/ru/en).
 PREMIUM_BENEFITS = [
-	"Uy va sport zali uchun individual mashg‘ulot dasturlari",
-	"Har bir dastur ichidagi barcha 10 ta rejaga to‘liq kirish",
-	"Har bir sport zali rejasida to‘liq 6 haftalik tizim",
-	"Har bir uy mashg‘ulot rejasida to‘liq 4 haftalik tizim",
-	"Marafon va challenge’larga bepul kirish",
-	"Sevimlilar bo‘limida o‘z dasturingizni yaratish imkoniyati",
-	"Mashg‘ulot statistikasi va tarixi",
+	_("Individual workout programs for home and gym"),
+	_("Full access to all 10 plans inside each program"),
+	_("Complete 6-week system in every gym plan"),
+	_("Complete 4-week system in every home workout plan"),
+	_("Free access to marathons and challenges"),
+	_("Create your own program in the Favorites section"),
+	_("Workout statistics and history"),
 ]
 
 
