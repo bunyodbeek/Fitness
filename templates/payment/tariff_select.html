@@ -1,10 +1,11 @@
-{% load static %}
+{% load static i18n %}
+{% get_current_language as LANGUAGE_CODE %}
 <!DOCTYPE html>
-<html lang="uz">
+<html lang="{{ LANGUAGE_CODE }}">
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-	<title>Tarifni tanlang</title>
+	<title>{% trans "Choose a tariff" %}</title>
 	<script src="https://telegram.org/js/telegram-web-app.js"></script>
 	<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 	<style>
@@ -239,8 +240,8 @@
 			<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
 		</button>
 		<div class="header-title-wrap">
-			<div class="page-title">Tarifni tanlang</div>
-			<div class="page-subtitle">Siz uchun eng mos tarifni tanlang</div>
+			<div class="page-title">{% trans "Choose a tariff" %}</div>
+			<div class="page-subtitle">{% trans "Choose the plan that suits you best" %}</div>
 		</div>
 		<div class="header-spacer"></div>
 	</div>
@@ -259,19 +260,19 @@
 		     data-disc-uzs="{{ plan.discount_uzs }}"
 		     data-disc-usd="{{ plan.discount_usd }}"
 		     onclick="selectPlan(this)">
-			{% if plan.is_popular %}<div class="badge-popular">ENG POPULAR</div>{% endif %}
+			{% if plan.is_popular %}<div class="badge-popular">{% trans "MOST POPULAR" %}</div>{% endif %}
 			<div class="radio"></div>
 			<div class="plan-info">
-				<div class="plan-name">{{ plan.months }} OY</div>
+				<div class="plan-name">{{ plan.months }} {% trans "MONTHS" %}</div>
 				<div class="plan-price">
 					<b class="amount-uzs">{{ plan.price_uzs|floatformat:0 }} UZS</b>
 					<b class="amount-usd" style="display:none">${{ plan.price_usd|floatformat:2 }}</b>
-					<span class="per"> / {% if plan.months == 1 %}oy{% else %}{{ plan.months }} oy{% endif %}</span>
+					<span class="per"> / {% if plan.months == 1 %}{% trans "mo" %}{% else %}{{ plan.months }} {% trans "mo" %}{% endif %}</span>
 				</div>
 			</div>
 			<div class="discount" {% if not plan.discount_uzs %}style="display:none"{% endif %}>
 				<div class="pct disc-val">{{ plan.discount_uzs }}%</div>
-				<div class="lbl">tejang</div>
+				<div class="lbl">{% trans "save" %}</div>
 			</div>
 		</div>
 		{% endfor %}
@@ -280,16 +281,16 @@
 	<div class="meta-row">
 		<span>
 			<svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0z"/><polyline points="12 7 12 12 15 14"/></svg>
-			Istalgan vaqtda bekor qilish mumkin
+			{% trans "Cancel anytime" %}
 		</span>
 		<span>
 			<svg viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z"/></svg>
-			Xavfsiz to'lov
+			{% trans "Secure payment" %}
 		</span>
 	</div>
 
 	<div class="footer">
-		<button class="btn-primary" id="continueBtn" onclick="continueToPayment()" disabled>Davom etish</button>
+		<button class="btn-primary" id="continueBtn" onclick="continueToPayment()" disabled>{% trans "Continue" %}</button>
 	</div>
 
 	<script>

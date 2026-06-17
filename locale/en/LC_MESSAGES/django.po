@@ -3139,6 +3139,82 @@ msgstr "Go Premium"
 msgid "Later"
 msgstr "Later"
 
+#: templates/payment/tariff_select.html
+msgid "Choose a tariff"
+msgstr "Choose a tariff"
+
+#: templates/payment/tariff_select.html
+msgid "Choose the plan that suits you best"
+msgstr "Choose the plan that suits you best"
+
+#: templates/payment/tariff_select.html
+msgid "MOST POPULAR"
+msgstr "MOST POPULAR"
+
+#: templates/payment/tariff_select.html templates/payment/payment_method.html
+msgid "MONTHS"
+msgstr "MONTHS"
+
+#: templates/payment/tariff_select.html
+msgid "mo"
+msgstr "mo"
+
+#: templates/payment/tariff_select.html
+msgid "save"
+msgstr "save"
+
+#: templates/payment/tariff_select.html
+msgid "Cancel anytime"
+msgstr "Cancel anytime"
+
+#: templates/payment/tariff_select.html
+msgid "Secure payment"
+msgstr "Secure payment"
+
+#: templates/payment/payment_method.html
+msgid "Payment method"
+msgstr "Payment method"
+
+#: templates/payment/payment_method.html
+msgid "Pay in a convenient way"
+msgstr "Pay in a convenient way"
+
+#: templates/payment/payment_method.html
+msgid "Selected plan"
+msgstr "Selected plan"
+
+#: templates/payment/payment_method.html
+msgid "Via card"
+msgstr "Via card"
+
+#: templates/payment/payment_method.html
+msgid "Pay by card"
+msgstr "Pay by card"
+
+#: templates/payment/payment_method.html
+msgid "Your payment details are protected"
+msgstr "Your payment details are protected"
+
+#: templates/payment/payment_method.html
+msgid "Pay"
+msgstr "Pay"
+
+#: templates/payment/success.html
+msgid "Congratulations, Premium!"
+msgstr "Congratulations, Premium!"
+
+#: templates/payment/success.html
+msgid "Congratulations,"
+msgstr "Congratulations,"
+
+#: templates/payment/success.html
+msgid "Now you have access to all Premium features."
+msgstr "Now you have access to all Premium features."
+
+#: templates/payment/success.html
+msgid "Get Started"
+msgstr "Get Started"
+
 #~ msgid "TIL SOZLAMALARI"
 #~ msgstr "Language Settings"
 

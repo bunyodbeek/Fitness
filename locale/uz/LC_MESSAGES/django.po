@@ -3237,6 +3237,82 @@ msgstr "Premium'ga o'tish"
 msgid "Later"
 msgstr "Keyinroq"
 
+#: templates/payment/tariff_select.html
+msgid "Choose a tariff"
+msgstr "Tarifni tanlang"
+
+#: templates/payment/tariff_select.html
+msgid "Choose the plan that suits you best"
+msgstr "Siz uchun eng mos tarifni tanlang"
+
+#: templates/payment/tariff_select.html
+msgid "MOST POPULAR"
+msgstr "ENG POPULAR"
+
+#: templates/payment/tariff_select.html templates/payment/payment_method.html
+msgid "MONTHS"
+msgstr "OY"
+
+#: templates/payment/tariff_select.html
+msgid "mo"
+msgstr "oy"
+
+#: templates/payment/tariff_select.html
+msgid "save"
+msgstr "tejang"
+
+#: templates/payment/tariff_select.html
+msgid "Cancel anytime"
+msgstr "Istalgan vaqtda bekor qilish mumkin"
+
+#: templates/payment/tariff_select.html
+msgid "Secure payment"
+msgstr "Xavfsiz to'lov"
+
+#: templates/payment/payment_method.html
+msgid "Payment method"
+msgstr "To'lov usuli"
+
+#: templates/payment/payment_method.html
+msgid "Pay in a convenient way"
+msgstr "Siz uchun qulay usulda to'lang"
+
+#: templates/payment/payment_method.html
+msgid "Selected plan"
+msgstr "Tanlangan tarif"
+
+#: templates/payment/payment_method.html
+msgid "Via card"
+msgstr "Karta orqali"
+
+#: templates/payment/payment_method.html
+msgid "Pay by card"
+msgstr "Karta orqali to'lash"
+
+#: templates/payment/payment_method.html
+msgid "Your payment details are protected"
+msgstr "To'lov ma'lumotlaringiz himoyalangan"
+
+#: templates/payment/payment_method.html
+msgid "Pay"
+msgstr "To'lash"
+
+#: templates/payment/success.html
+msgid "Congratulations, Premium!"
+msgstr "Tabriklaymiz, Premium!"
+
+#: templates/payment/success.html
+msgid "Congratulations,"
+msgstr "Tabriklaymiz,"
+
+#: templates/payment/success.html
+msgid "Now you have access to all Premium features."
+msgstr "Endi siz barcha Premium imkoniyatlaridan foydalana olasiz."
+
+#: templates/payment/success.html
+msgid "Get Started"
+msgstr "Boshlash"
+
 #~ msgid "Program created. Now add a plan."
 #~ msgstr "Dastur yaratildi. Endi plan qo'shing."
 

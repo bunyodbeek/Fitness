@@ -3251,6 +3251,82 @@ msgstr "Перейти на Премиум"
 msgid "Later"
 msgstr "Позже"
 
+#: templates/payment/tariff_select.html
+msgid "Choose a tariff"
+msgstr "Выберите тариф"
+
+#: templates/payment/tariff_select.html
+msgid "Choose the plan that suits you best"
+msgstr "Выберите наиболее подходящий тариф"
+
+#: templates/payment/tariff_select.html
+msgid "MOST POPULAR"
+msgstr "САМЫЙ ПОПУЛЯРНЫЙ"
+
+#: templates/payment/tariff_select.html templates/payment/payment_method.html
+msgid "MONTHS"
+msgstr "МЕС"
+
+#: templates/payment/tariff_select.html
+msgid "mo"
+msgstr "мес"
+
+#: templates/payment/tariff_select.html
+msgid "save"
+msgstr "скидка"
+
+#: templates/payment/tariff_select.html
+msgid "Cancel anytime"
+msgstr "Можно отменить в любое время"
+
+#: templates/payment/tariff_select.html
+msgid "Secure payment"
+msgstr "Безопасная оплата"
+
+#: templates/payment/payment_method.html
+msgid "Payment method"
+msgstr "Способ оплаты"
+
+#: templates/payment/payment_method.html
+msgid "Pay in a convenient way"
+msgstr "Оплатите удобным способом"
+
+#: templates/payment/payment_method.html
+msgid "Selected plan"
+msgstr "Выбранный тариф"
+
+#: templates/payment/payment_method.html
+msgid "Via card"
+msgstr "Картой"
+
+#: templates/payment/payment_method.html
+msgid "Pay by card"
+msgstr "Оплата картой"
+
+#: templates/payment/payment_method.html
+msgid "Your payment details are protected"
+msgstr "Ваши платёжные данные защищены"
+
+#: templates/payment/payment_method.html
+msgid "Pay"
+msgstr "Оплатить"
+
+#: templates/payment/success.html
+msgid "Congratulations, Premium!"
+msgstr "Поздравляем, Premium!"
+
+#: templates/payment/success.html
+msgid "Congratulations,"
+msgstr "Поздравляем,"
+
+#: templates/payment/success.html
+msgid "Now you have access to all Premium features."
+msgstr "Теперь вам доступны все Premium-возможности."
+
+#: templates/payment/success.html
+msgid "Get Started"
+msgstr "Начать"
+
 #~ msgid "Program created. Now add a plan."
 #~ msgstr "Программа создана. Теперь добавьте план."
 

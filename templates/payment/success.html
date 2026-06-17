@@ -1,10 +1,11 @@
-{% load static %}
+{% load static i18n %}
+{% get_current_language as LANGUAGE_CODE %}
 <!DOCTYPE html>
-<html lang="uz">
+<html lang="{{ LANGUAGE_CODE }}">
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-	<title>Tabriklaymiz, Premium!</title>
+	<title>{% trans "Congratulations, Premium!" %}</title>
 	<script src="https://telegram.org/js/telegram-web-app.js"></script>
 	<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 	<style>
@@ -115,8 +116,8 @@
 		<div class="crown">
 			<svg viewBox="0 0 24 24"><path d="M2 6l4 4 6-7 6 7 4-4-2 13H4L2 6z"/></svg>
 		</div>
-		<h1>Tabriklaymiz,<br><span class="gold">Premium!</span></h1>
-		<p>Endi siz barcha Premium imkoniyatlaridan foydalana olasiz.</p>
+		<h1>{% trans "Congratulations," %}<br><span class="gold">Premium!</span></h1>
+		<p>{% trans "Now you have access to all Premium features." %}</p>
 	</div>
 
 	<div class="benefits">
@@ -131,7 +132,7 @@
 	</div>
 
 	<div class="footer">
-		<a href="/" class="btn-primary">Boshlash</a>
+		<a href="/" class="btn-primary">{% trans "Get Started" %}</a>
 	</div>
 
 	<script>
