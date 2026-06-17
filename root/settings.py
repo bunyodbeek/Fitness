@@ -172,6 +172,18 @@ LOGIN_REDIRECT_URL = 'program_list'
 
 LOGOUT_REDIRECT_URL = '/'
 
+# --- Telegram Mini App cookie sozlamalari ---
+# Mini App sahifa cross-origin iframe/webview ichida (web.telegram.org) ochiladi,
+# ya'ni third-party kontekst. SameSite='Lax' (Django default) bunday kontekstda
+# sessiya/CSRF cookie'ni saqlamaydi/yubormaydi -> login() 200 qaytarsa ham sessiya
+# keyingi so'rovda yo'qoladi -> redirect loop. SameSite='None' + Secure=True buni
+# hal qiladi. SameSite='None' Secure=True'ni MAJBUR qiladi (Telegram baribir HTTPS).
+SESSION_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SECURE = True
+
+CSRF_COOKIE_SAMESITE = 'None'
+CSRF_COOKIE_SECURE = True
+
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
