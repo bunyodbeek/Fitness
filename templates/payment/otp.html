@@ -1,0 +1,81 @@
+{% load static i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>{% trans "Confirm payment" %}</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #000; --card: rgba(255,255,255,0.04); --gold: #ffd700;
+            --gold-grad: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
+            --text: #fff; --text-dim: #9aa0b0; --border: rgba(255,255,255,0.07); --red: #ff6b6b;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; padding: 0 16px 130px; }
+        .page-header {
+            padding: 14px 0; display: flex; align-items: center; justify-content: space-between;
+            border-bottom: 1px solid rgba(255,255,255,0.06); margin-bottom: 24px;
+        }
+        .back-btn { background: none; border: none; color: var(--gold); cursor: pointer; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; }
+        .page-title { color: var(--gold); font-size: 13px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; }
+        .header-spacer { width: 32px; }
+        .intro { text-align: center; margin: 8px 0 28px; }
+        .intro h2 { font-family: 'Bebas Neue', sans-serif; font-size: 30px; letter-spacing: 0.5px; }
+        .intro p { color: var(--text-dim); font-size: 13px; margin-top: 8px; line-height: 1.5; }
+        .otp-input {
+            width: 100%; background: var(--card); border: 1px solid var(--border); color: var(--text);
+            border-radius: 14px; padding: 18px; font-size: 24px; text-align: center; letter-spacing: 8px;
+            outline: none; font-weight: 700;
+        }
+        .otp-input:focus { border-color: rgba(255,215,0,0.5); }
+        .errors { background: rgba(255,107,107,0.1); border: 1px solid rgba(255,107,107,0.3); color: var(--red);
+            border-radius: 12px; padding: 12px 14px; font-size: 13px; margin-bottom: 16px; }
+        .footer { position: fixed; bottom: 0; left: 0; right: 0; padding: 12px 16px calc(14px + env(safe-area-inset-bottom)); background: linear-gradient(180deg, transparent, var(--bg) 35%); }
+        .btn-primary {
+            display: flex; align-items: center; justify-content: center; width: 100%; max-width: 520px; margin: 0 auto;
+            padding: 15px; border: none; border-radius: 14px; background: var(--gold-grad); color: #1a1300;
+            font-size: 15px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer;
+            box-shadow: 0 6px 24px rgba(255,215,0,0.3);
+        }
+        .btn-primary:disabled { opacity: 0.4; box-shadow: none; cursor: not-allowed; }
+        .amount { text-align: center; color: var(--gold); font-family: 'Bebas Neue', sans-serif; font-size: 22px; margin-top: 6px; }
+    </style>
+</head>
+<body>
+<div class="page-header">
+    <button class="back-btn" onclick="history.back()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <div class="page-title">{% trans "Confirm payment" %}</div>
+    <div class="header-spacer"></div>
+</div>
+
+<div class="intro">
+    <h2>{% trans "Enter SMS code" %}</h2>
+    <p>{% trans "We sent a one-time code to the phone number linked to your card." %}</p>
+    <div class="amount">{{ payment.amount|floatformat:0 }} UZS</div>
+</div>
+
+{% if messages %}{% for m in messages %}<div class="errors">{{ m }}</div>{% endfor %}{% endif %}
+
+<form method="post" action="{% url 'payment_otp' payment.id %}">
+    {% csrf_token %}
+    <input type="text" class="otp-input" id="otp" name="otp" inputmode="numeric"
+           autocomplete="one-time-code" placeholder="——————" maxlength="6"
+           oninput="this.value=this.value.replace(/\D/g,''); document.getElementById('confirmBtn').disabled=this.value.length<4;">
+    <div class="footer">
+        <button type="submit" class="btn-primary" id="confirmBtn" disabled>{% trans "Confirm" %}</button>
+    </div>
+</form>
+
+<script>
+    const tg = window.Telegram?.WebApp;
+    if (tg) { tg.ready(); tg.expand(); }
+    document.getElementById('otp').focus();
+</script>
+</body>
+</html>

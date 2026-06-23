@@ -15,7 +15,8 @@ from apps.models.workouts import (
 	Workout,
 	WorkoutExercise,
 	Program,
-	
+	DayTemplate,
+	DayTemplateExercise,
 )
 
 # If you have a favorites.py, add it here:

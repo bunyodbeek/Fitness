@@ -6,10 +6,13 @@ from django.urls import include, path
 from django.views.generic.base import RedirectView
 from django.views.decorators.csrf import csrf_exempt # Buni qo'shing
 from apps.bot.bot_view import TelegramWebhookView# Webhook view funksiyangizni import qiling
+from apps.views.payments import AtmosCallbackView
 
 # 1. Tildan mustaqil (prefiksiz) URL'lar
 urlpatterns = [
     path('bot/webhook/', csrf_exempt(TelegramWebhookView.as_view()), name='bot_webhook'),
+    # Atmos to'lov tizimi natija (callback) URL'i — til prefiksisiz
+    path('payments/atmos/callback/', AtmosCallbackView.as_view(), name='atmos_callback'),
     path('favicon.ico', RedirectView.as_view(url='/static/images/default_exercise.svg', permanent=False)),
 ]
 

@@ -395,6 +395,54 @@ class WorkoutExercise(Model):
 		return self.workout.week.week_number == 1 and self.source_week_one_id is None
 
 
+class DayTemplate(CreatedBaseModel):
+	"""Pre-made day — a standalone, reusable day of exercises that is NOT bound to
+	any plan / week / program.
+
+	Admins build these in the "Pre-made days" section. When a pre-made day is
+	attached to a plan, its exercises are COPIED into a normal ``Workout`` /
+	``WorkoutExercise`` (a snapshot). Nothing here links into the progression /
+	calculator / generation logic, so that backend behaviour is untouched.
+	"""
+	name = CharField(max_length=200)
+	name_uz = CharField(max_length=200, blank=True)
+	name_ru = CharField(max_length=200, blank=True)
+
+	workout_type = CharField(max_length=10, choices=WorkoutType.choices, default=WorkoutType.GYM)
+	# Home days run in rounds (mirrors Workout.rounds); ignored for gym days.
+	rounds = IntegerField(default=1, verbose_name="Rounds (home)")
+
+	class Meta:
+		verbose_name = "Pre-made day"
+		verbose_name_plural = "Pre-made days"
+		ordering = ["-created_at", "id"]
+
+	def __str__(self):
+		return self.name
+
+	@property
+	def display_name(self):
+		return localized_field(self, 'name')
+
+
+class DayTemplateExercise(Model):
+	"""One exercise (with full params) inside a pre-made day. Mirrors the fields
+	of ``WorkoutExercise`` so a day can be copied into a plan as-is."""
+	day = ForeignKey("apps.DayTemplate", CASCADE, related_name="exercises")
+	exercise = ForeignKey("apps.Exercise", CASCADE, related_name="day_template_exercises")
+	sets = IntegerField(default=0)
+	reps = IntegerField(default=0)
+	recommended_weight = FloatField(default=0, null=True, blank=True)
+	minutes = PositiveIntegerField(default=0, null=True, blank=True, verbose_name="Davomiyligi (minutda)")
+	order = IntegerField(default=0)
+
+	class Meta:
+		ordering = ["order", "id"]
+
+	def __str__(self):
+		return f"{self.day} - {self.exercise}"
+
+
 class WorkoutProgress(Model):
 	class Status(TextChoices):
 		IN_PROGRESS = "in_progress", _("In progress")

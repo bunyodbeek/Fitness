@@ -17,6 +17,7 @@ from apps.panel.views import payments as pay
 from apps.panel.views import reports as rep
 from apps.panel.views import settings as st
 from apps.panel.views import admins as adm
+from apps.panel.views import premade_days as pmd
 
 app_name = "panel"
 
@@ -86,6 +87,14 @@ urlpatterns = [
     path("workouts/<int:workout_pk>/exercises/add/", pr.WorkoutExerciseCreateView.as_view(), name="we_add"),
     path("workout-exercises/<int:pk>/edit/", pr.WorkoutExerciseUpdateView.as_view(), name="we_edit"),
     path("workout-exercises/<int:pk>/delete/", pr.WorkoutExerciseDeleteView.as_view(), name="we_delete"),
+
+    # Pre-made days (standalone day templates, copied into plans on attach)
+    path("premade-days/", pmd.PremadeDayListView.as_view(), name="premade_days"),
+    path("premade-days/add/", pmd.PremadeDayCreateView.as_view(), name="premade_day_add"),
+    path("premade-days/<int:pk>/builder/", pmd.PremadeDayBuilderView.as_view(), name="premade_day_builder"),
+    path("premade-days/<int:pk>/edit/", pmd.PremadeDayUpdateView.as_view(), name="premade_day_edit"),
+    path("premade-days/<int:pk>/delete/", pmd.PremadeDayDeleteView.as_view(), name="premade_day_delete"),
+    path("weeks/<int:week_pk>/days/from-template/", pmd.WorkoutFromTemplateView.as_view(), name="workout_from_template"),
 
     # Exercises
     path("exercises/", ex.ExerciseListView.as_view(), name="exercises"),

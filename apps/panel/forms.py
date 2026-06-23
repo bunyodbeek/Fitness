@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 from apps.models import Exercise, Plan, Program, User, UserProfile, Week, Workout, WorkoutExercise
 from apps.models.handbook import HandbookCategory, HandbookItem, HandbookSubCategory
 from apps.models.payments import Subscription, SubscriptionPlan
-from apps.models.workouts import HomeProgressionSetting, ProgressionSetting, WorkoutProgress
+from apps.models.workouts import DayTemplate, HomeProgressionSetting, ProgressionSetting, WorkoutProgress
 
 
 class UserProfileForm(forms.ModelForm):
@@ -123,6 +123,17 @@ class WorkoutExerciseForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["minutes"].required = False
         self.fields["recommended_weight"].required = False
+
+
+# ───────────────────────── Content: pre-made days ─────────────────────────
+
+class DayTemplateForm(forms.ModelForm):
+    """Pre-made day (standalone). Type (gym/home) decides which inputs the
+    builder shows and which plans it can later be attached to. Exercises are
+    added afterwards in the builder."""
+    class Meta:
+        model = DayTemplate
+        fields = ["name", "name_uz", "name_ru", "workout_type"]
 
 
 # ───────────────────────── Content: exercise library ─────────────────────────

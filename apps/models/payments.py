@@ -140,6 +140,9 @@ class Payment(CreatedBaseModel):
 	auto_payment_attempt = IntegerField(_("Avto to'lov urinishi"), default=0)
 	completed_at = DateTimeField(_("Bajarilgan sana"), null=True, blank=True)
 
+	# Atmos transaction id (returned by /merchant/pay/create).
+	atmos_transaction_id = BigIntegerField(_("Atmos transaction id"), null=True, blank=True, db_index=True)
+
 	# Payme/Click integration fields (kept for the future)
 	created_at_ms = BigIntegerField(_("Created At MS"), null=True, blank=True)
 	perform_time = BigIntegerField(_("Perform Time"), null=True, default=0)

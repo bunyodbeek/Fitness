@@ -224,6 +224,16 @@ TELEGRAM_WEBHOOK_URL = os.getenv('TELEGRAM_WEBHOOK_URL', default=WEBAPP_URL)
 TELEGRAM_BOT_REDIRECT_URL = os.getenv('TELEGRAM_BOT_REDIRECT_URL', default=f'{WEBAPP_URL}/uz/miniapp/questionnaire/')
 
 ADMIN_ID = '7946709135'
+
+# ATMOS payment gateway (https://docs.atmos.uz)
+ATMOS_API_URL = os.getenv('ATMOS_API_URL', default='https://apigw.atmos.uz')
+ATMOS_STORE_ID = os.getenv('ATMOS_STORE_ID', default='')
+ATMOS_CONSUMER_KEY = os.getenv('ATMOS_CONSUMER_KEY', default='')
+ATMOS_CONSUMER_SECRET = os.getenv('ATMOS_CONSUMER_SECRET', default='')
+# Secret used ONLY to verify the signature on the result/callback request.
+ATMOS_API_KEY = os.getenv('ATMOS_API_KEY', default='')
+# Public URL Atmos posts the result to: {WEBAPP_URL}/payments/atmos/callback/
+ATMOS_CALLBACK_URL = os.getenv('ATMOS_CALLBACK_URL', default=f'{WEBAPP_URL}/payments/atmos/callback/')
 #
 # JAZZMIN_SETTINGS = {
 #

@@ -1,0 +1,50 @@
+{% extends 'panel/base.html' %}
+{% load i18n %}
+
+{% block content %}
+<style>
+    .pm-card {
+        display: flex; align-items: center; gap: 14px;
+        background: var(--panel-2); border: 1px solid var(--border-strong);
+        border-radius: 12px; padding: 14px 16px; margin-bottom: 12px;
+    }
+    .pm-info { flex: 1; min-width: 0; }
+    .pm-name { font-size: 14.5px; font-weight: 700; }
+    .pm-meta { font-size: 12px; color: var(--dim); margin-top: 3px; }
+    .pm-empty { text-align: center; color: var(--dim); padding: 40px 16px; }
+</style>
+
+<div class="page-head">
+    <div>
+        <div class="muted" style="font-size:12px;margin-bottom:4px;">
+            {% for b in breadcrumbs %}{% if b.url %}<a href="{{ b.url }}" style="color:var(--gold);">{{ b.label }}</a>{% else %}{{ b.label }}{% endif %}{% if not forloop.last %} · {% endif %}{% endfor %}
+        </div>
+        <h2>{% trans "Add from pre-made day" %}
+            <span class="badge badge-premium" style="margin-left:8px;">{{ workout_type_label }}</span>
+        </h2>
+    </div>
+    <a href="{{ back_url }}" class="btn">{% trans "Back" %}</a>
+</div>
+
+<div class="muted" style="font-size:12.5px;margin-bottom:16px;">
+    {% blocktrans %}Pick a pre-made day to add to this week. Its exercises are copied into a new day — later edits to the pre-made day will not affect this plan.{% endblocktrans %}
+</div>
+
+{% for day in days %}
+<form method="post" action="{% url 'panel:workout_from_template' week.pk %}" class="pm-card">
+    {% csrf_token %}
+    <input type="hidden" name="day_template_id" value="{{ day.pk }}">
+    <div class="pm-info">
+        <div class="pm-name">{{ day.name }}</div>
+        <div class="pm-meta">{{ day.exercises.count }} {% trans "exercises" %}</div>
+    </div>
+    <a href="{% url 'panel:premade_day_builder' day.pk %}" class="btn" style="padding:7px 12px;">{% trans "Preview" %}</a>
+    <button type="submit" class="btn btn-primary" style="padding:7px 14px;">{% trans "Add to week" %}</button>
+</form>
+{% empty %}
+<div class="card"><div class="pm-empty">
+    {% trans "No pre-made days for this mode yet." %}
+    <a href="{% url 'panel:premade_day_add' %}" style="color:var(--gold);">{% trans "Create one" %}</a>
+</div></div>
+{% endfor %}
+{% endblock %}

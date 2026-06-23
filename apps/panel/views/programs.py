@@ -317,6 +317,8 @@ class WeekDetailView(StaffRequiredMixin, PanelContextMixin, DetailView):
         ctx["child_title"] = _("Days (workouts)")
         ctx["child_add_url"] = reverse("panel:workout_add", args=[w.pk])
         ctx["child_add_label"] = _("Add day")
+        ctx["child_add2_url"] = reverse("panel:workout_from_template", args=[w.pk])
+        ctx["child_add2_label"] = _("Add from pre-made day")
         ctx["child_columns"] = [_("Day"), _("Title"), _("Exercises"), _("All weeks")]
         ctx["child_rows"] = [
             {
