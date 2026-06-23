@@ -110,18 +110,9 @@
                 {% trans "A single-session program: just exercises with sets / reps / weight. No weeks or progression." %}
             </div>
             {% else %}
-            <div class="form-row">
-                <label>{% trans "Progression rule" %}</label>
-                <select name="progression_id">
-                    <option value="">{% trans "— none —" %}</option>
-                    {% for p in progressions %}
-                    <option value="{{ p.pk }}" {% if p.pk == current_progression_id %}selected{% endif %}>{{ p.key }}</option>
-                    {% endfor %}
-                </select>
-                <div class="muted" style="font-size:11px;margin-top:5px;">
-                    {% if is_home %}{% trans "Home rule (rounds / time growth)." %}{% else %}{% trans "Gym rule (sets / reps / weight growth)." %}{% endif %}
-                    <a href="{% if is_home %}{% url 'panel:progression_home' %}{% else %}{% url 'panel:progression' %}{% endif %}" style="color:var(--gold);">{% trans "manage" %}</a>
-                </div>
+            <div class="muted" style="font-size:11.5px;margin-bottom:14px;">
+                {% trans "The progression rule is set on the plan. Week-1 days here seed the exercises; weeks 2..N are generated from them." %}
+                <a href="{% url 'panel:plan_edit' plan.pk %}" style="color:var(--gold);">{% trans "edit plan rule" %}</a>
             </div>
 
             {% if show_home_inputs %}

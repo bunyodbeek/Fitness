@@ -75,14 +75,17 @@ class OneTimeProgramForm(forms.ModelForm):
 class PlanForm(forms.ModelForm):
     """Plan create/edit. Program is chosen here (Plans is its own section).
 
-    Progression rule is NOT selected here anymore — it is picked later in the
-    workout builder (per the program's mode: gym vs home).
+    The progression rule is chosen here, right below the week count. Fill the one
+    that matches the program's mode (Gym rule for gym programs, Home rule for home
+    programs) — the week 2..N generator reads it when week-1 days are saved, so
+    every day in every week gets its progressed copy automatically.
     """
     class Meta:
         model = Plan
         fields = [
             "program", "name", "name_uz", "name_ru", "description",
-            "order", "weeks_count", "is_premium", "is_4_week",
+            "order", "weeks_count", "progression_config", "home_progression_config",
+            "is_premium", "is_4_week",
         ]
 
 

@@ -16,7 +16,7 @@ from django.views.generic import DetailView, TemplateView
 
 from apps.models import Exercise, Plan, Program, Week, Workout, WorkoutExercise
 from apps.models.exercises import MuscleGroup
-from apps.models.workouts import HomeProgressionSetting, ProgressionSetting, WorkoutType
+from apps.models.workouts import WorkoutType
 from apps.panel.forms import (
     IndividualProgramForm, OneTimeProgramForm, PlanForm, ProgramForm,
     WeekForm, WorkoutExerciseForm, WorkoutForm,
@@ -551,13 +551,6 @@ class WorkoutBuilderView(StaffRequiredMixin, PanelContextMixin, TemplateView):
             ).order_by("name"),
             "body_parts": MuscleGroup.choices,
         })
-        if not is_one_time:
-            if is_home:
-                ctx["progressions"] = HomeProgressionSetting.objects.all()
-                ctx["current_progression_id"] = plan.home_progression_config_id
-            else:
-                ctx["progressions"] = ProgressionSetting.objects.all()
-                ctx["current_progression_id"] = plan.progression_config_id
         return ctx
 
     def post(self, request, *args, **kwargs):
@@ -570,17 +563,9 @@ class WorkoutBuilderView(StaffRequiredMixin, PanelContextMixin, TemplateView):
         save_home_inputs = is_home and not is_one_time
 
         if not is_one_time:
-            # 1) Plan progression (saved BEFORE exercises so the generation signal
-            #    uses the freshly chosen rule).
-            prog_id = request.POST.get("progression_id") or None
-            if is_home:
-                plan.home_progression_config_id = prog_id
-                plan.save(update_fields=["home_progression_config"])
-            else:
-                plan.progression_config_id = prog_id
-                plan.save(update_fields=["progression_config"])
-
-            # 2) Day-level fields: apply-to-all-weeks (+ rounds for home).
+            # Day-level fields: apply-to-all-weeks (+ rounds for home). The
+            # progression rule itself now lives on the Plan (chosen at plan
+            # creation), so the generation signal reads it from there.
             wo.apply_to_all_weeks = bool(request.POST.get("apply_to_all_weeks"))
             if is_home:
                 try:
