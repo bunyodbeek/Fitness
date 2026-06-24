@@ -14,9 +14,9 @@ TELEGRAM_BOT_REDIRECT_URL=os.getenv('TELEGRAM_BOT_REDIRECT_URL')
 WEBAPP_URL = 'https://www.shredzville.com'
 TELEGRAM_BOT_USERNAME = os.getenv('TELEGRAM_BOT_USERNAME', '')
 
-SECRET_KEY = 'django-insecure-test-key-for-development-12345'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = ['*']
 
@@ -109,19 +109,19 @@ AUTH_USER_MODEL = 'apps.User'
 DATABASES = {
 	
 	"default": {
-		
+
 		"ENGINE": "django.db.backends.postgresql",
-		
-		"NAME": 'fitness_db',
-		
-		"USER": 'postgres',
-		
-		"PASSWORD": 'JudaKuchliParol123!',
-		
-		"HOST": '127.0.0.1',
-		
-		"PORT": '5432',
-		
+
+		"NAME": os.getenv('DB_NAME'),
+
+		"USER": os.getenv('DB_USER'),
+
+		"PASSWORD": os.getenv('DB_PASSWORD'),
+
+		"HOST": os.getenv('DB_HOST'),
+
+		"PORT": os.getenv('DB_PORT'),
+
 	}
 	
 }
@@ -223,7 +223,7 @@ TELEGRAM_BOT_TOKEN = BOT_TOKEN
 TELEGRAM_WEBHOOK_URL = os.getenv('TELEGRAM_WEBHOOK_URL', default=WEBAPP_URL)
 TELEGRAM_BOT_REDIRECT_URL = os.getenv('TELEGRAM_BOT_REDIRECT_URL', default=f'{WEBAPP_URL}/uz/miniapp/questionnaire/')
 
-ADMIN_ID = '7946709135'
+ADMIN_ID = os.getenv('ADMIN_ID')
 
 # ATMOS payment gateway (https://docs.atmos.uz)
 ATMOS_API_URL = os.getenv('ATMOS_API_URL', default='https://apigw.atmos.uz')

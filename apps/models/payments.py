@@ -178,7 +178,7 @@ class Payment(CreatedBaseModel):
 				f"Summa: {self.amount:,.0f} {self.currency}\n"
 				f"Obuna muddati: {sub.end_date.strftime('%d.%m.%Y')} gacha."
 			)
-			from apps.bot.management import send_notification
+			from apps.management.commands.bot_notisfication import send_notification
 			send_notification(self.user.telegram_id, msg)
 
 	def mark_as_failed(self):
