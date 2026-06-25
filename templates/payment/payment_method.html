@@ -38,18 +38,11 @@
             padding: 0 0 130px;
         }
 
-        /* ===== STANDART HEADER ===== */
+        /* ===== MINIMAL BACK ARROW (header olib tashlandi) ===== */
         .page-header {
-            background: rgba(0, 0, 0, 0.95);
-            backdrop-filter: blur(12px);
-            padding: 14px var(--side-space);
+            padding: 12px var(--side-space) 2px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
         .back-btn {
             background: none;
@@ -314,16 +307,11 @@
     </style>
 </head>
 <body>
-<!-- STANDART HEADER -->
+<!-- MINIMAL BACK ARROW -->
 <div class="page-header">
-    <button class="back-btn" onclick="goBack()">
+    <button class="back-btn" onclick="goBack()" aria-label="{% trans 'Back' %}">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
     </button>
-    <div class="header-title-wrap">
-        <div class="page-title">{% trans "Payment method" %}</div>
-        <div class="page-subtitle">{% trans "Pay in a convenient way" %}</div>
-    </div>
-    <div class="header-spacer"></div>
 </div>
 
 <div class="summary">
@@ -339,7 +327,7 @@
 <div class="section-label">{% trans "Via card" %}</div>
 <div class="methods">
     {% for value, name in card_methods %}
-        <div class="method" data-method="{{ value }}" onclick="selectMethod(this)">
+        <div class="method{% if value == selected_method %} selected{% endif %}" data-method="{{ value }}" onclick="selectMethod(this)">
             <div class="method-icon ic-{{ value }}">{% if value == 'humo' %}HUMO{% elif value == 'uzcard' %}
                 UZCARD{% elif value == 'visa' %}VISA{% endif %}</div>
             <div class="method-info">
@@ -358,13 +346,14 @@
 
     <div class="section-label">{% trans "Card details" %}</div>
     <div class="methods">
-        <div class="card-fields">
+        {% if error %}<div class="field-error" id="cardError">{{ error }}</div>{% endif %}
+        <div class="card-fields{% if error %} has-error{% endif %}" id="cardFields">
             <input type="text" id="cardNumber" name="card_number" inputmode="numeric"
                    autocomplete="cc-number" placeholder="0000 0000 0000 0000" maxlength="19"
-                   oninput="formatCard(this)">
+                   value="{{ card_number }}" oninput="formatCard(this)">
             <input type="text" id="cardExpiry" name="expiry" inputmode="numeric"
                    autocomplete="cc-exp" placeholder="MM/YY" maxlength="5"
-                   oninput="formatExpiry(this)">
+                   value="{{ expiry }}" oninput="formatExpiry(this)">
         </div>
     </div>
 
@@ -391,6 +380,23 @@
     .card-fields input:focus { border-color: rgba(255, 215, 0, 0.5); }
     #cardNumber { flex: 1; }
     #cardExpiry { width: 96px; flex-shrink: 0; text-align: center; }
+
+    /* Noto'g'ri karta — Click uslubidagi qizil holat (shu sahifaning o'zida) */
+    .field-error {
+        margin: 0 0 10px;
+        background: rgba(255, 107, 107, 0.1);
+        border: 1px solid rgba(255, 107, 107, 0.35);
+        color: #ff6b6b;
+        border-radius: 12px;
+        padding: 12px 14px;
+        font-size: 13px;
+        line-height: 1.4;
+    }
+    .card-fields.has-error input {
+        border-color: #ff6b6b;
+        color: #ff6b6b;
+    }
+    .card-fields.has-error input::placeholder { color: rgba(255, 107, 107, 0.5); }
 </style>
 
 <script>
@@ -410,12 +416,14 @@
     function formatCard(el) {
         let v = el.value.replace(/\D/g, '').slice(0, 16);
         el.value = v.replace(/(.{4})/g, '$1 ').trim();
+        clearCardError();
         refreshPay();
     }
     function formatExpiry(el) {
         let v = el.value.replace(/\D/g, '').slice(0, 4);
         if (v.length >= 3) v = v.slice(0, 2) + '/' + v.slice(2);
         el.value = v;
+        clearCardError();
         refreshPay();
     }
     function refreshPay() {
@@ -424,7 +432,22 @@
         payBtn.disabled = !(digits.length >= 16 && expOk);
     }
 
+    // Foydalanuvchi qaytadan kirita boshlasa qizil xato holatini olib tashlaymiz.
+    function clearCardError() {
+        const fields = document.getElementById('cardFields');
+        if (fields) fields.classList.remove('has-error');
+        const err = document.getElementById('cardError');
+        if (err) err.style.display = 'none';
+    }
+
     function goBack() { history.back(); }
+
+    // Xatodan keyin oldin tanlangan karta brendini hidden input'ga tiklaymiz.
+    const preSelected = document.querySelector('.method.selected');
+    if (preSelected) document.getElementById('methodInput').value = preSelected.dataset.method;
+
+    // Prefilled qiymatlar bo'lsa (xatodan keyin) tugma holatini to'g'rilaymiz.
+    refreshPay();
 </script>
 </body>
 </html>

@@ -30,18 +30,11 @@
 			padding: 0 0 120px;
 		}
 
-		/* ===== STANDART HEADER ===== */
+		/* ===== MINIMAL BACK ARROW (header olib tashlandi) ===== */
 		.page-header {
-			background: rgba(0, 0, 0, 0.95);
-			backdrop-filter: blur(12px);
-			padding: 14px var(--side-space);
+			padding: 12px var(--side-space) 2px;
 			display: flex;
 			align-items: center;
-			justify-content: space-between;
-			position: sticky;
-			top: 0;
-			z-index: 100;
-			border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 		}
 		.back-btn {
 			background: none;
@@ -93,12 +86,12 @@
 		}
 		.currency-toggle button {
 			flex: 1;
-			padding: 12px;
+			padding: 10px;
 			border: none;
 			background: transparent;
 			color: var(--text-dim);
 			font-family: 'Bebas Neue', sans-serif;
-			font-size: 18px;
+			font-size: 15px;
 			letter-spacing: 1px;
 			border-radius: 9px;
 			cursor: pointer;
@@ -117,8 +110,8 @@
 			display: flex;
 			align-items: center;
 			gap: 14px;
-			padding: 18px 16px;
-			margin-bottom: 12px;
+			padding: 14px 14px;
+			margin-bottom: 10px;
 			background: var(--card);
 			border: 1px solid var(--border);
 			border-radius: 16px;
@@ -149,10 +142,10 @@
 		.plan-info { flex: 1; }
 		.plan-name {
 			font-family: 'Bebas Neue', sans-serif;
-			font-size: 22px;
+			font-size: 18px;
 			letter-spacing: 0.5px;
 		}
-		.plan-price { font-size: 14px; color: var(--text-dim); margin-top: 2px; }
+		.plan-price { font-size: 13px; color: var(--text-dim); margin-top: 2px; }
 		.plan-price b { color: var(--text); font-weight: 600; }
 		.badge-popular {
 			position: absolute;
@@ -171,11 +164,11 @@
 		}
 		.discount .pct {
 			font-family: 'Bebas Neue', sans-serif;
-			font-size: 20px;
+			font-size: 16px;
 			color: var(--gold);
 			line-height: 1;
 		}
-		.discount .lbl { font-size: 11px; color: var(--text-dim); }
+		.discount .lbl { font-size: 10px; color: var(--text-dim); }
 
 		/* ===== META ROW ===== */
 		.meta-row {
@@ -234,16 +227,11 @@
 	</style>
 </head>
 <body>
-	<!-- STANDART HEADER -->
+	<!-- MINIMAL BACK ARROW -->
 	<div class="page-header">
-		<button class="back-btn" onclick="goBack()">
+		<button class="back-btn" onclick="goBack()" aria-label="{% trans 'Back' %}">
 			<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
 		</button>
-		<div class="header-title-wrap">
-			<div class="page-title">{% trans "Choose a tariff" %}</div>
-			<div class="page-subtitle">{% trans "Choose the plan that suits you best" %}</div>
-		</div>
-		<div class="header-spacer"></div>
 	</div>
 
 	<div class="currency-toggle">

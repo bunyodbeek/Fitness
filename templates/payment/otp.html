@@ -17,12 +17,9 @@
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; padding: 0 16px 130px; }
         .page-header {
-            padding: 14px 0; display: flex; align-items: center; justify-content: space-between;
-            border-bottom: 1px solid rgba(255,255,255,0.06); margin-bottom: 24px;
+            padding: 12px 0 2px; display: flex; align-items: center; margin-bottom: 18px;
         }
         .back-btn { background: none; border: none; color: var(--gold); cursor: pointer; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; }
-        .page-title { color: var(--gold); font-size: 13px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; }
-        .header-spacer { width: 32px; }
         .intro { text-align: center; margin: 8px 0 28px; }
         .intro h2 { font-family: 'Bebas Neue', sans-serif; font-size: 30px; letter-spacing: 0.5px; }
         .intro p { color: var(--text-dim); font-size: 13px; margin-top: 8px; line-height: 1.5; }
@@ -47,11 +44,9 @@
 </head>
 <body>
 <div class="page-header">
-    <button class="back-btn" onclick="history.back()">
+    <button class="back-btn" onclick="history.back()" aria-label="{% trans 'Back' %}">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
     </button>
-    <div class="page-title">{% trans "Confirm payment" %}</div>
-    <div class="header-spacer"></div>
 </div>
 
 <div class="intro">

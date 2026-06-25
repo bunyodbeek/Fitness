@@ -78,6 +78,27 @@ class TariffSelectView(LoginRequiredMixin, TemplateView):
 		return ctx
 
 
+def _payment_method_context(plan, currency, *, error='', card_number='', expiry='', method=None):
+	"""Shared context for the payment-method screen. Reused by both the initial
+	GET (TemplateView) and the in-place re-render when a card charge is rejected,
+	so the error + the values the user already typed stay on the same page."""
+	return {
+		'plan': plan,
+		'currency': currency,
+		'amount': plan.price_for(currency),
+		'card_methods': [
+			('humo', 'Humo'),
+			('uzcard', 'Uzcard'),
+			('visa', 'Visa'),
+			('mastercard', 'Mastercard'),
+		],
+		'error': error,
+		'card_number': card_number,
+		'expiry': expiry,
+		'selected_method': method,
+	}
+
+
 class PaymentMethodView(LoginRequiredMixin, TemplateView):
 	"""Screen 7 — choose payment method (cards only for now)."""
 	template_name = 'payment/payment_method.html'
@@ -88,15 +109,7 @@ class PaymentMethodView(LoginRequiredMixin, TemplateView):
 		currency = self.request.GET.get('currency', Payment.Currency.UZS)
 		if currency not in Payment.Currency.values:
 			currency = Payment.Currency.UZS
-		ctx['plan'] = plan
-		ctx['currency'] = currency
-		ctx['amount'] = plan.price_for(currency)
-		ctx['card_methods'] = [
-			('humo', 'Humo'),
-			('uzcard', 'Uzcard'),
-			('visa', 'Visa'),
-			('mastercard', 'Mastercard'),
-		]
+		ctx.update(_payment_method_context(plan, currency))
 		return ctx
 
 
@@ -118,15 +131,31 @@ class PaymentCreateView(LoginRequiredMixin, View):
 
 	def post(self, request, plan_id):
 		plan = get_object_or_404(SubscriptionPlan, pk=plan_id, is_active=True)
+
+		currency = request.POST.get('currency', Payment.Currency.UZS)
+		if currency not in Payment.Currency.values:
+			currency = Payment.Currency.UZS
+
 		method = request.POST.get('method')
 		if method not in Payment.Method.values:
 			method = None
 
-		card_number = ''.join(ch for ch in (request.POST.get('card_number') or '') if ch.isdigit())
-		expiry = _normalize_expiry(request.POST.get('expiry'))
+		raw_card = request.POST.get('card_number') or ''
+		raw_expiry = request.POST.get('expiry') or ''
+		card_number = ''.join(ch for ch in raw_card if ch.isdigit())
+		expiry = _normalize_expiry(raw_expiry)
+
+		def reject(message):
+			# Re-render the same screen with the error + the values the user typed,
+			# so nothing navigates away and the card field is not wiped.
+			ctx = _payment_method_context(
+				plan, currency, error=message,
+				card_number=raw_card, expiry=raw_expiry, method=method,
+			)
+			return render(request, PaymentMethodView.template_name, ctx)
+
 		if len(card_number) < 16 or not expiry:
-			messages.error(request, _("Enter a valid card number and expiry date."))
-			return redirect(reverse('payment_method', args=[plan.id]))
+			return reject(_("Enter a valid card number and expiry date."))
 
 		payment = Payment.objects.create(
 			user=request.user.profile,
@@ -151,8 +180,7 @@ class PaymentCreateView(LoginRequiredMixin, View):
 		except AtmosError as exc:
 			logger.warning("Atmos start failed for payment %s: %s", payment.id, exc)
 			payment.mark_as_failed()
-			messages.error(request, _("Payment could not be started: %(err)s") % {"err": exc.message})
-			return redirect(reverse('payment_method', args=[plan.id]))
+			return reject(_("Payment could not be started: %(err)s") % {"err": exc.message})
 
 		return redirect(reverse('payment_otp', args=[payment.id]))
 
