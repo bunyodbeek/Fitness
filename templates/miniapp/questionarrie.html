@@ -287,13 +287,49 @@
 
     // ---------------- Telegram init ----------------
     const tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
-    if (tg) { try { tg.expand(); } catch(e){} }
+    // Telegram WebApp dokumentatsiyasiga ko'ra ready() chaqirilishi shart —
+    // ba'zi klientlarda u chaqirilmasa initData kech yetib keladi.
+    if (tg) { try { tg.ready(); } catch(e){} try { tg.expand(); } catch(e){} }
+
+    // raw initData (imzolangan) — backendda tekshirish/ID ajratish uchun ishonchli manba.
+    function getInitData() {
+        return (tg && tg.initData) ? tg.initData : '';
+    }
+
+    // initData query-stringidan user.id ni ajratib olamiz (initDataUnsafe bo'sh bo'lsa zaxira).
+    function parseIdFromInitData() {
+        try {
+            const raw = getInitData();
+            if (!raw) return null;
+            const params = new URLSearchParams(raw);
+            const userJson = params.get('user');
+            if (!userJson) return null;
+            const u = JSON.parse(userJson);
+            return u && u.id ? u.id : null;
+        } catch (e) { return null; }
+    }
+
+    // telegram_id ni bir nechta manbadan ishonchli aniqlaymiz va keshlaymiz.
+    // Tartib: initDataUnsafe.user.id -> initData parse -> localStorage.
+    function resolveTelegramId() {
+        let id = tg?.initDataUnsafe?.user?.id || parseIdFromInitData();
+        if (id) {
+            try { localStorage.setItem('tg_id', String(id)); } catch (e) {}
+            return id;
+        }
+        try {
+            const cached = localStorage.getItem('tg_id');
+            if (cached) return cached;
+        } catch (e) {}
+        return null;
+    }
 
     const telegramUser = tg?.initDataUnsafe?.user || null;
 
     // ---------------- Form data ----------------
     const formData = {
-        telegram_id: telegramUser?.id || null,
+        telegram_id: resolveTelegramId(),
+        init_data: getInitData(),
         first_name: telegramUser?.first_name || '',
         last_name: telegramUser?.last_name || '',
         username: telegramUser?.username || '',
@@ -308,15 +344,17 @@
 
     // -------------- Auto telegram auth (fix url) --------------
     document.addEventListener("DOMContentLoaded", async () => {
-        const telegramId = tg?.initDataUnsafe?.user?.id;
-        if (!telegramId) return;
+        const telegramId = resolveTelegramId();
+        const initData = getInitData();
+        // Hech qanday identifikator bo'lmasa — so'rov yubormaymiz.
+        if (!telegramId && !initData) return;
 
         try {
             const res = await fetch('{% url "telegram_auth" %}', {
                 method: "POST",
                 headers: {"Content-Type": "application/json", ...(csrfToken ? {"X-CSRFToken": csrfToken} : {})},
                 credentials: "include",
-                body: JSON.stringify({ telegram_id: telegramId })
+                body: JSON.stringify({ telegram_id: telegramId, init_data: initData })
             });
 
             const data = await res.json();
@@ -425,7 +463,12 @@
 
     // -------- Submit --------
     async function submitQuestionnaire() {
-        if (!formData.telegram_id) {
+        // ID sahifa ochilganda bo'sh bo'lib, keyin yetib kelishi mumkin —
+        // shuning uchun yuborish paytida qayta aniqlaymiz.
+        formData.telegram_id = resolveTelegramId();
+        formData.init_data = getInitData();
+
+        if (!formData.telegram_id && !formData.init_data) {
             if (tg && tg.showAlert) tg.showAlert(T.noId);
             else alert(T.noId);
             return;

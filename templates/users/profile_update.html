@@ -327,39 +327,95 @@
 
         /* ===== RESPONSIVE ===== */
         @media (min-width: 500px) {
-            .page-title { font-size: 18px; }
+            .page-title {
+                font-size: 18px;
+            }
+
             .avatar-upload-wrapper,
-            .avatar-circle { width: 100px; height: 100px; }
-            .form-field { padding: 16px 18px; }
+            .avatar-circle {
+                width: 100px;
+                height: 100px;
+            }
+
+            .form-field {
+                padding: 16px 18px;
+            }
+
             .form-field input,
             .form-field select,
-            .form-field textarea { font-size: 15px; }
+            .form-field textarea {
+                font-size: 15px;
+            }
         }
 
         @media (min-width: 768px) {
-            .page-header { padding: 18px 28px 14px; }
-            .page-title  { font-size: 20px; letter-spacing: 5px; }
-            .container   { padding: 28px 24px 48px; }
+            .page-header {
+                padding: 18px 28px 14px;
+            }
+
+            .page-title {
+                font-size: 20px;
+                letter-spacing: 5px;
+            }
+
+            .container {
+                padding: 28px 24px 48px;
+            }
+
             .avatar-upload-wrapper,
-            .avatar-circle { width: 110px; height: 110px; }
-            .form-section { gap: 12px; }
-            .btn { padding: 16px 28px; font-size: 14px; }
+            .avatar-circle {
+                width: 110px;
+                height: 110px;
+            }
+
+            .form-section {
+                gap: 12px;
+            }
+
+            .btn {
+                padding: 16px 28px;
+                font-size: 14px;
+            }
         }
 
         @media (max-width: 360px) {
-            .page-title  { font-size: 13px; letter-spacing: 2.5px; }
-            .container   { padding: 14px 12px 36px; }
+            .page-title {
+                font-size: 13px;
+                letter-spacing: 2.5px;
+            }
+
+            .container {
+                padding: 14px 12px 36px;
+            }
+
             .avatar-upload-wrapper,
-            .avatar-circle { width: 76px; height: 76px; }
-            .form-field  { padding: 12px 14px; border-radius: 12px; }
+            .avatar-circle {
+                width: 76px;
+                height: 76px;
+            }
+
+            .form-field {
+                padding: 12px 14px;
+                border-radius: 12px;
+            }
+
             .form-field input,
             .form-field select,
-            .form-field textarea { font-size: 14px; }
-            .btn { padding: 13px 16px; font-size: 12px; border-radius: 11px; }
+            .form-field textarea {
+                font-size: 14px;
+            }
+
+            .btn {
+                padding: 13px 16px;
+                font-size: 12px;
+                border-radius: 11px;
+            }
         }
 
         @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after { transition-duration: 0.01ms !important; }
+            *, *::before, *::after {
+                transition-duration: 0.01ms !important;
+            }
         }
     </style>
 
@@ -367,93 +423,90 @@
 </head>
 <body>
 
-    <!-- ===== HEADER ===== -->
-    <div class="page-header">
-        <a href="{% url 'user_profile' %}" class="back-btn">‹</a>
-        <h1 class="page-title">{% trans "EDIT PROFILE" %}</h1>
-        <div class="header-spacer"></div>
+<!-- ===== HEADER ===== -->
+<div class="page-header">
+    <a href="{% url 'user_profile' %}" class="back-btn">‹</a>
+    <h1 class="page-title">{% trans "EDIT PROFILE" %}</h1>
+    <div class="header-spacer"></div>
+</div>
+
+<div class="container">
+
+    <!-- Avatar -->
+    <div class="avatar-section">
+        <div class="avatar-upload-wrapper" onclick="document.getElementById('id_avatar').click()">
+            <div class="avatar-circle">
+                {% if form.avatar.value %}
+                    <img src="{{ form.avatar.value.url }}" alt="Avatar" class="avatar-image" id="avatar-preview">
+                {% else %}
+                    <div class="avatar-icon">👤</div>
+                {% endif %}
+            </div>
+            <div class="avatar-overlay">📷</div>
+        </div>
+        <div class="upload-hint">{% trans "Tap to change photo" %}</div>
     </div>
 
-    <div class="container">
+    <!-- Form -->
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
 
-        <!-- Avatar -->
-        <div class="avatar-section">
-            <div class="avatar-upload-wrapper" onclick="document.getElementById('id_avatar').click()">
-                <div class="avatar-circle">
-                    {% if form.avatar.value %}
-                        <img src="{{ form.avatar.value.url }}" alt="Avatar" class="avatar-image" id="avatar-preview">
-                    {% else %}
-                        <div class="avatar-icon">👤</div>
-                    {% endif %}
-                </div>
-                <div class="avatar-overlay">📷</div>
-            </div>
-            <div class="upload-hint">{% trans "Tap to change photo" %}</div>
+
+        {% if form.non_field_errors %}
+            <div class="non-field-errors">{{ form.non_field_errors }}</div>
+        {% endif %}
+
+        <div class="form-section">
+            {% for field in form %}
+                {% if field.name != 'avatar' and field.name != 'unit_system' and field.name != 'metric' %}
+                    <div class="form-field">
+                        {{ field.label_tag }}
+                        {{ field }}
+                        {% if field.help_text %}
+                            <span class="helptext">{{ field.help_text }}</span>
+                        {% endif %}
+                        {{ field.errors }}
+                    </div>
+                {% elif field.name == 'avatar' %}
+                    {{ field }}
+                {% endif %}
+            {% endfor %}
         </div>
 
-        <!-- Form -->
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
+        <!-- Buttons — sticky emas, pastda -->
+        <div class="buttons-wrapper">
+            <a href="{% url 'user_profile' %}" class="btn btn-cancel">
+                {% trans "Cancel" %}
+            </a>
+            <button type="submit" class="btn btn-submit">
+                {% trans "Save" %}
+            </button>
+        </div>
+    </form>
+</div>
 
-            {# unit_system is required on the model but intentionally not shown;
-               submit it as hidden so the form stays valid on save. #}
-            {{ form.unit_system.as_hidden }}
+<script>
+    // Avatar preview
+    const avatarInput = document.getElementById('id_avatar');
+    const avatarCircle = document.querySelector('.avatar-circle');
 
-            {% if form.non_field_errors %}
-                <div class="non-field-errors">{{ form.non_field_errors }}</div>
-            {% endif %}
-
-            <div class="form-section">
-                {% for field in form %}
-                    {% if field.name != 'avatar' and field.name != 'unit_system' and field.name != 'metric' %}
-                        <div class="form-field">
-                            {{ field.label_tag }}
-                            {{ field }}
-                            {% if field.help_text %}
-                                <span class="helptext">{{ field.help_text }}</span>
-                            {% endif %}
-                            {{ field.errors }}
-                        </div>
-                    {% elif field.name == 'avatar' %}
-                        {{ field }}
-                    {% endif %}
-                {% endfor %}
-            </div>
-
-            <!-- Buttons — sticky emas, pastda -->
-            <div class="buttons-wrapper">
-                <a href="{% url 'user_profile' %}" class="btn btn-cancel">
-                    {% trans "Cancel" %}
-                </a>
-                <button type="submit" class="btn btn-submit">
-                    {% trans "Save" %}
-                </button>
-            </div>
-        </form>
-    </div>
-
-    <script>
-        // Avatar preview
-        const avatarInput = document.getElementById('id_avatar');
-        const avatarCircle = document.querySelector('.avatar-circle');
-
-        if (avatarInput) {
-            avatarInput.addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (!file) return;
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    const preview = document.getElementById('avatar-preview');
-                    if (preview) {
-                        preview.src = event.target.result;
-                    } else {
-                        avatarCircle.innerHTML = `<img src="${event.target.result}" alt="Avatar" class="avatar-image" id="avatar-preview">`;
-                    }
-                };
-                reader.readAsDataURL(file);
-            });
-        }
-    </script>
+    if (avatarInput) {
+        avatarInput.addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                const preview = document.getElementById('avatar-preview');
+                if (preview) {
+                    preview.src = event.target.result;
+                } else {
+                    avatarCircle.innerHTML = `<img src="${event.target.result}" alt="Avatar" class="avatar-image" id="avatar-preview">`;
+                }
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+</script>
 
 </body>
 </html>

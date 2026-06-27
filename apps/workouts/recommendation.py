@@ -74,7 +74,7 @@ def get_recommended_program(user_profile, workout_type: str | None = None) -> Pr
         is_active=True, type=Program.ProgramType.ADMIN, is_individual=True, is_one_time=False,
     )
     if workout_type in {"gym", "home"}:
-        fallback = fallback_qs.filter(workout_type=workout_type).first()
-        if fallback:
-            return fallback
+        # Tanlangan rejim talab qilingan bo'lsa — FAQAT shu rejim ichidan qaytaramiz.
+        # Aks holda boshqa rejim programmasi qaytib, detail havolasi 404 berishi mumkin.
+        return fallback_qs.filter(workout_type=workout_type).first()
     return fallback_qs.first()

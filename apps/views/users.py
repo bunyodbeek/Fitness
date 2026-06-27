@@ -30,6 +30,7 @@ from apps.models.favorites import CustomProgramProgress
 from apps.models.payments import Subscription, Payment
 from apps.models.workouts import WorkoutProgress, WorkoutType
 from apps.services.program_progression import create_onboarding_program
+from apps.utils.telegram_webapp import parse_init_data
 from apps.utils.tlg_bot import bot_send_message
 
 
@@ -139,6 +140,19 @@ class QuestionnaireSubmitAPIView(APIView):
         request.session['workout_type'] = workout_type
 
         telegram_id = data.get('telegram_id')
+        # Frontend telegram_id bera olmasa — imzolangan init_data'dan ajratamiz.
+        if not telegram_id:
+            verified = parse_init_data(data.get('init_data') or '')
+            if verified:
+                telegram_id = verified['telegram_id']
+                # Telegramdan kelgan ishonchli ma'lumotlar bilan to'ldiramiz.
+                data = data.copy() if hasattr(data, 'copy') else dict(data)
+                data['telegram_id'] = telegram_id
+                data.setdefault('first_name', verified.get('first_name') or 'User')
+                data.setdefault('last_name', verified.get('last_name') or '')
+                data.setdefault('username', verified.get('username') or '')
+                data.setdefault('photo_url', verified.get('photo_url') or '')
+
         if not telegram_id:
             return Response({'success': False, 'error': 'Telegram ID topilmadi'}, status=400)
 
@@ -207,6 +221,12 @@ class TelegramAuthAPIView(APIView):
         try:
             data = request.data
             telegram_id = data.get('telegram_id')
+
+            # Frontend telegram_id bera olmasa — imzolangan init_data'dan ajratamiz.
+            if not telegram_id:
+                verified = parse_init_data(data.get('init_data') or '')
+                if verified:
+                    telegram_id = verified['telegram_id']
 
             if not telegram_id:
                 return Response({'success': False, 'error': 'Telegram ID not found'},

@@ -144,17 +144,23 @@ def build_programs_page_context(request, workout_type):
 		explore_programs.append(program)
 
 	# ── Recommended hero ──
+	# Tavsiya kartochkasi FAQAT gym rejimida ko'rsatiladi.
+	# Home rejimida mos individual tavsiya programmasi ko'pincha bo'lmaydi va
+	# (eski xulq-atvorda) gym programmasiga "home_program_detail" havolasi
+	# yasalib, ochilganda 404 berardi. Shuning uchun home'da umuman ko'rsatmaymiz.
 	recommended_card = None
-	recommended = get_recommended_program(profile, workout_type=workout_type) if profile else None
-	if recommended and not recommended.is_one_time:
-		rec_ids = _all_workout_ids(recommended)
-		fully_completed = bool(rec_ids) and all(wid in completed_ids for wid in rec_ids)
-		if not fully_completed:
-			recommended_card = {
-				"program": recommended,
-				"url": _program_detail_url(recommended, workout_type),
-				"progress": compute_program_progress(recommended, completed_ids),
-			}
+	if workout_type == WorkoutType.GYM:
+		recommended = get_recommended_program(profile, workout_type=workout_type) if profile else None
+		# Tavsiya programmasi tanlangan rejimga MOS bo'lishi shart (404 oldini olish).
+		if recommended and recommended.workout_type == workout_type and not recommended.is_one_time:
+			rec_ids = _all_workout_ids(recommended)
+			fully_completed = bool(rec_ids) and all(wid in completed_ids for wid in rec_ids)
+			if not fully_completed:
+				recommended_card = {
+					"program": recommended,
+					"url": _program_detail_url(recommended, workout_type),
+					"progress": compute_program_progress(recommended, completed_ids),
+				}
 
 	# ── One-time cards ──
 	one_time_cards = []
