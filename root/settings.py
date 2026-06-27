@@ -60,6 +60,7 @@ MIDDLEWARE = [
 	
 	'django.contrib.auth.middleware.AuthenticationMiddleware',
 	'apps.middleware.TelegramLoginRedirectMiddleware',
+	'apps.middleware.TelegramProfileRedirectMiddleware',
 	
 	'django.contrib.messages.middleware.MessageMiddleware',
 

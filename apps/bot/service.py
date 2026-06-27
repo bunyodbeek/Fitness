@@ -2,7 +2,10 @@
 import asyncio
 from django.utils import timezone
 from apps.models import UserProfile
-from .notifications import notify_subscription_expiring, notify_subscription_expired
+from apps.management.commands.bot_notisfication import (
+	notify_subscription_expiring,
+	notify_subscription_expired,
+)
 
 
 def process_subscription_alerts():

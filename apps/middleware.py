@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.http import JsonResponse
 from django.shortcuts import redirect
 from urllib.parse import urlparse
 
@@ -74,5 +75,45 @@ class TelegramLoginRedirectMiddleware:
         accepts_html = "text/html" in (request.headers.get("Accept", ""))
         if not accepts_html:
             return response
+
+        return redirect(settings.TELEGRAM_BOT_REDIRECT_URL)
+
+
+class TelegramProfileRedirectMiddleware:
+    """
+    Foydalanuvchi (masalan, brauzerda shredzville.com orqali) tizimga kirgan, lekin
+    unga bog'langan `UserProfile` mavjud bo'lmasligi mumkin. Ko'p view'lar
+    `request.user.profile` ga to'g'ridan-to'g'ri murojaat qiladi va bunday holatda
+    `UserProfile.DoesNotExist` xatosi yuzaga keladi (DEBUG=True'da xato sahifasi
+    ko'rinadi). Bu middleware shu xatoni bitta joyda ushlab, "profil kerak" bo'lgan
+    har qanday sahifani Telegram bot'iga (onboarding) yo'naltiradi.
+    """
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        return self.get_response(request)
+
+    def process_exception(self, request, exception):
+        # Faqat UserProfile.DoesNotExist (request.user.profile murojaatidan) bilan ishlaymiz.
+        # Importni shu yerda qilamiz — app'lar yuklanmasdan oldin middleware import bo'lishi mumkin.
+        from apps.models import UserProfile
+
+        if not isinstance(exception, UserProfile.DoesNotExist):
+            return None
+
+        # API / AJAX so'rovlarga JSON qaytaramiz — bu yerda redirect mantiqsiz.
+        accepts_html = "text/html" in (request.headers.get("Accept", ""))
+        is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
+        if is_ajax or not accepts_html:
+            return JsonResponse(
+                {
+                    "success": False,
+                    "error": "profile_required",
+                    "redirect": settings.TELEGRAM_BOT_REDIRECT_URL,
+                },
+                status=403,
+            )
 
         return redirect(settings.TELEGRAM_BOT_REDIRECT_URL)
