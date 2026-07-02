@@ -18,21 +18,27 @@ def _roundup_to_2_5(value: float) -> float:
     return math.ceil(float(value) / 2.5) * 2.5
 
 
-def _calc_weight(base_weight: float, multiplier: float,
+def _calc_weight(week1_base: float, prev_weight: float, multiplier: float,
                  small_threshold: float, small_boost: float) -> float:
     """
     Sheets formula:
-    =ROUNDUP(MAX(base*mult, IF(base<threshold, base+boost, base+2.5))/2.5, 0)*2.5
-    Agar natija <= base bo'lsa → base + 2.5
+    =ROUNDUP(MAX(base*mult, IF(base<threshold, prev+boost, prev+2.5))/2.5, 0)*2.5
+
+    - opt1 (multiplier tarmog'i) week-1 bazasiga tayanadi, chunki mult'lar
+      week-1'dan kumulyativ (1.06, 1.12, 1.18, 1.22).
+    - opt2 (small boost tarmog'i) OLDINGI hafta vazniga tayanadi, shuning uchun
+      har hafta ketma-ket qo'shiladi (30 → 35 → 40 → 45 → 50).
+    Natija oldingi haftadan kam bo'lsa → prev + 2.5.
     """
-    base_weight = float(base_weight or 0)
-    opt1 = base_weight * float(multiplier)
-    opt2 = (base_weight + float(small_boost)
-            if base_weight < float(small_threshold)
-            else base_weight + 2.5)
+    week1_base = float(week1_base or 0)
+    prev_weight = float(prev_weight or 0)
+    opt1 = week1_base * float(multiplier)
+    opt2 = (prev_weight + float(small_boost)
+            if week1_base < float(small_threshold)
+            else prev_weight + 2.5)
     result = _roundup_to_2_5(max(opt1, opt2))
-    if result <= base_weight:
-        result = base_weight + 2.5
+    if result <= prev_weight:
+        result = prev_weight + 2.5
     return result
 
 
@@ -70,6 +76,7 @@ class ProgramGenerationService:
         base_sets   = int(instance.sets or 0)
         base_reps   = int(instance.reps or 0)
         base_weight = float(instance.recommended_weight or 0)
+        prev_weight = base_weight
 
         max_weeks = 4 if getattr(plan, "is_4_week", False) else 6
         for week_num in range(2, max_weeks + 1):
@@ -81,10 +88,16 @@ class ProgramGenerationService:
 
             new_sets   = max(0, base_sets + int(set_increment))
             new_reps   = max(6, base_reps + int(rep_increment))
+
+            # Deload haftasi (mult < 1) kumulyativ emas — week-1 bazasidan hisoblanadi.
+            is_deload = float(weight_mult) < 1.0
+            weight_base = base_weight if is_deload else prev_weight
             new_weight = _calc_weight(
-                base_weight, weight_mult,
+                base_weight, weight_base, weight_mult,
                 config.small_threshold, config.small_boost,
             )
+            if not is_deload:
+                prev_weight = new_weight
 
             target_week = Week.objects.filter(plan=plan, week_number=week_num).first()
             if not target_week:
