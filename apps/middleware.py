@@ -76,7 +76,9 @@ class TelegramLoginRedirectMiddleware:
         if not accepts_html:
             return response
 
-        return redirect(settings.TELEGRAM_BOT_REDIRECT_URL)
+        from apps.utils.telegram_bot_link import get_bot_deeplink
+
+        return redirect(get_bot_deeplink())
 
 
 class TelegramProfileRedirectMiddleware:
@@ -103,6 +105,10 @@ class TelegramProfileRedirectMiddleware:
         if not isinstance(exception, UserProfile.DoesNotExist):
             return None
 
+        from apps.utils.telegram_bot_link import get_bot_deeplink
+
+        bot_url = get_bot_deeplink()
+
         # API / AJAX so'rovlarga JSON qaytaramiz — bu yerda redirect mantiqsiz.
         accepts_html = "text/html" in (request.headers.get("Accept", ""))
         is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
@@ -111,9 +117,9 @@ class TelegramProfileRedirectMiddleware:
                 {
                     "success": False,
                     "error": "profile_required",
-                    "redirect": settings.TELEGRAM_BOT_REDIRECT_URL,
+                    "redirect": bot_url,
                 },
                 status=403,
             )
 
-        return redirect(settings.TELEGRAM_BOT_REDIRECT_URL)
+        return redirect(bot_url)

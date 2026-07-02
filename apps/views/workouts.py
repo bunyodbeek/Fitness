@@ -122,6 +122,12 @@ def build_programs_page_context(request, workout_type):
 			).values_list("workout_id", flat=True)
 		)
 
+	# ── Daraja (level) filtri: Beginner / Advanced dropdown ──
+	valid_levels = {Program.Level.BEGINNER, Program.Level.ADVANCED}
+	active_level = (request.GET.get("level") or "").lower().strip()
+	if active_level not in valid_levels:
+		active_level = ""
+
 	# ── Explore (kategoriya + grid) uchun asosiy queryset ──
 	explore_qs = (
 		Program.objects.filter(
@@ -134,14 +140,11 @@ def build_programs_page_context(request, workout_type):
 		.prefetch_related("plans__weeks__workouts")
 		.order_by("id")
 	)
+	if active_level:
+		explore_qs = explore_qs.filter(level=active_level)
 
-	explore_programs = []
-	for program in explore_qs:
-		ids = _all_workout_ids(program)
-		# To'liq tugatilgan programmalarni yashiramiz (avvalgi xulq-atvor).
-		if ids and all(wid in completed_ids for wid in ids):
-			continue
-		explore_programs.append(program)
+	# Tugatilgan programmalar ham ro'yxatda qoladi (yashirilmaydi).
+	explore_programs = list(explore_qs)
 
 	# ── Recommended hero ──
 	# Tavsiya kartochkasi FAQAT gym rejimida ko'rsatiladi.
@@ -220,6 +223,8 @@ def build_programs_page_context(request, workout_type):
 	return {
 		"active_workout_type": workout_type,
 		"is_home_mode": workout_type == WorkoutType.HOME,
+		"active_level": active_level,
+		"level_choices": Program.Level.choices,
 		"recommended_card": recommended_card,
 		"one_time_cards": one_time_cards,
 		"categories": categories,

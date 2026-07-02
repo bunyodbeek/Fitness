@@ -291,6 +291,18 @@
     // ba'zi klientlarda u chaqirilmasa initData kech yetib keladi.
     if (tg) { try { tg.ready(); } catch(e){} try { tg.expand(); } catch(e){} }
 
+    // Brauzerda (shredzville.com) Telegram konteksti yo'q — telegram_id ololmaymiz.
+    // Bunday userni to'g'ridan-to'g'ri Telegram bot'iga yuboramiz (u yerdan mini app
+    // ochilib telegram_id olinadi). tg.platform === 'unknown' => Telegram tashqarisida.
+    const BOT_URL = "{{ telegram_bot_url|escapejs }}";
+    const insideTelegram = !!(tg && tg.platform && tg.platform !== 'unknown');
+    // Faqat HAQIQIY Telegram havolasiga yo'naltiramiz (t.me/tg://) — aks holda
+    // shu sahifaning o'ziga qaytib, cheksiz reload bo'lib qolishi mumkin.
+    const isTelegramLink = /(^tg:)|(\/\/t\.me\/)|(telegram\.me\/)/i.test(BOT_URL);
+    if (!insideTelegram && isTelegramLink) {
+        window.location.replace(BOT_URL);
+    }
+
     // raw initData (imzolangan) — backendda tekshirish/ID ajratish uchun ishonchli manba.
     function getInitData() {
         return (tg && tg.initData) ? tg.initData : '';

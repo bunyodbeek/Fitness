@@ -92,7 +92,9 @@ TEMPLATES = [
 				'django.contrib.auth.context_processors.auth',
 				
 				'django.contrib.messages.context_processors.messages',
-			
+
+				'apps.context_processors.telegram_bot_url',
+
 			],
 			
 		},
@@ -222,7 +224,22 @@ CORS_ALLOW_ALL_ORIGINS = True
 TELEGRAM_BOT_TOKEN = BOT_TOKEN
 
 TELEGRAM_WEBHOOK_URL = os.getenv('TELEGRAM_WEBHOOK_URL', default=WEBAPP_URL)
-TELEGRAM_BOT_REDIRECT_URL = os.getenv('TELEGRAM_BOT_REDIRECT_URL', default=f'{WEBAPP_URL}/uz/miniapp/questionnaire/')
+
+# Telegram bot deep-link (t.me). Brauzerdan (shredzville.com) kirgan, Telegram
+# konteksti bo'lmagan userni shu yerga yo'naltiramiz — u yerdan mini app ochilib
+# telegram_id olinadi. Username sozlanmagan bo'lsa, runtime'da bot.get_me() orqali
+# aniqlanadi (apps.utils.telegram_bot_link.get_bot_deeplink).
+TELEGRAM_BOT_URL = os.getenv('TELEGRAM_BOT_URL') or (
+    f"https://t.me/{TELEGRAM_BOT_USERNAME.lstrip('@')}" if TELEGRAM_BOT_USERNAME else ''
+)
+
+# MUHIM: bu QUESTIONNAIRE sahifasi emas, balki BOT bo'lishi kerak. Aks holda
+# profilsiz user questionnaire'ga tushib qoladi (u yerda telegram_id yo'q).
+TELEGRAM_BOT_REDIRECT_URL = (
+    os.getenv('TELEGRAM_BOT_REDIRECT_URL')
+    or TELEGRAM_BOT_URL
+    or f'{WEBAPP_URL}/uz/miniapp/questionnaire/'
+)
 
 ADMIN_ID = os.getenv('ADMIN_ID')
 

@@ -173,6 +173,12 @@
             overflow: hidden;
         }
 
+        /* Recommended kartochkada matn blokini pastroqqa suramiz:
+           badge tepada, matn (nom + tavsif) pastroqda, CTA eng pastda. */
+        .hero-card--recommended .hero-textblock {
+            margin-top: 44px;
+        }
+
         .hero-inforow {
             display: flex;
             align-items: center;
@@ -243,6 +249,36 @@
             text-transform: uppercase;
             color: #fff;
 
+        }
+
+        /* ===== LEVEL FILTER (Beginner / Advanced dropdown) ===== */
+        .level-filter {
+            margin: 2px 2px 0;
+        }
+
+        .level-select {
+            width: 100%;
+            appearance: none;
+            -webkit-appearance: none;
+            background: #0a0a0a url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ffd700' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6 6-6'/></svg>") no-repeat right 14px center;
+            border: 1px solid rgba(255, 215, 0, 0.25);
+            color: #fff;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            padding: 12px 40px 12px 14px;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+
+        .level-select:focus {
+            outline: none;
+            border-color: rgba(255, 215, 0, 0.55);
+        }
+
+        .level-select option {
+            background: #0a0a0a;
+            color: #fff;
         }
 
         .view-toggle {
@@ -582,12 +618,12 @@
                             </svg>
                             {% trans 'RECOMMENDED FOR YOU' %}
                         </span>
-                        <div class="hero-name">{{ rp.display_name }}</div>
-                        <div class="hero-meta">{{ rp.get_level_display }}
-                            &bull; {{ rp.plans.first.days_per_week|default:"3" }}x/{% trans "week" %}</div>
-                        {% if rp.display_description %}
-                            <div class="hero-desc">{{ rp.display_description|truncatewords:18 }}</div>
-                        {% endif %}
+                        <div class="hero-textblock">
+                            <div class="hero-name">{{ rp.display_name }}</div>
+                            {% if rp.display_description %}
+                                <div class="hero-desc">{{ rp.display_description|truncatewords:24 }}</div>
+                            {% endif %}
+                        </div>
 
                         <div class="hero-inforow">
                             {% if prog.started %}
@@ -728,6 +764,16 @@
                         </svg>
                     </button>
                 </div>
+            </div>
+
+            <div class="level-filter">
+                <select id="levelFilter" class="level-select"
+                        onchange="location.href='{% url 'program_list' %}?type={{ active_workout_type }}' + (this.value ? '&level=' + this.value : '')">
+                    <option value="" {% if not active_level %}selected{% endif %}>{% trans 'All levels' %}</option>
+                    {% for value, label in level_choices %}
+                        <option value="{{ value }}" {% if active_level == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
             </div>
 
             <div id="exploreRoot" class="explore-root mode-list">
