@@ -255,26 +255,31 @@
             letter-spacing: 2px;
             text-transform: uppercase;
             color: #fff;
-
+            min-width: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        /* ===== LEVEL FILTER (Beginner / Advanced dropdown) ===== */
+        /* ===== LEVEL FILTER (Beginner / Advanced dropdown) =====
+           Compact pill living inside the explore-header, between the
+           title and the list/grid toggle. */
         .level-filter {
-            margin: 2px 2px 0;
+            flex-shrink: 0;
         }
 
         .level-select {
-            width: 100%;
+            max-width: 130px;
             appearance: none;
             -webkit-appearance: none;
-            background: #0a0a0a url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ffd700' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6 6-6'/></svg>") no-repeat right 14px center;
+            background: #0a0a0a url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23ffd700' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6 6-6'/></svg>") no-repeat right 8px center;
             border: 1px solid rgba(255, 215, 0, 0.25);
             color: #fff;
-            font-size: 13px;
+            font-size: 11px;
             font-weight: 700;
-            letter-spacing: 0.5px;
-            padding: 12px 40px 12px 14px;
-            border-radius: 12px;
+            letter-spacing: 0.3px;
+            padding: 7px 26px 7px 11px;
+            border-radius: 9px;
             cursor: pointer;
         }
 
@@ -291,6 +296,7 @@
         .view-toggle {
             display: flex;
             gap: 4px;
+            flex-shrink: 0;
         }
 
         .view-toggle button {
@@ -381,7 +387,7 @@
             display: flex;
             overflow-x: auto;
             scroll-snap-type: x mandatory;
-            gap: 12px;
+            gap: 7px;
             padding: 2px 2px 4px;
             -ms-overflow-style: none;
             scrollbar-width: none;
@@ -391,9 +397,11 @@
             display: none;
         }
 
-        /* 3 cards fit per row; more than 3 -> horizontal scroll */
+        /* 3 cards fit per row; more than 3 -> horizontal scroll.
+           Tight gap (2 x 7px) keeps the cards as wide as possible so the
+           meta line ("6 weeks | 3x/week") fits without overflowing. */
         .cat-card {
-            flex: 0 0 calc((100% - 24px) / 3);
+            flex: 0 0 calc((100% - 14px) / 3);
             scroll-snap-align: start;
             position: relative;
             display: block;
@@ -537,7 +545,7 @@
         /* ===== RESPONSIVE ===== */
         @media (min-width: 700px) {
             .cat-card {
-                flex: 0 0 calc((100% - 48px) / 4);
+                flex: 0 0 calc((100% - 21px) / 4);
             }
         }
 
@@ -565,9 +573,10 @@
                 gap: 3px;
             }
 
+            /* Telefonda kartalar tor — meta ikonlarini olib tashlaymiz,
+               shunda "6 weeks | 3x/week" matni to‘liq sig‘adi. */
             .cat-meta-ic {
-                width: 11px;
-                height: 11px;
+                display: none;
             }
 
             .cat-popular {
@@ -730,6 +739,15 @@
         {% if categories %}
             <div class="explore-header">
                 <span class="title">{% trans 'EXPLORE PROGRAMS' %}</span>
+                <div class="level-filter">
+                    <select id="levelFilter" class="level-select"
+                            onchange="location.href='{% url 'program_list' %}?type={{ active_workout_type }}' + (this.value ? '&level=' + this.value : '')">
+                        <option value="" {% if not active_level %}selected{% endif %}>{% trans 'All levels' %}</option>
+                        {% for value, label in level_choices %}
+                            <option value="{{ value }}" {% if active_level == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
                 <div class="view-toggle" role="group" aria-label="{% trans 'View mode' %}">
                     <button type="button" id="viewBtnList" aria-label="{% trans 'List view' %}">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -752,16 +770,6 @@
                         </svg>
                     </button>
                 </div>
-            </div>
-
-            <div class="level-filter">
-                <select id="levelFilter" class="level-select"
-                        onchange="location.href='{% url 'program_list' %}?type={{ active_workout_type }}' + (this.value ? '&level=' + this.value : '')">
-                    <option value="" {% if not active_level %}selected{% endif %}>{% trans 'All levels' %}</option>
-                    {% for value, label in level_choices %}
-                        <option value="{{ value }}" {% if active_level == value %}selected{% endif %}>{{ label }}</option>
-                    {% endfor %}
-                </select>
             </div>
 
             <div id="exploreRoot" class="explore-root mode-list">
