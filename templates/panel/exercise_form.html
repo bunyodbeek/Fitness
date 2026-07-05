@@ -1,0 +1,126 @@
+{% extends 'panel/base.html' %}
+{% load i18n %}
+
+{% comment %}
+Exercise create/edit form. Extends the generic panel form with a progression
+block (GYM only): a Reps-based / Time-based selector that toggles either the
+weight fields or the time fields. HOME exercises hide the whole block. Backend
+validation in ExerciseForm.clean() mirrors this.
+{% endcomment %}
+
+{% block content %}
+    <div class="page-head">
+        <h2>{{ page_title }}</h2>
+        <a href="{{ cancel_url }}" class="btn">{% trans "Back" %}</a>
+    </div>
+
+    <style>
+        .prog-section {
+            margin-top: 22px; padding-top: 18px;
+            border-top: 1px solid rgba(255, 215, 0, 0.18);
+        }
+        .prog-section h3 {
+            font-size: 13px; font-weight: 700; letter-spacing: .04em;
+            text-transform: uppercase; color: var(--gold); margin: 0 0 4px;
+        }
+        .prog-section .prog-hint { font-size: 12px; margin: 0 0 14px; }
+        .prog-group {
+            padding: 14px; margin-top: 6px;
+            border: 1px solid rgba(255, 215, 0, 0.22); border-radius: 10px;
+            background: rgba(255, 215, 0, 0.04);
+        }
+    </style>
+
+    <div class="card" style="max-width:680px;">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <div class="form-errors" style="margin-bottom:16px;">{{ form.non_field_errors }}</div>
+            {% endif %}
+
+            {# ── Core fields (everything except progression) ── #}
+            {% for field in form %}
+                {% if field.name not in progression_fields %}
+                    <div class="form-row">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} *{% endif %}</label>
+                        {{ field }}
+                        {% if field.help_text %}<div class="muted" style="font-size:12px;margin-top:4px;">{{ field.help_text }}</div>{% endif %}
+                        {% if field.errors %}<div class="form-errors">{{ field.errors }}</div>{% endif %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+            {# ── Progression block (GYM only) ── #}
+            <div class="prog-section" id="prog-section">
+                <h3>{% trans "Progression" %}</h3>
+                <p class="prog-hint muted">
+                    {% trans "GYM only. The working weight or hold time grows each week across the program." %}
+                </p>
+
+                <div class="form-row" id="prog-type-row">
+                    <label for="{{ form.exercise_type.id_for_label }}">{{ form.exercise_type.label }}</label>
+                    {{ form.exercise_type }}
+                    {% if form.exercise_type.errors %}<div class="form-errors">{{ form.exercise_type.errors }}</div>{% endif %}
+                </div>
+
+                {# Reps-based → weight fields #}
+                <div class="prog-group" id="prog-weight">
+                    {% for field in form %}
+                        {% if field.name == "start_weight_beginner" or field.name == "start_weight_advanced" or field.name == "weekly_weight_increment_beginner" or field.name == "weekly_weight_increment_advanced" %}
+                            <div class="form-row">
+                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                {{ field }}
+                                {% if field.help_text %}<div class="muted" style="font-size:12px;margin-top:4px;">{{ field.help_text }}</div>{% endif %}
+                                {% if field.errors %}<div class="form-errors">{{ field.errors }}</div>{% endif %}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+                {# Time-based → time fields #}
+                <div class="prog-group" id="prog-time">
+                    {% for field in form %}
+                        {% if field.name == "start_time_beginner" or field.name == "start_time_advanced" or field.name == "weekly_time_increment_beginner" or field.name == "weekly_time_increment_advanced" %}
+                            <div class="form-row">
+                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                {{ field }}
+                                {% if field.help_text %}<div class="muted" style="font-size:12px;margin-top:4px;">{{ field.help_text }}</div>{% endif %}
+                                {% if field.errors %}<div class="form-errors">{{ field.errors }}</div>{% endif %}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div style="display:flex;gap:10px;margin-top:22px;">
+                <button type="submit" class="btn btn-primary">{% trans "Save" %}</button>
+                <a href="{{ cancel_url }}" class="btn">{% trans "Cancel" %}</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        (function () {
+            var wt = document.getElementById("id_workout_type");
+            var et = document.getElementById("id_exercise_type");
+            var section = document.getElementById("prog-section");
+            var typeRow = document.getElementById("prog-type-row");
+            var weight = document.getElementById("prog-weight");
+            var time = document.getElementById("prog-time");
+            if (!wt || !et) return;
+
+            function sync() {
+                var isGym = wt.value === "gym";
+                var type = et.value;
+                section.style.display = isGym ? "" : "none";
+                typeRow.style.display = isGym ? "" : "none";
+                weight.style.display = (isGym && type === "reps_based") ? "" : "none";
+                time.style.display = (isGym && type === "time_based") ? "" : "none";
+            }
+
+            wt.addEventListener("change", sync);
+            et.addEventListener("change", sync);
+            sync();
+        })();
+    </script>
+{% endblock %}

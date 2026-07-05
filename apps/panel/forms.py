@@ -79,12 +79,16 @@ class PlanForm(forms.ModelForm):
     that matches the program's mode (Gym rule for gym programs, Home rule for home
     programs) — the week 2..N generator reads it when week-1 days are saved, so
     every day in every week gets its progressed copy automatically.
+
+    ``difficulty`` (beginner/advanced) selects which start weight/time each
+    exercise contributes; changing it later recomputes the stored weekly values.
     """
     class Meta:
         model = Plan
         fields = [
             "program", "name", "name_uz", "name_ru", "description",
-            "order", "weeks_count", "progression_config", "home_progression_config",
+            "order", "weeks_count", "difficulty",
+            "progression_config", "home_progression_config",
             "is_premium", "is_4_week",
         ]
 
@@ -120,12 +124,20 @@ class WorkoutExerciseForm(forms.ModelForm):
     """
     class Meta:
         model = WorkoutExercise
-        fields = ["exercise", "sets", "reps", "recommended_weight", "minutes", "order"]
+        fields = ["exercise", "sets", "reps", "recommended_weight", "minutes", "order", "is_weight_manual"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["minutes"].required = False
         self.fields["recommended_weight"].required = False
+        self.fields["is_weight_manual"].required = False
+        self.fields["is_weight_manual"].label = _(
+            "Manual weight — keep this value on difficulty change / regeneration"
+        )
+        self.fields["is_weight_manual"].help_text = _(
+            "Auto-enabled when you change the weight. Untick (without changing "
+            "the weight) to hand it back to automatic calculation."
+        )
 
 
 # ───────────────────────── Content: pre-made days ─────────────────────────
@@ -142,29 +154,88 @@ class DayTemplateForm(forms.ModelForm):
 # ───────────────────────── Content: exercise library ─────────────────────────
 
 class ExerciseForm(forms.ModelForm):
+    # Progression fields (below) apply to GYM exercises only. HOME exercises hide
+    # them (JS) and the values are cleared on save.
+    PROGRESSION_FIELDS = [
+        "exercise_type",
+        "start_weight_beginner", "start_weight_advanced",
+        "weekly_weight_increment_beginner", "weekly_weight_increment_advanced",
+        "start_time_beginner", "start_time_advanced",
+        "weekly_time_increment_beginner", "weekly_time_increment_advanced",
+    ]
+
     class Meta:
         model = Exercise
         fields = [
             "name", "name_ru", "name_uz",
             "description", "description_ru", "description_uz",
             "primary_body_part", "thumbnail", "video",
-            "calory", "duration", "recommended_weight", "workout_type",
+            "calory", "duration", "workout_type",
+            "exercise_type",
+            "start_weight_beginner", "start_weight_advanced",
+            "weekly_weight_increment_beginner", "weekly_weight_increment_advanced",
+            "start_time_beginner", "start_time_advanced",
+            "weekly_time_increment_beginner", "weekly_time_increment_advanced",
         ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # `start_weight_beginner` keeps the legacy DB verbose ("Recommended
+        # weight (W1)") so the rename stayed a clean RenameField — relabel here.
+        self.fields["start_weight_beginner"].label = _("Start weight — beginner (kg)")
+        # Progression is validated conditionally in clean(), so nothing is
+        # required at the widget level.
+        for name in self.PROGRESSION_FIELDS:
+            self.fields[name].required = False
+
+    def clean(self):
+        cleaned = super().clean()
+        workout_type = cleaned.get("workout_type")
+        exercise_type = cleaned.get("exercise_type")
+
+        weight_fields = [
+            "start_weight_beginner", "start_weight_advanced",
+            "weekly_weight_increment_beginner", "weekly_weight_increment_advanced",
+        ]
+        time_fields = [
+            "start_time_beginner", "start_time_advanced",
+            "weekly_time_increment_beginner", "weekly_time_increment_advanced",
+        ]
+
+        if workout_type == Exercise.WorkoutType.GYM:
+            if exercise_type == Exercise.ExerciseType.REPS_BASED:
+                for name in weight_fields:
+                    if cleaned.get(name) in (None, ""):
+                        self.add_error(name, _("Required for reps-based exercises."))
+            elif exercise_type == Exercise.ExerciseType.TIME_BASED:
+                for name in time_fields:
+                    if cleaned.get(name) in (None, ""):
+                        self.add_error(name, _("Required for time-based exercises."))
+        else:
+            # HOME exercises don't use progression — clear it out.
+            cleaned["exercise_type"] = ""
+            for name in weight_fields[1:] + time_fields:
+                cleaned[name] = None
+
+        # `start_weight_beginner` is NOT NULL in the DB (renamed from
+        # recommended_weight); never let a blank submission save None.
+        if cleaned.get("start_weight_beginner") in (None, ""):
+            cleaned["start_weight_beginner"] = 0
+
+        return cleaned
 
 
 # ───────────────────────── Content: progression rules ─────────────────────────
 
 class ProgressionSettingForm(forms.ModelForm):
-    """Gym progression (sets / reps / weight growth per week). Also used by
-    custom programs (same rules as gym)."""
+    """Gym progression (sets / reps growth per week). Weight/time growth now
+    lives on the Exercise itself. Also used by custom programs (same rules)."""
     class Meta:
         model = ProgressionSetting
         fields = [
             "key",
-            "w2_weight_mult", "w3_weight_mult", "w4_weight_mult", "w5_weight_mult", "w6_deload_mult",
             "set_w2", "set_w3", "set_w4", "set_w5", "set_w6",
             "rep_w2", "rep_w3", "rep_w4", "rep_w5", "rep_w6",
-            "small_threshold", "small_boost",
         ]
 
 

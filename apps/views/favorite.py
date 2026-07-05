@@ -547,11 +547,8 @@ class CustomProgramCreateView(LoginRequiredMixin, View):
 			progression, _ = ProgressionSetting.objects.get_or_create(
 				key='default',
 				defaults={
-					'w2_weight_mult': 1.06, 'w3_weight_mult': 1.12,
-					'w4_weight_mult': 1.18, 'w5_weight_mult': 1.22, 'w6_deload_mult': 0.85,
 					'set_w2': 1, 'set_w3': 1, 'set_w4': 0, 'set_w5': 0, 'set_w6': 0,
 					'rep_w2': 0, 'rep_w3': -1, 'rep_w4': 0, 'rep_w5': -1, 'rep_w6': -2,
-					'small_threshold': 25.0, 'small_boost': 5.0,
 				}
 			)
 			plan = Plan.objects.create(

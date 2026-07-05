@@ -12,6 +12,7 @@
         didIt:    'Did It',
         kg:       'KG',
         reps:     'REPS',
+        sec:      'SEC',
         setOf:    'SET',
         of:       'OF',
         set:      'Set',
@@ -215,7 +216,9 @@ const toggleFullscreen = (e) => {
         const dur = $('nextUpDur');
         if (dur) {
             const exType = (next.type || 'strength').toLowerCase();
-            if (exType === 'strength' && next.sets) {
+            if ((next.exercise_type || '') === 'time_based' && next.duration_seconds != null) {
+                dur.textContent = `${next.sets || 1} ${T.setOf.toLowerCase()} × ${next.duration_seconds}${T.sec.toLowerCase()}`;
+            } else if (exType === 'strength' && next.sets) {
                 dur.textContent = `${next.sets} ${T.setOf.toLowerCase()} × ${next.reps || ''} ${T.reps.toLowerCase()}`;
             } else if (next.duration_minutes) {
                 dur.textContent = `${next.duration_minutes} min`;
@@ -245,7 +248,9 @@ const toggleFullscreen = (e) => {
         const dur = $('nextupModalDur');
         if (dur) {
             const exType = (ex.type || 'strength').toLowerCase();
-            if (exType === 'strength' && ex.sets) {
+            if ((ex.exercise_type || '') === 'time_based' && ex.duration_seconds != null) {
+                dur.textContent = `${ex.sets || 1} ${T.setOf.toLowerCase()} × ${ex.duration_seconds}${T.sec.toLowerCase()}`;
+            } else if (exType === 'strength' && ex.sets) {
                 dur.textContent = `${ex.sets} ${T.setOf.toLowerCase()} × ${ex.reps || ''} ${T.reps.toLowerCase()}`;
             } else if (ex.duration_minutes) {
                 dur.textContent = `${ex.duration_minutes} min`;
@@ -281,12 +286,17 @@ const toggleFullscreen = (e) => {
         const exType=(ex.type||'strength').toLowerCase(); if(!wr||!ex||exType!=='strength') return;
         wr.innerHTML='';
     
+        const isTime = (ex.exercise_type || '') === 'time_based' && ex.duration_seconds != null;
+
         for (let i=0; i<ex.sets; i++) {
             const done = isDone(currentExIdx, i);
             const w    = getW(currentExIdx, i);
             const wStr = w%1===0 ? String(w) : w.toFixed(1);
-            const rStr = ex.reps_max && ex.reps_max!==ex.reps
-                ? `${ex.reps}-${ex.reps_max}` : String(ex.reps);
+            // Time-based mashqlarda reps o'rniga ushlab turish vaqti (sekund) ko'rsatiladi.
+            const rStr = isTime
+                ? String(ex.duration_seconds)
+                : (ex.reps_max && ex.reps_max!==ex.reps
+                    ? `${ex.reps}-${ex.reps_max}` : String(ex.reps));
     
             const lr = document.createElement('div');
             lr.className='set-label-row';
@@ -342,7 +352,7 @@ const toggleFullscreen = (e) => {
             const div=document.createElement('div'); div.className='set-divider';
     
             const rZone=document.createElement('div'); rZone.className='set-reps-zone';
-            rZone.innerHTML=`<span class="r-num">${rStr}</span><span class="r-lbl">${T.reps}</span>`;
+            rZone.innerHTML=`<span class="r-num">${rStr}</span><span class="r-lbl">${isTime?T.sec:T.reps}</span>`;
     
             const diCell=document.createElement('div');
             diCell.className='did-it-cell';
@@ -352,8 +362,11 @@ const toggleFullscreen = (e) => {
                 diCell.addEventListener('click', ()=>didItSet(i));
             }
     
-            card.appendChild(wZone);
-            card.appendChild(div);
+            // Time-based mashqlarda vazn maydoni ko'rsatilmaydi.
+            if (!isTime) {
+                card.appendChild(wZone);
+                card.appendChild(div);
+            }
             card.appendChild(rZone);
             card.appendChild(diCell);
             wr.appendChild(card);

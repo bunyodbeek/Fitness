@@ -120,6 +120,10 @@ class Program(CreatedBaseModel):
 
 
 class Plan(CreatedBaseModel):
+	class Difficulty(TextChoices):
+		BEGINNER = "beginner", _("Beginner")
+		ADVANCED = "advanced", _("Advanced")
+
 	program = ForeignKey("apps.Program", CASCADE, related_name="plans")
 	name = CharField(max_length=200)
 	name_uz = CharField(max_length=200, blank=True)
@@ -132,6 +136,15 @@ class Plan(CreatedBaseModel):
 	weeks_count = IntegerField(default=6)
 	is_premium = BooleanField(default=False, verbose_name="Premium Plan")
 	is_4_week = BooleanField(default=False, verbose_name="4-haftalik tsikl (Home)", help_text="Faqat Home Plan uchun. Belgilansa, 4 hafta bilan cheklanadi.")
+	# Selects the beginner vs advanced start weight/time from each Exercise when
+	# the weekly progression is generated. Every plan has a difficulty.
+	difficulty = CharField(
+		_("Difficulty"), max_length=20, choices=Difficulty.choices, default=Difficulty.BEGINNER,
+		help_text=_("Which exercise values this plan uses: beginner or advanced."),
+	)
+	# Admin-only token for the panel "copy plan by link" feature. Separate from
+	# the user-facing Program.share_token; never exposed to end users.
+	share_token = CharField(max_length=8, unique=True, null=True, blank=True, db_index=True)
 	progression_config = ForeignKey(
 		"apps.ProgressionSetting",
 		SET_NULL,
@@ -300,14 +313,7 @@ class HomeWorkout(Workout):
 class ProgressionSetting(Model):
 	
 	key = CharField(max_length=64, unique=True)
-	
-	# Weight multipliers (har hafta uchun alohida)
-	w2_weight_mult = FloatField(default=1.06, verbose_name="W2 weight multiplier")
-	w3_weight_mult = FloatField(default=1.12, verbose_name="W3 weight multiplier")
-	w4_weight_mult = FloatField(default=1.18, verbose_name="W4 weight multiplier")
-	w5_weight_mult = FloatField(default=1.22, verbose_name="W5 weight multiplier")
-	w6_deload_mult = FloatField(default=0.85, verbose_name="W6 deload multiplier")
-	
+
 	# Sets increment (har hafta uchun alohida)
 	set_w2 = IntegerField(default=1, verbose_name="Sets +/- W2")
 	set_w3 = IntegerField(default=1, verbose_name="Sets +/- W3")
@@ -321,11 +327,7 @@ class ProgressionSetting(Model):
 	rep_w4 = IntegerField(default=0, verbose_name="Reps +/- W4")
 	rep_w5 = IntegerField(default=-1, verbose_name="Reps +/- W5")
 	rep_w6 = IntegerField(default=-2, verbose_name="Reps +/- W6 (deload)")
-	
-	# Small weight threshold va boost (Sheets col 17, 18)
-	small_threshold = FloatField(default=25.0, verbose_name="Small weight threshold (kg)")
-	small_boost = FloatField(default=5.0, verbose_name="Small weight boost (kg)")
-	
+
 	class Meta:
 		verbose_name = "Progression Setting"
 		verbose_name_plural = "Progression Settings"
@@ -360,6 +362,12 @@ class WorkoutExercise(Model):
 	sets = IntegerField(default=0)
 	reps = IntegerField(default=0)
 	recommended_weight = FloatField(default=0, null=True, blank=True)
+	# Per-week hold time (seconds) for time-based gym exercises (e.g. plank).
+	# Filled by the progression generator; None for reps-based exercises.
+	duration_seconds = IntegerField(null=True, blank=True, verbose_name="Time-based duration (sec)")
+	# True when an admin hand-edited this row's weight/time. Such rows are left
+	# untouched by weight recomputation (difficulty change / regeneration).
+	is_weight_manual = BooleanField(default=False, verbose_name="Manual weight/time")
 	order = IntegerField(default=0)
 	minutes = PositiveIntegerField(
 		default=0,
@@ -377,13 +385,13 @@ class WorkoutExercise(Model):
 		if self.exercise_id:
 			exercise_obj = getattr(self, "exercise", None)
 			if exercise_obj is None:
-				exercise_obj = Exercise.objects.filter(pk=self.exercise_id).only("duration", "recommended_weight").first()
+				exercise_obj = Exercise.objects.filter(pk=self.exercise_id).only("duration", "start_weight_beginner").first()
 
 			if exercise_obj:
 				if self.minutes in (None, 0):
 					self.minutes = exercise_obj.duration or 0
 				if self.recommended_weight in (None, 0):
-					self.recommended_weight = exercise_obj.recommended_weight or 0
+					self.recommended_weight = exercise_obj.start_weight_beginner or 0
 
 		super().save(*args, **kwargs)
 

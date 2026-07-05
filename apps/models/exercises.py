@@ -47,6 +47,10 @@ class Exercise(CreatedBaseModel):
         GYM = 'gym', _('Gym')
         HOME = 'home', _('Home')
 
+    class ExerciseType(TextChoices):
+        REPS_BASED = 'reps_based', _('Reps based')
+        TIME_BASED = 'time_based', _('Time based')
+
     name = CharField(_("Name"), max_length=200)
     name_ru = CharField(_("Russian Name"), max_length=200, blank=True)
     name_uz = CharField(_("Uzbek Name"), max_length=200, blank=True)
@@ -58,8 +62,29 @@ class Exercise(CreatedBaseModel):
     video = FileField(upload_to='exercises/videos/')
     calory = IntegerField(_("Calories"), default=0)
     duration = IntegerField(_("Duration"), default=0)
-    recommended_weight = FloatField(_("Recommended weight (W1)"), default=0)
     workout_type = CharField(_("Workout type"), max_length=10, choices=WorkoutType.choices, default=WorkoutType.GYM)
+
+    # ── Progression (GYM exercises only) ──────────────────────────────────────
+    # `exercise_type` decides which start/increment group drives the weekly
+    # progression. HOME exercises ignore all of the fields below.
+    exercise_type = CharField(
+        _("Exercise type"), max_length=20, choices=ExerciseType.choices, blank=True, default='',
+    )
+
+    # Reps-based: working weight grows each week by the level-specific increment.
+    # `start_weight_beginner` was renamed from the old `recommended_weight` (W1)
+    # so existing catalog values are preserved — keep its definition byte-identical
+    # so makemigrations emits a RenameField, not RemoveField + AddField.
+    start_weight_beginner = FloatField(_("Recommended weight (W1)"), default=0)
+    start_weight_advanced = FloatField(_("Start weight — advanced (kg)"), blank=True, null=True)
+    weekly_weight_increment_beginner = FloatField(_("Weekly weight increment — beginner (kg)"), blank=True, null=True)
+    weekly_weight_increment_advanced = FloatField(_("Weekly weight increment — advanced (kg)"), blank=True, null=True)
+
+    # Time-based (e.g. plank): held time grows each week by the level-specific increment.
+    start_time_beginner = IntegerField(_("Start time — beginner (sec)"), blank=True, null=True)
+    start_time_advanced = IntegerField(_("Start time — advanced (sec)"), blank=True, null=True)
+    weekly_time_increment_beginner = IntegerField(_("Weekly time increment — beginner (sec)"), blank=True, null=True)
+    weekly_time_increment_advanced = IntegerField(_("Weekly time increment — advanced (sec)"), blank=True, null=True)
 
     class Meta:
         ordering = ['id']

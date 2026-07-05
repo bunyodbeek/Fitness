@@ -31,18 +31,30 @@ class ExerciseListView(PanelListView):
 class ExerciseCreateView(PanelCreateView):
     model = Exercise
     form_class = ExerciseForm
+    template_name = "panel/exercise_form.html"
     nav_active = "exercises"
     page_title = _("Add exercise")
     success_url = reverse_lazy("panel:exercises")
     success_message = _("Exercise created.")
 
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["progression_fields"] = ExerciseForm.PROGRESSION_FIELDS
+        return ctx
+
 
 class ExerciseUpdateView(PanelUpdateView):
     model = Exercise
     form_class = ExerciseForm
+    template_name = "panel/exercise_form.html"
     nav_active = "exercises"
     page_title = _("Edit exercise")
     success_url = reverse_lazy("panel:exercises")
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["progression_fields"] = ExerciseForm.PROGRESSION_FIELDS
+        return ctx
 
 
 class ExerciseDeleteView(PanelDeleteView):

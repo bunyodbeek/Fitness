@@ -29,7 +29,7 @@ class ProgressionListView(PanelListView):
     model = ProgressionSetting
     nav_active = "progression"
     page_title = _("Progression rules")
-    columns = [_("Key"), _("W2 weight ×"), _("W6 deload ×"), _("Sets W2"), _("Reps W3")]
+    columns = [_("Key"), _("Sets W2"), _("Sets W4"), _("Reps W3"), _("Reps W5")]
     search_fields = ["key"]
     create_url_name = "panel:progression_add"
     edit_url_name = "panel:progression_edit"
@@ -40,7 +40,7 @@ class ProgressionListView(PanelListView):
         return super().get_queryset().order_by("key")
 
     def get_row_cells(self, obj):
-        return [obj.key, obj.w2_weight_mult, obj.w6_deload_mult, obj.set_w2, obj.rep_w3]
+        return [obj.key, obj.set_w2, obj.set_w4, obj.rep_w3, obj.rep_w5]
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)

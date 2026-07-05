@@ -6,12 +6,15 @@ This is a drill-down UI over the *existing* models. All progression behaviour
 existing post_save signals on WorkoutExercise — nothing in that logic changes.
 """
 import json
+import re
 
 from django.contrib import messages
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
+from django.views import View
 from django.views.generic import DetailView, TemplateView
 
 from apps.models import Exercise, Plan, Program, Week, Workout, WorkoutExercise
@@ -196,6 +199,25 @@ class PlanUpdateView(PanelUpdateView):
     nav_active = "plans"
     page_title = _("Edit plan")
 
+    def form_valid(self, form):
+        # Weekly weights/times are stored per WorkoutExercise, so a difficulty
+        # change must recompute them. Only AUTO rows are touched — hand-edited
+        # (manual) weights and every set/rep value are preserved.
+        old_difficulty = (
+            Plan.objects.filter(pk=form.instance.pk)
+            .values_list("difficulty", flat=True)
+            .first()
+        )
+        response = super().form_valid(form)
+        if old_difficulty is not None and old_difficulty != self.object.difficulty:
+            ProgramGenerationService.recompute_plan_weights(self.object)
+            messages.success(
+                self.request,
+                _("Difficulty changed — auto weights/times recomputed "
+                  "(manual overrides kept)."),
+            )
+        return response
+
     def get_success_url(self):
         return reverse("panel:plan_detail", args=[self.object.pk])
 
@@ -230,6 +252,7 @@ class PlanDetailView(StaffRequiredMixin, PanelContextMixin, DetailView):
         progression = pl.home_progression_config if is_home else pl.progression_config
         ctx["obj_meta"] = [
             {"label": _("Mode"), "value": pl.program.get_workout_type_display()},
+            {"label": _("Difficulty"), "value": pl.get_difficulty_display()},
             {"label": _("Weeks"), "value": pl.weeks_count},
             {"label": _("Progression"), "value": progression or _("Not set")},
         ]
@@ -238,6 +261,12 @@ class PlanDetailView(StaffRequiredMixin, PanelContextMixin, DetailView):
                 "Tip: open a week-1 day and use “Build / add exercises” to pick a "
                 "progression rule and add exercises — weeks 2..N then auto-fill."
             )
+        # Admin "copy plan by link": header Get-link action + Weeks-section import.
+        ctx["obj_action_url"] = reverse("panel:plan_share_generate", args=[pl.pk])
+        ctx["obj_action_label"] = _("Get link")
+        ctx["child_import_url"] = reverse("panel:plan_import", args=[pl.pk])
+        ctx["child_import_label"] = _("By link")
+        ctx["child_import_placeholder"] = _("Paste another plan's link…")
         ctx["child_title"] = _("Weeks")
         ctx["child_add_url"] = reverse("panel:week_add", args=[pl.pk])
         ctx["child_add_label"] = _("Add week")
@@ -251,6 +280,60 @@ class PlanDetailView(StaffRequiredMixin, PanelContextMixin, DetailView):
             for w in pl.weeks.all()
         ]
         return ctx
+
+
+# ───────────────────────── Plan copy-by-link (admin only) ─────────────────────────
+
+def _extract_plan_token(raw: str) -> str:
+    """Pull an 8-char share token out of a pasted token or link."""
+    parts = re.split(r"[^A-Z0-9]+", (raw or "").strip().upper())
+    for part in reversed(parts):
+        if len(part) == 8:
+            return part
+    return ""
+
+
+class PlanShareTokenView(StaffRequiredMixin, View):
+    """POST — mint/return an admin share token (+ link) for a plan. JSON."""
+
+    def post(self, request, pk):
+        plan = get_object_or_404(Plan, pk=pk)
+        token = ProgramGenerationService.get_or_create_plan_share_token(plan)
+        url = request.build_absolute_uri(reverse("panel:plans")) + f"?link={token}"
+        return JsonResponse({"token": token, "url": url})
+
+
+class PlanImportView(StaffRequiredMixin, View):
+    """POST — paste another admin plan's link/token and copy its structure into
+    this plan's week 1 (sets/reps only; weights derived from target difficulty)."""
+
+    def post(self, request, pk):
+        target = get_object_or_404(Plan, pk=pk)
+        token = _extract_plan_token(request.POST.get("link", ""))
+
+        detail_url = reverse("panel:plan_detail", args=[target.pk])
+        if not token:
+            messages.error(request, _("Please paste a valid plan link."))
+            return redirect(detail_url)
+
+        source = Plan.objects.filter(share_token=token).first()
+        if not source:
+            messages.error(request, _("Invalid or expired link — no plan found."))
+            return redirect(detail_url)
+        if source.pk == target.pk:
+            messages.error(request, _("You can't import a plan into itself."))
+            return redirect(detail_url)
+
+        imported = ProgramGenerationService.copy_plan_structure_into(target, source)
+        if imported:
+            messages.success(
+                request,
+                _("Imported %(n)d day(s). Weeks 2..N were regenerated for this "
+                  "plan's difficulty.") % {"n": imported},
+            )
+        else:
+            messages.error(request, _("Nothing to import — the source plan has no week-1 days."))
+        return redirect(detail_url)
 
 
 # ───────────────────────── Week ─────────────────────────
@@ -456,6 +539,20 @@ class WorkoutExerciseUpdateView(PanelUpdateView):
     form_class = WorkoutExerciseForm
     nav_active = "plans"
     page_title = _("Edit exercise")
+
+    def form_valid(self, form):
+        # A hand-edited weight becomes a manual override so it survives future
+        # difficulty changes / regeneration. Leaving the weight untouched keeps
+        # the admin's is_weight_manual checkbox choice (allowing reset to auto).
+        old_weight = (
+            WorkoutExercise.objects.filter(pk=form.instance.pk)
+            .values_list("recommended_weight", flat=True)
+            .first()
+        )
+        new_weight = form.cleaned_data.get("recommended_weight")
+        if old_weight is not None and float(old_weight or 0) != float(new_weight or 0):
+            form.instance.is_weight_manual = True
+        return super().form_valid(form)
 
     def get_success_url(self):
         return reverse("panel:workout_detail", args=[self.object.workout_id])

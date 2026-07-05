@@ -1,8 +1,6 @@
-import math
-
 from django.db import transaction
 
-from apps.models import Plan, Program, Week, Workout, WorkoutExercise
+from apps.models import Exercise, Plan, Program, Week, Workout, WorkoutExercise
 from apps.models.workouts import ProgressionSetting, HomeProgressionSetting
 from apps.utils.tokens import generate_share_token
 from apps.workouts.recommendation import get_recommended_program
@@ -13,43 +11,44 @@ except ImportError:
     UserProgram = None
 
 
-
-def _roundup_to_2_5(value: float) -> float:
-    return math.ceil(float(value) / 2.5) * 2.5
-
-
-def _calc_weight(week1_base: float, prev_weight: float, multiplier: float,
-                 small_threshold: float, small_boost: float) -> float:
-    """
-    Sheets formula:
-    =ROUNDUP(MAX(base*mult, IF(base<threshold, prev+boost, prev+2.5))/2.5, 0)*2.5
-
-    - opt1 (multiplier tarmog'i) week-1 bazasiga tayanadi, chunki mult'lar
-      week-1'dan kumulyativ (1.06, 1.12, 1.18, 1.22).
-    - opt2 (small boost tarmog'i) OLDINGI hafta vazniga tayanadi, shuning uchun
-      har hafta ketma-ket qo'shiladi (30 → 35 → 40 → 45 → 50).
-    Natija oldingi haftadan kam bo'lsa → prev + 2.5.
-    """
-    week1_base = float(week1_base or 0)
-    prev_weight = float(prev_weight or 0)
-    opt1 = week1_base * float(multiplier)
-    opt2 = (prev_weight + float(small_boost)
-            if week1_base < float(small_threshold)
-            else prev_weight + 2.5)
-    result = _roundup_to_2_5(max(opt1, opt2))
-    if result <= prev_weight:
-        result = prev_weight + 2.5
-    return result
-
-
-# Hafta raqami → ProgressionSetting field nomlari
+# Hafta raqami → ProgressionSetting field nomlari (sets / reps o'sishi).
+# Vazn/vaqt endi bu yerdan emas, mashqning o'z maydonlaridan hisoblanadi.
 WEEK_FIELD_MAP = {
-    2: ("w2_weight_mult", "set_w2", "rep_w2"),
-    3: ("w3_weight_mult", "set_w3", "rep_w3"),
-    4: ("w4_weight_mult", "set_w4", "rep_w4"),
-    5: ("w5_weight_mult", "set_w5", "rep_w5"),
-    6: ("w6_deload_mult", "set_w6", "rep_w6"),
+    2: ("set_w2", "rep_w2"),
+    3: ("set_w3", "rep_w3"),
+    4: ("set_w4", "rep_w4"),
+    5: ("set_w5", "rep_w5"),
+    6: ("set_w6", "rep_w6"),
 }
+
+
+def _gym_progression_source(exercise: Exercise, difficulty: str):
+    """Resolve the per-week progression driver for a GYM exercise.
+
+    ``difficulty`` is the target plan's ``Plan.difficulty`` (beginner/advanced).
+    Returns ``(mode, start, increment)`` where ``mode`` is ``"time"`` or
+    ``"weight"``. Both the start value and the weekly increment are difficulty-
+    specific. The advanced side falls back to the beginner value when empty, and
+    a missing increment falls back to 0 (weight/time stays flat), so legacy
+    exercises keep working unchanged.
+    """
+    advanced = difficulty == Plan.Difficulty.ADVANCED
+
+    if exercise.exercise_type == Exercise.ExerciseType.TIME_BASED:
+        if advanced and exercise.start_time_advanced is not None:
+            increment = exercise.weekly_time_increment_advanced
+            if increment is None:
+                increment = exercise.weekly_time_increment_beginner
+            return "time", exercise.start_time_advanced, (increment or 0)
+        return "time", (exercise.start_time_beginner or 0), (exercise.weekly_time_increment_beginner or 0)
+
+    # reps_based (yoki hali tanlanmagan) → vaznga asoslangan.
+    if advanced and exercise.start_weight_advanced is not None:
+        increment = exercise.weekly_weight_increment_advanced
+        if increment is None:
+            increment = exercise.weekly_weight_increment_beginner
+        return "weight", exercise.start_weight_advanced, (increment or 0)
+    return "weight", (exercise.start_weight_beginner or 0), (exercise.weekly_weight_increment_beginner or 0)
 
 
 class ProgramGenerationService:
@@ -63,41 +62,49 @@ class ProgramGenerationService:
 
     @staticmethod
     def generate_progression_from_week_one(instance: WorkoutExercise):
-        print(f"DEBUG generate called: exercise_id={instance.id}, week={instance.workout.week.week_number}")
-
         plan = instance.workout.week.plan
         config: ProgressionSetting = plan.progression_config
-        print(f"DEBUG config={config}, plan={plan}")
 
+        # Sets/reps o'sishi progression rule'dan olinadi.
         if not config:
-            print("DEBUG: config None, returning!")
             return
 
-        base_sets   = int(instance.sets or 0)
-        base_reps   = int(instance.reps or 0)
-        base_weight = float(instance.recommended_weight or 0)
-        prev_weight = base_weight
+        base_sets = int(instance.sets or 0)
+        base_reps = int(instance.reps or 0)
+
+        # Vazn/vaqt mashqning katalog maydonlaridan + PLANNING difficulty'sidan
+        # hisoblanadi: N-hafta = start + (N - 1) * weekly_increment.
+        mode, start_value, increment = _gym_progression_source(
+            instance.exercise, plan.difficulty,
+        )
+
+        def week_value(week_num: int):
+            value = start_value + (week_num - 1) * increment
+            if mode == "time":
+                return None, int(round(value))
+            return round(value, 2), None
 
         max_weeks = 4 if getattr(plan, "is_4_week", False) else 6
-        for week_num in range(2, max_weeks + 1):
-            weight_field, set_field, rep_field = WEEK_FIELD_MAP[week_num]
 
-            weight_mult   = getattr(config, weight_field)
+        # 1-hafta (seed) — darajaga mos boshlang'ich qiymatni o'rnatamiz, lekin
+        # admin qo'lda tahrirlagan (manual) qiymatga tegmaymiz.
+        if not instance.is_weight_manual:
+            w1_weight, w1_seconds = week_value(1)
+            WorkoutExercise.objects.filter(pk=instance.pk).update(
+                recommended_weight=w1_weight if w1_weight is not None else 0,
+                duration_seconds=w1_seconds,
+            )
+
+        for week_num in range(2, max_weeks + 1):
+            set_field, rep_field = WEEK_FIELD_MAP[week_num]
+
             set_increment = getattr(config, set_field)
             rep_increment = getattr(config, rep_field)
 
-            new_sets   = max(0, base_sets + int(set_increment))
-            new_reps   = max(6, base_reps + int(rep_increment))
+            new_sets = max(0, base_sets + int(set_increment))
+            new_reps = max(6, base_reps + int(rep_increment))
 
-            # Deload haftasi (mult < 1) kumulyativ emas — week-1 bazasidan hisoblanadi.
-            is_deload = float(weight_mult) < 1.0
-            weight_base = base_weight if is_deload else prev_weight
-            new_weight = _calc_weight(
-                base_weight, weight_base, weight_mult,
-                config.small_threshold, config.small_boost,
-            )
-            if not is_deload:
-                prev_weight = new_weight
+            new_weight, new_seconds = week_value(week_num)
 
             target_week = Week.objects.filter(plan=plan, week_number=week_num).first()
             if not target_week:
@@ -113,13 +120,24 @@ class ProgramGenerationService:
                 },
             )
 
+            # Preserve a hand-edited weight/time on the target row if present.
+            existing = WorkoutExercise.objects.filter(
+                workout=target_workout, exercise=instance.exercise,
+            ).first()
+            if existing and existing.is_weight_manual:
+                weight_val, seconds_val = existing.recommended_weight, existing.duration_seconds
+            else:
+                weight_val = new_weight if new_weight is not None else 0
+                seconds_val = new_seconds
+
             WorkoutExercise.objects.update_or_create(
                 workout=target_workout,
                 exercise=instance.exercise,
                 defaults={
                     "sets":               new_sets,
                     "reps":               new_reps,
-                    "recommended_weight": new_weight,
+                    "recommended_weight": weight_val,
+                    "duration_seconds":   seconds_val,
                     "order":              instance.order,
                     "minutes":            instance.minutes,
                     "source_week_one":    instance,
@@ -145,6 +163,40 @@ class ProgramGenerationService:
                 ProgramGenerationService.generate_home_progression_from_week_one(seed)
             else:
                 ProgramGenerationService.generate_progression_from_week_one(seed)
+            count += 1
+        return count
+
+    @staticmethod
+    def recompute_plan_weights(plan) -> int:
+        """Recompute the stored weekly weight/time of every AUTO (non-manual)
+        WorkoutExercise in a GYM plan from the exercise fields + plan.difficulty.
+
+        Only weight/time change — sets/reps/structure are untouched, and rows
+        flagged ``is_weight_manual`` are skipped. Used when the plan's difficulty
+        changes and after a copy-by-link import. Home plans are a no-op (their
+        per-week values are minutes/rounds, not difficulty-driven weights).
+        """
+        if plan.program.workout_type != "gym":
+            return 0
+
+        rows = (
+            WorkoutExercise.objects
+            .filter(workout__week__plan=plan, is_weight_manual=False)
+            .select_related("exercise", "workout__week")
+        )
+        count = 0
+        for we in rows:
+            week_number = we.workout.week.week_number
+            mode, start, increment = _gym_progression_source(we.exercise, plan.difficulty)
+            value = start + (week_number - 1) * increment
+            if mode == "time":
+                WorkoutExercise.objects.filter(pk=we.pk).update(
+                    recommended_weight=0, duration_seconds=int(round(value)),
+                )
+            else:
+                WorkoutExercise.objects.filter(pk=we.pk).update(
+                    recommended_weight=round(value, 2), duration_seconds=None,
+                )
             count += 1
         return count
 
@@ -237,6 +289,102 @@ class ProgramGenerationService:
 
         for seed in seeds:
             ProgramGenerationService.generate_home_progression_from_week_one(seed)
+
+    # ── Admin "copy plan by link" (panel-only) ────────────────────────────────
+
+    @staticmethod
+    def get_or_create_plan_share_token(plan: Plan) -> str:
+        """Lazily mint/persist an admin-only share token for a single Plan.
+
+        Reuses ``generate_share_token`` but lives on ``Plan.share_token`` — kept
+        entirely separate from the user-facing ``Program.share_token`` flow.
+        """
+        if plan.share_token:
+            return plan.share_token
+
+        for _ in range(10):
+            token = generate_share_token()
+            if not Plan.objects.filter(share_token=token).exists():
+                plan.share_token = token
+                plan.save(update_fields=["share_token"])
+                return token
+        plan.share_token = generate_share_token()
+        plan.save(update_fields=["share_token"])
+        return plan.share_token
+
+    @staticmethod
+    @transaction.atomic
+    def copy_plan_structure_into(target_plan: Plan, source_plan: Plan) -> int:
+        """Copy the source plan's FULL structure — every week, day/workout and
+        exercise with its set/rep values — into ``target_plan``, then fill in the
+        weekly weights/times from the TARGET plan's own difficulty.
+
+        Every week is copied verbatim (not seed+regenerate) so any hand-edited
+        per-week set/rep differences in the source are reproduced exactly. Days
+        are appended after any existing week-1 days, with the same offset applied
+        to every week so day alignment across weeks is preserved.
+
+        Deliberately NOT copied: weights/times (derived from the target
+        difficulty), the source's difficulty / progression rule, and the manual
+        override flags (imported rows all start as auto). Uses ``bulk_create`` so
+        the week-1 post_save generation signal does NOT fire — the explicit copy
+        is authoritative. Returns the number of week-1 days imported.
+        """
+        ProgramGenerationService.ensure_plan_weeks(target_plan)
+
+        target_weeks = {w.week_number: w for w in target_plan.weeks.all()}
+        tw1 = target_weeks.get(1)
+        last_day = tw1.workouts.order_by("-day_number").first() if tw1 else None
+        day_offset = last_day.day_number if last_day else 0
+
+        source_weeks = (
+            source_plan.weeks
+            .order_by("week_number")
+            .prefetch_related("workouts__workout_exercises")
+        )
+
+        week1_days = 0
+        for source_week in source_weeks:
+            target_week = target_weeks.get(source_week.week_number)
+            if target_week is None:
+                target_week = Week.objects.create(
+                    plan=target_plan, week_number=source_week.week_number,
+                )
+                target_weeks[source_week.week_number] = target_week
+
+            for source_wo in source_week.workouts.all():
+                target_wo = Workout.objects.create(
+                    week=target_week,
+                    day_number=source_wo.day_number + day_offset,
+                    title=source_wo.title,
+                    title_uz=source_wo.title_uz,
+                    title_ru=source_wo.title_ru,
+                    description=source_wo.description,
+                    description_uz=source_wo.description_uz,
+                    description_ru=source_wo.description_ru,
+                    rounds=source_wo.rounds,
+                    apply_to_all_weeks=source_wo.apply_to_all_weeks,
+                )
+                if source_week.week_number == 1:
+                    week1_days += 1
+
+                WorkoutExercise.objects.bulk_create([
+                    WorkoutExercise(
+                        workout=target_wo,
+                        exercise=we.exercise,
+                        sets=we.sets,
+                        reps=we.reps,
+                        minutes=we.minutes,
+                        order=we.order,
+                        source_week_one=None,
+                        is_weight_manual=False,
+                    )
+                    for we in source_wo.workout_exercises.all()
+                ])
+
+        # Fill every copied row's weight/time from the TARGET plan's difficulty.
+        ProgramGenerationService.recompute_plan_weights(target_plan)
+        return week1_days
 
 
 # ─────────────────────────────────────────────
