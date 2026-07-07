@@ -1,0 +1,31 @@
+/*
+ * Shared Telegram fullscreen safe-area for standalone pages.
+ *
+ * In fullscreen (requestFullscreen, Bot API 8.0+) the OS status bar and
+ * Telegram's floating Close/More buttons overlap the very top of the webview.
+ * Any sticky/fixed top bar at top:0 would sit UNDER them. This file pushes the
+ * app's top bars below that inset uniformly. On non-fullscreen / older clients
+ * the inset resolves to 0, so nothing changes.
+ *
+ * Link this on standalone pages (those that don't extend base.html, which already
+ * handles its own headers inline). Pages relying on it must load the Telegram SDK
+ * so the --tg-* insets are provided.
+ */
+:root {
+    --app-safe-top: calc(
+        var(--tg-safe-area-inset-top, env(safe-area-inset-top, 0px))
+        + var(--tg-content-safe-area-inset-top, 0px)
+    );
+}
+
+/* Uniform top bar: keep a consistent 12px bar padding + the fullscreen inset.
+   The header background still fills up to the very top; only its content is
+   pushed below the status bar / Telegram buttons. */
+.page-header {
+    padding-top: calc(12px + var(--app-safe-top)) !important;
+}
+
+/* Keep the scroll-to-close fallback consistent with base.html. */
+html, body {
+    overscroll-behavior: none;
+}

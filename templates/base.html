@@ -462,7 +462,7 @@
     </style>
     {% block extra_css %}{% endblock %}
 </head>
-<body>
+<body {% block body_attributes %}{% endblock %}>
 {% block content %}{% endblock %}
 {% block bottom_nav %}
     <div class="bottom-nav">

@@ -6,6 +6,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Active Workout - {{ workout.title }}</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="{% static 'js/tg_viewport.js' %}"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700;900&display=swap');
 
@@ -29,6 +31,13 @@
 
             /* ⬅️➡️ EKRAN CHETIDAN SPACING (butun loyiha bilan bir xil) */
             --side-space: 12px;
+
+            /* Telegram fullscreen top inset (status bar + floating Close/More).
+               0 on non-fullscreen / older clients. */
+            --app-safe-top: calc(
+                var(--tg-safe-area-inset-top, env(safe-area-inset-top, 0px))
+                + var(--tg-content-safe-area-inset-top, 0px)
+            );
         }
 
         /* REUSABLE GOLD GRADIENT TEXT (butun program uchun) */
@@ -52,10 +61,14 @@
             position: sticky;
             top: 0;
             z-index: 200;
-            height: 54px;
+            min-height: 54px;
+            /* Push timer/exit below the fullscreen inset; bg still fills to the top. */
+            padding-top: var(--app-safe-top);
+            height: calc(54px + var(--app-safe-top));
             display: flex;
             align-items: center;
-            padding: 0 var(--side-space);
+            padding-left: var(--side-space);
+            padding-right: var(--side-space);
             background: rgba(0, 0, 0, 0.6);
             -webkit-backdrop-filter: blur(14px);
             backdrop-filter: blur(14px);
@@ -98,7 +111,8 @@
         .header-center {
             position: absolute;
             left: 50%;
-            top: 50%;
+            /* Center within the 54px bar that sits below the fullscreen inset. */
+            top: calc(var(--app-safe-top) + 27px);
             transform: translate(-50%, -50%);
             text-align: center;
             z-index: 1;
@@ -138,7 +152,7 @@
         /* ===== PROGRESS (segmented) ===== */
         .progress-section {
             position: sticky;
-            top: 54px;
+            top: calc(54px + var(--app-safe-top));
             z-index: 199;
             background: rgba(0, 0, 0, 0.6);
             -webkit-backdrop-filter: blur(14px);

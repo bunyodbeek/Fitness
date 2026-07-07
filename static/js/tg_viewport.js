@@ -56,33 +56,12 @@
         call('disableVerticalSwipes');
     }
 
-    // ── App-bar BackButton: back when there's history, close at the root ──
-    // Bot API 6.1+. When the page can go back the native back arrow is shown and
-    // wired to history.back(). At the entry page (no history) the back arrow is
-    // hidden, so Telegram's own Close button is the only control → tapping it
-    // quits the app. The onClick close() is a fallback if the arrow is ever shown
-    // at the root.
-    var BackButton = tg.BackButton;
-    if (atLeast('6.1') && BackButton) {
-        // Telegram's in-app browser starts the mini app at history length 1;
-        // every in-app navigation grows it, so >1 means we have somewhere to go back to.
-        function canGoBack() {
-            return window.history.length > 1;
-        }
-        try {
-            if (canGoBack()) BackButton.show();
-            else BackButton.hide();
-        } catch (e) {}
-        try {
-            BackButton.onClick(function () {
-                if (canGoBack()) {
-                    window.history.back();
-                } else {
-                    try { tg.close(); } catch (e) {}
-                }
-            });
-        } catch (e) {}
-    }
+    // NOTE: We deliberately do NOT use Telegram's native BackButton (tg.BackButton).
+    // On several clients it renders a "Back" text label that clashes with the app's
+    // own in-page back arrows. Navigation uses the pages' own back buttons; closing
+    // the app is handled by Telegram's built-in Close control (always present).
+    // Make sure the native back arrow is hidden if a previous build left it on.
+    try { if (tg.BackButton) tg.BackButton.hide(); } catch (e) {}
 
     // Keep the app expanded if Telegram collapses the viewport again.
     try {

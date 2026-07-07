@@ -4,6 +4,9 @@
 
 {% block title %}Profil{% endblock %}
 
+{# Root/top-level page → Telegram BackButton hidden, native Close shown. #}
+{% block body_attributes %}data-tg-root="1"{% endblock %}
+
 {% block extra_css %}
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
