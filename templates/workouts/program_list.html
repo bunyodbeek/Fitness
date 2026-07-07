@@ -5,6 +5,10 @@
 {% block title %}{% trans "All Workouts" %}{% endblock %}
 
 {% block extra_css %}
+    {# Preload the recommended-program cover — it's the LCP element (hero background). #}
+    {% if recommended_card.program.image %}
+        <link rel="preload" as="image" href="{{ recommended_card.program.image.url }}" fetchpriority="high">
+    {% endif %}
     {% include 'workouts/_program_card_styles.html' %}
     <style>
         /* ===== PAGE TITLE ===== */
@@ -786,7 +790,8 @@
                                        class="cat-card">
                                         <div class="cat-card-img">
                                             {% if program.image %}
-                                                <img src="{{ program.image.url }}" alt="{{ program.display_name }}">
+                                                <img src="{{ program.image_thumb_url }}" alt="{{ program.display_name }}"
+                                                     loading="lazy" decoding="async">
                                             {% else %}
                                                 <div class="ph">{{ program.display_name|slice:":3"|upper }}</div>
                                             {% endif %}
@@ -822,7 +827,7 @@
                                 <span class="cat-title">{{ cat.label }}</span>
                             </div>
                             {% for program in cat.programs %}
-                                {% include 'workouts/_program_card.html' with card_url=program.detail_url card_image=program.image card_title=program.display_name card_description=program.display_description|truncatewords:18 weeks=program.plans.first.weeks_count days=program.plans.first.days_per_week show_plans=True plan_count=program.plans.count is_premium=program.is_premium user_is_premium=request.user.profile.is_premium show_foryou=program.is_recommended show_popular=program.is_popular %}
+                                {% include 'workouts/_program_card.html' with card_url=program.detail_url card_image=program.image card_image_url=program.image_thumb_url card_title=program.display_name card_description=program.display_description|truncatewords:18 weeks=program.plans.first.weeks_count days=program.plans.first.days_per_week show_plans=True plan_count=program.plans.count is_premium=program.is_premium user_is_premium=request.user.profile.is_premium show_foryou=program.is_recommended show_popular=program.is_popular %}
                             {% endfor %}
                         </section>
                     {% endfor %}

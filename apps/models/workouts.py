@@ -118,6 +118,23 @@ class Program(CreatedBaseModel):
 			return None
 		return week.workouts.order_by("day_number", "id").first()
 
+	@property
+	def image_thumb_url(self):
+		"""≤400px WebP thumb for the small grid/list cards.
+
+		Falls back to the full cover URL if no thumb has been generated yet
+		(e.g. a legacy image not run through the WebP conversion)."""
+		if not self.image:
+			return ""
+		from apps.services.image_optim import thumb_name_for
+		try:
+			thumb = thumb_name_for(self.image.name)
+			if self.image.storage.exists(thumb):
+				return self.image.storage.url(thumb)
+		except Exception:
+			pass
+		return self.image.url
+
 
 class Plan(CreatedBaseModel):
 	class Difficulty(TextChoices):

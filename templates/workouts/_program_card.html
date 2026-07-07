@@ -19,7 +19,8 @@ Expected context (pass via {% include ... with %}):
 {% endcomment %}
 {% if card_url %}<a href="{{ card_url }}" class="program-card">{% else %}<div class="program-card program-card--static">{% endif %}
     {% if card_image %}
-        <img src="{{ card_image.url }}" alt="{{ card_title }}" class="program-image">
+        <img src="{{ card_image_url|default:card_image.url }}" alt="{{ card_title }}" class="program-image"
+             loading="lazy" decoding="async">
     {% else %}
         <div class="program-image-placeholder">{{ card_title|slice:":3"|upper }}</div>
     {% endif %}

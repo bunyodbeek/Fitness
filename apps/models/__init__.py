@@ -18,6 +18,11 @@ from apps.models.workouts import (
 	DayTemplate,
 	DayTemplateExercise,
 )
+from apps.models.handbook import (
+	HandbookCategory,
+	HandbookSubCategory,
+	HandbookItem,
+)
 
 # If you have a favorites.py, add it here:
 # from apps.models.favorites import Favorite, FavoriteExercise, FavoriteProgram
