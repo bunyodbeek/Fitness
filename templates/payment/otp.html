@@ -4,42 +4,65 @@
 <html lang="{{ LANGUAGE_CODE }}">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>{% trans "Confirm payment" %}</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="{% static 'js/tg_viewport.js' %}"></script>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #000; --card: rgba(255,255,255,0.04); --gold: #ffd700;
             --gold-grad: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
             --text: #fff; --text-dim: #9aa0b0; --border: rgba(255,255,255,0.07); --red: #ff6b6b;
+            --app-safe-top: calc(
+                var(--tg-safe-area-inset-top, env(safe-area-inset-top, 0px))
+                + var(--tg-content-safe-area-inset-top, 0px)
+            );
         }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html, body { overscroll-behavior: none; }
         body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; padding: 0 16px 130px; }
         .page-header {
-            padding: 12px 0 2px; display: flex; align-items: center; margin-bottom: 18px;
+            padding: calc(12px + var(--app-safe-top)) 0 2px; display: flex; align-items: center; margin-bottom: 18px;
         }
         .back-btn { background: none; border: none; color: var(--gold); cursor: pointer; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; }
-        .intro { text-align: center; margin: 8px 0 28px; }
+        .intro { text-align: center; margin: 8px 0 22px; }
         .intro h2 { font-family: 'Bebas Neue', sans-serif; font-size: 30px; letter-spacing: 0.5px; }
         .intro p { color: var(--text-dim); font-size: 13px; margin-top: 8px; line-height: 1.5; }
+        .amount { text-align: center; color: var(--gold); font-family: 'Bebas Neue', sans-serif; font-size: 22px; margin-top: 6px; }
         .otp-input {
             width: 100%; background: var(--card); border: 1px solid var(--border); color: var(--text);
             border-radius: 14px; padding: 18px; font-size: 24px; text-align: center; letter-spacing: 8px;
             outline: none; font-weight: 700;
         }
         .otp-input:focus { border-color: rgba(255,215,0,0.5); }
+        .hint { text-align: center; color: var(--text-dim); font-size: 12px; margin-top: 10px; }
         .errors { background: rgba(255,107,107,0.1); border: 1px solid rgba(255,107,107,0.3); color: var(--red);
-            border-radius: 12px; padding: 12px 14px; font-size: 13px; margin-bottom: 16px; }
+            border-radius: 12px; padding: 12px 14px; font-size: 13px; margin-bottom: 16px; display: none; }
+        .errors.show { display: block; }
+
+        /* ===== RESEND ROW ===== */
+        .resend-row { text-align: center; margin-top: 18px; font-size: 13px; }
+        .resend-timer { color: var(--text-dim); }
+        .resend-btn {
+            background: none; border: none; color: var(--gold); font-weight: 700; font-size: 13px;
+            cursor: pointer; padding: 6px 4px; font-family: 'Inter', sans-serif;
+        }
+        .resend-btn[disabled] { color: var(--text-dim); cursor: default; }
+
         .footer { position: fixed; bottom: 0; left: 0; right: 0; padding: 12px 16px calc(14px + env(safe-area-inset-bottom)); background: linear-gradient(180deg, transparent, var(--bg) 35%); }
         .btn-primary {
-            display: flex; align-items: center; justify-content: center; width: 100%; max-width: 520px; margin: 0 auto;
+            display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; max-width: 520px; margin: 0 auto;
             padding: 15px; border: none; border-radius: 14px; background: var(--gold-grad); color: #1a1300;
             font-size: 15px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer;
             box-shadow: 0 6px 24px rgba(255,215,0,0.3);
         }
         .btn-primary:disabled { opacity: 0.4; box-shadow: none; cursor: not-allowed; }
-        .amount { text-align: center; color: var(--gold); font-family: 'Bebas Neue', sans-serif; font-size: 22px; margin-top: 6px; }
+        .btn-spinner {
+            width: 16px; height: 16px; border: 2px solid rgba(26,19,0,0.35); border-top-color: #1a1300;
+            border-radius: 50%; animation: btnspin 0.7s linear infinite; flex-shrink: 0;
+        }
+        @keyframes btnspin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
@@ -55,22 +78,216 @@
     <div class="amount">{{ payment.amount|floatformat:0 }} UZS</div>
 </div>
 
-{% if messages %}{% for m in messages %}<div class="errors">{{ m }}</div>{% endfor %}{% endif %}
+<div class="errors" id="otpError"></div>
 
-<form method="post" action="{% url 'payment_otp' payment.id %}">
+<form id="otpForm" method="post" action="{% url 'payment_otp' payment.id %}">
     {% csrf_token %}
     <input type="text" class="otp-input" id="otp" name="otp" inputmode="numeric"
-           autocomplete="one-time-code" placeholder="——————" maxlength="6"
-           oninput="this.value=this.value.replace(/\D/g,''); document.getElementById('confirmBtn').disabled=this.value.length<4;">
+           autocomplete="one-time-code" placeholder="——————" maxlength="6">
+
+    <div class="hint" id="validityHint"></div>
+
+    <div class="resend-row">
+        <span class="resend-timer" id="resendTimer"></span>
+        <button type="button" class="resend-btn" id="resendBtn" disabled style="display:none;"></button>
+    </div>
+
     <div class="footer">
-        <button type="submit" class="btn-primary" id="confirmBtn" disabled>{% trans "Confirm" %}</button>
+        <button type="submit" class="btn-primary" id="confirmBtn" disabled>
+            <span class="btn-label">{% trans "Confirm" %}</span>
+        </button>
     </div>
 </form>
 
+{% trans "Confirm" as t_confirm %}
+{% trans "Checking…" as t_checking %}
+{% trans "Resend code" as t_resend %}
+{% trans "Resend code (%(time)s)" as t_resend_in %}
+{% trans "This code is valid for %(min)s min." as t_valid %}
+{% trans "Enter the SMS code." as t_empty %}
+{% trans "Wrong code. Please try again." as t_wrong %}
+{% trans "Too many requests. Try again in %(min)s min." as t_too_many %}
+{% trans "Too many attempts. Please start the payment again." as t_locked %}
+{% trans "A new code has been sent." as t_resent %}
+{% trans "Something went wrong. Please try again." as t_generic %}
 <script>
-    const tg = window.Telegram?.WebApp;
-    if (tg) { tg.ready(); tg.expand(); }
-    document.getElementById('otp').focus();
+    // JS i18n (uz/ru/en) — localized at render time.
+    const T = {
+        confirm: "{{ t_confirm|escapejs }}",
+        checking: "{{ t_checking|escapejs }}",
+        resend: "{{ t_resend|escapejs }}",
+        resendIn: "{{ t_resend_in|escapejs }}",
+        valid: "{{ t_valid|escapejs }}",
+        empty: "{{ t_empty|escapejs }}",
+        wrong: "{{ t_wrong|escapejs }}",
+        tooMany: "{{ t_too_many|escapejs }}",
+        locked: "{{ t_locked|escapejs }}",
+        resent: "{{ t_resent|escapejs }}",
+        generic: "{{ t_generic|escapejs }}",
+    };
+
+    const PAYMENT_ID = "{{ payment.id }}";
+    const OTP_TTL = {{ otp_ttl|default:120 }};          // seconds a code stays valid
+    const RESEND_AFTER = {{ resend_after|default:60 }}; // seconds before resend allowed
+    const RESEND_URL = "{% url 'payment_otp_resend' payment.id %}";
+    const DEADLINE_KEY = 'otp_deadline_' + PAYMENT_ID;
+
+    const form = document.getElementById('otpForm');
+    const otpEl = document.getElementById('otp');
+    const confirmBtn = document.getElementById('confirmBtn');
+    const errorBox = document.getElementById('otpError');
+    const resendTimer = document.getElementById('resendTimer');
+    const resendBtn = document.getElementById('resendBtn');
+    const csrf = form.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    let submitting = false;
+    let resending = false;
+    let tick = null;
+
+    document.getElementById('validityHint').textContent =
+        T.valid.replace('%(min)s', Math.max(1, Math.round(OTP_TTL / 60)));
+
+    // ---- helpers ----
+    function minutesFrom(sec) { return Math.max(1, Math.ceil((sec || 0) / 60)); }
+    function mmss(sec) {
+        const m = Math.floor(sec / 60), s = sec % 60;
+        return m + ':' + String(s).padStart(2, '0');
+    }
+    function showError(msg) { errorBox.textContent = msg; errorBox.classList.add('show'); }
+    function clearError() { errorBox.classList.remove('show'); }
+    function setConfirmLoading(on) {
+        if (on) {
+            confirmBtn.disabled = true;
+            confirmBtn.innerHTML = '<span class="btn-spinner"></span><span class="btn-label">'
+                + T.checking + '</span>';
+        } else {
+            confirmBtn.innerHTML = '<span class="btn-label">' + T.confirm + '</span>';
+            confirmBtn.disabled = otpEl.value.length < 4;
+        }
+    }
+
+    // ---- countdown (persisted across refresh via sessionStorage) ----
+    function startCountdown(seconds) {
+        const deadline = Date.now() + seconds * 1000;
+        sessionStorage.setItem(DEADLINE_KEY, String(deadline));
+        runCountdown();
+    }
+    function runCountdown() {
+        if (tick) clearInterval(tick);
+        function render() {
+            const stored = parseInt(sessionStorage.getItem(DEADLINE_KEY) || '0', 10);
+            const remain = Math.round((stored - Date.now()) / 1000);
+            if (remain > 0) {
+                resendTimer.style.display = '';
+                resendBtn.style.display = 'none';
+                resendTimer.textContent = T.resendIn.replace('%(time)s', mmss(remain));
+            } else {
+                clearInterval(tick); tick = null;
+                resendTimer.style.display = 'none';
+                resendBtn.style.display = '';
+                resendBtn.disabled = false;
+                resendBtn.textContent = T.resend;
+            }
+        }
+        render();
+        tick = setInterval(render, 1000);
+    }
+
+    // Resume an existing countdown after a refresh, else start a fresh one.
+    (function initCountdown() {
+        const stored = parseInt(sessionStorage.getItem(DEADLINE_KEY) || '0', 10);
+        if (stored && stored - Date.now() > 0) runCountdown();
+        else startCountdown(RESEND_AFTER);
+    })();
+
+    // ---- input ----
+    otpEl.addEventListener('input', () => {
+        otpEl.value = otpEl.value.replace(/\D/g, '');
+        confirmBtn.disabled = otpEl.value.length < 4;
+        clearError();
+    });
+    otpEl.focus();
+
+    // ---- verify ----
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (submitting) return;
+        if (otpEl.value.length < 4) { showError(T.empty); return; }
+        submitting = true;
+        clearError();
+        setConfirmLoading(true);
+        try {
+            const resp = await fetch(form.action, {
+                method: 'POST',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                body: new FormData(form),
+            });
+            let data = {};
+            try { data = await resp.json(); } catch (_) {}
+
+            if (resp.ok && data.ok && data.redirect) {
+                sessionStorage.removeItem(DEADLINE_KEY);
+                window.location.assign(data.redirect);
+                return;                     // keep spinner during navigation
+            }
+
+            if (resp.status === 429) {
+                // locked / too many attempts → send them back to start a fresh code
+                showError(data.message || T.locked);
+                if (data.restart_url) {
+                    setTimeout(() => window.location.assign(data.restart_url), 2500);
+                    submitting = false;
+                    return;                 // keep button disabled while redirecting
+                }
+            } else if (data.error === 'wrong_otp') {
+                showError(data.message || T.wrong);
+            } else {
+                showError(data.message || T.generic);
+            }
+        } catch (_) {
+            showError(T.generic);
+        }
+        submitting = false;
+        setConfirmLoading(false);
+    });
+
+    // ---- resend ----
+    resendBtn.addEventListener('click', async () => {
+        if (resending) return;
+        resending = true;
+        resendBtn.disabled = true;
+        clearError();
+        try {
+            const body = new FormData();
+            body.append('csrfmiddlewaretoken', csrf);
+            const resp = await fetch(RESEND_URL, {
+                method: 'POST',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                body,
+            });
+            let data = {};
+            try { data = await resp.json(); } catch (_) {}
+
+            if (resp.ok && data.ok) {
+                startCountdown(data.retry_after || RESEND_AFTER);
+            } else if (resp.status === 429) {
+                showError(T.tooMany.replace('%(min)s', minutesFrom(data.retry_after)));
+                // Sync the countdown to the backend's retry_after.
+                startCountdown(data.retry_after || RESEND_AFTER);
+            } else if (data.restart_url) {
+                showError(data.message || T.generic);
+                setTimeout(() => window.location.assign(data.restart_url), 2500);
+                return;
+            } else {
+                showError(data.message || T.generic);
+                resendBtn.disabled = false;
+            }
+        } catch (_) {
+            showError(T.generic);
+            resendBtn.disabled = false;
+        }
+        resending = false;
+    });
 </script>
 </body>
 </html>

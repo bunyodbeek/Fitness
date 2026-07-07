@@ -187,6 +187,32 @@ SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SAMESITE = 'None'
 CSRF_COOKIE_SECURE = True
 
+# ── Cache ──────────────────────────────────────────────────────────────────
+# The OTP payment guards (in-flight lock, send/verify rate limits) live in the
+# cache and MUST be shared across all gunicorn workers. The Django default is
+# per-process LocMemCache, which would let a duplicate request on another worker
+# slip past the lock — so we use a shared backend.
+#
+#   • REDIS_URL set   → Redis (best: fast, shared, atomic add()).
+#   • otherwise       → database cache table "app_cache_table".
+#                       Run ONCE on the server:  python manage.py createcachetable
+#                       (this is NOT a migration, so it's safe to run there).
+REDIS_URL = os.getenv('REDIS_URL')
+if REDIS_URL:
+	CACHES = {
+		'default': {
+			'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+			'LOCATION': REDIS_URL,
+		}
+	}
+else:
+	CACHES = {
+		'default': {
+			'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+			'LOCATION': 'app_cache_table',
+		}
+	}
+
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [

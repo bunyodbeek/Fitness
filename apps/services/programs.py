@@ -22,6 +22,18 @@ WEEK_FIELD_MAP = {
 }
 
 
+def _weight_week_index(week_number: int, max_weeks: int) -> int:
+    """Return the week whose weight a given week should mirror.
+
+    Week 6 is a deload week: its weight matches week 4 (``start + 3*increment``)
+    instead of continuing the progression. Only applies to full 6-week plans —
+    4-week plans have no deload week. Every other week uses its own number.
+    """
+    if max_weeks == 6 and week_number == 6:
+        return 4
+    return week_number
+
+
 def _gym_progression_source(exercise: Exercise, difficulty: str):
     """Resolve the per-week progression driver for a GYM exercise.
 
@@ -78,13 +90,14 @@ class ProgramGenerationService:
             instance.exercise, plan.difficulty,
         )
 
+        max_weeks = 4 if getattr(plan, "is_4_week", False) else 6
+
         def week_value(week_num: int):
-            value = start_value + (week_num - 1) * increment
+            eff_week = _weight_week_index(week_num, max_weeks)
+            value = start_value + (eff_week - 1) * increment
             if mode == "time":
                 return None, int(round(value))
             return round(value, 2), None
-
-        max_weeks = 4 if getattr(plan, "is_4_week", False) else 6
 
         # 1-hafta (seed) — darajaga mos boshlang'ich qiymatni o'rnatamiz, lekin
         # admin qo'lda tahrirlagan (manual) qiymatga tegmaymiz.
@@ -184,11 +197,14 @@ class ProgramGenerationService:
             .filter(workout__week__plan=plan, is_weight_manual=False)
             .select_related("exercise", "workout__week")
         )
+        max_weeks = 4 if getattr(plan, "is_4_week", False) else 6
+
         count = 0
         for we in rows:
             week_number = we.workout.week.week_number
             mode, start, increment = _gym_progression_source(we.exercise, plan.difficulty)
-            value = start + (week_number - 1) * increment
+            eff_week = _weight_week_index(week_number, max_weeks)
+            value = start + (eff_week - 1) * increment
             if mode == "time":
                 WorkoutExercise.objects.filter(pk=we.pk).update(
                     recommended_weight=0, duration_seconds=int(round(value)),

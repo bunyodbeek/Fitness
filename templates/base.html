@@ -1,17 +1,34 @@
-{% load i18n %}
+{% load i18n static %}
 <!DOCTYPE html>
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>{% block title %}Fitness App{% endblock %}</title>
     <!-- Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="{% static 'js/tg_viewport.js' %}"></script>
     <style>
+        :root {
+            /* Total top inset our sticky headers must clear: device notch/status bar
+               (--tg-safe-area-inset-top, env() fallback) + Telegram's floating
+               Close/More buttons (--tg-content-safe-area-inset-top). Resolves to 0
+               on desktop / older clients. */
+            --app-safe-top: calc(
+                var(--tg-safe-area-inset-top, env(safe-area-inset-top, 0px))
+                + var(--tg-content-safe-area-inset-top, 0px)
+            );
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+        }
+
+        /* Fallback scroll-to-close guard for clients without disableVerticalSwipes. */
+        html, body {
+            overscroll-behavior: none;
         }
 
         body {
@@ -40,6 +57,7 @@
             background: #0a0a0a;
             color: white;
             padding: 18px 20px;
+            padding-top: calc(18px + var(--app-safe-top));
             position: sticky;
             top: 0;
             z-index: 100;
@@ -107,6 +125,7 @@
             z-index: 100 !important;
             min-height: 54px !important;
             padding: 8px 16px !important;
+            padding-top: calc(8px + var(--app-safe-top)) !important;
             background: rgba(0, 0, 0, 0.6) !important;
             -webkit-backdrop-filter: blur(14px) !important;
             backdrop-filter: blur(14px) !important;

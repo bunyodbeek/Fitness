@@ -1,19 +1,21 @@
 import json
 import logging
+from datetime import timedelta
 from decimal import Decimal
 
 from django.conf import settings
-from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView, View
 
 from apps.models.payments import SubscriptionPlan, Payment
+from apps.services import otp_guard
 from apps.services.atmos import AtmosClient, AtmosError, callback_response, validate_callback_signature
 
 logger = logging.getLogger(__name__)
@@ -124,13 +126,23 @@ def _normalize_expiry(raw: str) -> str:
 	return digits
 
 
+def _session_card_key(payment_id):
+	return f'atmos_card_{payment_id}'
+
+
 class PaymentCreateView(LoginRequiredMixin, View):
 	"""Start an Atmos card charge: create the transaction, send the card to get
-	an OTP, then move the user to the OTP screen. Atmos is UZS-only, so the UZS
-	price is always used regardless of the currency toggle."""
+	an OTP, then hand the OTP screen URL to the frontend. Atmos is UZS-only, so
+	the UZS price is always used regardless of the currency toggle.
+
+	AJAX endpoint — always returns JSON. The frontend disables the button and
+	shows a spinner on the first tap; the backend is made idempotent with a cache
+	lock + a 60s "reuse the fresh transaction" window so a double-tap or retry can
+	never make Atmos send two OTP codes."""
 
 	def post(self, request, plan_id):
 		plan = get_object_or_404(SubscriptionPlan, pk=plan_id, is_active=True)
+		profile = request.user.profile
 
 		currency = request.POST.get('currency', Payment.Currency.UZS)
 		if currency not in Payment.Currency.values:
@@ -145,48 +157,98 @@ class PaymentCreateView(LoginRequiredMixin, View):
 		card_number = ''.join(ch for ch in raw_card if ch.isdigit())
 		expiry = _normalize_expiry(raw_expiry)
 
-		def reject(message):
-			# Re-render the same screen with the error + the values the user typed,
-			# so nothing navigates away and the card field is not wiped.
-			ctx = _payment_method_context(
-				plan, currency, error=message,
-				card_number=raw_card, expiry=raw_expiry, method=method,
-			)
-			return render(request, PaymentMethodView.template_name, ctx)
-
 		if len(card_number) < 16 or not expiry:
-			return reject(_("Enter a valid card number and expiry date."))
+			return JsonResponse({
+				'ok': False, 'error': 'invalid_card',
+				'message': _("Enter a valid card number and expiry date."),
+			}, status=400)
 
-		payment = Payment.objects.create(
-			user=request.user.profile,
-			plan=plan,
-			amount=plan.price_uzs,
-			currency=Payment.Currency.UZS,
-			method=method,
-			status=Payment.PaymentStatus.PENDING,
-		)
+		def otp_url(pid):
+			return reverse('payment_otp', args=[pid])
 
-		client = AtmosClient()
-		try:
-			# amount is sent in tiyin (1 UZS = 100 tiyin)
-			tx_id = client.create_transaction(
-				amount_tiyin=int((payment.amount * 100).to_integral_value()),
-				account=str(payment.id),
+		def recent_processing():
+			"""A fresh, still-usable transaction for this user+plan (last 60s)."""
+			cutoff = timezone.now() - timedelta(seconds=otp_guard.IDEMPOTENT_WINDOW)
+			return (
+				Payment.objects
+				.filter(
+					user=profile, plan=plan,
+					status=Payment.PaymentStatus.PROCESSING,
+					atmos_transaction_id__isnull=False,
+					created_at__gte=cutoff,
+				)
+				.order_by('-created_at')
+				.first()
 			)
-			payment.atmos_transaction_id = tx_id
-			payment.status = Payment.PaymentStatus.PROCESSING
-			payment.save(update_fields=['atmos_transaction_id', 'status'])
-			client.pre_apply(tx_id, card_number=card_number, expiry=expiry)
-		except AtmosError as exc:
-			logger.warning("Atmos start failed for payment %s: %s", payment.id, exc)
-			payment.mark_as_failed()
-			return reject(_("Payment could not be started: %(err)s") % {"err": exc.message})
 
-		return redirect(reverse('payment_otp', args=[payment.id]))
+		# ── rate limit: max SEND_MAX OTP sends per window ──
+		allowed, retry_after = otp_guard.send_rate_status(profile.id)
+		if not allowed:
+			return JsonResponse({
+				'ok': False, 'error': 'too_many_requests', 'retry_after': retry_after,
+				'message': _("Too many requests. Please try again later."),
+			}, status=429)
+
+		# ── in-flight lock: another send is already talking to Atmos ──
+		if not otp_guard.acquire_send_lock(profile.id):
+			existing = recent_processing()
+			if existing:
+				return JsonResponse({'ok': True, 'otp_url': otp_url(existing.id)})
+			return JsonResponse({
+				'ok': False, 'error': 'in_progress',
+				'message': _("A request is already being processed. Please wait."),
+			}, status=409)
+
+		try:
+			# ── idempotency: reuse the OTP we just sent instead of a new code ──
+			existing = recent_processing()
+			if existing:
+				return JsonResponse({'ok': True, 'otp_url': otp_url(existing.id)})
+
+			payment = Payment.objects.create(
+				user=profile,
+				plan=plan,
+				amount=plan.price_uzs,
+				currency=Payment.Currency.UZS,
+				method=method,
+				status=Payment.PaymentStatus.PENDING,
+			)
+
+			client = AtmosClient()
+			try:
+				# amount is sent in tiyin (1 UZS = 100 tiyin)
+				tx_id = client.create_transaction(
+					amount_tiyin=int((payment.amount * 100).to_integral_value()),
+					account=str(payment.id),
+				)
+				payment.atmos_transaction_id = tx_id
+				payment.status = Payment.PaymentStatus.PROCESSING
+				payment.save(update_fields=['atmos_transaction_id', 'status'])
+				client.pre_apply(tx_id, card_number=card_number, expiry=expiry)
+			except AtmosError as exc:
+				logger.warning("Atmos start failed for payment %s: %s", payment.id, exc)
+				payment.mark_as_failed()
+				return JsonResponse({
+					'ok': False, 'error': 'atmos',
+					'message': _("Payment could not be started: %(err)s") % {"err": exc.message},
+				}, status=502)
+
+			# Keep the card in the SERVER-SIDE session so "resend" can re-trigger the
+			# OTP without asking for the card again. Cleared on success / lockout.
+			request.session[_session_card_key(payment.id)] = {
+				'card': card_number, 'expiry': expiry,
+			}
+			otp_guard.record_send(profile.id)
+			return JsonResponse({
+				'ok': True, 'otp_url': otp_url(payment.id),
+				'otp_ttl': otp_guard.OTP_TTL_SECONDS,
+			})
+		finally:
+			otp_guard.release_send_lock(profile.id)
 
 
 class PaymentOtpView(LoginRequiredMixin, View):
-	"""Collect the SMS OTP and confirm the Atmos transaction."""
+	"""Render the OTP screen (GET) and confirm the Atmos transaction (POST/AJAX)."""
 	template_name = 'payment/otp.html'
 
 	def get_payment(self, request, payment_id):
@@ -197,28 +259,126 @@ class PaymentOtpView(LoginRequiredMixin, View):
 
 	def get(self, request, payment_id):
 		payment = self.get_payment(request, payment_id)
-		return render(request, self.template_name, {'payment': payment})
+		return render(request, self.template_name, {
+			'payment': payment,
+			'otp_ttl': otp_guard.OTP_TTL_SECONDS,
+			'resend_after': 60,
+		})
 
 	def post(self, request, payment_id):
 		payment = self.get_payment(request, payment_id)
+		profile = request.user.profile
+
+		# ── verification lockout (too many wrong codes earlier) ──
+		blocked, retry_after = otp_guard.verify_block_status(profile.id)
+		if blocked:
+			return JsonResponse({
+				'ok': False, 'error': 'locked', 'retry_after': retry_after,
+				'restart_url': reverse('payment_method', args=[payment.plan_id]),
+				'message': _("Too many attempts. Please try again later."),
+			}, status=429)
+
 		otp = ''.join(ch for ch in (request.POST.get('otp') or '') if ch.isdigit())
 		if not otp:
-			messages.error(request, _("Enter the SMS code."))
-			return render(request, self.template_name, {'payment': payment})
+			return JsonResponse({
+				'ok': False, 'error': 'empty_otp',
+				'message': _("Enter the SMS code."),
+			}, status=400)
 
 		client = AtmosClient()
 		try:
 			client.apply(payment.atmos_transaction_id, otp=otp)
 		except AtmosError as exc:
-			logger.warning("Atmos apply failed for payment %s: %s", payment.id, exc)
-			messages.error(request, _("Confirmation failed: %(err)s") % {"err": exc.message})
-			return render(request, self.template_name, {'payment': payment})
+			# A coded error means Atmos responded and rejected (wrong/expired OTP);
+			# a code-less error is a transient network/parse failure — don't burn an
+			# attempt for that.
+			if exc.code is None:
+				logger.warning("Atmos apply transient error for payment %s: %s", payment.id, exc)
+				return JsonResponse({
+					'ok': False, 'error': 'atmos',
+					'message': _("Confirmation failed: %(err)s") % {"err": exc.message},
+				}, status=502)
+
+			attempts, remaining, locked = otp_guard.record_wrong_attempt(profile.id, payment.id)
+			logger.warning(
+				"Atmos apply rejected for payment %s (attempt %s): %s",
+				payment.id, attempts, exc,
+			)
+			if locked:
+				payment.mark_as_failed()
+				request.session.pop(_session_card_key(payment.id), None)
+				return JsonResponse({
+					'ok': False, 'error': 'too_many_attempts',
+					'retry_after': otp_guard.VERIFY_BLOCK,
+					'restart_url': reverse('payment_method', args=[payment.plan_id]),
+					'message': _("Too many attempts. Please request a new code later."),
+				}, status=429)
+			return JsonResponse({
+				'ok': False, 'error': 'wrong_otp', 'remaining': remaining,
+				'message': _("Wrong code. %(n)s attempt(s) left.") % {"n": remaining},
+			}, status=400)
 
 		# Apply confirms synchronously; the callback is the async backstop, so guard
 		# against double-activation.
 		if payment.status != Payment.PaymentStatus.COMPLETED:
 			payment.mark_as_completed()
-		return redirect(reverse('payment_success'))
+		otp_guard.reset_verify_attempts(profile.id, payment.id)
+		request.session.pop(_session_card_key(payment.id), None)
+		return JsonResponse({'ok': True, 'redirect': reverse('payment_success')})
+
+
+class PaymentOtpResendView(LoginRequiredMixin, View):
+	"""Re-trigger the Atmos OTP SMS for an in-flight transaction. Respects the
+	same send rate limit as the initial request."""
+
+	def post(self, request, payment_id):
+		payment = get_object_or_404(
+			Payment, pk=payment_id, user=request.user.profile,
+			status=Payment.PaymentStatus.PROCESSING,
+		)
+		profile = request.user.profile
+
+		card = request.session.get(_session_card_key(payment.id))
+		if not card:
+			return JsonResponse({
+				'ok': False, 'error': 'restart_required',
+				'restart_url': reverse('payment_method', args=[payment.plan_id]),
+				'message': _("Session expired. Please start the payment again."),
+			}, status=409)
+
+		allowed, retry_after = otp_guard.send_rate_status(profile.id)
+		if not allowed:
+			return JsonResponse({
+				'ok': False, 'error': 'too_many_requests', 'retry_after': retry_after,
+				'message': _("Too many requests. Please try again later."),
+			}, status=429)
+
+		if not otp_guard.acquire_send_lock(profile.id):
+			return JsonResponse({
+				'ok': False, 'error': 'in_progress',
+				'message': _("A request is already being processed. Please wait."),
+			}, status=409)
+
+		try:
+			client = AtmosClient()
+			try:
+				client.pre_apply(
+					payment.atmos_transaction_id,
+					card_number=card['card'], expiry=card['expiry'],
+				)
+			except AtmosError as exc:
+				logger.warning("Atmos resend failed for payment %s: %s", payment.id, exc)
+				return JsonResponse({
+					'ok': False, 'error': 'atmos',
+					'message': _("Could not resend the code: %(err)s") % {"err": exc.message},
+				}, status=502)
+
+			otp_guard.record_send(profile.id)
+			return JsonResponse({
+				'ok': True, 'retry_after': 60, 'otp_ttl': otp_guard.OTP_TTL_SECONDS,
+			})
+		finally:
+			otp_guard.release_send_lock(profile.id)
 
 
 class PaymentSuccessView(LoginRequiredMixin, TemplateView):

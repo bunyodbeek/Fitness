@@ -4,9 +4,10 @@
 <html lang="{{ LANGUAGE_CODE }}">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>{% trans "Payment method" %}</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="{% static 'js/tg_viewport.js' %}"></script>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap"
           rel="stylesheet">
     <style>
@@ -21,6 +22,10 @@
             --border: rgba(255, 255, 255, 0.07);
 
             --side-space: 12px;
+            --app-safe-top: calc(
+                var(--tg-safe-area-inset-top, env(safe-area-inset-top, 0px))
+                + var(--tg-content-safe-area-inset-top, 0px)
+            );
         }
 
         * {
@@ -29,6 +34,8 @@
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
         }
+
+        html, body { overscroll-behavior: none; }
 
         body {
             background: var(--bg);
@@ -40,10 +47,22 @@
 
         /* ===== MINIMAL BACK ARROW (header olib tashlandi) ===== */
         .page-header {
-            padding: 12px var(--side-space) 2px;
+            padding: calc(12px + var(--app-safe-top)) var(--side-space) 2px;
             display: flex;
             align-items: center;
         }
+
+        /* Inline spinner for the pay button loading state */
+        .btn-spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(26, 19, 0, 0.35);
+            border-top-color: #1a1300;
+            border-radius: 50%;
+            animation: btnspin 0.7s linear infinite;
+            flex-shrink: 0;
+        }
+        @keyframes btnspin { to { transform: rotate(360deg); } }
         .back-btn {
             background: none;
             border: none;
@@ -366,7 +385,9 @@
     </div>
 
     <div class="footer">
-        <button type="submit" class="btn-primary" id="payBtn" disabled>{% trans "Pay" %}</button>
+        <button type="submit" class="btn-primary" id="payBtn" disabled>
+            <span class="btn-label">{% trans "Pay" %}</span>
+        </button>
     </div>
 </form>
 
@@ -399,9 +420,22 @@
     .card-fields.has-error input::placeholder { color: rgba(255, 107, 107, 0.5); }
 </style>
 
+{% trans "Sending…" as t_sending %}
+{% trans "Pay" as t_pay %}
+{% trans "Too many requests. Try again in %(min)s min." as t_too_many %}
+{% trans "A request is already being processed. Please wait." as t_in_progress %}
+{% trans "Something went wrong. Please try again." as t_generic %}
 <script>
+    // JS i18n (uz/ru/en) — localized at render time.
+    const T = {
+        sending: "{{ t_sending|escapejs }}",
+        pay: "{{ t_pay|escapejs }}",
+        tooMany: "{{ t_too_many|escapejs }}",
+        inProgress: "{{ t_in_progress|escapejs }}",
+        generic: "{{ t_generic|escapejs }}",
+    };
+
     const tg = window.Telegram?.WebApp;
-    if (tg) { tg.ready(); tg.expand(); }
 
     const numEl = document.getElementById('cardNumber');
     const expEl = document.getElementById('cardExpiry');
@@ -448,6 +482,74 @@
 
     // Prefilled qiymatlar bo'lsa (xatodan keyin) tugma holatini to'g'rilaymiz.
     refreshPay();
+
+    // ===== AJAX pay: guard flag + spinner so the button never looks frozen,
+    //       and a double-tap can't fire two OTP requests. =====
+    const form = document.getElementById('payForm');
+    const labelEl = payBtn.querySelector('.btn-label');
+    let submitting = false;
+
+    function minutesFrom(seconds) {
+        return Math.max(1, Math.ceil((seconds || 0) / 60));
+    }
+    function setLoading(on) {
+        if (on) {
+            payBtn.disabled = true;
+            payBtn.innerHTML = '<span class="btn-spinner"></span><span class="btn-label">'
+                + T.sending + '</span>';
+        } else {
+            payBtn.innerHTML = '<span class="btn-label">' + T.pay + '</span>';
+            refreshPay();
+        }
+    }
+    function showPayError(msg) {
+        const err = document.getElementById('cardError');
+        const fields = document.getElementById('cardFields');
+        if (fields) fields.classList.add('has-error');
+        if (err) { err.textContent = msg; err.style.display = 'block'; }
+        else {
+            const box = document.createElement('div');
+            box.className = 'field-error';
+            box.id = 'cardError';
+            box.textContent = msg;
+            fields.parentNode.insertBefore(box, fields);
+        }
+    }
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (submitting) return;              // guard: ignore double-tap / re-entry
+        submitting = true;
+        setLoading(true);
+
+        try {
+            const resp = await fetch(form.action, {
+                method: 'POST',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                body: new FormData(form),
+            });
+            let data = {};
+            try { data = await resp.json(); } catch (_) {}
+
+            if (resp.ok && data.ok && data.otp_url) {
+                // Navigate to the OTP screen as soon as the code is on its way.
+                window.location.assign(data.otp_url);
+                return;                      // keep the spinner during navigation
+            }
+
+            if (resp.status === 429) {
+                showPayError(T.tooMany.replace('%(min)s', minutesFrom(data.retry_after)));
+            } else if (resp.status === 409) {
+                showPayError(data.message || T.inProgress);
+            } else {
+                showPayError(data.message || T.generic);
+            }
+        } catch (_) {
+            showPayError(T.generic);
+        }
+        submitting = false;
+        setLoading(false);
+    });
 </script>
 </body>
 </html>
