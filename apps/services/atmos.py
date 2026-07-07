@@ -29,7 +29,7 @@ import requests
 from django.conf import settings
 
 # Fields that must be present in a callback for us to even try to verify it.
-REQUIRED_CALLBACK_KEYS = ('store_id', 'transaction_id', 'invoice', 'amount', 'sign')
+REQUIRED_CALLBACK_KEYS = ('store_id', 'transaction_id', 'account', 'amount', 'sign')
 
 
 def validate_callback_signature(data: dict, api_key: str) -> bool:
@@ -40,7 +40,7 @@ def validate_callback_signature(data: dict, api_key: str) -> bool:
 	sign_string = "".join((
 		str(data['store_id']),
 		str(data['transaction_id']),
-		str(data['invoice']),
+		str(data['account']),
 		str(data['amount']),
 		api_key,
 	))

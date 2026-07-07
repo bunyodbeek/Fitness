@@ -178,8 +178,12 @@ class Payment(CreatedBaseModel):
 				f"Summa: {self.amount:,.0f} {self.currency}\n"
 				f"Obuna muddati: {sub.end_date.strftime('%d.%m.%Y')} gacha."
 			)
-			from apps.management.commands.bot_notisfication import send_notification
-			send_notification(self.user.telegram_id, msg)
+			try:
+				from apps.management.commands.bot_notisfication import send_notification
+				send_notification(self.user.telegram_id, msg)
+			except Exception as exc:
+				import logging
+				logging.getLogger(__name__).warning("Payment notification failed: %s", exc)
 
 	def mark_as_failed(self):
 		self.status = self.PaymentStatus.FAILED
