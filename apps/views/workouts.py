@@ -154,6 +154,15 @@ def build_programs_page_context(request, workout_type):
 	recommended_card = None
 	if workout_type == WorkoutType.GYM:
 		recommended = get_recommended_program(profile, workout_type=workout_type) if profile else None
+		# Prefetch plans→weeks→workouts so the hero's _all_workout_ids /
+		# compute_program_progress walks use the cache instead of an N+1 chain.
+		if recommended:
+			recommended = (
+				Program.objects
+				.prefetch_related("plans__weeks__workouts")
+				.filter(pk=recommended.pk)
+				.first()
+			)
 		# Tavsiya programmasi tanlangan rejimga MOS bo'lishi shart (404 oldini olish).
 		if recommended and recommended.workout_type == workout_type and not recommended.is_one_time:
 			rec_ids = _all_workout_ids(recommended)

@@ -109,30 +109,33 @@ class Program(CreatedBaseModel):
 
 	@property
 	def first_workout(self):
-		"""Birinchi mashg'ulot (one-time programma uchun: bog'lanadigan yagona workout)."""
-		plan = self.plans.order_by("order", "id").first()
+		"""Birinchi mashg'ulot (one-time programma uchun: bog'lanadigan yagona workout).
+
+		Cached-relation friendly: picks the first plan/week/workout from ``.all()``
+		with the same ordering as before (plan (order,id), week week_number, workout
+		(day_number,id)) so a ``plans__weeks__workouts`` prefetch is reused instead of
+		firing per-level ``.order_by().first()`` queries."""
+		plan = min(self.plans.all(), key=lambda p: (p.order, p.id), default=None)
 		if not plan:
 			return None
-		week = plan.weeks.order_by("week_number").first()
+		week = min(plan.weeks.all(), key=lambda w: w.week_number, default=None)
 		if not week:
 			return None
-		return week.workouts.order_by("day_number", "id").first()
+		return min(week.workouts.all(), key=lambda w: (w.day_number, w.id), default=None)
 
 	@property
 	def image_thumb_url(self):
 		"""≤400px WebP thumb for the small grid/list cards.
 
-		Falls back to the full cover URL if no thumb has been generated yet
-		(e.g. a legacy image not run through the WebP conversion)."""
+		Pure string operation — no filesystem stat — so it's cheap when called per
+		card. The backfill + upload-time signal guarantee the ``_thumb.webp`` exists
+		for every WebP cover; a legacy non-WebP image falls back to the full cover."""
 		if not self.image:
 			return ""
-		from apps.services.image_optim import thumb_name_for
-		try:
-			thumb = thumb_name_for(self.image.name)
-			if self.image.storage.exists(thumb):
-				return self.image.storage.url(thumb)
-		except Exception:
-			pass
+		name = self.image.name
+		if name.lower().endswith(".webp"):
+			from apps.services.image_optim import thumb_name_for
+			return self.image.storage.url(thumb_name_for(name))
 		return self.image.url
 
 
@@ -197,9 +200,11 @@ class Plan(CreatedBaseModel):
 	
 	@property
 	def days_per_week(self):
-		week = self.weeks.filter(week_number=1).first()
-		if week:
-			return week.workouts.count()
+		# Iterate the cached relation (reuses a weeks__workouts prefetch) instead of
+		# .filter(week_number=1).first() + .count(), which fire a query per card.
+		for week in self.weeks.all():
+			if week.week_number == 1:
+				return len(week.workouts.all())
 		return 0
 
 
