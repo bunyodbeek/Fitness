@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends base_template|default:'base.html' %}
 {% load static %}
 {% load i18n %}
 {% block title %}{% trans "Exercises - Body Parts" %}{% endblock %}
@@ -563,6 +563,7 @@
 
 {% block extra_js %}
     <script>
+(function () {
         // State sessionStorage da saqlanadi
         let showingFront = sessionStorage.getItem('bodySide') !== 'back';
         let touchStartX = 0;
@@ -718,9 +719,15 @@
             new Image().src = '{% static "apps/images/body/rasulback.PNG" %}';
         }
 
-        window.addEventListener('DOMContentLoaded', initBodyPage);
-        window.addEventListener('pageshow', function (e) {
-            if (e.persisted) initBodyPage();
-        });
+        window.rotateBody = rotateBody;      // inline onclick="rotateBody()" needs it global
+        window.__bodyInit = initBodyPage;
+        if (!window.__bodyListeners) {       // add window listeners only once, not per re-inject
+            window.__bodyListeners = true;
+            window.addEventListener('pageshow', function (e) {
+                if (e.persisted && window.__bodyInit) window.__bodyInit();
+            });
+        }
+        initBodyPage();   // run now: covers first load AND router re-inject (DOMContentLoaded won't refire)
+})();
     </script>
 {% endblock %}

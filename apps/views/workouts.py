@@ -266,7 +266,10 @@ class AnimationView(TemplateView):
 
 
 # --- 1. Programmalar Ro'yxati ---
-class ProgramListView(TemplateView):
+from apps.views.partial import PartialTabMixin
+
+
+class ProgramListView(PartialTabMixin, TemplateView):
 	forced_workout_type = None
 	template_name = 'workouts/program_list.html'
 

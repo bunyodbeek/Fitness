@@ -146,6 +146,8 @@ function disableBtn(form) {
         btn.disabled = true;
         btn.textContent = '{% trans "Importing..." %}';
     }
+    // Import adds a program → mark the programs tab cache dirty for the router.
+    try { sessionStorage.setItem('tabdirty:programs', '1'); } catch (e) {}
 }
 </script>
 {% endblock %}

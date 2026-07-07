@@ -37,6 +37,8 @@
         const data = await res.json();
         if (data.status === 'added') setFavUi(true);
         if (data.status === 'removed') setFavUi(false);
+        // The favorites tab list changed → drop its cached fragment.
+        if (window.tabCache) window.tabCache.invalidateMatch('/favorites/');
     }
 
     async function loadCollections() {
@@ -67,6 +69,7 @@
                     alert(cfg.strings.savedToCollection);
                     setFavUi(true);
                     closeSheet();
+                    if (window.tabCache) window.tabCache.invalidateMatch('/favorites/');
                 }
             });
             listEl.appendChild(btn);

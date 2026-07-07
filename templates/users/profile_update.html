@@ -509,6 +509,15 @@
             reader.readAsDataURL(file);
         });
     }
+
+    // Saved via a full POST → mark the profile tab cache dirty so the tab router
+    // refetches it on the next visit (the router consumes this flag on shell load).
+    var profileForm = document.querySelector('form[method="post"]');
+    if (profileForm) {
+        profileForm.addEventListener('submit', function () {
+            try { sessionStorage.setItem('tabdirty:profile', '1'); } catch (e) {}
+        });
+    }
 </script>
 
 </body>

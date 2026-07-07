@@ -1,5 +1,5 @@
 <!-- templates/handbooks/category_list.html -->
-{% extends 'base.html' %}
+{% extends base_template|default:'base.html' %}
 {% load static %}
 {% load i18n %}
 
@@ -295,18 +295,9 @@
 
 {% block extra_js %}
     <script>
-        // Telegram WebApp initialization
-        if (window.Telegram && window.Telegram.WebApp) {
-            const tg = window.Telegram.WebApp;
-            tg.ready();
-            tg.expand();
-
-            // Back button
-            tg.BackButton.show();
-            tg.BackButton.onClick(() => {
-                window.history.back();
-            });
-        }
+    (function () {
+        // (Telegram init removed here — the shell's tg_viewport.js owns it and must
+        //  run exactly once; re-running on tab re-inject would duplicate it.)
 
         // Image loading error handler
         document.querySelectorAll('.category-image').forEach(img => {
@@ -342,13 +333,11 @@
             }, {passive: true});
         });
 
-        // Preload images
-        window.addEventListener('DOMContentLoaded', function() {
-            const images = document.querySelectorAll('.category-image');
-            images.forEach(img => {
-                const preloadImg = new Image();
-                preloadImg.src = img.src;
-            });
+        // Preload images (run now — DOMContentLoaded won't refire on router re-inject)
+        document.querySelectorAll('.category-image').forEach(function (img) {
+            var preloadImg = new Image();
+            preloadImg.src = img.src;
         });
+    })();
     </script>
 {% endblock %}

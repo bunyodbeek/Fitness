@@ -38,7 +38,10 @@ class FavoriteCollectionMixin:
 				favorite.save(update_fields=["collection"])
 
 
-class FavoritesListView(LoginRequiredMixin, ListView):
+from apps.views.partial import PartialTabMixin
+
+
+class FavoritesListView(PartialTabMixin, LoginRequiredMixin, ListView):
 	model = Favorite
 	template_name = 'exercises/favorites_list.html'
 	context_object_name = 'favorites'

@@ -9,7 +9,10 @@ from apps.models.handbook import (
 )
 
 
-class HandbookCategoryListView(ListView):
+from apps.views.partial import PartialTabMixin
+
+
+class HandbookCategoryListView(PartialTabMixin, ListView):
     model = HandbookCategory
     template_name = 'handbooks/category_list.html'
     context_object_name = 'categories'

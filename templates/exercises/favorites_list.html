@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends base_template|default:'base.html' %}
 {% load static %}
 {% load i18n %}
 
@@ -549,6 +549,10 @@ body { background: #000000; font-family: -apple-system, BlinkMacSystemFont, 'Seg
 
 <!-- JS TRANSLATIONS: apostrof muammosini hal qilish uchun alohida chiqarildi -->
 <script>
+// Wrapped in an IIFE so this fragment is safe to re-run when the tab router
+// re-injects it (no top-level const/let redeclaration). Inline onclick handlers
+// need their functions on window — exposed at the bottom.
+(function () {
 const CSRF = document.querySelector('[name=csrfmiddlewaretoken]').value;
 const LANG = window.location.pathname.match(/^\/(en|ru|uz)\//)?.[1] || 'en';
 
@@ -605,9 +609,12 @@ function toggleMenu(e, id) {
     document.getElementById(`menu${id}`).classList.toggle('open');
 }
 
-document.addEventListener('click', () => {
+// Guarded: remove any handler from a previous injection so it never stacks.
+if (window.__favDocClick) document.removeEventListener('click', window.__favDocClick);
+window.__favDocClick = function () {
     document.querySelectorAll('.program-dropdown').forEach(d => d.classList.remove('open'));
-});
+};
+document.addEventListener('click', window.__favDocClick);
 
 function editProgram(e, id) {
     e.stopPropagation();
@@ -629,6 +636,7 @@ function deleteProgram(e, id) {
                 card.style.transition = 'all 0.25s';
                 setTimeout(() => card.remove(), 250);
             }
+            if (window.tabCache) window.tabCache.invalidateMatch('/favorites/');
         }
     });
 }
@@ -731,6 +739,7 @@ async function confirmAddFavorites() {
         }
     });
 
+    if (window.tabCache) window.tabCache.invalidateMatch('/favorites/');
     closeExPicker();
 }
 
@@ -746,6 +755,7 @@ function unfavoriteExercise(exId) {
         favoriteIds.delete(exId);
         const pickerItem = document.getElementById(`pickerItem${exId}`);
         if (pickerItem) pickerItem.classList.remove('already-added');
+        if (window.tabCache) window.tabCache.invalidateMatch('/favorites/');
     });
 }
 
@@ -812,6 +822,15 @@ function copyShareCode() {
     var code = document.getElementById('shareTokenCode').textContent;
     _doCopy(code, document.getElementById('copyCodeBtn'));
 }
+
+// Expose the functions referenced by inline onclick/oninput handlers.
+Object.assign(window, {
+    openProgram, toggleMenu, editProgram, deleteProgram,
+    openExPicker, closeExPicker, filterExercises, toggleExercise,
+    updateDoneBtn, confirmAddFavorites, unfavoriteExercise,
+    shareProgram, closeShareModal, copyShareLink, copyShareCode
+});
+})();
 </script>
 
 {% endblock %}

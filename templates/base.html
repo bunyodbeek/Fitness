@@ -459,11 +459,37 @@
             from { opacity: 1; transform: translateX(0); }
             to { opacity: 0; transform: translateX(120%); }
         }
+
+        /* ===== TAB ROUTER SKELETON (instant tab switch placeholder) ===== */
+        .tab-skeleton {
+            padding: 60px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .tab-skeleton .sk {
+            height: 96px;
+            border-radius: 16px;
+            background: linear-gradient(100deg,
+                rgba(255, 215, 0, 0.04) 30%,
+                rgba(255, 215, 0, 0.12) 50%,
+                rgba(255, 215, 0, 0.04) 70%);
+            background-size: 200% 100%;
+            animation: skShimmer 1.1s ease-in-out infinite;
+            border: 1px solid rgba(255, 215, 0, 0.08);
+        }
+        .tab-skeleton .sk.tall { height: 170px; }
+        @keyframes skShimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
 <body {% block body_attributes %}{% endblock %}>
-{% block content %}{% endblock %}
+<main id="content">{% block content %}{% endblock %}</main>
 {% block bottom_nav %}
     <div class="bottom-nav">
         <a href="{% url 'gym_program_list' %}" class="nav-item {% if 'program' in request.path %}active{% endif %}">
@@ -533,6 +559,7 @@
         showToast(text, 'success');
     }
 </script>
+<script src="{% static 'js/tab_router.js' %}"></script>
 {% block extra_js %}{% endblock %}
 </body>
 </html>

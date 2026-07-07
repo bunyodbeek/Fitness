@@ -14,7 +14,10 @@ def get_session_workout_type(request):
     return workout_type
 
 
-class MuscleGroupListView(TemplateView):
+from apps.views.partial import PartialTabMixin
+
+
+class MuscleGroupListView(PartialTabMixin, TemplateView):
     template_name = 'exercises/body_parts.html'
 
     def get_context_data(self, **kwargs):

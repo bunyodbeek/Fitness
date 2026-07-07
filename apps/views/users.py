@@ -269,7 +269,10 @@ class OnboardingView(TemplateView):
         return super().dispatch(request, *args, **kwargs)
 
 
-class ProfileView(LoginRequiredMixin, TemplateView):
+from apps.views.partial import PartialTabMixin
+
+
+class ProfileView(PartialTabMixin, LoginRequiredMixin, TemplateView):
     template_name = 'users/profile_detail.html'
 
     def get_context_data(self, **kwargs):

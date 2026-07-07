@@ -1,0 +1,7 @@
+{% comment %}
+Partial shell for the tab router (?partial=1). Renders ONLY a self-contained
+fragment — the page's own CSS, the content block, and the page's inline JS — with
+no <head>, no bottom nav, and no Telegram init. The router injects this into
+#content and re-executes the scripts. The persistent shell (base.html) keeps the
+bottom nav + tg_viewport init running exactly once.
+{% endcomment %}{% block extra_css %}{% endblock %}{% block content %}{% endblock %}{% block extra_js %}{% endblock %}
