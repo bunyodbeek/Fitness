@@ -3327,6 +3327,24 @@ msgstr "Теперь вам доступны все Premium-возможност
 msgid "Get Started"
 msgstr "Начать"
 
+
+# ---- Payment UX (Atmos errors + merged tariff/card page) ----
+
+msgid "Insufficient funds on the card"
+msgstr "Недостаточно средств на карте"
+
+msgid "The code has expired. Please request a new one."
+msgstr "Срок действия кода истёк. Пожалуйста, запросите новый код."
+
+msgid "There was a problem with the card. Please try another card."
+msgstr "Проблема с картой. Попробуйте другую карту."
+
+msgid "Payment failed. Please try again."
+msgstr "Платёж не прошёл, попробуйте ещё раз."
+
+msgid "We accept Humo, Uzcard, Visa and Mastercard"
+msgstr "Принимаем Humo, Uzcard, Visa и Mastercard"
+
 #~ msgid "Program created. Now add a plan."
 #~ msgstr "Программа создана. Теперь добавьте план."
 

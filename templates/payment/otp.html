@@ -40,6 +40,9 @@
         .errors { background: rgba(255,107,107,0.1); border: 1px solid rgba(255,107,107,0.3); color: var(--red);
             border-radius: 12px; padding: 12px 14px; font-size: 13px; margin-bottom: 16px; display: none; }
         .errors.show { display: block; }
+        /* Non-OTP payment problems (insufficient funds, card, expired) — the code was
+           fine, so show a neutral gold note, NOT the red "wrong code" state. */
+        .errors.info { background: rgba(255,215,0,0.08); border-color: rgba(255,215,0,0.35); color: var(--gold); }
 
         /* ===== RESEND ROW ===== */
         .resend-row { text-align: center; margin-top: 18px; font-size: 13px; }
@@ -106,6 +109,8 @@
 {% trans "This code is valid for %(min)s min." as t_valid %}
 {% trans "Enter the SMS code." as t_empty %}
 {% trans "Wrong code. Please try again." as t_wrong %}
+{% trans "Insufficient funds on the card" as t_insufficient %}
+{% trans "The code has expired. Please request a new one." as t_expired %}
 {% trans "Too many requests. Try again in %(min)s min." as t_too_many %}
 {% trans "Too many attempts. Please start the payment again." as t_locked %}
 {% trans "A new code has been sent." as t_resent %}
@@ -120,6 +125,8 @@
         valid: "{{ t_valid|escapejs }}",
         empty: "{{ t_empty|escapejs }}",
         wrong: "{{ t_wrong|escapejs }}",
+        insufficient: "{{ t_insufficient|escapejs }}",
+        expired: "{{ t_expired|escapejs }}",
         tooMany: "{{ t_too_many|escapejs }}",
         locked: "{{ t_locked|escapejs }}",
         resent: "{{ t_resent|escapejs }}",
@@ -153,8 +160,13 @@
         const m = Math.floor(sec / 60), s = sec % 60;
         return m + ':' + String(s).padStart(2, '0');
     }
-    function showError(msg) { errorBox.textContent = msg; errorBox.classList.add('show'); }
-    function clearError() { errorBox.classList.remove('show'); }
+    function showError(msg, variant) {
+        errorBox.textContent = msg;
+        errorBox.classList.remove('info');
+        if (variant === 'info') errorBox.classList.add('info');
+        errorBox.classList.add('show');
+    }
+    function clearError() { errorBox.classList.remove('show', 'info'); }
     function setConfirmLoading(on) {
         if (on) {
             confirmBtn.disabled = true;
@@ -240,9 +252,18 @@
                     return;                 // keep button disabled while redirecting
                 }
             } else if (data.error === 'wrong_otp') {
+                // Red "wrong code" state (this DID consume an attempt).
                 showError(data.message || T.wrong);
+            } else if (data.error === 'insufficient_funds') {
+                // Code was fine → neutral note, keep the OTP input so they can retry.
+                showError(data.message || T.insufficient, 'info');
+            } else if (data.error === 'otp_expired') {
+                showError(data.message || T.expired, 'info');
+                startCountdown(0);   // enable "Resend" right away for a fresh code
+            } else if (data.error === 'card_error' || data.error === 'payment_failed') {
+                showError(data.message || T.generic, 'info');
             } else {
-                showError(data.message || T.generic);
+                showError(data.message || T.generic, 'info');
             }
         } catch (_) {
             showError(T.generic);

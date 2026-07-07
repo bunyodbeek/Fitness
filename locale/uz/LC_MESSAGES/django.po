@@ -3313,6 +3313,24 @@ msgstr "Endi siz barcha Premium imkoniyatlaridan foydalana olasiz."
 msgid "Get Started"
 msgstr "Boshlash"
 
+
+# ---- Payment UX (Atmos errors + merged tariff/card page) ----
+
+msgid "Insufficient funds on the card"
+msgstr "Kartada mablag' yetarli emas"
+
+msgid "The code has expired. Please request a new one."
+msgstr "Kod muddati tugadi. Iltimos, yangi kod so'rang."
+
+msgid "There was a problem with the card. Please try another card."
+msgstr "Karta bilan muammo yuz berdi. Boshqa karta bilan urinib ko'ring."
+
+msgid "Payment failed. Please try again."
+msgstr "To'lov amalga oshmadi, qayta urinib ko'ring."
+
+msgid "We accept Humo, Uzcard, Visa and Mastercard"
+msgstr "Humo, Uzcard, Visa va Mastercard qabul qilamiz"
+
 #~ msgid "Program created. Now add a plan."
 #~ msgstr "Dastur yaratildi. Endi plan qo'shing."
 

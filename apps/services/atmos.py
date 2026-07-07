@@ -67,6 +67,62 @@ class AtmosError(Exception):
 		self.message = message
 
 
+# ── apply()-error classification ────────────────────────────────────────────
+# Our own enum for what went wrong when confirming (apply) a transaction. Only
+# WRONG_OTP should consume an OTP attempt; the rest are payment problems whose
+# code was fine.
+class ApplyError:
+	INSUFFICIENT_FUNDS = "insufficient_funds"
+	WRONG_OTP = "wrong_otp"
+	OTP_EXPIRED = "otp_expired"
+	CARD_ERROR = "card_error"
+	OTHER = "other"
+
+
+# Known Atmos result codes → our enum (extend as real codes are confirmed in prod
+# logs). Codes are matched first; message text is the fallback.
+_ATMOS_CODE_MAP = {
+	# e.g. "STPIMS-ERR-098": ApplyError.INSUFFICIENT_FUNDS,
+}
+
+# Message-text keywords (RU / UZ / EN), checked in priority order. Insufficient
+# funds is checked before generic "card" words because its text also mentions the
+# card ("Недостаточно средств на балансе карты").
+_MESSAGE_RULES = (
+	(ApplyError.INSUFFICIENT_FUNDS, (
+		"недостаточно", "yetarli emas", "mablag", "insufficient", "not enough", "balance",
+	)),
+	(ApplyError.OTP_EXPIRED, (
+		"срок", "истек", "истёк", "expired", "muddat", "vaqti", "tugadi", "amal qilish muddati",
+	)),
+	(ApplyError.WRONG_OTP, (
+		"неверный", "неправильн", "wrong", "incorrect", "invalid", "код", "kod",
+		"otp", "parol", "sms", "одноразов", "noto'g'ri", "notog'ri",
+	)),
+	(ApplyError.CARD_ERROR, (
+		"карт", "card", "karta", "заблокирован", "blocked", "bloklangan", "expire",
+	)),
+)
+
+
+def classify_apply_error(code, message) -> str:
+	"""Map an Atmos apply rejection to our ApplyError enum.
+
+	Prefers the Atmos result code when it's a known one; otherwise matches the
+	human description text across RU/UZ/EN. Falls back to OTHER.
+	"""
+	if code is not None:
+		mapped = _ATMOS_CODE_MAP.get(str(code).upper())
+		if mapped:
+			return mapped
+
+	text = (message or "").lower()
+	for kind, keywords in _MESSAGE_RULES:
+		if any(kw in text for kw in keywords):
+			return kind
+	return ApplyError.OTHER
+
+
 class AtmosClient:
 	"""Minimal client for the Atmos merchant payment API.
 

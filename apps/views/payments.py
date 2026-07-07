@@ -16,7 +16,10 @@ from django.views.generic import TemplateView, View
 
 from apps.models.payments import SubscriptionPlan, Payment
 from apps.services import otp_guard
-from apps.services.atmos import AtmosClient, AtmosError, callback_response, validate_callback_signature
+from apps.services.atmos import (
+	ApplyError, AtmosClient, AtmosError, callback_response,
+	classify_apply_error, validate_callback_signature,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -101,18 +104,16 @@ def _payment_method_context(plan, currency, *, error='', card_number='', expiry=
 	}
 
 
-class PaymentMethodView(LoginRequiredMixin, TemplateView):
-	"""Screen 7 — choose payment method (cards only for now)."""
-	template_name = 'payment/payment_method.html'
+class PaymentMethodView(LoginRequiredMixin, View):
+	"""Legacy two-step route. Tariff + card are now one page — redirect so old
+	links / bookmarks don't 404."""
 
-	def get_context_data(self, **kwargs):
-		ctx = super().get_context_data(**kwargs)
-		plan = get_object_or_404(SubscriptionPlan, pk=kwargs['plan_id'], is_active=True)
-		currency = self.request.GET.get('currency', Payment.Currency.UZS)
-		if currency not in Payment.Currency.values:
-			currency = Payment.Currency.UZS
-		ctx.update(_payment_method_context(plan, currency))
-		return ctx
+	def get(self, request, plan_id):
+		currency = request.GET.get('currency')
+		url = reverse('tariff_select')
+		if currency:
+			url += f'?currency={currency}'
+		return redirect(url)
 
 
 def _normalize_expiry(raw: str) -> str:
@@ -128,6 +129,23 @@ def _normalize_expiry(raw: str) -> str:
 
 def _session_card_key(payment_id):
 	return f'atmos_card_{payment_id}'
+
+
+def _detect_scheme(card_number: str):
+	"""Infer the card scheme from the PAN (the radio picker was removed).
+
+	8600* → Uzcard, 9860* → Humo, 4* → Visa, 5*/2* → Mastercard. Returns a
+	``Payment.Method`` value or ``None`` (kept for the payment record / history)."""
+	n = card_number or ''
+	if n.startswith('8600'):
+		return Payment.Method.UZCARD
+	if n.startswith('9860'):
+		return Payment.Method.HUMO
+	if n.startswith('4'):
+		return Payment.Method.VISA
+	if n[:1] in ('5', '2'):
+		return Payment.Method.MASTERCARD
+	return None
 
 
 class PaymentCreateView(LoginRequiredMixin, View):
@@ -148,14 +166,13 @@ class PaymentCreateView(LoginRequiredMixin, View):
 		if currency not in Payment.Currency.values:
 			currency = Payment.Currency.UZS
 
-		method = request.POST.get('method')
-		if method not in Payment.Method.values:
-			method = None
-
 		raw_card = request.POST.get('card_number') or ''
 		raw_expiry = request.POST.get('expiry') or ''
 		card_number = ''.join(ch for ch in raw_card if ch.isdigit())
 		expiry = _normalize_expiry(raw_expiry)
+
+		# Scheme is derived from the PAN (no radio picker); kept on the Payment record.
+		method = _detect_scheme(card_number)
 
 		if len(card_number) < 16 or not expiry:
 			return JsonResponse({
@@ -274,7 +291,7 @@ class PaymentOtpView(LoginRequiredMixin, View):
 		if blocked:
 			return JsonResponse({
 				'ok': False, 'error': 'locked', 'retry_after': retry_after,
-				'restart_url': reverse('payment_method', args=[payment.plan_id]),
+				'restart_url': reverse('tariff_select'),
 				'message': _("Too many attempts. Please try again later."),
 			}, status=429)
 
@@ -289,8 +306,7 @@ class PaymentOtpView(LoginRequiredMixin, View):
 		try:
 			client.apply(payment.atmos_transaction_id, otp=otp)
 		except AtmosError as exc:
-			# A coded error means Atmos responded and rejected (wrong/expired OTP);
-			# a code-less error is a transient network/parse failure — don't burn an
+			# A code-less error is a transient network/parse failure — don't burn an
 			# attempt for that.
 			if exc.code is None:
 				logger.warning("Atmos apply transient error for payment %s: %s", payment.id, exc)
@@ -299,23 +315,54 @@ class PaymentOtpView(LoginRequiredMixin, View):
 					'message': _("Confirmation failed: %(err)s") % {"err": exc.message},
 				}, status=502)
 
-			attempts, remaining, locked = otp_guard.record_wrong_attempt(profile.id, payment.id)
-			logger.warning(
-				"Atmos apply rejected for payment %s (attempt %s): %s",
-				payment.id, attempts, exc,
-			)
-			if locked:
-				payment.mark_as_failed()
-				request.session.pop(_session_card_key(payment.id), None)
+			kind = classify_apply_error(exc.code, exc.message)
+
+			# ── Only a genuinely WRONG OTP consumes an attempt / triggers lockout. ──
+			if kind == ApplyError.WRONG_OTP:
+				attempts, remaining, locked = otp_guard.record_wrong_attempt(profile.id, payment.id)
+				logger.warning(
+					"Atmos apply wrong OTP for payment %s (attempt %s): %s",
+					payment.id, attempts, exc,
+				)
+				if locked:
+					payment.mark_as_failed()
+					request.session.pop(_session_card_key(payment.id), None)
+					return JsonResponse({
+						'ok': False, 'error': 'too_many_attempts',
+						'retry_after': otp_guard.VERIFY_BLOCK,
+						'restart_url': reverse('tariff_select'),
+						'message': _("Too many attempts. Please request a new code later."),
+					}, status=429)
 				return JsonResponse({
-					'ok': False, 'error': 'too_many_attempts',
-					'retry_after': otp_guard.VERIFY_BLOCK,
-					'restart_url': reverse('payment_method', args=[payment.plan_id]),
-					'message': _("Too many attempts. Please request a new code later."),
-				}, status=429)
+					'ok': False, 'error': 'wrong_otp', 'remaining': remaining,
+					'message': _("Wrong code. %(n)s attempt(s) left.") % {"n": remaining},
+				}, status=400)
+
+			# ── Non-OTP rejections: the code was fine, so DON'T touch the attempt
+			#    counter and keep the transaction alive so the user can retry. Log the
+			#    real Atmos detail; return a localized, error-specific message. ──
+			logger.warning(
+				"Atmos apply rejected (%s) for payment %s: code=%s msg=%s",
+				kind, payment.id, exc.code, exc.message,
+			)
+			if kind == ApplyError.INSUFFICIENT_FUNDS:
+				return JsonResponse({
+					'ok': False, 'error': 'insufficient_funds',
+					'message': _("Insufficient funds on the card"),
+				}, status=400)
+			if kind == ApplyError.OTP_EXPIRED:
+				return JsonResponse({
+					'ok': False, 'error': 'otp_expired',
+					'message': _("The code has expired. Please request a new one."),
+				}, status=400)
+			if kind == ApplyError.CARD_ERROR:
+				return JsonResponse({
+					'ok': False, 'error': 'card_error',
+					'message': _("There was a problem with the card. Please try another card."),
+				}, status=400)
 			return JsonResponse({
-				'ok': False, 'error': 'wrong_otp', 'remaining': remaining,
-				'message': _("Wrong code. %(n)s attempt(s) left.") % {"n": remaining},
+				'ok': False, 'error': 'payment_failed',
+				'message': _("Payment failed. Please try again."),
 			}, status=400)
 
 		# Apply confirms synchronously; the callback is the async backstop, so guard
@@ -342,7 +389,7 @@ class PaymentOtpResendView(LoginRequiredMixin, View):
 		if not card:
 			return JsonResponse({
 				'ok': False, 'error': 'restart_required',
-				'restart_url': reverse('payment_method', args=[payment.plan_id]),
+				'restart_url': reverse('tariff_select'),
 				'message': _("Session expired. Please start the payment again."),
 			}, status=409)
 
