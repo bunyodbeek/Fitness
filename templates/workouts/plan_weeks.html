@@ -31,6 +31,7 @@
         background: rgba(0, 0, 0, 0.95);
         backdrop-filter: blur(12px);
         padding: 14px 16px;
+        padding-top: calc(14px + var(--app-safe-top));
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -85,7 +86,7 @@
         --side-space: 12px;
 
         position: fixed;
-        top: 57px;
+        top: calc(57px + var(--app-safe-top));
         bottom: 0;
         left: 0; right: 0;
         z-index: 1;
