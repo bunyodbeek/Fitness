@@ -4,555 +4,478 @@
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>{% trans "Manage Subscription" %}</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="{% static 'js/tg_viewport.js' %}"></script>
     <link rel="stylesheet" href="{% static 'css/tg_safe_area.css' %}">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --gold: #ffd700;
+            --gold-grad: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
+            --side-space: 12px;
+            --card-bg: #101010;
+            --card-border: 1px solid rgba(255, 255, 255, 0.08);
+            --card-radius: 16px;
+            --card-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+            --app-safe-top: calc(
+                var(--tg-safe-area-inset-top, env(safe-area-inset-top, 0px))
+                + var(--tg-content-safe-area-inset-top, 0px)
+            );
         }
 
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html, body { overscroll-behavior: none; }
+
         body {
-            background: #0b0303;
+            background: #000000;
+            color: #EAEAEA;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             min-height: 100vh;
-            position: relative;
             overflow-x: hidden;
         }
 
-        /* Header */
+        /* ===== HEADER (unified app style) ===== */
         .page-header {
-            background: #0b0303;
-            backdrop-filter: blur(10px);
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-            border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+            min-height: 54px;
+            padding: 8px 16px;
+            padding-top: calc(8px + var(--app-safe-top));
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.6);
+            -webkit-backdrop-filter: blur(14px);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
 
         .back-btn {
-            background: none;
-            border: none;
-            color: #ffd700;
-            font-size: 32px;
-            cursor: pointer;
-            padding: 0;
-            width: 40px;
-            height: 40px;
+            width: 34px;
+            height: 34px;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s ease;
-            font-weight: 900;
-        }
-
-        .back-btn:hover {
-            transform: translateX(-5px) scale(1.2);
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+            background: none;
+            border: none;
+            color: var(--gold);
+            font-size: 20px;
+            font-weight: 700;
+            cursor: pointer;
+            flex-shrink: 0;
         }
 
         .page-title {
-            color: white;
-            font-size: 22px;
-            font-weight: 900;
-            letter-spacing: 3px;
-            text-transform: uppercase;
             flex: 1;
             text-align: center;
-            margin-right: 40px;
-            background: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+            color: var(--gold);
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
         }
 
-        /* Content */
-        .subscription-content {
-            padding: 20px;
-            padding-bottom: 120px;
-            position: relative;
-            z-index: 1;
+        .header-spacer { width: 34px; flex-shrink: 0; }
+
+        /* ===== CONTAINER ===== */
+        .container {
+            --pad: var(--side-space);
+            padding: 16px var(--pad) 110px;
+            max-width: 640px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
         }
 
-        /* Section Title */
         .section-title {
-            font-size: 16px;
-            color: rgba(255, 255, 255, 0.6);
-            margin-bottom: 15px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.55);
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 2px;
-            padding-left: 5px;
-        }
-
-        /* User Info Card */
-        .user-info-card {
-            background: linear-gradient(135deg,
-                rgba(255, 215, 0, 0.15) 0%,
-                rgba(255, 215, 0, 0.08) 100%);
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(255, 215, 0, 0.3);
-            border-radius: 25px;
-            padding: 20px;
-            margin-bottom: 30px;
-            transition: all 0.4s ease;
-            box-shadow:
-                0 8px 32px rgba(0, 0, 0, 0.3),
-                inset 0 2px 12px rgba(255, 255, 255, 0.1);
-            animation: fadeInUp 0.6s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .user-info-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg,
-                transparent,
-                rgba(255, 255, 255, 0.1),
-                transparent);
-            transition: left 0.5s ease;
-        }
-
-        .user-info-card:hover::before {
-            left: 100%;
-        }
-
-        .user-header {
             display: flex;
             align-items: center;
-            gap: 15px;
-            margin-bottom: 20px;
+            gap: 8px;
+        }
+        .section-title svg { stroke: var(--gold); flex-shrink: 0; }
+
+        .icon {
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.9;
+            stroke-linecap: round;
+            stroke-linejoin: round;
         }
 
-        .user-avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #ffd700 0%, #f39c12 100%);
+        /* ===== SUBSCRIPTION CARD ===== */
+        .sub-card {
+            background: var(--card-bg);
+            border: var(--card-border);
+            border-radius: var(--card-radius);
+            box-shadow: var(--card-shadow);
+            padding: 18px 16px;
+        }
+
+        .sub-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 11px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 215, 0, 0.45);
+            color: var(--gold);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+        .sub-badge svg { stroke: var(--gold); }
+
+        .sub-rows { display: flex; flex-direction: column; gap: 12px; }
+
+        .sub-row {
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
-            flex-shrink: 0;
+            justify-content: space-between;
+            gap: 10px;
         }
 
-        .user-info {
-            flex: 1;
-        }
-
-        .user-name {
-            font-size: 18px;
-            font-weight: 800;
-            color: white;
-            margin-bottom: 5px;
-            text-transform: capitalize;
-        }
-
-        .edit-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: rgba(255, 215, 0, 0.2);
-            border: 2px solid rgba(255, 215, 0, 0.4);
+        .sub-row-label {
             display: flex;
             align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 18px;
-        }
-
-        .edit-btn:hover {
-            background: rgba(255, 215, 0, 0.3);
-            transform: rotate(90deg) scale(1.1);
-        }
-
-        /* Info Row */
-        .info-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .info-row:last-child {
-            border-bottom: none;
-            padding-bottom: 0;
-        }
-
-        .info-icon {
-            width: 35px;
-            height: 35px;
-            border-radius: 10px;
-            background: rgba(255, 215, 0, 0.15);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            flex-shrink: 0;
-        }
-
-        .info-label {
+            gap: 9px;
             font-size: 13px;
             color: rgba(255, 255, 255, 0.6);
-            font-weight: 600;
+            font-weight: 500;
         }
+        .sub-row-label svg { stroke: var(--gold); flex-shrink: 0; }
 
-        .info-value {
-            font-size: 14px;
-            color: white;
+        .sub-row-value { font-size: 13px; color: #fff; font-weight: 700; text-align: right; }
+
+        /* ===== SUMMARY (total paid) ===== */
+        .summary-card {
+            background: var(--card-bg);
+            border: var(--card-border);
+            border-radius: var(--card-radius);
+            box-shadow: var(--card-shadow);
+            padding: 20px 16px;
+            text-align: center;
+        }
+        .summary-label {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.55);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
             font-weight: 700;
-            margin-left: auto;
+            margin-bottom: 8px;
         }
+        .summary-amount {
+            font-size: 30px;
+            font-weight: 900;
+            background: var(--gold-grad);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 4px;
+        }
+        .summary-count { font-size: 11px; color: rgba(255, 255, 255, 0.5); font-weight: 600; }
 
-        /* Action Card */
-        .action-card {
-            appearance: none;
-            -webkit-appearance: none;
-            font: inherit;
-            text-align: left;
-            width: 100%;
-            color: inherit;
-            background: linear-gradient(135deg,
-                rgba(255, 215, 0, 0.15) 0%,
-                rgba(255, 215, 0, 0.08) 100%);
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(255, 215, 0, 0.2);
-            border-radius: 25px;
-            padding: 20px;
-            margin-bottom: 15px;
-            transition: all 0.4s ease;
-            box-shadow:
-                0 8px 32px rgba(0, 0, 0, 0.3),
-                inset 0 2px 8px rgba(255, 255, 255, 0.1);
-            cursor: pointer;
-            display: block;
-            position: relative;
+        /* ===== TRANSACTION TABLE ===== */
+        .txn-section { display: flex; flex-direction: column; gap: 12px; }
+
+        .txn-table {
+            background: var(--card-bg);
+            border: var(--card-border);
+            border-radius: var(--card-radius);
+            box-shadow: var(--card-shadow);
             overflow: hidden;
-            animation: slideInLeft 0.6s ease;
-            animation-fill-mode: both;
         }
 
-        .action-card.disabled {
-            opacity: 0.6;
-            pointer-events: none;
+        /* Table header — hidden on narrow phones, shown ≥520px */
+        .txn-head {
+            display: none;
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.4);
         }
 
-        .action-card:nth-child(2) { animation-delay: 0.1s; }
-        .action-card:nth-child(3) { animation-delay: 0.2s; }
-
-        .action-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg,
-                transparent,
-                rgba(255, 215, 0, 0.1),
-                transparent);
-            transition: left 0.5s ease;
-        }
-
-        .action-card:hover::before {
-            left: 100%;
-        }
-
-        .action-card:hover {
-            border-color: rgba(255, 215, 0, 0.4);
-            transform: translateX(8px);
-            box-shadow:
-                0 15px 40px rgba(255, 215, 0, 0.3),
-                inset 0 2px 16px rgba(255, 255, 255, 0.15);
-        }
-
-        .action-header {
-            display: flex;
+        .txn-row {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            grid-template-areas:
+                "date   amount"
+                "status action";
+            gap: 8px 12px;
             align-items: center;
-            gap: 15px;
-            margin-bottom: 10px;
+            padding: 14px 16px;
+        }
+        .txn-row + .txn-row { border-top: 1px solid rgba(255, 255, 255, 0.06); }
+
+        .txn-date {
+            grid-area: date;
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+        }
+        .txn-plan {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.45);
+            font-weight: 500;
+            margin-top: 2px;
         }
 
-        .action-icon-wrapper {
-            width: 50px;
-            height: 50px;
-            border-radius: 14px;
-            background: linear-gradient(135deg, #ffd700 0%, #f39c12 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            transition: all 0.3s ease;
-            box-shadow:
-                0 0 20px rgba(255, 215, 0, 0.4),
-                inset 0 2px 8px rgba(255, 255, 255, 0.3);
-        }
-
-        .action-card.cancel .action-icon-wrapper {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ff4757 100%);
-            box-shadow: 0 0 20px rgba(255, 107, 107, 0.4);
-        }
-
-        .action-card:hover .action-icon-wrapper {
-            transform: scale(1.1) rotate(5deg);
-        }
-
-        .action-icon {
-            font-size: 24px;
-        }
-
-        .action-text {
-            flex: 1;
-        }
-
-        .action-title {
-            font-size: 16px;
+        .txn-amount {
+            grid-area: amount;
+            font-size: 15px;
             font-weight: 800;
-            color: white;
-            margin-bottom: 3px;
+            color: var(--gold);
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .txn-status { grid-area: status; }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 10px;
+            font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-
-        .action-card.cancel .action-title {
-            color: #ff6b6b;
+        .status-pill .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
         }
-
-        .action-subtitle {
-            font-size: 12px;
+        .status-pill.paid {
+            color: var(--gold);
+            border: 1px solid rgba(255, 215, 0, 0.4);
+            background: rgba(255, 215, 0, 0.08);
+        }
+        .status-pill.pending {
             color: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .status-pill.canceled {
+            color: #ff6b6b;
+            border: 1px solid rgba(255, 107, 107, 0.35);
+            background: rgba(255, 107, 107, 0.08);
+        }
+
+        .txn-action { grid-area: action; text-align: right; }
+
+        .view-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            color: rgba(255, 255, 255, 0.65);
+            text-decoration: none;
+            font-size: 12px;
             font-weight: 600;
+            padding: 5px 8px;
+            border-radius: 9px;
+            transition: color 0.2s, background 0.2s;
+        }
+        .view-link svg { stroke: currentColor; }
+        .view-link:active { color: var(--gold); background: rgba(255, 215, 0, 0.08); }
+        @media (hover: hover) {
+            .view-link:hover { color: var(--gold); background: rgba(255, 215, 0, 0.08); }
         }
 
-        .action-arrow {
-            font-size: 24px;
-            color: rgba(255, 215, 0, 0.6);
-            transition: all 0.3s ease;
-            font-weight: 900;
+        /* ≥520px: real 4-column table row + header */
+        @media (min-width: 520px) {
+            .txn-head {
+                display: grid;
+                grid-template-columns: 1.5fr 1fr 1fr 0.8fr;
+                gap: 12px;
+                align-items: center;
+            }
+            .txn-head span:nth-child(2),
+            .txn-head span:nth-child(3) { text-align: right; }
+            .txn-head span:last-child { text-align: right; }
+
+            .txn-row {
+                grid-template-columns: 1.5fr 1fr 1fr 0.8fr;
+                grid-template-areas: "date amount status action";
+            }
+            .txn-status { justify-self: end; }
         }
 
-        .action-card:hover .action-arrow {
-            color: #ffd700;
-            transform: translateX(5px);
-        }
-
-        /* Bottom Button */
-        .bottom-button {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #ffd700 0%, #f39c12 100%);
-            border: none;
-            border-radius: 20px;
-            padding: 18px;
-            color: #0a0e27;
-            font-size: 16px;
-            font-weight: 900;
+        /* ===== LOAD MORE (secondary button) ===== */
+        .load-more-wrap { display: flex; justify-content: center; margin-top: 4px; }
+        .load-more {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 14px;
+            background: transparent;
+            border: 1px solid rgba(255, 215, 0, 0.4);
+            color: var(--gold);
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 1px;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            cursor: pointer;
-            box-shadow: 0 8px 32px rgba(255, 215, 0, 0.5);
-            transition: all 0.3s ease;
-            z-index: 50;
+            text-decoration: none;
+            transition: background 0.2s, transform 0.15s;
+        }
+        .load-more svg { stroke: var(--gold); }
+        .load-more:active { transform: scale(0.98); background: rgba(255, 215, 0, 0.1); }
+        @media (hover: hover) {
+            .load-more:hover { background: rgba(255, 215, 0, 0.1); }
         }
 
-        .bottom-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 40px rgba(255, 215, 0, 0.7);
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
+            padding: 46px 20px;
+            text-align: center;
         }
-
-        .bottom-button:active {
-            transform: translateY(0);
+        .empty-icon {
+            width: 56px;
+            height: 56px;
+            margin: 0 auto 16px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 215, 0, 0.06);
+            border: 1px solid rgba(255, 215, 0, 0.15);
         }
+        .empty-icon svg { stroke: var(--gold); }
+        .empty-text { font-size: 14px; color: rgba(255, 255, 255, 0.5); font-weight: 600; }
 
-        /* Animations */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes slideInLeft {
-            from {
-                opacity: 0;
-                transform: translateX(-50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .page-title {
-                font-size: 16px;
-                letter-spacing: 2px;
-            }
-
-            .user-name {
-                font-size: 16px;
-            }
-
-            .action-title {
-                font-size: 14px;
-            }
-
-            .bottom-button {
-                font-size: 14px;
-                padding: 16px;
-            }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { transition-duration: 0.01ms !important; }
         }
     </style>
 </head>
 <body>
     <div class="page-header">
-        <button class="back-btn" onclick="history.back()">‹</button>
-        <h1 class="page-title">{% trans "Manage Subscription" %}</h1>
+        <button class="back-btn" onclick="history.back()" aria-label="{% trans 'Back' %}">‹</button>
+        <div class="page-title">{% trans "Subscription" %}</div>
+        <div class="header-spacer"></div>
     </div>
 
-    <div class="subscription-content">
-        <!-- User Info Section -->
-        <div class="section-title">{% trans "Subscription info" %}</div>
-
-        <div class="user-info-card">
-            <div class="user-header">
-                <div class="user-avatar">👤</div>
-                <div class="user-info">
-                    <div class="user-name">{{ request.user.profile.name|default:request.user.username }}</div>
+    <div class="container">
+        <!-- Subscription status -->
+        {% if subscription %}
+        <div class="sub-card">
+            <span class="sub-badge">
+                <svg class="icon" width="13" height="13" viewBox="0 0 24 24"><path d="M12 3l2.6 5.3 5.9.85-4.25 4.15 1 5.85L12 16.9l-5.25 2.75 1-5.85L2.5 9.15l5.9-.85z"/></svg>
+                {% trans "Premium active" %}
+            </span>
+            <div class="sub-rows">
+                <div class="sub-row">
+                    <div class="sub-row-label">
+                        <svg class="icon" width="16" height="16" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
+                        {% trans "Plan" %}
+                    </div>
+                    <div class="sub-row-value">{{ subscription.plan.get_period_display }}</div>
                 </div>
-                <button class="edit-btn" onclick="window.location.href='{% url 'profile_update' %}'">✏️</button>
-            </div>
-
-            <div class="info-row">
-                <div class="info-icon">🔄</div>
-                <div class="info-label">{% trans "Next payment date" %}</div>
-                <div class="info-value">
-                    {% if next_payment_date %}
-                        {{ next_payment_date|date:"d M Y" }}
-                    {% else %}
-                        {% trans "Not scheduled" %}
-                    {% endif %}
+                <div class="sub-row">
+                    <div class="sub-row-label">
+                        <svg class="icon" width="16" height="16" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v4h-4"/></svg>
+                        {% trans "Next payment date" %}
+                    </div>
+                    <div class="sub-row-value">
+                        {% if next_payment_date %}{{ next_payment_date|date:"j F Y" }}{% else %}{% trans "Not scheduled" %}{% endif %}
+                    </div>
                 </div>
-            </div>
-
-            <div class="info-row">
-                <div class="info-icon">💳</div>
-                <div class="info-label">{% trans "Last payment" %}</div>
-                <div class="info-value">
-                    {% if last_payment %}
-                        {{ last_payment.amount }} {% trans "sum" %} • {{ last_payment.created_at|date:"d M Y" }}
-                    {% else %}
-                        {% trans "No payments" %}
-                    {% endif %}
+                <div class="sub-row">
+                    <div class="sub-row-label">
+                        <svg class="icon" width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                        {% trans "Days remaining" %}
+                    </div>
+                    <div class="sub-row-value">{{ days_remaining }}</div>
                 </div>
-            </div>
-
-            <div class="info-row">
-                <div class="info-icon">💰</div>
-                <div class="info-label">{% trans "Plan price" %}</div>
-                <div class="info-value">
-                    {% if subscription %}
-                        {{ subscription.plan.price }} {% trans "sum" %}
-                    {% else %}
-                        {% trans "No active plan" %}
-                    {% endif %}
-                </div>
-            </div>
-
-            <div class="info-row">
-                <div class="info-icon">⏳</div>
-                <div class="info-label">{% trans "Days remaining" %}</div>
-                <div class="info-value">{{ days_remaining }}</div>
             </div>
         </div>
+        {% endif %}
 
-        <!-- Actions Section -->
-        <div class="section-title">{% trans "Actions" %}</div>
+{#        <!-- Total paid -->#}
+{#        <div class="summary-card">#}
+{#            <div class="summary-label">{% trans "Total paid" %}</div>#}
+{#            <div class="summary-amount">{{ total_paid|default:"0" }} {% trans "sum" %}</div>#}
+{#            <div class="summary-count">{{ payment_count|default:"0" }} {% trans "transaction" %}</div>#}
+{#        </div>#}
 
-        <form method="post" action="{% url 'subscription_cancel' %}">
-            {% csrf_token %}
-            <button class="action-card {% if not subscription or not subscription.is_active %}disabled{% endif %}" type="submit">
-                <div class="action-header">
-                    <div class="action-icon-wrapper">
-                        <div class="action-icon">↩️</div>
-                    </div>
-                    <div class="action-text">
-                        <div class="action-title">{% trans "Cancel subscription" %}</div>
-                        <div class="action-subtitle">
-                            {% if next_payment_date %}
-                                {% blocktrans %}Access remains until {{ next_payment_date|date:"d M Y" }}{% endblocktrans %}
-                            {% else %}
-                                {% trans "No active subscription to cancel" %}
-                            {% endif %}
+        <!-- Transaction history -->
+        <div class="txn-section" id="transactions">
+            <div class="section-title">
+                <svg class="icon" width="15" height="15" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+                {% trans "Transaction history" %}
+            </div>
+
+            <div class="txn-table">
+                {% if payments %}
+                <div class="txn-head">
+                    <span>{% trans "Date" %}</span>
+                    <span>{% trans "Total" %}</span>
+                    <span>{% trans "Status" %}</span>
+                    <span>{% trans "Action" %}</span>
+                </div>
+
+                {% for payment in payments %}
+                <div class="txn-row">
+                    <div class="txn-date">
+                        {{ payment.created_at|date:"j F Y" }}
+                        <div class="txn-plan">
+                            {% if payment.plan %}{{ payment.plan.get_period_display }}{% else %}{% trans "Premium" %}{% endif %}
                         </div>
                     </div>
-                    <div class="action-arrow">›</div>
+                    <div class="txn-amount">{{ payment.amount }} {{ payment.currency }}</div>
+                    <div class="txn-status">
+                        {% if payment.ui_status == 'success' %}
+                            <span class="status-pill paid"><span class="dot"></span>{% trans "Paid" %}</span>
+                        {% elif payment.ui_status == 'pending' %}
+                            <span class="status-pill pending"><span class="dot"></span>{% trans "Pending" %}</span>
+                        {% else %}
+                            <span class="status-pill canceled"><span class="dot"></span>{% trans "Canceled" %}</span>
+                        {% endif %}
+                    </div>
+                    <div class="txn-action">
+                        {# TODO: no payment-detail / receipt page exists yet — stub link. #}
+                        <a class="view-link" href="#" aria-label="{% trans 'View' %}">
+                            <svg class="icon" width="15" height="15" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                            {% trans "View" %}
+                        </a>
+                    </div>
                 </div>
-            </button>
-        </form>
+                {% endfor %}
+                {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <svg class="icon" width="26" height="26" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+                    </div>
+                    <div class="empty-text">{% trans "No payments yet" %}</div>
+                </div>
+                {% endif %}
+            </div>
 
-        <form method="post" action="{% url 'subscription_resume' %}">
-            {% csrf_token %}
-            <button class="action-card {% if not subscription or subscription.is_active %}disabled{% endif %}" type="submit">
-                <div class="action-header">
-                    <div class="action-icon-wrapper">
-                        <div class="action-icon">⬆️</div>
-                    </div>
-                    <div class="action-text">
-                        <div class="action-title">{% trans "Resume subscription" %}</div>
-                        <div class="action-subtitle">{% trans "Reactivate your plan" %}</div>
-                    </div>
-                    <div class="action-arrow">›</div>
-                </div>
-            </button>
-        </form>
+            {% if has_more %}
+            <div class="load-more-wrap">
+                <a class="load-more" href="?page={{ next_page }}#transactions">
+                    {% trans "Load more" %}
+                    <svg class="icon" width="15" height="15" viewBox="0 0 24 24" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg>
+                </a>
+            </div>
+            {% endif %}
+        </div>
     </div>
-
-    <button class="bottom-button" onclick="goBack()">{% trans "Back" %}</button>
-
-    <script>
-        // Bottom button
-        function goBack() {
-            history.back();
-        }
-
-        // Animation on scroll
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                }
-            });
-        });
-
-        document.querySelectorAll('.action-card').forEach(card => {
-            observer.observe(card);
-        });
-    </script>
 </body>
 </html>

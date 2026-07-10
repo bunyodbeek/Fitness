@@ -660,29 +660,80 @@ class ChangeLanguageView(LoginRequiredMixin, TemplateView):
             return render(request, self.template_name, context)
 
 
+# Payment.status → coarse UI bucket used by the template (icon / colour / filter).
+_PAYMENT_UI_STATUS = {
+    Payment.PaymentStatus.COMPLETED: 'success',
+    Payment.PaymentStatus.PENDING: 'pending',
+    Payment.PaymentStatus.PROCESSING: 'pending',
+    Payment.PaymentStatus.FAILED: 'failed',
+}
+
+
 class ManageSubscriptionView(LoginRequiredMixin, TemplateView):
+    """Premium → transaction history. Non-premium → the buy-premium page.
+
+    Payment history used to be a separate (dead) menu item in settings; it now
+    lives here.
+    """
     template_name = 'users/manage_subscription.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        # Only premium users see the subscription/transaction screen; everyone
+        # else is sent to the paywall to buy premium first.
+        if not request.user.profile.is_premium:
+            return redirect('premium')
+        return super().dispatch(request, *args, **kwargs)
+
+    # Transaction history is shown in cumulative pages of this size. "Load more"
+    # is a plain ?page=N link (full reload) — no AJAX pattern exists in the app.
+    PAGE_SIZE = 5
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        profile = self.request.user.profile
+
         subscription = (
-            Subscription.objects.filter(user=self.request.user)
+            Subscription.objects.filter(user=profile)
             .select_related('plan')
             .order_by('-id')
             .first()
         )
-        payment_history = Payment.objects.filter(user=self.request.user).order_by('-created_at')
-        last_payment = payment_history.first()
+
+        payments_qs = (
+            Payment.objects.filter(user=profile)
+            .select_related('plan')
+            .order_by('-created_at')
+        )
+        total_count = payments_qs.count()
+        total_paid = payments_qs.filter(
+            status=Payment.PaymentStatus.COMPLETED
+        ).aggregate(total=Sum('amount'))['total'] or 0
+
+        # Cumulative pagination: page 1 → first 5, page 2 → first 10, …
+        try:
+            page = max(1, int(self.request.GET.get('page', 1)))
+        except (TypeError, ValueError):
+            page = 1
+        visible_count = page * self.PAGE_SIZE
+
+        payments = list(payments_qs[:visible_count])
+        for payment in payments:
+            payment.ui_status = _PAYMENT_UI_STATUS.get(payment.status, 'pending')
+
         next_payment_date = subscription.end_date if subscription and subscription.is_active else None
 
         days_remaining = 0
         if next_payment_date:
-            delta = (next_payment_date - timezone.localdate()).days
+            delta = (next_payment_date.date() - timezone.localdate()).days
             days_remaining = max(delta, 0)
 
         context.update({
             'subscription': subscription,
-            'last_payment': last_payment,
+            'payments': payments,
+            'total_paid': total_paid,
+            'payment_count': total_count,
+            'has_more': total_count > visible_count,
+            'next_page': page + 1,
             'next_payment_date': next_payment_date,
             'days_remaining': days_remaining,
         })

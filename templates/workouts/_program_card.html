@@ -1,4 +1,6 @@
-{% load i18n %}{% comment %}
+{% load i18n %}
+
+{% comment %}
 Single "big" program card — shared between the programs grid view and the
 plans (edition_list) plan list, so they stay visually identical.
 
@@ -17,72 +19,144 @@ Expected context (pass via {% include ... with %}):
   show_popular     - bool, render orange "top" badge
   (card_url empty/omitted => card renders as a non-clickable <div>)
 {% endcomment %}
-{% if card_url %}<a href="{{ card_url }}" class="program-card">{% else %}<div class="program-card program-card--static">{% endif %}
+
+{% if card_url %}
+<a href="{{ card_url }}" class="program-card">
+{% else %}
+<div class="program-card program-card--static">
+{% endif %}
+
     {% if card_image %}
-        <img src="{{ card_image_url|default:card_image.url }}" alt="{{ card_title }}" class="program-image"
-             loading="lazy" decoding="async">
+        <img
+            src="{{ card_image_url|default:card_image.url }}"
+            alt="{{ card_title }}"
+            class="program-image"
+            loading="lazy"
+            decoding="async"
+        >
     {% else %}
-        <div class="program-image-placeholder">{{ card_title|slice:":3"|upper }}</div>
+        <div class="program-image-placeholder">
+            {{ card_title|slice:":3"|upper }}
+        </div>
     {% endif %}
 
     <div class="program-overlay"></div>
 
     {% if is_premium and not user_is_premium %}
         <div class="card-lock-badge">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            >
                 <rect x="3" y="11" width="18" height="11" rx="2"/>
                 <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
             </svg>
-            {% trans 'Premium' %}
+            {% trans "Premium" %}
         </div>
     {% elif show_popular %}
         <div class="card-popular-badge">
-            {% trans 'top' %}
+            {% trans "top" %}
         </div>
     {% endif %}
 
     {% if show_foryou %}
         <div class="card-foryou-badge">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+            <svg
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                stroke="none"
+            >
                 <path d="M12 2l2.9 6.3 6.9.7-5.1 4.6 1.4 6.8L12 17.8 5.9 20.4l1.4-6.8L2.2 9l6.9-.7L12 2z"/>
             </svg>
-            {% trans 'FOR YOU' %}
+            {% trans "FOR YOU" %}
         </div>
     {% endif %}
 
     <div class="program-title-overlay">
         <h2>{{ card_title }}</h2>
+
         {% if card_description %}
-            <p class="program-description">{{ card_description }}</p>
+            <p class="program-description">
+                {{ card_description }}
+            </p>
         {% endif %}
     </div>
 
     <div class="program-info">
         <div class="program-meta">
+
             {% if show_plans %}
                 <span class="meta-item">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                         stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>
+                    <svg
+                        width="15"
+                        height="15"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.9"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <circle cx="12" cy="12" r="9"/>
+                        <circle cx="12" cy="12" r="5"/>
+                        <circle cx="12" cy="12" r="1"/>
                     </svg>
                     {{ plan_count|default:"1" }} {% trans "Plans" %}
                 </span>
             {% endif %}
+
             <span class="meta-item">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                     stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>
+                <svg
+                    width="15"
+                    height="15"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.9"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                >
+                    <rect x="3" y="4" width="18" height="18" rx="2"/>
+                    <path d="M16 2v4"/>
+                    <path d="M8 2v4"/>
+                    <path d="M3 10h18"/>
                 </svg>
                 {{ weeks|default:"6" }}{% trans "w" %}
             </span>
+
             <span class="meta-item">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                     stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M5 8v8M8 6v12M16 6v12M19 8v8M8 12h8"/>
+                <svg
+                    width="15"
+                    height="15"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.9"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                >
+                    <path d="M5 8v8"/>
+                    <path d="M8 6v12"/>
+                    <path d="M16 6v12"/>
+                    <path d="M19 8v8"/>
+                    <path d="M8 12h8"/>
                 </svg>
                 {{ days|default:"1" }}{% trans "d/week" %}
             </span>
+
         </div>
     </div>
-{% if card_url %}</a>{% else %}</div>{% endif %}
+
+{% if card_url %}
+</a>
+{% else %}
+</div>
+{% endif %}

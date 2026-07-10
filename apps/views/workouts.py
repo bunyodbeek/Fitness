@@ -26,8 +26,8 @@ from apps.utils.mixins import PremiumRequiredMixin
 GOAL_CARDS = [
 	(Program.Goal.MUSCLE_GAIN, "💪", _("Build size & strength")),
 	(Program.Goal.FAT_LOSS, "🔥", _("Burn fat & get lean")),
-	(Program.Goal.GENERAL, "⚡", _("Stay fit & healthy")),
 	(Program.Goal.RECOMPOSITION, "🔄", _("Build muscle & burn fat")),
+	(Program.Goal.GENERAL, "⚡", _("Stay fit & healthy")),
 ]
 
 
