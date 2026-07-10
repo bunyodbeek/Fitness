@@ -697,50 +697,38 @@
             {% endwith %}
         {% endif %}
 
-        {# ============ 2. ONE-TIME CARDS ============ #}
-        {% for item in one_time_cards %}
-            {% with op=item.program %}
-                <a href="{{ item.url }}" class="hero-card hero-card--onetime">
-                    {% if op.image %}
-                        <div class="hero-bg" style="background-image:url('{{ op.image.url }}')"></div>{% endif %}
-                    <div class="hero-grad"></div>
-                    <div class="hero-content">
-                        <span class="hero-badge hero-badge--neutral">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12"
-                                                                                                         r="9"/><path
-                                    d="M12 7v5l3 2"/></svg>
-                            {% trans 'ONE-TIME WORKOUT' %}
-                        </span>
-                        <div class="hero-name">{{ op.display_name }}</div>
-                        <div class="hero-meta">{{ op.get_level_display }}{% if op.plans.first %} &bull;
-                            {{ op.plans.first.days_per_week|default:"1" }}x/{% trans "week" %}{% endif %}</div>
-                        {% if op.display_description %}
-                            <div class="hero-desc">{{ op.display_description|truncatewords:18 }}</div>
-                        {% endif %}
-                        <div class="hero-inforow">
-                            <span class="info-chunk">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                     stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12"
-                                                                                                               cy="12"
-                                                                                                               r="9"/><path
-                                        d="M12 7v5l3 2"/></svg>
-                                {% trans 'Single session' %}
-                            </span>
-                        </div>
-                        <div class="hero-bottom">
-                            <span></span>
-                            <span class="hero-cta">
-                                {% trans 'START WORKOUT' %}
-                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                     stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path
-                                        d="M9 6l6 6-6 6"/></svg>
-                            </span>
-                        </div>
-                    </div>
-                </a>
-            {% endwith %}
-        {% endfor %}
+        {# ============ 2. TRENDS (one-time programs) ============ #}
+        {% if one_time_cards %}
+            <section class="cat-section">
+                <div class="cat-header">
+                    <span class="cat-title">{% trans 'Trends' %}</span>
+                </div>
+                <div class="cat-scroll">
+                    {% for item in one_time_cards %}
+                        {% with op=item.program %}
+                            <a href="{{ item.url }}" class="cat-card">
+                                <div class="cat-card-img">
+                                    {% if op.image %}
+                                        <img src="{{ op.image_thumb_url }}" alt="{{ op.display_name }}"
+                                             loading="lazy" decoding="async">
+                                    {% else %}
+                                        <div class="ph">{{ op.display_name|slice:":3"|upper }}</div>
+                                    {% endif %}
+                                    <div class="grad"></div>
+                                </div>
+                                <div class="cat-card-body">
+                                    <div class="cat-name">{{ op.display_name }}</div>
+                                    <div class="cat-meta">
+                                        <svg class="cat-meta-ic" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                                        <span>{% trans 'Single session' %}</span>
+                                    </div>
+                                </div>
+                            </a>
+                        {% endwith %}
+                    {% endfor %}
+                </div>
+            </section>
+        {% endif %}
 
         {# ============ 3. EXPLORE (categories <-> grid) ============ #}
         {% if categories %}

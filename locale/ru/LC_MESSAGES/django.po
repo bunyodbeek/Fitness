@@ -4161,3 +4161,7 @@ msgstr "Начать тренировку"
 #~ msgstr[1] "%(plan_count)s плана"
 #~ msgstr[2] "%(plan_count)s планов"
 #~ msgstr[3] "%(plan_count)s планов"
+
+#: templates/workouts/program_list.html
+msgid "Trends"
+msgstr "В тренде"

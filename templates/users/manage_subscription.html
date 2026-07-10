@@ -19,14 +19,20 @@
             --card-radius: 16px;
             --card-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
             --app-safe-top: calc(
-                var(--tg-safe-area-inset-top, env(safe-area-inset-top, 0px))
-                + var(--tg-content-safe-area-inset-top, 0px)
+                    var(--tg-safe-area-inset-top, env(safe-area-inset-top, 0px))
+                    + var(--tg-content-safe-area-inset-top, 0px)
             );
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-        html, body { overscroll-behavior: none; }
+        html, body {
+            overscroll-behavior: none;
+        }
 
         body {
             background: #000000;
@@ -78,7 +84,10 @@
             text-transform: uppercase;
         }
 
-        .header-spacer { width: 34px; flex-shrink: 0; }
+        .header-spacer {
+            width: 34px;
+            flex-shrink: 0;
+        }
 
         /* ===== CONTAINER ===== */
         .container {
@@ -101,7 +110,11 @@
             align-items: center;
             gap: 8px;
         }
-        .section-title svg { stroke: var(--gold); flex-shrink: 0; }
+
+        .section-title svg {
+            stroke: var(--gold);
+            flex-shrink: 0;
+        }
 
         .icon {
             fill: none;
@@ -134,9 +147,16 @@
             text-transform: uppercase;
             margin-bottom: 16px;
         }
-        .sub-badge svg { stroke: var(--gold); }
 
-        .sub-rows { display: flex; flex-direction: column; gap: 12px; }
+        .sub-badge svg {
+            stroke: var(--gold);
+        }
+
+        .sub-rows {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
 
         .sub-row {
             display: flex;
@@ -153,9 +173,18 @@
             color: rgba(255, 255, 255, 0.6);
             font-weight: 500;
         }
-        .sub-row-label svg { stroke: var(--gold); flex-shrink: 0; }
 
-        .sub-row-value { font-size: 13px; color: #fff; font-weight: 700; text-align: right; }
+        .sub-row-label svg {
+            stroke: var(--gold);
+            flex-shrink: 0;
+        }
+
+        .sub-row-value {
+            font-size: 13px;
+            color: #fff;
+            font-weight: 700;
+            text-align: right;
+        }
 
         /* ===== SUMMARY (total paid) ===== */
         .summary-card {
@@ -166,6 +195,7 @@
             padding: 20px 16px;
             text-align: center;
         }
+
         .summary-label {
             font-size: 10px;
             color: rgba(255, 255, 255, 0.55);
@@ -174,6 +204,7 @@
             font-weight: 700;
             margin-bottom: 8px;
         }
+
         .summary-amount {
             font-size: 30px;
             font-weight: 900;
@@ -183,10 +214,19 @@
             -webkit-text-fill-color: transparent;
             margin-bottom: 4px;
         }
-        .summary-count { font-size: 11px; color: rgba(255, 255, 255, 0.5); font-weight: 600; }
+
+        .summary-count {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.5);
+            font-weight: 600;
+        }
 
         /* ===== TRANSACTION TABLE ===== */
-        .txn-section { display: flex; flex-direction: column; gap: 12px; }
+        .txn-section {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
 
         .txn-table {
             background: var(--card-bg);
@@ -218,7 +258,10 @@
             align-items: center;
             padding: 14px 16px;
         }
-        .txn-row + .txn-row { border-top: 1px solid rgba(255, 255, 255, 0.06); }
+
+        .txn-row + .txn-row {
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+        }
 
         .txn-date {
             grid-area: date;
@@ -226,6 +269,7 @@
             font-weight: 700;
             color: #fff;
         }
+
         .txn-plan {
             font-size: 11px;
             color: rgba(255, 255, 255, 0.45);
@@ -242,7 +286,9 @@
             white-space: nowrap;
         }
 
-        .txn-status { grid-area: status; }
+        .txn-status {
+            grid-area: status;
+        }
 
         .status-pill {
             display: inline-flex;
@@ -255,29 +301,36 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
+
         .status-pill .dot {
             width: 6px;
             height: 6px;
             border-radius: 50%;
             background: currentColor;
         }
+
         .status-pill.paid {
             color: var(--gold);
             border: 1px solid rgba(255, 215, 0, 0.4);
             background: rgba(255, 215, 0, 0.08);
         }
+
         .status-pill.pending {
             color: rgba(255, 255, 255, 0.6);
             border: 1px solid rgba(255, 255, 255, 0.15);
             background: rgba(255, 255, 255, 0.05);
         }
+
         .status-pill.canceled {
             color: #ff6b6b;
             border: 1px solid rgba(255, 107, 107, 0.35);
             background: rgba(255, 107, 107, 0.08);
         }
 
-        .txn-action { grid-area: action; text-align: right; }
+        .txn-action {
+            grid-area: action;
+            text-align: right;
+        }
 
         .view-link {
             display: inline-flex;
@@ -291,10 +344,21 @@
             border-radius: 9px;
             transition: color 0.2s, background 0.2s;
         }
-        .view-link svg { stroke: currentColor; }
-        .view-link:active { color: var(--gold); background: rgba(255, 215, 0, 0.08); }
+
+        .view-link svg {
+            stroke: currentColor;
+        }
+
+        .view-link:active {
+            color: var(--gold);
+            background: rgba(255, 215, 0, 0.08);
+        }
+
         @media (hover: hover) {
-            .view-link:hover { color: var(--gold); background: rgba(255, 215, 0, 0.08); }
+            .view-link:hover {
+                color: var(--gold);
+                background: rgba(255, 215, 0, 0.08);
+            }
         }
 
         /* ≥520px: real 4-column table row + header */
@@ -305,19 +369,33 @@
                 gap: 12px;
                 align-items: center;
             }
+
             .txn-head span:nth-child(2),
-            .txn-head span:nth-child(3) { text-align: right; }
-            .txn-head span:last-child { text-align: right; }
+            .txn-head span:nth-child(3) {
+                text-align: right;
+            }
+
+            .txn-head span:last-child {
+                text-align: right;
+            }
 
             .txn-row {
                 grid-template-columns: 1.5fr 1fr 1fr 0.8fr;
                 grid-template-areas: "date amount status action";
             }
-            .txn-status { justify-self: end; }
+
+            .txn-status {
+                justify-self: end;
+            }
         }
 
         /* ===== LOAD MORE (secondary button) ===== */
-        .load-more-wrap { display: flex; justify-content: center; margin-top: 4px; }
+        .load-more-wrap {
+            display: flex;
+            justify-content: center;
+            margin-top: 4px;
+        }
+
         .load-more {
             display: inline-flex;
             align-items: center;
@@ -334,10 +412,20 @@
             text-decoration: none;
             transition: background 0.2s, transform 0.15s;
         }
-        .load-more svg { stroke: var(--gold); }
-        .load-more:active { transform: scale(0.98); background: rgba(255, 215, 0, 0.1); }
+
+        .load-more svg {
+            stroke: var(--gold);
+        }
+
+        .load-more:active {
+            transform: scale(0.98);
+            background: rgba(255, 215, 0, 0.1);
+        }
+
         @media (hover: hover) {
-            .load-more:hover { background: rgba(255, 215, 0, 0.1); }
+            .load-more:hover {
+                background: rgba(255, 215, 0, 0.1);
+            }
         }
 
         /* ===== EMPTY STATE ===== */
@@ -345,6 +433,7 @@
             padding: 46px 20px;
             text-align: center;
         }
+
         .empty-icon {
             width: 56px;
             height: 56px;
@@ -356,73 +445,92 @@
             background: rgba(255, 215, 0, 0.06);
             border: 1px solid rgba(255, 215, 0, 0.15);
         }
-        .empty-icon svg { stroke: var(--gold); }
-        .empty-text { font-size: 14px; color: rgba(255, 255, 255, 0.5); font-weight: 600; }
+
+        .empty-icon svg {
+            stroke: var(--gold);
+        }
+
+        .empty-text {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.5);
+            font-weight: 600;
+        }
 
         @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after { transition-duration: 0.01ms !important; }
+            *, *::before, *::after {
+                transition-duration: 0.01ms !important;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="page-header">
-        <button class="back-btn" onclick="history.back()" aria-label="{% trans 'Back' %}">‹</button>
-        <div class="page-title">{% trans "Subscription" %}</div>
-        <div class="header-spacer"></div>
-    </div>
+<div class="page-header">
+    <button class="back-btn" onclick="history.back()" aria-label="{% trans 'Back' %}">‹</button>
+    <div class="page-title">{% trans "Subscription" %}</div>
+    <div class="header-spacer"></div>
+</div>
 
-    <div class="container">
-        <!-- Subscription status -->
-        {% if subscription %}
+<div class="container">
+    <!-- Subscription status -->
+    {% if subscription %}
         <div class="sub-card">
             <span class="sub-badge">
-                <svg class="icon" width="13" height="13" viewBox="0 0 24 24"><path d="M12 3l2.6 5.3 5.9.85-4.25 4.15 1 5.85L12 16.9l-5.25 2.75 1-5.85L2.5 9.15l5.9-.85z"/></svg>
+                <svg class="icon" width="13" height="13" viewBox="0 0 24 24"><path
+                        d="M12 3l2.6 5.3 5.9.85-4.25 4.15 1 5.85L12 16.9l-5.25 2.75 1-5.85L2.5 9.15l5.9-.85z"/></svg>
                 {% trans "Premium active" %}
             </span>
             <div class="sub-rows">
                 <div class="sub-row">
                     <div class="sub-row-label">
-                        <svg class="icon" width="16" height="16" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
+                        <svg class="icon" width="16" height="16" viewBox="0 0 24 24">
+                            <rect x="3" y="4" width="18" height="16" rx="2"/>
+                            <path d="M3 9h18M8 2v4M16 2v4"/>
+                        </svg>
                         {% trans "Plan" %}
                     </div>
                     <div class="sub-row-value">{{ subscription.plan.get_period_display }}</div>
                 </div>
                 <div class="sub-row">
                     <div class="sub-row-label">
-                        <svg class="icon" width="16" height="16" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v4h-4"/></svg>
+                        <svg class="icon" width="16" height="16" viewBox="0 0 24 24">
+                            <path d="M21 12a9 9 0 1 1-3-6.7"/>
+                            <path d="M21 4v4h-4"/>
+                        </svg>
                         {% trans "Next payment date" %}
                     </div>
                     <div class="sub-row-value">
-                        {% if next_payment_date %}{{ next_payment_date|date:"j F Y" }}{% else %}{% trans "Not scheduled" %}{% endif %}
+                        {% if next_payment_date %}{{ next_payment_date|date:"j F Y" }}{% else %}
+                            {% trans "Not scheduled" %}{% endif %}
                     </div>
                 </div>
                 <div class="sub-row">
                     <div class="sub-row-label">
-                        <svg class="icon" width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                        <svg class="icon" width="16" height="16" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="9"/>
+                            <path d="M12 7v5l3 2"/>
+                        </svg>
                         {% trans "Days remaining" %}
                     </div>
                     <div class="sub-row-value">{{ days_remaining }}</div>
                 </div>
             </div>
         </div>
-        {% endif %}
+    {% endif %}
 
-{#        <!-- Total paid -->#}
-{#        <div class="summary-card">#}
-{#            <div class="summary-label">{% trans "Total paid" %}</div>#}
-{#            <div class="summary-amount">{{ total_paid|default:"0" }} {% trans "sum" %}</div>#}
-{#            <div class="summary-count">{{ payment_count|default:"0" }} {% trans "transaction" %}</div>#}
-{#        </div>#}
 
-        <!-- Transaction history -->
-        <div class="txn-section" id="transactions">
-            <div class="section-title">
-                <svg class="icon" width="15" height="15" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
-                {% trans "Transaction history" %}
-            </div>
 
-            <div class="txn-table">
-                {% if payments %}
+    <!-- Transaction history -->
+    <div class="txn-section" id="transactions">
+        <div class="section-title">
+            <svg class="icon" width="15" height="15" viewBox="0 0 24 24">
+                <rect x="2" y="5" width="20" height="14" rx="2"/>
+                <path d="M2 10h20"/>
+            </svg>
+            {% trans "Transaction history" %}
+        </div>
+
+        <div class="txn-table">
+            {% if payments %}
                 <div class="txn-head">
                     <span>{% trans "Date" %}</span>
                     <span>{% trans "Total" %}</span>
@@ -431,51 +539,61 @@
                 </div>
 
                 {% for payment in payments %}
-                <div class="txn-row">
-                    <div class="txn-date">
-                        {{ payment.created_at|date:"j F Y" }}
-                        <div class="txn-plan">
-                            {% if payment.plan %}{{ payment.plan.get_period_display }}{% else %}{% trans "Premium" %}{% endif %}
+                    <div class="txn-row">
+                        <div class="txn-date">
+                            {{ payment.created_at|date:"j F Y" }}
+                            <div class="txn-plan">
+                                {% if payment.plan %}{{ payment.plan.get_period_display }}{% else %}
+                                    {% trans "Premium" %}{% endif %}
+                            </div>
+                        </div>
+                        <div class="txn-amount">{{ payment.amount }} {{ payment.currency }}</div>
+                        <div class="txn-status">
+                            {% if payment.ui_status == 'success' %}
+                                <span class="status-pill paid"><span class="dot"></span>{% trans "Paid" %}</span>
+                            {% elif payment.ui_status == 'pending' %}
+                                <span class="status-pill pending"><span class="dot"></span>{% trans "Pending" %}</span>
+                            {% else %}
+                                <span class="status-pill canceled"><span
+                                        class="dot"></span>{% trans "Canceled" %}</span>
+                            {% endif %}
+                        </div>
+                        <div class="txn-action">
+                            {# TODO: no payment-detail / receipt page exists yet — stub link. #}
+                            <a class="view-link" href="#" aria-label="{% trans 'View' %}">
+                                <svg class="icon" width="15" height="15" viewBox="0 0 24 24">
+                                    <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                </svg>
+                                {% trans "View" %}
+                            </a>
                         </div>
                     </div>
-                    <div class="txn-amount">{{ payment.amount }} {{ payment.currency }}</div>
-                    <div class="txn-status">
-                        {% if payment.ui_status == 'success' %}
-                            <span class="status-pill paid"><span class="dot"></span>{% trans "Paid" %}</span>
-                        {% elif payment.ui_status == 'pending' %}
-                            <span class="status-pill pending"><span class="dot"></span>{% trans "Pending" %}</span>
-                        {% else %}
-                            <span class="status-pill canceled"><span class="dot"></span>{% trans "Canceled" %}</span>
-                        {% endif %}
-                    </div>
-                    <div class="txn-action">
-                        {# TODO: no payment-detail / receipt page exists yet — stub link. #}
-                        <a class="view-link" href="#" aria-label="{% trans 'View' %}">
-                            <svg class="icon" width="15" height="15" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
-                            {% trans "View" %}
-                        </a>
-                    </div>
-                </div>
                 {% endfor %}
-                {% else %}
+            {% else %}
                 <div class="empty-state">
                     <div class="empty-icon">
-                        <svg class="icon" width="26" height="26" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+                        <svg class="icon" width="26" height="26" viewBox="0 0 24 24">
+                            <rect x="2" y="5" width="20" height="14" rx="2"/>
+                            <path d="M2 10h20"/>
+                        </svg>
                     </div>
                     <div class="empty-text">{% trans "No payments yet" %}</div>
                 </div>
-                {% endif %}
-            </div>
+            {% endif %}
+        </div>
 
-            {% if has_more %}
+        {% if has_more %}
             <div class="load-more-wrap">
                 <a class="load-more" href="?page={{ next_page }}#transactions">
                     {% trans "Load more" %}
-                    <svg class="icon" width="15" height="15" viewBox="0 0 24 24" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg>
+                    <svg class="icon" width="15" height="15" viewBox="0 0 24 24" stroke-width="2.2">
+                        <path d="M6 9l6 6 6-6"/>
+                    </svg>
                 </a>
             </div>
-            {% endif %}
-        </div>
+        {% endif %}
     </div>
+</div>
 </body>
 </html>

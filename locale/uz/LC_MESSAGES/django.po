@@ -4136,3 +4136,7 @@ msgstr "Mashg'ulotni boshlash"
 #~ msgid "%(plan_count)s Plan"
 #~ msgid_plural "%(plan_count)s Plans"
 #~ msgstr[0] "%(plan_count)s ta reja"
+
+#: templates/workouts/program_list.html
+msgid "Trends"
+msgstr "Trendda"
