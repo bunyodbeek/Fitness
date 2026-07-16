@@ -18,7 +18,7 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import activate, get_language
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
-from django.views.generic import TemplateView, UpdateView
+from django.views.generic import TemplateView, UpdateView, View
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -611,29 +611,14 @@ class AdminAnalyticsView(TemplateView):
 
 
 @method_decorator(csrf_protect, name='dispatch')
-class ChangeLanguageView(LoginRequiredMixin, TemplateView):
-    template_name = 'users/language.html'
-
-    def _get_language_context(self):
-
-        current_language = get_language()
-        available_languages = []
-
-        for code, name in settings.LANGUAGES:
-            available_languages.append({
-                'code': code,
-                'name': str(name)
-            })
-
-        return {
-            'current_language': current_language,
-            'available_languages': available_languages,
-        }
+class ChangeLanguageView(LoginRequiredMixin, View):
+    """Language switch endpoint. The old full-page selector is gone — language is
+    now chosen from a bottom-sheet modal on the Settings page — so GET (and the
+    invalid-code path) just bounce back to Settings. The POST mechanism itself is
+    unchanged: set session + cookie, activate, redirect to Settings."""
 
     def get(self, request, *args, **kwargs):
-
-        context = self._get_language_context()
-        return render(request, self.template_name, context)
+        return HttpResponseRedirect(reverse('settings'))
 
     def post(self, request, *args, **kwargs):
 
@@ -656,8 +641,7 @@ class ChangeLanguageView(LoginRequiredMixin, TemplateView):
         else:
             messages.error(request, _("Selected language doesn't exist."))
 
-            context = self._get_language_context()
-            return render(request, self.template_name, context)
+            return HttpResponseRedirect(reverse('settings'))
 
 
 # Payment.status → coarse UI bucket used by the template (icon / colour / filter).

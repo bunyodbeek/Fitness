@@ -46,10 +46,12 @@
             background: rgba(0, 0, 0, 0.6);
             -webkit-backdrop-filter: blur(14px);
             backdrop-filter: blur(14px);
-            padding: 0 var(--side-space);
+            /* Push content below Telegram's fullscreen top inset (shared
+               --app-safe-top from base.html); background still fills to top. */
+            padding: var(--app-safe-top) var(--side-space) 0;
             display: flex;
             align-items: center;
-            height: 54px;
+            height: calc(54px + var(--app-safe-top));
         }
 
         .header-side {
@@ -124,7 +126,7 @@
         /* ===== PROGRESS ===== */
         .progress-section {
             position: fixed;
-            top: 54px;
+            top: calc(54px + var(--app-safe-top));
             left: 0;
             right: 0;
             z-index: 99;
@@ -368,7 +370,7 @@
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.25s;
-            padding-top: 54px;
+            padding-top: calc(54px + var(--app-safe-top));
         }
 
         .desc-overlay.active {
@@ -386,7 +388,7 @@
             overflow: hidden;
             transform: translateY(-20px);
             transition: transform 0.3s cubic-bezier(0.34, 1.4, 0.64, 1);
-            max-height: calc(100vh - 54px);
+            max-height: calc(100vh - 54px - var(--app-safe-top));
             display: flex;
             flex-direction: column;
         }
