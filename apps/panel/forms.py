@@ -39,13 +39,16 @@ class WorkoutProgressForm(forms.ModelForm):
 # ───────────────────────── Content: program hierarchy ─────────────────────────
 
 class ProgramForm(forms.ModelForm):
+    # NOTE: no ``is_premium`` — hierarchy programs are gated structurally
+    # ("first plan's week 1 is free, everything else premium"), so the checkbox
+    # is meaningless here. Only OneTimeProgramForm still exposes it.
     class Meta:
         model = Program
         fields = [
             "name", "name_uz", "name_ru",
             "description", "description_uz", "description_ru",
             "image", "workout_type", "level", "goal",
-            "is_active", "is_premium",
+            "is_active",
         ]
 
 
@@ -57,7 +60,7 @@ class IndividualProgramForm(forms.ModelForm):
         fields = [
             "name", "name_uz", "name_ru",
             "description", "description_uz", "description_ru",
-            "image", "workout_type", "level", "goal", "is_active", "is_premium",
+            "image", "workout_type", "level", "goal", "is_active",
         ]
 
 
@@ -89,7 +92,7 @@ class PlanForm(forms.ModelForm):
             "program", "name", "name_uz", "name_ru", "description",
             "order", "weeks_count", "difficulty",
             "progression_config", "home_progression_config",
-            "is_premium", "is_4_week",
+            "is_4_week",
         ]
 
 

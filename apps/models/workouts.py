@@ -207,6 +207,25 @@ class Plan(CreatedBaseModel):
 				return len(week.workouts.all())
 		return 0
 
+	@property
+	def is_first_plan(self):
+		"""True when this is the program's first plan — min by ``(order, id)``,
+		the exact same comparator as ``Program.first_workout`` (workouts.py).
+
+		Iterates the program's cached ``plans.all()`` so a ``plans`` prefetch
+		(or the reverse-FK cache a prefetch primes on each plan) is reused
+		instead of firing a query per card. Source of truth for the
+		"first plan's week 1 is free" rule — never re-derive it inline."""
+		first = min(self.program.plans.all(), key=lambda p: (p.order, p.id), default=None)
+		return bool(first and first.pk == self.pk)
+
+	def is_locked_for(self, profile):
+		"""Plans are never locked at the plan level in a hierarchy program — the
+		paywall lives at the week level (first plan's week 1 is the free
+		preview). Kept as a single call-site so views/templates don't re-derive
+		the rule. One-time programs don't use this (legacy ``is_premium``)."""
+		return False
+
 
 class IndividualProgram(Program):
 	"""Admin uchun proxy — tavsiya programmalarini alohida boshqarish."""
@@ -269,7 +288,24 @@ class Week(Model):
 	@property
 	def display_name(self):
 		return f"Week {self.week_number}"
-	
+
+	@property
+	def is_free_preview(self):
+		"""The single free week in a hierarchy program: week 1 of the first
+		plan. Everything else needs an active subscription. Structural rule,
+		computed purely from position — the per-object ``is_premium`` checkbox
+		is ignored for hierarchy programs."""
+		return self.week_number == 1 and self.plan.is_first_plan
+
+	def is_locked_for(self, profile):
+		"""Premium gate for this week. Premium users see everything; otherwise
+		only the free preview (first plan, week 1, and all its workouts) is
+		open. One-time programs never reach this — they keep the legacy
+		``is_premium`` checkbox handled by ``PremiumRequiredMixin``."""
+		if getattr(profile, "is_premium", False):
+			return False
+		return not self.is_free_preview
+
 	def __str__(self):
 		return f"{self.plan.name} - Week {self.week_number}"
 

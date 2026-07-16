@@ -818,7 +818,7 @@
                                 <span class="cat-title">{{ cat.label }}</span>
                             </div>
                             {% for program in cat.programs %}
-                                {% include 'workouts/_program_card.html' with card_url=program.detail_url card_image=program.image card_image_url=program.image_thumb_url card_title=program.display_name card_description=program.display_description|truncatewords:18 weeks=program.plans.first.weeks_count days=program.plans.first.days_per_week show_plans=True plan_count=program.plans.count is_premium=program.is_premium user_is_premium=request.user.profile.is_premium show_foryou=program.is_recommended show_popular=program.is_popular %}
+                                {% include 'workouts/_program_card.html' with card_url=program.detail_url card_image=program.image card_image_url=program.image_thumb_url card_title=program.display_name card_description=program.display_description|truncatewords:18 weeks=program.plans.first.weeks_count days=program.plans.first.days_per_week show_plans=True plan_count=program.plans.count is_premium=program.is_premium is_one_time=program.is_one_time user_is_premium=request.user.profile.is_premium show_foryou=program.is_recommended show_popular=program.is_popular %}
                             {% endfor %}
                         </section>
                     {% endfor %}

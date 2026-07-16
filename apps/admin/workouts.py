@@ -434,14 +434,16 @@ class HomeWorkoutAdmin(admin.ModelAdmin):
 # ─────────────────────────────────────────────
 @admin.register(Plan)
 class PlanAdmin(admin.ModelAdmin):
-	list_display = ("id", "name", "program_link", "weeks_count", "week_fill_status", "is_premium")
-	list_filter = ("program__workout_type", "program", "is_premium")
+	# is_premium removed — Plans are gated structurally (first plan's week 1 is
+	# free, everything else premium); the per-plan checkbox is meaningless.
+	list_display = ("id", "name", "program_link", "weeks_count", "week_fill_status")
+	list_filter = ("program__workout_type", "program")
 	search_fields = ("name", "program__name")
 	autocomplete_fields = ["program", "progression_config"]
 	inlines = [WeekInline]
-	
+
 	fieldsets = (
-		(None, {"fields": ("program", "order", "is_premium", "is_4_week")}),
+		(None, {"fields": ("program", "order", "is_4_week")}),
 		(_("Nomlar"), {"fields": ("name", "name_uz", "name_ru")}),
 		(_("Progression sozlamalari"), {
 			"fields": ("weeks_count", "progression_config"),
@@ -480,14 +482,17 @@ class PlanAdmin(admin.ModelAdmin):
 # ─────────────────────────────────────────────
 @admin.register(Program)
 class ProgramAdmin(admin.ModelAdmin):
-	list_display = ("id", "name", "type", "workout_type", "level", "goal", "plan_count", "view_count", "is_active", "is_premium", "recommendation_key")
-	list_filter = ("type", "workout_type", "level", "goal", "is_active", "is_premium", "is_one_time")
+	# is_premium removed — hierarchy programs use the structural "first plan's
+	# week 1 is free" rule; the checkbox only applies to one-time programs
+	# (managed under OneTimeProgram admin).
+	list_display = ("id", "name", "type", "workout_type", "level", "goal", "plan_count", "view_count", "is_active", "recommendation_key")
+	list_filter = ("type", "workout_type", "level", "goal", "is_active", "is_one_time")
 	search_fields = ("name",)
 
 	fieldsets = (
 		(None, {"fields": ("name", "name_uz", "name_ru", "image")}),
 		(_("Sozlamalar"),
-		 {"fields": ("workout_type", "level", "goal", "type", "is_active", "is_premium", "is_template"),
+		 {"fields": ("workout_type", "level", "goal", "type", "is_active", "is_template"),
 		  "description": (
 			  "⭐ Tavsiya uchun: type=Admin, is_active=True, goal va level ni to'g'ri tanlang. "
 			  "Yangi foydalanuvchiga avtomatik shu program tavsiya qilinadi."
@@ -553,7 +558,7 @@ class IndividualProgramAdmin(admin.ModelAdmin):
 	fieldsets = (
 		(None, {"fields": ("name", "name_uz", "name_ru", "image")}),
 		(_("Sozlamalar"), {
-			"fields": ("workout_type", "level", "goal", "is_active", "is_premium"),
+			"fields": ("workout_type", "level", "goal", "is_active"),
 			"description": (
 				"⭐ Bu programma oddiy ro'yxatda ko'rinmaydi. "
 				"Yangi foydalanuvchi ro'yxatdan o'tganda, uning "

@@ -15,6 +15,7 @@ from apps.services import UserProgramService
 from apps.services.programs import ProgramGenerationService
 from apps.workouts.recommendation import get_recommended_program
 from apps.utils.home_progression import calculate_home_week_exercise
+from apps.utils.mixins import WeekPaywallDetailMixin, week_paywall_redirect
 from apps.views.workouts import WorkoutCompleteView, build_programs_page_context
 
 
@@ -97,14 +98,17 @@ class HomePlanWeeksView(DetailView):
 		return context
 
 
-class HomeWorkoutDetailView(LoginRequiredMixin, DetailView):
+class HomeWorkoutDetailView(WeekPaywallDetailMixin, LoginRequiredMixin, DetailView):
 	"""
 	Workout (kun) tafsilotlari + progress.
 	"""
 	model = Workout
 	template_name = 'workouts/home_workout_detail.html'
 	context_object_name = 'workout'
-	
+
+	def paywall_week(self):
+		return self.object.week
+
 	def get_queryset(self):
 		return Workout.objects.filter(
 			week__plan__program__workout_type=WorkoutType.HOME
@@ -138,7 +142,7 @@ class HomeWorkoutDetailView(LoginRequiredMixin, DetailView):
 		rounds = workout.rounds
 		rest_seconds = setting.rest_between_rounds
 		for wex in workout_exercises:
-			calc = calculate_home_week_exercise(workout.rounds, int((wex.minutes or 0) * 60), week_number, setting)
+			calc = calculate_home_week_exercise(workout.rounds, int(wex.minutes or 0), week_number, setting)
 			rounds = calc["rounds"]
 			rest_seconds = calc["rest_seconds"]
 			exercises.append({
@@ -181,7 +185,11 @@ class HomeWorkoutDoneView(LoginRequiredMixin, View):
 			pk=pk,
 			week__plan__program__workout_type=WorkoutType.HOME,
 		)
-		
+
+		blocked = week_paywall_redirect(request, workout.week)
+		if blocked:
+			return blocked
+
 		exercise_count = workout.workout_exercises.count()
 		
 		if exercise_count == 0:
@@ -225,13 +233,15 @@ from django.db.models import Count
 from apps.models import Week  # import qo'shing
 
 
-class HomeWeekDetailView(DetailView):
+class HomeWeekDetailView(WeekPaywallDetailMixin, DetailView):
 	model = Week
 	template_name = 'workouts/week_days.html'
 	context_object_name = 'week'
-	
+
 	def get_queryset(self):
-		return Week.objects.filter(plan__program__workout_type=WorkoutType.HOME)  
+		return Week.objects.filter(
+			plan__program__workout_type=WorkoutType.HOME
+		).select_related('plan__program')
 	
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
@@ -265,6 +275,9 @@ class HomeWorkoutCompleteView(LoginRequiredMixin, View):
 			pk=pk,
 			week__plan__program__workout_type=WorkoutType.HOME,
 		)
+		blocked = week_paywall_redirect(request, workout.week)
+		if blocked:
+			return blocked
 		total_calories = float(request.POST.get("total_calories", 0) or 0)
 		total_duration = int(float(request.POST.get("total_duration", 0) or 0))
 		
@@ -287,11 +300,24 @@ class HomeWorkoutCompleteView(LoginRequiredMixin, View):
 		workout = get_object_or_404(
 			HomeWorkout.objects.select_related("week__plan__program"), pk=pk
 		)
+		blocked = week_paywall_redirect(request, workout.week)
+		if blocked:
+			return blocked
 		return render(request, self.template_name, {"workout": workout})
 
 
 class HomeSessionView(LoginRequiredMixin, TemplateView):
     template_name = "workouts/home_session.html"
+
+    def get(self, request, *args, **kwargs):
+        # Gate the live session player the same way as the workout detail page.
+        workout = get_object_or_404(
+            HomeWorkout.objects.select_related("week__plan__program"), pk=kwargs["pk"]
+        )
+        blocked = week_paywall_redirect(request, workout.week)
+        if blocked:
+            return blocked
+        return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -313,7 +339,7 @@ class HomeSessionView(LoginRequiredMixin, TemplateView):
         rounds = workout.rounds
         rest_seconds = setting.rest_between_rounds
         for wex in workout_exercises:
-            calc = calculate_home_week_exercise(workout.rounds, int((wex.minutes or 0) * 60), week_number, setting)
+            calc = calculate_home_week_exercise(workout.rounds, int(wex.minutes or 0), week_number, setting)
             rounds = calc["rounds"]
             rest_seconds = calc["rest_seconds"]
 

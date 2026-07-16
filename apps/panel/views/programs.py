@@ -145,7 +145,7 @@ class PlanListView(PanelListView):
     model = Plan
     nav_active = "plans"
     page_title = _("Plans")
-    columns = [_("Name"), _("Program"), _("Order"), _("Weeks"), _("Premium")]
+    columns = [_("Name"), _("Program"), _("Order"), _("Weeks")]
     search_fields = ["name", "program__name"]
     create_url_name = "panel:plan_add"
     open_url_name = "panel:plan_detail"
@@ -165,7 +165,7 @@ class PlanListView(PanelListView):
         return ctx
 
     def get_row_cells(self, obj):
-        return [obj.name, obj.program.name, obj.order, obj.weeks_count, _yesno(obj.is_premium)]
+        return [obj.name, obj.program.name, obj.order, obj.weeks_count]
 
 
 class PlanCreateView(PanelCreateView):

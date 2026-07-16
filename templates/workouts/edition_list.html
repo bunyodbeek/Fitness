@@ -348,6 +348,16 @@
             margin-top: 4px;
         }
 
+        .edition-free {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 9px;
+            font-weight: 700;
+            color: #4ade80;
+            margin-top: 4px;
+        }
+
         .edition-arrow {
             color: rgba(255, 215, 0, 0.5);
             transition: all 0.3s ease;
@@ -490,7 +500,7 @@
 
     <div class="container">
         <div class="top-program-card">
-            {% include 'workouts/_program_card.html' with card_url='' card_image=program.image card_title=program.display_name show_plans=True plan_count=plans|length weeks=plans.first.weeks_count days=plans.first.weeks.first.workouts.count is_premium=program.is_premium user_is_premium=request.user.profile.is_premium %}
+            {% include 'workouts/_program_card.html' with card_url='' card_image=program.image card_title=program.display_name show_plans=True plan_count=plans|length weeks=plans.first.weeks_count days=plans.first.weeks.first.workouts.count is_premium=program.is_premium is_one_time=program.is_one_time user_is_premium=request.user.profile.is_premium %}
         </div>
 
         <div class="about-card">
@@ -515,9 +525,14 @@
                             {{ plan.weeks_count }}{% trans "w" %} &bull;
                             {{ plan.weeks.first.workouts.count|default:"?" }}{% trans "d/week" %}
                         </div>
-                        {% if plan.is_premium %}
+                        {% if plan.is_first_plan %}
+                            <div class="edition-free">
+                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
+                                {% trans "Week 1 free" %}
+                            </div>
+                        {% elif not request.user.profile.is_premium %}
                             <div class="edition-premium">
-                                <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l2.9 6.3 6.9.7-5.1 4.6 1.4 6.8L12 17.8 5.9 20.4l1.4-6.8L2.2 9l6.9-.7L12 2z"/></svg>
+                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                                 {% trans "Premium" %}
                             </div>
                         {% endif %}

@@ -225,7 +225,11 @@ class ProgramGenerationService:
         if not setting:
             setting = HomeProgressionSetting.objects.create(key="default")
 
-        base_minutes = float(instance.minutes or 0)
+        # Home exercise time is stored in the ``minutes`` field but its unit is
+        # SECONDS for home programs (admin enters seconds). The duration
+        # increments (duration_w2 ...) are already in seconds, so everything
+        # here is seconds — no /60 conversion.
+        base_seconds = float(instance.minutes or 0)
         base_rounds = int(instance.workout.rounds or 1)
 
         cumulative_seconds = 0
@@ -246,7 +250,7 @@ class ProgramGenerationService:
             cumulative_seconds += d_inc
             cumulative_rounds += r_inc
 
-            new_minutes = base_minutes + (cumulative_seconds / 60)
+            new_seconds = base_seconds + cumulative_seconds
             new_rounds = max(1, base_rounds + cumulative_rounds)
 
             target_week = Week.objects.filter(plan=plan, week_number=week_num).first()
@@ -272,7 +276,7 @@ class ProgramGenerationService:
                 workout=target_workout,
                 exercise=instance.exercise,
                 defaults={
-                    "minutes":         new_minutes,
+                    "minutes":         new_seconds,
                     "sets":            instance.sets,
                     "reps":            instance.reps,
                     "order":           instance.order,

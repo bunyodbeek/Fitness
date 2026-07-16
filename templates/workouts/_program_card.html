@@ -13,7 +13,9 @@ Expected context (pass via {% include ... with %}):
   days             - frequency number (e.g. 3) -> "3d/week"
   show_plans       - bool, show a plans-count meta slot (programs only)
   plan_count       - number of plans (when show_plans)
-  is_premium       - bool, program/plan is premium
+  is_premium       - bool, one-time program's premium checkbox (hierarchy
+                     programs ignore this — their paywall is at week level)
+  is_one_time      - bool, program is a one-time (single-session) program
   user_is_premium  - bool, current user has premium
   show_foryou      - bool, render gold "FOR YOU" badge
   show_popular     - bool, render orange "top" badge
@@ -42,7 +44,7 @@ Expected context (pass via {% include ... with %}):
 
     <div class="program-overlay"></div>
 
-    {% if is_premium and not user_is_premium %}
+    {% if is_one_time and is_premium and not user_is_premium %}
         <div class="card-lock-badge">
             <svg
                 width="13"

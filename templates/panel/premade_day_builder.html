@@ -168,7 +168,7 @@
 
     function fieldsFor(ex) {
         if (IS_HOME) {
-            return `<div class="wb-field"><label>{% trans "Time (min)" %}</label><input type="number" min="0" data-k="minutes" value="${ex.minutes}"></div>`;
+            return `<div class="wb-field"><label>{% trans "Time (sec)" %}</label><input type="number" min="0" data-k="minutes" value="${ex.minutes}"></div>`;
         }
         return `
             <div class="wb-field"><label>{% trans "Sets" %}</label><input type="number" min="0" data-k="sets" value="${ex.sets}"></div>

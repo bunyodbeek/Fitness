@@ -13,7 +13,7 @@ import math
 from apps.models import Program, Plan, Week
 from apps.models.workouts import Workout, WorkoutExercise, WorkoutProgress, WorkoutType
 from apps.workouts.recommendation import get_recommended_program
-from apps.utils.mixins import PremiumRequiredMixin
+from apps.utils.mixins import PremiumRequiredMixin, WeekPaywallDetailMixin, week_paywall_redirect
 
 
 # ─────────────────────────────────────────────────────────────
@@ -302,7 +302,12 @@ class ProgramDetailView(PremiumRequiredMixin, DetailView):
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		active_type = self.object.workout_type
-		context['plans'] = self.object.plans.filter(program__workout_type=active_type).order_by('order')
+		# Reuse the ``plans`` prefetch (ordered by Plan.Meta ['order', 'id'] and
+		# with each plan's ``program`` reverse-FK cache primed to self.object),
+		# so ``plan.is_first_plan`` in the template is query-free — no N+1. All
+		# plans share the program's workout_type, so the old per-type filter was
+		# a no-op.
+		context['plans'] = self.object.plans.all()
 		context['active_workout_type'] = active_type
 		context['is_home_mode'] = active_type == WorkoutType.HOME
 		context['use_gym_urls'] = self.forced_workout_type == WorkoutType.GYM
@@ -317,31 +322,39 @@ class PlanWeeksView(PremiumRequiredMixin, DetailView):
 	
 	def get_queryset(self):
 		w_type = get_session_workout_type(self.request, self.forced_workout_type)
-		return Plan.objects.filter(program__workout_type=w_type)
-	
+		# select_related('program') so is_first_plan reads program.plans once.
+		return Plan.objects.filter(program__workout_type=w_type).select_related('program')
+
 	def premium_not_found_message(self, kwargs):
 		w_type = get_session_workout_type(self.request, self.forced_workout_type)
 		return f"IDsi {kwargs.get('pk')} bo'lgan plan tanlangan tur ({w_type}) uchun topilmadi."
-	
+
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		active_type = self.object.program.workout_type
-		context['weeks'] = self.object.weeks.all().order_by('week_number')
+		weeks = list(self.object.weeks.all().order_by('week_number'))
+		# Prime each week's ``plan`` FK to self.object so ``week.is_free_preview``
+		# in the template resolves plan.is_first_plan against the already-loaded
+		# plan/program (program.plans cached after the first access) — no N+1.
+		for week in weeks:
+			week.plan = self.object
+		context['weeks'] = weeks
 		context['active_workout_type'] = active_type
 		context['is_home_mode'] = active_type == WorkoutType.HOME
+		context['user_is_premium'] = self._user_is_premium()
 		return context
 
 
-class WeekDetailView(DetailView):
+class WeekDetailView(WeekPaywallDetailMixin, DetailView):
 	forced_workout_type = None
-	
+
 	model = Week
 	template_name = 'workouts/week_days.html'
 	context_object_name = 'week'
-	
+
 	def get_queryset(self):
 		w_type = get_session_workout_type(self.request, self.forced_workout_type)
-		return Week.objects.filter(plan__program__workout_type=w_type)
+		return Week.objects.filter(plan__program__workout_type=w_type).select_related('plan__program')
 	
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
@@ -366,13 +379,16 @@ class WeekDetailView(DetailView):
 		return context
 
 
-class WorkoutDetailView(DetailView):
+class WorkoutDetailView(WeekPaywallDetailMixin, DetailView):
 	forced_workout_type = None
-	
+
 	model = Workout
 	template_name = 'workouts/workout_detail.html'
 	context_object_name = 'workout'
-	
+
+	def paywall_week(self):
+		return self.object.week
+
 	def get_queryset(self):
 		workout_type = get_session_workout_type(self.request, self.forced_workout_type)
 		return Workout.objects.filter(week__plan__program__workout_type=workout_type).select_related(
@@ -418,13 +434,20 @@ class WorkoutStartView(LoginRequiredMixin, View):
 	forced_workout_type = None
 	
 	def get(self, request, pk):
-		workout = get_object_or_404(Workout, pk=pk)
+		workout = get_object_or_404(
+			Workout.objects.select_related('week__plan__program'), pk=pk
+		)
+		# Same paywall as the workout detail page — a locked week's player is
+		# never reachable by deep-link.
+		blocked = week_paywall_redirect(request, workout.week)
+		if blocked:
+			return blocked
 		wtype = (
 				self.forced_workout_type
 				or workout.week.plan.program.workout_type
 				or get_session_workout_type(request)
 		)
-		
+
 		workout_exercises = WorkoutExercise.objects.filter(
 			workout=workout
 		).select_related('exercise').order_by('order')
@@ -517,12 +540,13 @@ class WorkoutCompleteView(LoginRequiredMixin, View):
 		return self.template_name
 	
 	def post(self, request, pk):
-		workout = get_object_or_404(Workout, pk=pk, week__plan__program__workout_type=get_session_workout_type(request,
-		                                                                                                       getattr(
-			                                                                                                       self,
-			                                                                                                       "forced_workout_type",
-			                                                                                                       None)))
-		
+		workout = get_object_or_404(Workout.objects.select_related('week__plan__program'), pk=pk,
+		                            week__plan__program__workout_type=get_session_workout_type(request,
+		                                                                                       getattr(self, "forced_workout_type", None)))
+		blocked = week_paywall_redirect(request, workout.week)
+		if blocked:
+			return blocked
+
 		total_calories = self._safe_float(request.POST.get("total_calories", 0))
 		total_duration = self._safe_int(request.POST.get("total_duration", 0))
 		exercises_completed = self._safe_int(request.POST.get("exercises_completed", 0))
@@ -555,11 +579,12 @@ class WorkoutCompleteView(LoginRequiredMixin, View):
 		})
 	
 	def get(self, request, pk):
-		workout = get_object_or_404(Workout, pk=pk, week__plan__program__workout_type=get_session_workout_type(request,
-		                                                                                                       getattr(
-			                                                                                                       self,
-			                                                                                                       "forced_workout_type",
-			                                                                                                       None)))
+		workout = get_object_or_404(Workout.objects.select_related('week__plan__program'), pk=pk,
+		                            week__plan__program__workout_type=get_session_workout_type(request,
+		                                                                                       getattr(self, "forced_workout_type", None)))
+		blocked = week_paywall_redirect(request, workout.week)
+		if blocked:
+			return blocked
 		return render(request, self.get_template_name(request), {"workout": workout})
 
 #
