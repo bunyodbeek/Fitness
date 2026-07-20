@@ -527,8 +527,7 @@
                         </div>
                         {% if plan.is_first_plan %}
                             <div class="edition-free">
-                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
-                                {% trans "Week 1 free" %}
+
                             </div>
                         {% elif not request.user.profile.is_premium %}
                             <div class="edition-premium">
