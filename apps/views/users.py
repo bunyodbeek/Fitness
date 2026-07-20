@@ -27,7 +27,7 @@ from rest_framework.views import APIView
 from apps.forms import UserProfileForm
 from apps.models import User, UserMotivation, UserProfile
 from apps.models.favorites import CustomProgramProgress
-from apps.models.payments import Subscription, Payment
+from apps.models.payments import Subscription, Payment, SubscriptionPlan
 from apps.models.workouts import WorkoutProgress, WorkoutType
 from apps.services.program_progression import create_onboarding_program
 from apps.utils.telegram_webapp import parse_init_data
@@ -341,6 +341,19 @@ class ProgressView(LoginRequiredMixin, TemplateView):
             period = 'week'
 
         profile, _created = UserProfile.objects.get_or_create(user=self.request.user)
+
+        # Statistics are a premium feature. Free users may only view *today's*
+        # stats; any other period (week/month/year/all) is locked behind premium.
+        is_premium = profile.is_premium
+        stats_locked = (not is_premium) and period != 'today'
+        context['is_premium'] = is_premium
+        context['stats_locked'] = stats_locked
+        context['period'] = period
+        if stats_locked:
+            # Don't compute or reveal the real numbers — render the paywall only.
+            context['profile'] = profile
+            return context
+
         workout_progress_qs = WorkoutProgress.objects.filter(
             user=profile,
             status=WorkoutProgress.Status.COMPLETED,
@@ -711,8 +724,24 @@ class ManageSubscriptionView(LoginRequiredMixin, TemplateView):
             delta = (next_payment_date.date() - timezone.localdate()).days
             days_remaining = max(delta, 0)
 
+        # Available packages the user can switch/upgrade to. The one matching the
+        # current subscription is flagged so the template can mark it "Current".
+        current_plan_id = subscription.plan_id if subscription else None
+        available_plans = []
+        for plan in SubscriptionPlan.objects.filter(is_active=True).order_by('order', 'price_uzs'):
+            available_plans.append({
+                'id': plan.id,
+                'period_display': plan.get_period_display(),
+                'months': plan.months,
+                'price_uzs': plan.price_uzs,
+                'is_popular': plan.is_popular,
+                'is_current': plan.id == current_plan_id,
+            })
+
         context.update({
             'subscription': subscription,
+            'current_plan': subscription.plan if subscription else None,
+            'available_plans': available_plans,
             'payments': payments,
             'total_paid': total_paid,
             'payment_count': total_count,

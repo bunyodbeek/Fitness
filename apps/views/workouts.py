@@ -332,12 +332,35 @@ class PlanWeeksView(PremiumRequiredMixin, DetailView):
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		active_type = self.object.program.workout_type
-		weeks = list(self.object.weeks.all().order_by('week_number'))
+		weeks = list(
+			self.object.weeks.all().order_by('week_number').prefetch_related('workouts')
+		)
+
+		# A week is "completed" (shown green) once the user has finished every
+		# workout day in it. One query for all completed workout ids in this plan.
+		profile = getattr(self.request.user, 'profile', None)
+		completed_workout_ids = set()
+		if profile:
+			completed_workout_ids = set(
+				WorkoutProgress.objects.filter(
+					user=profile,
+					status=WorkoutProgress.Status.COMPLETED,
+					workout__week__plan=self.object,
+				).values_list('workout_id', flat=True)
+			)
+
 		# Prime each week's ``plan`` FK to self.object so ``week.is_free_preview``
 		# in the template resolves plan.is_first_plan against the already-loaded
 		# plan/program (program.plans cached after the first access) — no N+1.
 		for week in weeks:
 			week.plan = self.object
+			week_workout_ids = [w.id for w in week.workouts.all()]
+			total = len(week_workout_ids)
+			done = sum(1 for wid in week_workout_ids if wid in completed_workout_ids)
+			week.days_total = total
+			week.days_done = done
+			week.is_completed = total > 0 and done == total
+
 		context['weeks'] = weeks
 		context['active_workout_type'] = active_type
 		context['is_home_mode'] = active_type == WorkoutType.HOME

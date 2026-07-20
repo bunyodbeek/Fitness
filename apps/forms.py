@@ -8,14 +8,17 @@ from .models import UserProfile
 class UserProfileForm(forms.ModelForm):
     class Meta:
         model = UserProfile
-        fields = ['name', 'gender', 'birth_date', 'weight', 'height', 'avatar', 'unit_system']
+        # NOTE: `unit_system` is intentionally NOT listed here. It is not rendered
+        # in profile_update.html, so including it made the form require a value that
+        # the POST never contained → every save (avatar included) failed validation
+        # silently and "nothing changed". It keeps its existing/default value.
+        fields = ['name', 'gender', 'birth_date', 'weight', 'height', 'avatar']
         widgets = {
             'birth_date': forms.DateInput(attrs={'type': 'date', 'class': 'input-field'}),
             'name': forms.TextInput(attrs={'class': 'input-field'}),
             'gender': forms.Select(attrs={'class': 'input-field'}),
             'weight': forms.NumberInput(attrs={'class': 'input-field'}),
             'height': forms.NumberInput(attrs={'class': 'input-field'}),
-            'unit_system': forms.Select(attrs={'class': 'input-field'}),
             'avatar': forms.FileInput(attrs={'class': 'input-field'}),
         }
 

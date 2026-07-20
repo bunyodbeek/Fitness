@@ -281,6 +281,31 @@
     }
     .week-lock svg { flex-shrink: 0; }
 
+    /* Completed week — all days done (green) */
+    .week-card--completed {
+        border-color: rgba(74, 222, 128, 0.45);
+        background: rgba(74, 222, 128, 0.06);
+    }
+    .week-card--completed .week-number {
+        background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+        color: #0a1f0f;
+    }
+    .week-card--completed .week-arrow { color: rgba(74, 222, 128, 0.6); }
+    .week-card--completed:hover { border-color: rgba(74, 222, 128, 0.7); }
+
+    .week-done-tag {
+        display: inline-block;
+        margin-left: 6px;
+        padding: 1px 6px;
+        border-radius: 6px;
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: 0.4px;
+        color: #4ade80;
+        background: rgba(74, 222, 128, 0.12);
+        vertical-align: middle;
+    }
+
     /* Free preview week (first plan, week 1) */
     .week-free-tag {
         display: inline-block;
@@ -376,15 +401,22 @@
                     </div>
                 </a>
             {% else %}
-                <a href="{% if is_home_mode %}{% url 'home_week_detail' week.id %}{% else %}{% url 'gym_week_detail' week.id %}{% endif %}" class="week-card{% if week.is_free_preview %} week-card--free{% endif %}">
-                    <div class="week-number">{{ week.week_number }}</div>
+                <a href="{% if is_home_mode %}{% url 'home_week_detail' week.id %}{% else %}{% url 'gym_week_detail' week.id %}{% endif %}" class="week-card{% if week.is_free_preview %} week-card--free{% endif %}{% if week.is_completed %} week-card--completed{% endif %}">
+                    <div class="week-number">
+                        {% if week.is_completed %}
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+                        {% else %}
+                            {{ week.week_number }}
+                        {% endif %}
+                    </div>
                     <div class="week-content">
                         <div class="week-title">
                             {% trans "Week" %} {{ week.week_number }}
                             {% if week.is_free_preview and not user_is_premium %}<span class="week-free-tag">{% trans "Free" %}</span>{% endif %}
+                            {% if week.is_completed %}<span class="week-done-tag">{% trans "Completed" %}</span>{% endif %}
                         </div>
                         <div class="week-meta">
-                            {{ week.workouts.count }} {% trans "Days" %}
+                            {% if week.days_total %}{{ week.days_done }}/{{ week.days_total }}{% else %}{{ week.workouts.count }}{% endif %} {% trans "Days" %}
                         </div>
                     </div>
                     <div class="week-arrow">

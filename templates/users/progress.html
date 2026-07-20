@@ -133,6 +133,82 @@
         box-shadow: inset 0 0 0 1px rgba(255, 215, 0, 0.25);
     }
 
+    .period-lock {
+        font-size: 9px;
+        opacity: 0.85;
+        margin-left: 1px;
+    }
+
+    /* ===== PREMIUM PAYWALL ===== */
+    .paywall-card {
+        background: var(--card-bg);
+        border: 1px solid rgba(255, 215, 0, 0.22);
+        border-radius: 18px;
+        padding: 32px 22px;
+        text-align: center;
+        animation: slideInUp 0.5s ease;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+    }
+
+    .paywall-icon {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 16px;
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--gold);
+        background: rgba(255, 215, 0, 0.10);
+        border: 1px solid rgba(255, 215, 0, 0.25);
+    }
+
+    .paywall-title {
+        font-size: 18px;
+        font-weight: 900;
+        color: var(--gold);
+        margin-bottom: 10px;
+    }
+
+    .paywall-text {
+        font-size: 13px;
+        line-height: 1.55;
+        color: rgba(255, 255, 255, 0.6);
+        max-width: 340px;
+        margin: 0 auto 22px;
+    }
+
+    .paywall-btn {
+        display: inline-block;
+        width: 100%;
+        max-width: 320px;
+        padding: 15px 20px;
+        border-radius: 14px;
+        background: var(--gold-grad);
+        color: #1a1300;
+        font-size: 14px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        text-decoration: none;
+        box-shadow: 0 6px 22px rgba(255, 215, 0, 0.3);
+        transition: transform 0.2s ease;
+    }
+
+    .paywall-btn:active { transform: scale(0.98); }
+
+    .paywall-today-link {
+        display: block;
+        margin: 14px auto 0;
+        background: none;
+        border: none;
+        color: rgba(255, 255, 255, 0.55);
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: underline;
+    }
+
     /* ===== STATS — horizontal rows ===== */
     .stats-grid {
         display: grid;
@@ -485,11 +561,24 @@
     <!-- Period Selector -->
     <div class="period-selector">
         <button class="period-btn {% if period == 'today' %}active{% endif %}" data-period="today">{% trans "Today" %}</button>
-        <button class="period-btn {% if period == 'week' or not period %}active{% endif %}" data-period="week">{% trans "Week" %}</button>
-        <button class="period-btn {% if period == 'month' %}active{% endif %}" data-period="month">{% trans "Month" %}</button>
-        <button class="period-btn {% if period == 'year' %}active{% endif %}" data-period="year">{% trans "Year" %}</button>
-        <button class="period-btn {% if period == 'all' %}active{% endif %}" data-period="all">{% trans "All" %}</button>
+        <button class="period-btn {% if period == 'week' or not period %}active{% endif %}" data-period="week">{% trans "Week" %}{% if not is_premium %} <span class="period-lock">🔒</span>{% endif %}</button>
+        <button class="period-btn {% if period == 'month' %}active{% endif %}" data-period="month">{% trans "Month" %}{% if not is_premium %} <span class="period-lock">🔒</span>{% endif %}</button>
+        <button class="period-btn {% if period == 'year' %}active{% endif %}" data-period="year">{% trans "Year" %}{% if not is_premium %} <span class="period-lock">🔒</span>{% endif %}</button>
+        <button class="period-btn {% if period == 'all' %}active{% endif %}" data-period="all">{% trans "All" %}{% if not is_premium %} <span class="period-lock">🔒</span>{% endif %}</button>
     </div>
+
+    {% if stats_locked %}
+    <!-- Premium paywall — free users only get today's stats -->
+    <div class="paywall-card">
+        <div class="paywall-icon">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <h2 class="paywall-title">{% trans "Unlock full statistics" %}</h2>
+        <p class="paywall-text">{% trans "Weekly, monthly and yearly statistics are a premium feature. Upgrade to Premium to see your full progress." %}</p>
+        <a href="{% url 'premium' %}" class="paywall-btn">{% trans "Get Premium" %}</a>
+        <button type="button" class="paywall-today-link" onclick="window.location.href='?period=today'">{% trans "View today's stats" %}</button>
+    </div>
+    {% else %}
 
     <!-- Stats Grid -->
     <div class="stats-grid">
@@ -597,6 +686,7 @@
         </div>
         {% endfor %}
     </div>
+    {% endif %}
 </div>
 {% endblock %}
 
