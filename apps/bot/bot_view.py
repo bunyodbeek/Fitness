@@ -104,9 +104,51 @@ def _send_webapp_message(chat_id, first_name, lang_code):
 	)
 
 
+GIFT_CLAIM_TEXTS = {
+	"uz": {
+		"msg": "🎁 Sizga Premium sovg'a qilindi!\nUni olish uchun quyidagi tugmani bosing.",
+		"button": "🎁 Sovg'ani olish",
+	},
+	"ru": {
+		"msg": "🎁 Вам подарили Premium!\nНажмите кнопку ниже, чтобы получить его.",
+		"button": "🎁 Получить подарок",
+	},
+	"en": {
+		"msg": "🎁 You've received a Premium gift!\nTap the button below to claim it.",
+		"button": "🎁 Claim your gift",
+	},
+}
+
+
+def _send_gift_claim(message, code):
+	"""Open the mini-app claim page for a `/start gift_<code>` deep link."""
+	user = message.from_user
+	lang = (getattr(user, "language_code", "") or "en")[:2]
+	if lang not in SUPPORTED_LANGUAGES:
+		lang = "en"
+	texts = GIFT_CLAIM_TEXTS[lang]
+
+	claim_url = f"{WEBAPP_URL}/{lang}/users/gift/claim/{code}/"
+	keyboard = InlineKeyboardMarkup()
+	keyboard.add(
+		InlineKeyboardButton(texts["button"], web_app=WebAppInfo(url=claim_url))
+	)
+	bot.send_message(message.chat.id, texts["msg"], reply_markup=keyboard)
+
+
 @bot.message_handler(commands=['start'])
 def start(message):
 	user = message.from_user
+
+	# Deep link: `/start gift_<code>` → open the gift claim page directly.
+	parts = (message.text or "").split(maxsplit=1)
+	param = parts[1].strip() if len(parts) > 1 else ""
+	if param.startswith("gift_"):
+		code = param[len("gift_"):].strip()
+		if code:
+			_send_gift_claim(message, code)
+			return
+
 	bot.send_message(
 		message.chat.id,
 		LANGUAGE_TEXTS["en"]["choose_language"],

@@ -5,6 +5,7 @@ from decimal import Decimal
 
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import transaction
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -14,8 +15,10 @@ from django.utils.translation import gettext_lazy as _
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView, View
 
-from apps.models.payments import SubscriptionPlan, Payment
+from apps.models import UserProfile
+from apps.models.payments import SubscriptionPlan, Payment, PremiumGift
 from apps.services import otp_guard
+from apps.utils.telegram_webapp import parse_init_data
 from apps.services.atmos import (
 	ApplyError, AtmosClient, AtmosError, callback_response,
 	classify_apply_error, validate_callback_signature,
@@ -162,6 +165,17 @@ class PaymentCreateView(LoginRequiredMixin, View):
 		plan = get_object_or_404(SubscriptionPlan, pk=plan_id, is_active=True)
 		profile = request.user.profile
 
+		# A gift buys Premium for a friend (one time only) instead of extending
+		# the payer's own subscription.
+		is_gift = request.POST.get('is_gift') == '1'
+		if is_gift:
+			existing_gift = PremiumGift.objects.filter(sender=profile).first()
+			if existing_gift and existing_gift.is_used:
+				return JsonResponse({
+					'ok': False, 'error': 'already_gifted',
+					'message': _("You have already sent a Premium gift."),
+				}, status=409)
+
 		currency = request.POST.get('currency', Payment.Currency.UZS)
 		if currency not in Payment.Currency.values:
 			currency = Payment.Currency.UZS
@@ -189,7 +203,7 @@ class PaymentCreateView(LoginRequiredMixin, View):
 			return (
 				Payment.objects
 				.filter(
-					user=profile, plan=plan,
+					user=profile, plan=plan, is_gift=is_gift,
 					status=Payment.PaymentStatus.PROCESSING,
 					atmos_transaction_id__isnull=False,
 					created_at__gte=cutoff,
@@ -229,7 +243,21 @@ class PaymentCreateView(LoginRequiredMixin, View):
 				currency=Payment.Currency.UZS,
 				method=method,
 				status=Payment.PaymentStatus.PENDING,
+				is_gift=is_gift,
 			)
+
+			# Attach (or reuse) this sender's single gift row and point it at the
+			# current payment attempt. It becomes AVAILABLE on payment success.
+			if is_gift:
+				gift, _created = PremiumGift.objects.get_or_create(
+					sender=profile,
+					defaults={'code': PremiumGift.generate_code(), 'plan': plan},
+				)
+				if gift.status != PremiumGift.Status.CLAIMED:
+					gift.plan = plan
+					gift.payment = payment
+					gift.status = PremiumGift.Status.PENDING
+					gift.save(update_fields=['plan', 'payment', 'status'])
 
 			client = AtmosClient()
 			try:
@@ -371,7 +399,8 @@ class PaymentOtpView(LoginRequiredMixin, View):
 			payment.mark_as_completed()
 		otp_guard.reset_verify_attempts(profile.id, payment.id)
 		request.session.pop(_session_card_key(payment.id), None)
-		return JsonResponse({'ok': True, 'redirect': reverse('payment_success')})
+		redirect_name = 'gift_share' if payment.is_gift else 'payment_success'
+		return JsonResponse({'ok': True, 'redirect': reverse(redirect_name)})
 
 
 class PaymentOtpResendView(LoginRequiredMixin, View):
@@ -435,6 +464,102 @@ class PaymentSuccessView(LoginRequiredMixin, TemplateView):
 		ctx = super().get_context_data(**kwargs)
 		ctx['benefits'] = PREMIUM_BENEFITS
 		return ctx
+
+
+# ── Premium gifting ──────────────────────────────────────────────────────────
+
+class GiftPremiumView(LoginRequiredMixin, View):
+	"""Entry point (from Manage Subscription) to gift 1 month of Premium.
+
+	If the user has already used their one-time gift, they are sent to the share
+	page instead of the purchase form."""
+	template_name = 'payment/gift_purchase.html'
+
+	def get(self, request):
+		profile = request.user.profile
+		gift = PremiumGift.objects.filter(sender=profile).first()
+		if gift and gift.is_used:
+			return redirect('gift_share')
+
+		# A gift always grants the monthly plan.
+		plan = SubscriptionPlan.objects.filter(is_active=True, period='monthly').first()
+		return render(request, self.template_name, {
+			'plan': plan,
+			'amount': plan.price_uzs if plan else None,
+		})
+
+
+class GiftShareView(LoginRequiredMixin, TemplateView):
+	"""Shows the sender their shareable gift link and its current status."""
+	template_name = 'payment/gift_share.html'
+
+	def get_context_data(self, **kwargs):
+		ctx = super().get_context_data(**kwargs)
+		profile = self.request.user.profile
+		gift = PremiumGift.objects.filter(sender=profile).select_related('recipient').first()
+		# Only a paid (available/claimed) gift has a usable link.
+		ctx['gift'] = gift if (gift and gift.is_used) else None
+		ctx['share_link'] = ctx['gift'].share_link if ctx['gift'] else ''
+		return ctx
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class GiftClaimView(View):
+	"""Recipient-facing claim page opened from the shared Telegram link.
+
+	Not LoginRequired: the recipient is identified from the signed Telegram
+	``initData`` (same trust model as onboarding), so a friend who is not logged
+	into a browser session can still claim inside the Telegram mini app."""
+	template_name = 'payment/gift_claim.html'
+
+	def get(self, request, code):
+		gift = (
+			PremiumGift.objects
+			.filter(code=code)
+			.select_related('sender', 'plan')
+			.first()
+		)
+		return render(request, self.template_name, {'gift': gift, 'code': code})
+
+	def post(self, request, code):
+		verified = parse_init_data(request.POST.get('init_data') or '')
+		if not verified:
+			return JsonResponse({
+				'ok': False, 'error': 'auth',
+				'message': _("Could not verify your Telegram account. Please reopen the link."),
+			}, status=400)
+
+		recipient = UserProfile.objects.filter(telegram_id=verified['telegram_id']).first()
+		if recipient is None:
+			from apps.utils.telegram_bot_link import get_bot_deeplink
+			return JsonResponse({
+				'ok': False, 'error': 'no_profile', 'redirect': get_bot_deeplink(),
+				'message': _("Open the app and finish setup first, then claim your gift."),
+			}, status=403)
+
+		with transaction.atomic():
+			gift = PremiumGift.objects.select_for_update().filter(code=code).first()
+			if gift is None:
+				return JsonResponse({
+					'ok': False, 'error': 'not_found',
+					'message': _("This gift link is invalid."),
+				}, status=404)
+			ok, err = gift.claim(recipient)
+
+		if not ok:
+			messages_map = {
+				'unavailable': _("This gift has already been claimed or is not available."),
+				'self': _("You can't claim your own gift."),
+			}
+			return JsonResponse({
+				'ok': False, 'error': err,
+				'message': messages_map.get(err, _("This gift is not available.")),
+			}, status=409)
+
+		return JsonResponse({
+			'ok': True,
+			'message': _("Premium activated! Enjoy your gift."),
+		})
 
 
 @method_decorator(csrf_exempt, name='dispatch')

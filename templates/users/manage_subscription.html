@@ -215,6 +215,52 @@
             transform: scale(0.98);
         }
 
+        /* ===== GIFT PREMIUM CARD ===== */
+        .gift-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 215, 0, 0.28);
+            border-radius: var(--card-radius);
+            box-shadow: var(--card-shadow);
+            padding: 16px;
+            text-decoration: none;
+            transition: background 0.2s, border-color 0.2s;
+        }
+
+        .gift-card:active {
+            background: rgba(255, 215, 0, 0.06);
+        }
+
+        .gift-card-icon {
+            font-size: 28px;
+            line-height: 1;
+            flex-shrink: 0;
+        }
+
+        .gift-card-body {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .gift-card-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .gift-card-sub {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 3px;
+        }
+
+        .gift-card-arrow {
+            stroke: var(--gold);
+            flex-shrink: 0;
+        }
+
         /* ===== PACKAGES ===== */
         .packages {
             display: flex;
@@ -645,6 +691,26 @@
             </a>
         </div>
     {% endif %}
+
+    <!-- Gift Premium (one-time) -->
+    <a href="{% if gift %}{% url 'gift_share' %}{% else %}{% url 'gift_premium' %}{% endif %}" class="gift-card">
+        <div class="gift-card-icon">🎁</div>
+        <div class="gift-card-body">
+            <div class="gift-card-title">
+                {% if gift %}{% trans "Your Premium gift" %}{% else %}{% trans "Gift Premium to a friend" %}{% endif %}
+            </div>
+            <div class="gift-card-sub">
+                {% if gift and gift.status == 'claimed' %}
+                    {% trans "Claimed — thanks for sharing!" %}
+                {% elif gift %}
+                    {% trans "Tap to view your shareable link" %}
+                {% else %}
+                    {% trans "Send 1 month of Premium — one time only" %}
+                {% endif %}
+            </div>
+        </div>
+        <svg class="gift-card-arrow icon" width="18" height="18" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+    </a>
 
     <!-- Available packages -->
     {% if available_plans %}

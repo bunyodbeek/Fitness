@@ -1,0 +1,160 @@
+{% load static i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<title>{% trans "Claim Premium Gift" %}</title>
+	<script src="https://telegram.org/js/telegram-web-app.js"></script>
+	<script src="{% static 'js/tg_viewport.js' %}"></script>
+	<link rel="stylesheet" href="{% static 'css/tg_safe_area.css' %}">
+	<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+	<style>
+		:root {
+			--bg: #000000;
+			--card: rgba(255, 255, 255, 0.04);
+			--gold: #ffd700;
+			--gold-grad: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
+			--text: #ffffff;
+			--text-dim: #9aa0b0;
+			--border: rgba(255, 255, 255, 0.07);
+			--green: #4ade80;
+			--red: #ff6b6b;
+			--side-space: 12px;
+		}
+		* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+		html, body { overscroll-behavior: none; }
+		body {
+			background:
+				radial-gradient(circle at 50% 12%, rgba(255, 215, 0, 0.2), transparent 55%),
+				var(--bg);
+			color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh;
+			display: flex; align-items: center; justify-content: center; padding: 24px var(--side-space);
+		}
+		.card {
+			width: 100%; max-width: 420px; text-align: center;
+		}
+		.gift-emoji { font-size: 66px; line-height: 1; margin-bottom: 16px; }
+		h1 { font-family: 'Bebas Neue', sans-serif; font-size: 32px; letter-spacing: 1px; }
+		.sub { color: var(--text-dim); font-size: 14px; margin-top: 10px; line-height: 1.55; }
+		.plan-chip {
+			display: inline-block; margin: 20px 0 4px; padding: 10px 20px; border-radius: 14px;
+			background: rgba(255, 215, 0, 0.08); border: 1px solid rgba(255, 215, 0, 0.3);
+			color: var(--gold); font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 1px;
+		}
+		.btn {
+			display: flex; align-items: center; justify-content: center; gap: 8px;
+			width: 100%; margin-top: 26px; padding: 16px; border: none; border-radius: 14px;
+			background: var(--gold-grad); color: #1a1300; font-size: 15px; font-weight: 800;
+			letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer;
+			box-shadow: 0 6px 24px rgba(255, 215, 0, 0.3);
+		}
+		.btn:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; }
+		.btn-spinner {
+			width: 16px; height: 16px; border: 2px solid rgba(26, 19, 0, 0.35); border-top-color: #1a1300;
+			border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0;
+		}
+		@keyframes spin { to { transform: rotate(360deg); } }
+		.msg { margin-top: 18px; font-size: 14px; line-height: 1.5; display: none; }
+		.msg.show { display: block; }
+		.msg.error { color: var(--red); }
+		.msg.success { color: var(--green); }
+		.link-btn {
+			display: inline-block; margin-top: 18px; color: var(--gold); font-size: 14px; font-weight: 700;
+			text-decoration: none; border-bottom: 1px solid rgba(255, 215, 0, 0.4); padding-bottom: 2px;
+		}
+		.state-hidden { display: none; }
+	</style>
+</head>
+<body>
+<div class="card">
+	{% if gift and gift.status == 'available' %}
+		<div class="gift-emoji">🎁</div>
+		<h1>{% trans "You've got a gift!" %}</h1>
+		<p class="sub">{% trans "A friend sent you Premium. Claim it to unlock everything." %}</p>
+		<div class="plan-chip">1 {% trans "MONTH" %} · {% trans "PREMIUM" %}</div>
+
+		<button class="btn" id="claimBtn" onclick="claim()">
+			<span class="btn-label">{% trans "Claim Premium" %}</span>
+		</button>
+		<div class="msg" id="msg"></div>
+		<a class="link-btn state-hidden" id="openAppLink" href="#">{% trans "Open the app" %}</a>
+
+	{% elif gift and gift.status == 'claimed' %}
+		<div class="gift-emoji">😔</div>
+		<h1>{% trans "Already claimed" %}</h1>
+		<p class="sub">{% trans "This gift has already been claimed by someone else." %}</p>
+
+	{% else %}
+		<div class="gift-emoji">🔗</div>
+		<h1>{% trans "Invalid gift" %}</h1>
+		<p class="sub">{% trans "This gift link is invalid or is no longer available." %}</p>
+	{% endif %}
+</div>
+
+{% trans "Claiming…" as t_claiming %}
+{% trans "Claim Premium" as t_claim %}
+{% trans "Something went wrong. Please try again." as t_generic %}
+<script>
+	const CLAIM_URL = "{% url 'gift_claim' code %}";
+	const T = {
+		claiming: "{{ t_claiming|escapejs }}",
+		claim: "{{ t_claim|escapejs }}",
+		generic: "{{ t_generic|escapejs }}",
+	};
+
+	const tg = window.Telegram ? window.Telegram.WebApp : null;
+	if (tg) { try { tg.ready(); tg.expand(); } catch (_) {} }
+
+	function showMsg(text, kind) {
+		const el = document.getElementById('msg');
+		if (!el) return;
+		el.textContent = text;
+		el.className = 'msg show ' + (kind || '');
+	}
+	function setLoading(on) {
+		const btn = document.getElementById('claimBtn');
+		if (!btn) return;
+		if (on) {
+			btn.disabled = true;
+			btn.innerHTML = '<span class="btn-spinner"></span><span class="btn-label">' + T.claiming + '</span>';
+		} else {
+			btn.disabled = false;
+			btn.innerHTML = '<span class="btn-label">' + T.claim + '</span>';
+		}
+	}
+
+	async function claim() {
+		const initData = (tg && tg.initData) ? tg.initData : '';
+		setLoading(true);
+		try {
+			const body = new FormData();
+			body.append('init_data', initData);
+			const resp = await fetch(CLAIM_URL, {
+				method: 'POST',
+				headers: { 'X-Requested-With': 'XMLHttpRequest' },
+				body,
+			});
+			let data = {};
+			try { data = await resp.json(); } catch (_) {}
+
+			if (resp.ok && data.ok) {
+				document.getElementById('claimBtn').style.display = 'none';
+				showMsg(data.message, 'success');
+				return;
+			}
+			showMsg(data.message || T.generic, 'error');
+			if (data.redirect) {
+				const link = document.getElementById('openAppLink');
+				if (link) { link.href = data.redirect; link.classList.remove('state-hidden'); }
+			}
+			setLoading(false);
+		} catch (_) {
+			showMsg(T.generic, 'error');
+			setLoading(false);
+		}
+	}
+</script>
+</body>
+</html>

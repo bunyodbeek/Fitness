@@ -1107,7 +1107,7 @@
 
     <!-- BOTTOM BAR -->
     <div class="bottom-bar" id="bottomBar">
-        <button class="btn-start" id="startBtn" onclick="startWorkout()">{% trans "START" %}</button>
+        <button class="btn-start" id="startBtn" onclick="onStartClick()">{% trans "START" %}</button>
         <button class="btn-pause" id="pauseBtn" onclick="togglePause()" style="display:none;">
             <span id="pauseText">{% trans "Pause" %}</span>
         </button>
@@ -1157,6 +1157,7 @@
     let exerciseTimer   = null;
     let restTimer       = null;
     let isStarted       = false;
+    let awaitingStart   = false;
     let overallSeconds  = 0;
     let overallInterval = null;
 
@@ -1205,16 +1206,46 @@
         }
     }
 
+    // Single handler for the START button. It both kicks off the whole session
+    // (first press) and starts each following exercise's countdown once the user
+    // has set up for it — the exercise timer never auto-starts on its own.
+    function onStartClick() {
+        if (!isStarted) {
+            startWorkout();
+        } else {
+            beginCurrentExercise();
+        }
+    }
+
     function startWorkout() {
         isStarted = true;
+        startOverallTimer();   // overall timer runs continuously from here on
+        updateUI();
+        beginCurrentExercise();
+    }
 
+    // Show the running controls (pause / next) and start the countdown for the
+    // exercise currently on screen.
+    function beginCurrentExercise() {
+        awaitingStart = false;
+        isPaused = false;
+        document.getElementById('pauseText').textContent  = T.pause;
         document.getElementById('startBtn').style.display = 'none';
         document.getElementById('pauseBtn').style.display = 'flex';
         document.getElementById('nextBtn').style.display  = 'flex';
-
-        startOverallTimer();
-        updateUI();
         startExerciseTimer();
+    }
+
+    // The next exercise is loaded and ready, but its countdown waits until the
+    // user presses START. The overall timer keeps running the whole time.
+    function awaitStart() {
+        awaitingStart = true;
+        isPaused = false;
+        clearInterval(exerciseTimer);
+        document.getElementById('pauseText').textContent  = T.pause;
+        document.getElementById('startBtn').style.display = 'block';
+        document.getElementById('pauseBtn').style.display = 'none';
+        document.getElementById('nextBtn').style.display  = 'none';
     }
 
     function updateUI() {
@@ -1366,11 +1397,17 @@
                 timeLeft--;
                 updateTimerDisplay();
             }
-            if (timeLeft <= 0) nextExercise();
+            if (timeLeft <= 0) {
+                clearInterval(exerciseTimer);
+                advanceExercise();
+            }
         }, 1000);
     }
 
-    function nextExercise() {
+    // Move on to the next exercise (or rest / finish). When a new exercise is
+    // loaded we stop and wait for the user to press START — the next exercise
+    // never begins counting down automatically.
+    function advanceExercise() {
         if (isResting) return;
         currentExIndex++;
         if (currentExIndex >= TOTAL_EXERCISES) {
@@ -1385,7 +1422,14 @@
             return;
         }
         updateUI();
-        startExerciseTimer();
+        awaitStart();
+    }
+
+    // Manual "NEXT" button — skip forward, also waiting for START before the
+    // next exercise's countdown begins.
+    function nextExercise() {
+        clearInterval(exerciseTimer);
+        advanceExercise();
     }
 
     function startRest() {
@@ -1412,7 +1456,7 @@
         currentExIndex = 0;
         document.getElementById('restOverlay').classList.remove('active');
         updateUI();
-        startExerciseTimer();
+        awaitStart();
     }
 
     function skipRest() { endRest(); }

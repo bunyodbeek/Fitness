@@ -1,3 +1,4 @@
+import secrets
 from datetime import timedelta
 
 from dateutil.relativedelta import relativedelta
@@ -140,6 +141,10 @@ class Payment(CreatedBaseModel):
 	auto_payment_attempt = IntegerField(_("Avto to'lov urinishi"), default=0)
 	completed_at = DateTimeField(_("Bajarilgan sana"), null=True, blank=True)
 
+	# A gift payment buys Premium for a friend instead of extending the payer's
+	# own subscription — see PremiumGift and mark_as_completed().
+	is_gift = BooleanField(_("Sovg'a to'lovi"), default=False)
+
 	# Atmos transaction id (returned by /merchant/pay/create).
 	atmos_transaction_id = BigIntegerField(_("Atmos transaction id"), null=True, blank=True, db_index=True)
 
@@ -160,9 +165,25 @@ class Payment(CreatedBaseModel):
 		return f"{self.user} - {self.amount} {self.currency} ({self.get_status_display()})"
 
 	def mark_as_completed(self):
-		"""Activate / extend the subscription and notify the user."""
+		"""Activate the purchase and notify the user.
+
+		A normal payment extends the payer's own subscription. A *gift* payment
+		instead activates the linked ``PremiumGift`` so the payer can share it —
+		their own subscription is left untouched."""
 		self.status = self.PaymentStatus.COMPLETED
 		self.completed_at = timezone.now()
+
+		# A gift payment activates the sender's gift (found by is_gift + sender,
+		# so it's robust to which retry attempt actually completed) and never
+		# touches the sender's own subscription.
+		if self.is_gift:
+			gift = PremiumGift.objects.filter(sender=self.user).first()
+			self.save(update_fields=['status', 'completed_at'])
+			if gift is not None:
+				gift.payment = self
+				gift.save(update_fields=['payment'])
+				gift.activate()
+			return
 
 		sub, _created = Subscription.objects.get_or_create(
 			user=self.user,
@@ -188,3 +209,122 @@ class Payment(CreatedBaseModel):
 	def mark_as_failed(self):
 		self.status = self.PaymentStatus.FAILED
 		self.save(update_fields=['status'])
+
+
+class PremiumGift(CreatedBaseModel):
+	"""A one-time Premium gift a user buys for a friend (à la Telegram Premium).
+
+	The sender pays for it through the normal Atmos flow; on success the gift
+	becomes ``AVAILABLE`` and the sender gets a shareable Telegram link. The
+	first person to open the link and claim it receives the gifted plan.
+
+	The ``OneToOneField`` on ``sender`` enforces the "only one time" rule at the
+	database level — a user can ever have a single gift row."""
+
+	class Status(TextChoices):
+		PENDING = 'pending', _("Kutilmoqda")      # payment not completed yet
+		AVAILABLE = 'available', _("Faol")        # paid — waiting to be claimed
+		CLAIMED = 'claimed', _("Olingan")         # claimed by a recipient
+
+	sender = OneToOneField('apps.UserProfile', CASCADE, related_name='premium_gift',
+	                       verbose_name=_("Yuboruvchi"))
+	recipient = ForeignKey('apps.UserProfile', SET_NULL, null=True, blank=True,
+	                       related_name='claimed_gifts', verbose_name=_("Qabul qiluvchi"))
+	plan = ForeignKey('apps.SubscriptionPlan', SET_NULL, null=True, blank=True,
+	                  related_name='gifts', verbose_name=_("Tarif"))
+	payment = ForeignKey('apps.Payment', SET_NULL, null=True, blank=True,
+	                     related_name='gift_payments', verbose_name=_("To'lov"))
+	code = CharField(_("Kod"), max_length=64, unique=True, db_index=True)
+	status = CharField(_("Status"), max_length=20, choices=Status.choices, default=Status.PENDING)
+	claimed_at = DateTimeField(_("Olingan sana"), null=True, blank=True)
+
+	class Meta:
+		verbose_name = _("Premium sovg'a")
+		verbose_name_plural = _("Premium sovg'alar")
+
+	def __str__(self):
+		return f"Gift {self.code} ({self.get_status_display()})"
+
+	@staticmethod
+	def generate_code() -> str:
+		return secrets.token_urlsafe(16)
+
+	@property
+	def is_available(self) -> bool:
+		return self.status == self.Status.AVAILABLE
+
+	@property
+	def is_used(self) -> bool:
+		"""True once the gift has been paid for — i.e. the one-time chance is spent."""
+		return self.status in (self.Status.AVAILABLE, self.Status.CLAIMED)
+
+	@property
+	def share_link(self) -> str:
+		from apps.utils.telegram_bot_link import get_bot_deeplink
+		base = get_bot_deeplink()
+		if not base:
+			return ''
+		return f"{base}?start=gift_{self.code}"
+
+	def activate(self):
+		"""Make a paid gift claimable and notify the sender with the share link."""
+		if self.status == self.Status.CLAIMED:
+			return
+		self.status = self.Status.AVAILABLE
+		self.save(update_fields=['status'])
+		self._notify_sender()
+
+	def _notify_sender(self):
+		telegram_id = getattr(self.sender, 'telegram_id', None)
+		if not telegram_id:
+			return
+		link = self.share_link
+		msg = (
+			"🎁 <b>Premium sovg'angiz tayyor!</b>\n"
+			"Quyidagi havolani do'stingizga yuboring — uni birinchi ochgan inson "
+			"1 oylik Premium oladi.\n\n"
+			f"{link}"
+		)
+		try:
+			from apps.management.commands.bot_notisfication import send_notification
+			send_notification(telegram_id, msg)
+		except Exception as exc:
+			import logging
+			logging.getLogger(__name__).warning("Gift notification failed: %s", exc)
+
+	def claim(self, recipient):
+		"""Grant ``recipient`` the gifted plan. Returns ``(ok, error_key)``.
+
+		Re-checks the status under the caller's row lock so two people opening
+		the same link can never both claim it."""
+		if self.status != self.Status.AVAILABLE:
+			return False, 'unavailable'
+		if recipient.id == self.sender_id:
+			return False, 'self'
+		plan = self.plan
+		if plan is None:
+			return False, 'unavailable'
+
+		sub, _created = Subscription.objects.get_or_create(
+			user=recipient, defaults={'plan': plan},
+		)
+		sub.extend(plan)
+
+		self.recipient = recipient
+		self.status = self.Status.CLAIMED
+		self.claimed_at = timezone.now()
+		self.save(update_fields=['recipient', 'status', 'claimed_at'])
+
+		if getattr(recipient, 'telegram_id', None):
+			try:
+				from apps.management.commands.bot_notisfication import send_notification
+				send_notification(
+					recipient.telegram_id,
+					"🎉 <b>Premium faollashtirildi!</b>\n"
+					f"Sizga 1 oylik Premium sovg'a qilindi. Obuna {sub.end_date.strftime('%d.%m.%Y')} gacha.",
+				)
+			except Exception as exc:
+				import logging
+				logging.getLogger(__name__).warning("Gift claim notification failed: %s", exc)
+
+		return True, None

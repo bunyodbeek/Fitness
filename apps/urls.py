@@ -40,7 +40,7 @@ from apps.views.favorite import (
 	CustomProgramStartView,
 	CustomProgramCompleteView, CustomProgramEditView, CustomProgramEditSaveView,
 )
-from apps.views.payments import PremiumView, TariffSelectView, PaymentMethodView, PaymentCreateView, PaymentSuccessView, PaymentOtpView, PaymentOtpResendView
+from apps.views.payments import PremiumView, TariffSelectView, PaymentMethodView, PaymentCreateView, PaymentSuccessView, PaymentOtpView, PaymentOtpResendView, GiftPremiumView, GiftShareView, GiftClaimView
 from apps.views.users import (
 	AdminAnalyticsView,
 	ChangeLanguageView,
@@ -187,5 +187,10 @@ urlpatterns = [
 	path('premium/payment/<int:payment_id>/otp/', PaymentOtpView.as_view(), name='payment_otp'),
 	path('premium/payment/<int:payment_id>/otp/resend/', PaymentOtpResendView.as_view(), name='payment_otp_resend'),
 	path('premium/success/', PaymentSuccessView.as_view(), name='payment_success'),
+
+	# Premium gifting (one-time gift to a friend)
+	path('users/gift/', GiftPremiumView.as_view(), name='gift_premium'),
+	path('users/gift/share/', GiftShareView.as_view(), name='gift_share'),
+	path('users/gift/claim/<str:code>/', GiftClaimView.as_view(), name='gift_claim'),
 
 ]

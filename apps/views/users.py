@@ -738,9 +738,17 @@ class ManageSubscriptionView(LoginRequiredMixin, TemplateView):
                 'is_current': plan.id == current_plan_id,
             })
 
+        # One-time Premium gift the user may have already sent (drives the gift
+        # card CTA / status). Only a paid (available/claimed) gift is shown.
+        from apps.models.payments import PremiumGift
+        gift = PremiumGift.objects.filter(sender=profile).first()
+        if gift and not gift.is_used:
+            gift = None
+
         context.update({
             'subscription': subscription,
             'current_plan': subscription.plan if subscription else None,
+            'gift': gift,
             'available_plans': available_plans,
             'payments': payments,
             'total_paid': total_paid,

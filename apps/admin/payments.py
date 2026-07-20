@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
-from apps.models.payments import SubscriptionPlan, Subscription, Payment
+from apps.models.payments import SubscriptionPlan, Subscription, Payment, PremiumGift
 
 
 @admin.register(SubscriptionPlan)
@@ -50,3 +50,12 @@ class PaymentAdmin(admin.ModelAdmin):
 	def mark_failed(self, request, queryset):
 		for p in queryset:
 			p.mark_as_failed()
+
+
+@admin.register(PremiumGift)
+class PremiumGiftAdmin(admin.ModelAdmin):
+	list_display = ('sender', 'recipient', 'plan', 'status', 'created_at', 'claimed_at')
+	list_filter = ('status',)
+	search_fields = ('code', 'sender__name', 'sender__telegram_id', 'recipient__name', 'recipient__telegram_id')
+	readonly_fields = ('code', 'created_at', 'claimed_at')
+	autocomplete_fields = ('sender', 'recipient', 'plan', 'payment')

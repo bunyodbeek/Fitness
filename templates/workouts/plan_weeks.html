@@ -412,7 +412,6 @@
                     <div class="week-content">
                         <div class="week-title">
                             {% trans "Week" %} {{ week.week_number }}
-                            {% if week.is_free_preview and not user_is_premium %}<span class="week-free-tag">{% trans "Free" %}</span>{% endif %}
                             {% if week.is_completed %}<span class="week-done-tag">{% trans "Completed" %}</span>{% endif %}
                         </div>
                         <div class="week-meta">

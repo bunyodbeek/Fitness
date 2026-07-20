@@ -1,0 +1,149 @@
+{% load static i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<title>{% trans "Your Premium Gift" %}</title>
+	<script src="https://telegram.org/js/telegram-web-app.js"></script>
+	<script src="{% static 'js/tg_viewport.js' %}"></script>
+	<link rel="stylesheet" href="{% static 'css/tg_safe_area.css' %}">
+	<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+	<style>
+		:root {
+			--bg: #000000;
+			--card: rgba(255, 255, 255, 0.04);
+			--gold: #ffd700;
+			--gold-grad: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
+			--text: #ffffff;
+			--text-dim: #9aa0b0;
+			--border: rgba(255, 255, 255, 0.07);
+			--green: #4ade80;
+			--side-space: 12px;
+		}
+		* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+		html, body { overscroll-behavior: none; }
+		body {
+			background:
+				radial-gradient(circle at 50% 10%, rgba(255, 215, 0, 0.18), transparent 55%),
+				var(--bg);
+			color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; padding: 0 0 40px;
+		}
+		.page-header { padding: 12px var(--side-space) 2px; display: flex; align-items: center; }
+		.back-btn {
+			background: none; border: none; color: var(--gold); cursor: pointer; padding: 0;
+			width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+		}
+		.wrap { max-width: 520px; margin: 0 auto; padding: 20px var(--side-space) 0; }
+		.gift-emoji { font-size: 54px; text-align: center; line-height: 1; margin-bottom: 12px; }
+		h1 { font-family: 'Bebas Neue', sans-serif; font-size: 30px; letter-spacing: 1px; text-align: center; }
+		.sub { color: var(--text-dim); font-size: 13px; text-align: center; margin-top: 8px; line-height: 1.5; }
+
+		.status-pill {
+			display: inline-flex; align-items: center; gap: 6px; margin: 16px auto 0;
+			padding: 6px 14px; border-radius: 999px; font-size: 12px; font-weight: 700;
+			text-transform: uppercase; letter-spacing: 0.5px;
+		}
+		.status-wrap { text-align: center; }
+		.status-pill.available { color: var(--gold); border: 1px solid rgba(255, 215, 0, 0.4); background: rgba(255, 215, 0, 0.08); }
+		.status-pill.claimed { color: var(--green); border: 1px solid rgba(74, 222, 128, 0.4); background: rgba(74, 222, 128, 0.1); }
+		.dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+
+		.link-box {
+			margin-top: 22px; background: var(--card); border: 1px solid var(--border);
+			border-radius: 14px; padding: 14px; word-break: break-all; font-size: 13px; color: var(--text-dim);
+		}
+		.actions { margin-top: 14px; display: flex; flex-direction: column; gap: 10px; }
+		.btn {
+			display: flex; align-items: center; justify-content: center; gap: 8px;
+			width: 100%; padding: 15px; border: none; border-radius: 14px; font-size: 14px; font-weight: 800;
+			letter-spacing: 1px; text-transform: uppercase; cursor: pointer; text-decoration: none;
+		}
+		.btn-primary { background: var(--gold-grad); color: #1a1300; box-shadow: 0 6px 24px rgba(255, 215, 0, 0.3); }
+		.btn-secondary { background: transparent; border: 1px solid rgba(255, 215, 0, 0.4); color: var(--gold); }
+		.btn svg { flex-shrink: 0; }
+		.toast {
+			position: fixed; left: 50%; bottom: 30px; transform: translateX(-50%) translateY(20px);
+			background: #161925; border: 1px solid var(--border); color: var(--text);
+			padding: 11px 18px; border-radius: 12px; font-size: 13px; opacity: 0; pointer-events: none;
+			transition: opacity .2s, transform .2s;
+		}
+		.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+		.empty { text-align: center; color: var(--text-dim); margin-top: 40px; font-size: 14px; }
+		@media (max-width: 360px) { :root { --side-space: 10px; } }
+	</style>
+</head>
+<body>
+<div class="page-header">
+	<button class="back-btn" onclick="goBack()" aria-label="{% trans 'Back' %}">
+		<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+	</button>
+</div>
+
+<div class="wrap">
+	{% if gift %}
+		<div class="gift-emoji">🎁</div>
+		<h1>{% trans "Your Premium Gift" %}</h1>
+
+		{% if gift.status == 'claimed' %}
+			<p class="sub">{% trans "This gift has been claimed. Thank you for sharing Premium!" %}</p>
+			<div class="status-wrap">
+				<span class="status-pill claimed"><span class="dot"></span>{% trans "Claimed" %}</span>
+			</div>
+		{% else %}
+			<p class="sub">{% trans "Send this link to a friend. The first person to open it and claim gets 1 month of Premium." %}</p>
+			<div class="status-wrap">
+				<span class="status-pill available"><span class="dot"></span>{% trans "Ready to share" %}</span>
+			</div>
+
+			<div class="link-box" id="linkBox">{{ share_link }}</div>
+
+			<div class="actions">
+				<a class="btn btn-primary" id="shareBtn"
+				   href="https://t.me/share/url?url={{ share_link|urlencode }}&text={% filter urlencode %}{% trans "I sent you 1 month of Premium 🎁 Tap to claim it!" %}{% endfilter %}">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+					{% trans "Share on Telegram" %}
+				</a>
+				<button class="btn btn-secondary" onclick="copyLink()">
+					<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+					{% trans "Copy link" %}
+				</button>
+			</div>
+		{% endif %}
+	{% else %}
+		<div class="gift-emoji">🎁</div>
+		<h1>{% trans "Gift Premium" %}</h1>
+		<p class="empty">{% trans "You haven't sent a Premium gift yet." %}</p>
+		<div class="actions">
+			<a class="btn btn-primary" href="{% url 'gift_premium' %}">{% trans "Send a gift" %}</a>
+		</div>
+	{% endif %}
+</div>
+
+<div class="toast" id="toast">{% trans "Link copied" %}</div>
+
+<script>
+	function goBack() { history.back(); }
+	function copyLink() {
+		const link = document.getElementById('linkBox');
+		if (!link) return;
+		const text = link.textContent.trim();
+		const done = () => {
+			const t = document.getElementById('toast');
+			t.classList.add('show');
+			setTimeout(() => t.classList.remove('show'), 1600);
+		};
+		if (navigator.clipboard && navigator.clipboard.writeText) {
+			navigator.clipboard.writeText(text).then(done).catch(fallback);
+		} else { fallback(); }
+		function fallback() {
+			const ta = document.createElement('textarea');
+			ta.value = text; document.body.appendChild(ta); ta.select();
+			try { document.execCommand('copy'); } catch (_) {}
+			document.body.removeChild(ta); done();
+		}
+	}
+</script>
+</body>
+</html>
