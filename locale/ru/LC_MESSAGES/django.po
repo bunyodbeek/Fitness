@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-11 01:11+0500\n"
+"POT-Creation-Date: 2026-07-21 02:04+0500\n"
 "PO-Revision-Date: 2026-05-22 12:00+0500\n"
 "Last-Translator: Claude AI\n"
 "Language-Team: Russian\n"
@@ -29,8 +29,8 @@ msgstr "Описания"
 msgid "Media"
 msgstr "Медиа"
 
-#: apps/admin/payments.py:17 apps/models/payments.py:63
-#: apps/models/payments.py:130
+#: apps/admin/payments.py:17 apps/models/payments.py:64
+#: apps/models/payments.py:131 apps/models/payments.py:234
 msgid "Tarif"
 msgstr "Тариф"
 
@@ -63,21 +63,21 @@ msgstr "Отмена подписки"
 msgid "Subscription Plan"
 msgstr "Подписка"
 
-#: apps/admin/users.py:24 templates/users/manage_subscription.html:370
+#: apps/admin/users.py:24 templates/users/manage_subscription.html:637
 #: templates/users/profile_detail.html:273
 msgid "Subscription"
 msgstr "Подписка"
 
-#: apps/admin/users.py:28 templates/users/manage_subscription.html:402
+#: apps/admin/users.py:28 templates/users/manage_subscription.html:680
 msgid "Days remaining"
 msgstr "Осталось дней"
 
 #: apps/admin/users.py:39 apps/models/workouts.py:75
-#: apps/panel/views/programs.py:148 apps/panel/views/users.py:15
-#: templates/panel/dashboard.html:126 templates/payment/premium.html:8
-#: templates/users/manage_subscription.html:438
-#: templates/workouts/_program_card.html:60
-#: templates/workouts/edition_list.html:521
+#: apps/panel/views/users.py:15 templates/panel/dashboard.html:126
+#: templates/payment/premium.html:8
+#: templates/users/manage_subscription.html:775
+#: templates/workouts/_program_card.html:62
+#: templates/workouts/edition_list.html:535
 msgid "Premium"
 msgstr "Премиум"
 
@@ -92,25 +92,26 @@ msgstr "Отменить подписку"
 msgid "%(count)d user(s) successfully granted premium."
 msgstr "%(count)d пользователю(ям) успешно выдан премиум."
 
-#: apps/admin/workouts.py:445
+#: apps/admin/workouts.py:447
 msgid "Nomlar"
 msgstr "Названия"
 
-#: apps/admin/workouts.py:446
+#: apps/admin/workouts.py:448
 msgid "Progression sozlamalari"
 msgstr "Настройки прогрессии"
 
-#: apps/admin/workouts.py:489 apps/admin/workouts.py:555
-#: apps/admin/workouts.py:596
+#: apps/admin/workouts.py:494 apps/admin/workouts.py:560
+#: apps/admin/workouts.py:601
 msgid "Sozlamalar"
 msgstr "Настройки"
 
-#: apps/admin/workouts.py:495 apps/admin/workouts.py:563
-#: apps/admin/workouts.py:605 apps/models/handbook.py:57
+#: apps/admin/workouts.py:500 apps/admin/workouts.py:568
+#: apps/admin/workouts.py:610 apps/models/handbook.py:57
 msgid "Tavsif"
 msgstr "Описание"
 
-#: apps/forms.py:42 templates/users/language.html:316
+#: apps/forms.py:45 templates/users/settings.html:363
+#: templates/users/settings.html:365
 msgid "Select language"
 msgstr "Выбрать язык"
 
@@ -284,8 +285,8 @@ msgid "Image"
 msgstr "Изображение"
 
 #: apps/models/exercises.py:63 apps/panel/views/exercises.py:14
-#: apps/panel/views/tracking.py:15 templates/users/progress.html:522
-#: templates/users/progress.html:605
+#: apps/panel/views/tracking.py:15 templates/users/progress.html:611
+#: templates/users/progress.html:695
 msgid "Calories"
 msgstr "Калории"
 
@@ -354,7 +355,7 @@ msgstr "Упражнение"
 #: templates/exercises/exercise_list.html:4
 #: templates/exercises/favorites_list.html:565 templates/panel/base.html:285
 #: templates/panel/premade_day_builder.html:92
-#: templates/panel/workout_builder.html:94 templates/users/progress.html:532
+#: templates/panel/workout_builder.html:94 templates/users/progress.html:621
 #: templates/workouts/home_workout_detail.html:485
 #: templates/workouts/home_workout_detail.html:516
 #: templates/workouts/import_preview.html:99
@@ -469,158 +470,198 @@ msgstr "Название"
 msgid "HTML bo'lishi mumkin"
 msgstr "Может содержать HTML"
 
-#: apps/models/payments.py:18
+#: apps/models/payments.py:19
 msgid "1 oylik"
 msgstr "1 месяц"
 
-#: apps/models/payments.py:19
+#: apps/models/payments.py:20
 msgid "3 oylik"
 msgstr "3 месяца"
 
-#: apps/models/payments.py:20
+#: apps/models/payments.py:21
 msgid "6 oylik"
 msgstr "6 месяцев"
 
-#: apps/models/payments.py:21
+#: apps/models/payments.py:22
 msgid "1 yillik"
 msgstr "1 год"
 
-#: apps/models/payments.py:24
+#: apps/models/payments.py:25
 msgid "Narx (UZS)"
 msgstr "Цена (UZS)"
 
-#: apps/models/payments.py:25
+#: apps/models/payments.py:26
 msgid "Narx (USD)"
 msgstr "Цена (USD)"
 
-#: apps/models/payments.py:27
+#: apps/models/payments.py:28
 msgid "Davr"
 msgstr "Период"
 
-#: apps/models/payments.py:28
+#: apps/models/payments.py:29
 msgid "Eng mashhur"
 msgstr "Самый популярный"
 
-#: apps/models/payments.py:29 apps/models/payments.py:66
+#: apps/models/payments.py:30 apps/models/payments.py:67
+#: apps/models/payments.py:226
 msgid "Faol"
 msgstr "Активен"
 
-#: apps/models/payments.py:30
+#: apps/models/payments.py:31
 msgid "Tartib"
 msgstr "Порядок"
 
-#: apps/models/payments.py:33
+#: apps/models/payments.py:34
 msgid "Obuna tarifi"
 msgstr "Тариф подписки"
 
-#: apps/models/payments.py:34
+#: apps/models/payments.py:35
 #, fuzzy
 #| msgid "Obunani tiklash"
 msgid "Obuna tariflari"
 msgstr "Восстановление подписки"
 
-#: apps/models/payments.py:62 apps/models/payments.py:128
+#: apps/models/payments.py:63 apps/models/payments.py:129
 #: apps/panel/views/payments.py:24 apps/panel/views/payments.py:54
 #: apps/panel/views/programs.py:47 apps/panel/views/subscriptions.py:15
 #: apps/panel/views/tracking.py:15
 msgid "User"
 msgstr "Пользователь"
 
-#: apps/models/payments.py:64
+#: apps/models/payments.py:65
 msgid "Boshlanish sanasi"
 msgstr "Дата начала"
 
-#: apps/models/payments.py:65
+#: apps/models/payments.py:66
 msgid "Tugash sanasi"
 msgstr "Дата окончания"
 
-#: apps/models/payments.py:69 apps/models/payments.py:132
+#: apps/models/payments.py:70 apps/models/payments.py:133
 msgid "Obuna"
 msgstr "Подписка"
 
-#: apps/models/payments.py:70
+#: apps/models/payments.py:71
 #, fuzzy
 #| msgid "Obunani tiklash"
 msgid "Obunalar"
 msgstr "Восстановление подписки"
 
-#: apps/models/payments.py:113
+#: apps/models/payments.py:114 apps/models/payments.py:225
 msgid "Kutilmoqda"
 msgstr "Ожидается"
 
-#: apps/models/payments.py:114
+#: apps/models/payments.py:115
 msgid "Jarayonda"
 msgstr "В процессе"
 
-#: apps/models/payments.py:115
+#: apps/models/payments.py:116
 msgid "Bajarildi"
 msgstr "Выполнено"
 
-#: apps/models/payments.py:116
+#: apps/models/payments.py:117
 msgid "Muvaffaqiyatsiz"
 msgstr "Неуспешно"
 
-#: apps/models/payments.py:134 apps/models/users.py:135
-#: apps/panel/views/payments.py:24 apps/panel/views/payments.py:58
-#: apps/panel/views/subscriptions.py:15 apps/panel/views/tracking.py:15
-#: apps/panel/views/users.py:23 templates/panel/dashboard.html:118
-#: templates/users/manage_subscription.html:429
+#: apps/models/payments.py:135 apps/models/payments.py:238
+#: apps/models/users.py:135 apps/panel/views/payments.py:24
+#: apps/panel/views/payments.py:58 apps/panel/views/subscriptions.py:15
+#: apps/panel/views/tracking.py:15 apps/panel/views/users.py:23
+#: templates/panel/dashboard.html:118
+#: templates/users/manage_subscription.html:765
 msgid "Status"
 msgstr "Статус"
 
-#: apps/models/payments.py:135
+#: apps/models/payments.py:136
 msgid "Summasi"
 msgstr "Сумма"
 
-#: apps/models/payments.py:136
+#: apps/models/payments.py:137
 msgid "Valyuta"
 msgstr "Валюта"
 
-#: apps/models/payments.py:137
+#: apps/models/payments.py:138
 msgid "To'lov usuli"
 msgstr "Способ оплаты"
 
-#: apps/models/payments.py:139
+#: apps/models/payments.py:140
 msgid "Avto to'lov"
 msgstr "Автоплатёж"
 
-#: apps/models/payments.py:140
+#: apps/models/payments.py:141
 msgid "Avto to'lov urinishi"
 msgstr "Попытка автоплатежа"
 
-#: apps/models/payments.py:141
+#: apps/models/payments.py:142
 msgid "Bajarilgan sana"
 msgstr "Дата выполнения"
 
-#: apps/models/payments.py:144
+#: apps/models/payments.py:146
+#, fuzzy
+#| msgid "Avto to'lov"
+msgid "Sovg'a to'lovi"
+msgstr "Автоплатёж"
+
+#: apps/models/payments.py:149
 #, fuzzy
 #| msgid "transaction"
 msgid "Atmos transaction id"
 msgstr "транзакций"
 
-#: apps/models/payments.py:147
+#: apps/models/payments.py:152
 msgid "Created At MS"
 msgstr "Создано в МС"
 
-#: apps/models/payments.py:148
+#: apps/models/payments.py:153
 msgid "Perform Time"
 msgstr "Время выполнения"
 
-#: apps/models/payments.py:149
+#: apps/models/payments.py:154
 msgid "Cancel Time"
 msgstr "Время отмены"
 
-#: apps/models/payments.py:150
+#: apps/models/payments.py:155
 msgid "State"
 msgstr "Состояние"
 
-#: apps/models/payments.py:155
+#: apps/models/payments.py:160 apps/models/payments.py:236
 msgid "To'lov"
 msgstr "Платёж"
 
-#: apps/models/payments.py:156
+#: apps/models/payments.py:161
 msgid "To'lovlar"
 msgstr "Платежи"
+
+#: apps/models/payments.py:227
+msgid "Olingan"
+msgstr ""
+
+#: apps/models/payments.py:230
+msgid "Yuboruvchi"
+msgstr ""
+
+#: apps/models/payments.py:232
+msgid "Qabul qiluvchi"
+msgstr ""
+
+#: apps/models/payments.py:237
+msgid "Kod"
+msgstr ""
+
+#: apps/models/payments.py:239
+#, fuzzy
+#| msgid "Bajarilgan sana"
+msgid "Olingan sana"
+msgstr "Дата выполнения"
+
+#: apps/models/payments.py:242
+#, fuzzy
+#| msgid "Premium"
+msgid "Premium sovg'a"
+msgstr "Премиум"
+
+#: apps/models/payments.py:243
+msgid "Premium sovg'alar"
+msgstr ""
 
 #: apps/models/users.py:36 templates/miniapp/questionarrie.html:200
 msgid "Male"
@@ -677,7 +718,7 @@ msgid "Birth date"
 msgstr "Дата рождения"
 
 #: apps/models/users.py:59 apps/panel/views/programs.py:506
-#: apps/views/users.py:470 templates/panel/premade_day_builder.html:176
+#: apps/views/users.py:483 templates/panel/premade_day_builder.html:176
 #: templates/panel/workout_builder.html:197
 msgid "Weight"
 msgstr "Вес"
@@ -766,10 +807,11 @@ msgstr "Не начато"
 msgid "Unfinished"
 msgstr "Не завершено"
 
-#: apps/models/users.py:132 apps/models/workouts.py:479
+#: apps/models/users.py:132 apps/models/workouts.py:515
 #: apps/panel/views/payments.py:61
 #: templates/workouts/home_workout_complete.html:277
 #: templates/workouts/home_workout_detail.html:470
+#: templates/workouts/plan_weeks.html:415
 #: templates/workouts/workout_complete.html:289
 msgid "Completed"
 msgstr "Завершено"
@@ -833,45 +875,45 @@ msgstr ""
 msgid "Which exercise values this plan uses: beginner or advanced."
 msgstr ""
 
-#: apps/models/workouts.py:478
+#: apps/models/workouts.py:514
 msgid "In progress"
 msgstr "В процессе"
 
-#: apps/panel/forms.py:99
+#: apps/panel/forms.py:102
 msgid "Generate remaining weeks (up to the plan's week count)"
 msgstr "Создать оставшиеся недели (до числа недель плана)"
 
-#: apps/panel/forms.py:100
+#: apps/panel/forms.py:103
 msgid "If checked, the missing weeks after this one are created automatically."
 msgstr "Если отмечено, недостающие недели после этой создаются автоматически."
 
-#: apps/panel/forms.py:135
+#: apps/panel/forms.py:138
 msgid "Manual weight — keep this value on difficulty change / regeneration"
 msgstr ""
 
-#: apps/panel/forms.py:138
+#: apps/panel/forms.py:141
 msgid ""
 "Auto-enabled when you change the weight. Untick (without changing the "
 "weight) to hand it back to automatic calculation."
 msgstr ""
 
-#: apps/panel/forms.py:185
+#: apps/panel/forms.py:188
 msgid "Start weight — beginner (kg)"
 msgstr ""
 
-#: apps/panel/forms.py:209
+#: apps/panel/forms.py:212
 msgid "Required for reps-based exercises."
 msgstr ""
 
-#: apps/panel/forms.py:213
+#: apps/panel/forms.py:216
 msgid "Required for time-based exercises."
 msgstr ""
 
-#: apps/panel/forms.py:299 templates/panel/login.html:63
+#: apps/panel/forms.py:302 templates/panel/login.html:63
 msgid "Password"
 msgstr "Пароль"
 
-#: apps/panel/forms.py:300
+#: apps/panel/forms.py:303
 msgid "Leave blank to keep the current password."
 msgstr "Оставьте пустым, чтобы сохранить текущий пароль."
 
@@ -999,31 +1041,31 @@ msgstr "Ноябрь"
 msgid "December"
 msgstr "Декабрь"
 
-#: apps/panel/views/dashboard.py:20 templates/users/progress.html:548
+#: apps/panel/views/dashboard.py:20 templates/users/progress.html:637
 msgid "Mon"
 msgstr "Пн"
 
-#: apps/panel/views/dashboard.py:20 templates/users/progress.html:549
+#: apps/panel/views/dashboard.py:20 templates/users/progress.html:638
 msgid "Tue"
 msgstr "Вт"
 
-#: apps/panel/views/dashboard.py:20 templates/users/progress.html:550
+#: apps/panel/views/dashboard.py:20 templates/users/progress.html:639
 msgid "Wed"
 msgstr "Ср"
 
-#: apps/panel/views/dashboard.py:20 templates/users/progress.html:551
+#: apps/panel/views/dashboard.py:20 templates/users/progress.html:640
 msgid "Thu"
 msgstr "Чт"
 
-#: apps/panel/views/dashboard.py:20 templates/users/progress.html:552
+#: apps/panel/views/dashboard.py:20 templates/users/progress.html:641
 msgid "Fri"
 msgstr "Пт"
 
-#: apps/panel/views/dashboard.py:20 templates/users/progress.html:553
+#: apps/panel/views/dashboard.py:20 templates/users/progress.html:642
 msgid "Sat"
 msgstr "Сб"
 
-#: apps/panel/views/dashboard.py:20 templates/users/progress.html:554
+#: apps/panel/views/dashboard.py:20 templates/users/progress.html:643
 msgid "Sun"
 msgstr "Вс"
 
@@ -1116,6 +1158,7 @@ msgstr "материалов"
 #: apps/panel/views/programs.py:81 apps/panel/views/programs.py:849
 #: apps/panel/views/settings.py:21 apps/panel/views/subscriptions.py:27
 #: templates/my_trainer/my_trainer.html:342
+#: templates/users/manage_subscription.html:738
 msgid "Active"
 msgstr "Активный"
 
@@ -1199,8 +1242,7 @@ msgid "Method"
 msgstr "Способ"
 
 #: apps/panel/views/payments.py:24 apps/panel/views/tracking.py:15
-#: templates/users/manage_subscription.html:427
-#| msgid "End Date"
+#: templates/users/manage_subscription.html:763
 msgid "Date"
 msgstr "Дата"
 
@@ -1209,8 +1251,7 @@ msgid "Payment"
 msgstr "Платёж"
 
 #: apps/panel/views/payments.py:56 apps/panel/views/subscriptions.py:15
-#: templates/users/manage_subscription.html:386
-#| msgid "Plans"
+#: templates/users/manage_subscription.html:657
 msgid "Plan"
 msgstr "Тариф"
 
@@ -1274,7 +1315,7 @@ msgstr ""
 #: apps/panel/views/programs.py:147 apps/panel/views/programs.py:248
 #: apps/panel/views/programs.py:396 apps/panel/views/programs.py:488
 #: apps/panel/views/programs.py:626 apps/panel/views/programs.py:934
-#: templates/workouts/_program_card.html:112
+#: templates/workouts/_program_card.html:114
 #: templates/workouts/edition_list.html:4
 #: templates/workouts/import_preview.html:91
 msgid "Plans"
@@ -1287,7 +1328,7 @@ msgstr ""
 
 #: apps/panel/views/programs.py:42 templates/handbooks/category_items.html:552
 #: templates/handbooks/category_items.html:569
-#: templates/users/payment_history.html:588 templates/users/progress.html:491
+#: templates/users/payment_history.html:588 templates/users/progress.html:567
 msgid "All"
 msgstr "Все"
 
@@ -1419,16 +1460,17 @@ msgstr ""
 msgid "Add week"
 msgstr "дн/нед"
 
-#: apps/panel/views/programs.py:273 templates/users/progress.html:488
+#: apps/panel/views/programs.py:273 templates/users/progress.html:564
 #: templates/workouts/home_workout_detail.html:462
 #: templates/workouts/home_workout_week.html:1
-#: templates/workouts/plan_weeks.html:338 templates/workouts/week_days.html:4
+#: templates/workouts/plan_weeks.html:393
+#: templates/workouts/plan_weeks.html:414 templates/workouts/week_days.html:4
 #: templates/workouts/week_days.html:470
 msgid "Week"
 msgstr "Неделя"
 
-#: apps/panel/views/programs.py:273 templates/workouts/plan_weeks.html:341
-#: templates/workouts/week_days.html:4
+#: apps/panel/views/programs.py:273 templates/workouts/plan_weeks.html:396
+#: templates/workouts/plan_weeks.html:418 templates/workouts/week_days.html:4
 msgid "Days"
 msgstr "Дни"
 
@@ -1804,7 +1846,7 @@ msgstr "Заголовок (UZ)"
 msgid "Price (USD)"
 msgstr "Цена (USD)"
 
-#: apps/panel/views/settings.py:21
+#: apps/panel/views/settings.py:21 templates/users/manage_subscription.html:733
 msgid "Popular"
 msgstr "Популярный"
 
@@ -1873,7 +1915,7 @@ msgid "Tracking"
 msgstr "Отслеживание"
 
 #: apps/panel/views/tracking.py:15 templates/workouts/active_workout.html:1121
-#: templates/workouts/home_session.html:1011
+#: templates/workouts/home_session.html:1013
 #: templates/workouts/home_workout_complete.html:237
 #: templates/workouts/home_workout_detail.html:4
 #: templates/workouts/home_workout_detail.html:452
@@ -1940,108 +1982,141 @@ msgstr "Изменить пользователя"
 msgid "Delete user"
 msgstr "Удалить программу"
 
-#: apps/views/payments.py:29
+#: apps/views/payments.py:32
 msgid "Individual workout programs for home and gym"
 msgstr "Индивидуальные программы тренировок для дома и зала"
 
-#: apps/views/payments.py:30
+#: apps/views/payments.py:33
 msgid "Full access to all 10 plans inside each program"
 msgstr "Полный доступ ко всем 10 планам в каждой программе"
 
-#: apps/views/payments.py:31
+#: apps/views/payments.py:34
 msgid "Complete 6-week system in every gym plan"
 msgstr "Полная 6-недельная система в каждом плане для зала"
 
-#: apps/views/payments.py:32
+#: apps/views/payments.py:35
 msgid "Complete 4-week system in every home workout plan"
 msgstr "Полная 4-недельная система в каждом домашнем плане"
 
-#: apps/views/payments.py:33
+#: apps/views/payments.py:36
 msgid "Free access to marathons and challenges"
 msgstr "Бесплатный доступ к марафонам и челленджам"
 
-#: apps/views/payments.py:34
+#: apps/views/payments.py:37
 msgid "Create your own program in the Favorites section"
 msgstr "Возможность создать свою программу в разделе «Избранное»"
 
-#: apps/views/payments.py:35
+#: apps/views/payments.py:38
 msgid "Workout statistics and history"
 msgstr "Статистика и история тренировок"
 
-#: apps/views/payments.py:180
+#: apps/views/payments.py:176
+msgid "You have already sent a Premium gift."
+msgstr "Вы уже отправили подарок Premium."
+
+#: apps/views/payments.py:194
 msgid "Enter a valid card number and expiry date."
 msgstr ""
 
-#: apps/views/payments.py:206 apps/views/payments.py:400
+#: apps/views/payments.py:220 apps/views/payments.py:429
 #, fuzzy
 #| msgid "Payment failed. Please try again."
 msgid "Too many requests. Please try again later."
 msgstr "Платёж не прошёл, попробуйте ещё раз."
 
-#: apps/views/payments.py:216 apps/views/payments.py:406
+#: apps/views/payments.py:230 apps/views/payments.py:435
+#: templates/payment/gift_purchase.html:185
 #: templates/payment/payment_method.html:426
 #: templates/payment/tariff_select.html:270
 msgid "A request is already being processed. Please wait."
 msgstr ""
 
-#: apps/views/payments.py:250
+#: apps/views/payments.py:278
 #, python-format
 msgid "Payment could not be started: %(err)s"
 msgstr ""
 
-#: apps/views/payments.py:295
+#: apps/views/payments.py:323
 #, fuzzy
 #| msgid "Payment failed. Please try again."
 msgid "Too many attempts. Please try again later."
 msgstr "Платёж не прошёл, попробуйте ещё раз."
 
-#: apps/views/payments.py:302 templates/payment/otp.html:110
+#: apps/views/payments.py:330 templates/payment/otp.html:110
 msgid "Enter the SMS code."
 msgstr ""
 
-#: apps/views/payments.py:315
+#: apps/views/payments.py:343
 #, python-format
 msgid "Confirmation failed: %(err)s"
 msgstr ""
 
-#: apps/views/payments.py:334
+#: apps/views/payments.py:362
 #, fuzzy
 #| msgid "The code has expired. Please request a new one."
 msgid "Too many attempts. Please request a new code later."
 msgstr "Срок действия кода истёк. Пожалуйста, запросите новый код."
 
-#: apps/views/payments.py:338
+#: apps/views/payments.py:366
 #, python-format
 msgid "Wrong code. %(n)s attempt(s) left."
 msgstr ""
 
 # ---- Payment UX (Atmos errors + merged tariff/card page) ----
-#: apps/views/payments.py:351 templates/payment/otp.html:112
+#: apps/views/payments.py:379 templates/payment/otp.html:112
 msgid "Insufficient funds on the card"
 msgstr "Недостаточно средств на карте"
 
-#: apps/views/payments.py:356 templates/payment/otp.html:113
+#: apps/views/payments.py:384 templates/payment/otp.html:113
 msgid "The code has expired. Please request a new one."
 msgstr "Срок действия кода истёк. Пожалуйста, запросите новый код."
 
-#: apps/views/payments.py:361
+#: apps/views/payments.py:389
 msgid "There was a problem with the card. Please try another card."
 msgstr "Проблема с картой. Попробуйте другую карту."
 
-#: apps/views/payments.py:365
+#: apps/views/payments.py:393
 msgid "Payment failed. Please try again."
 msgstr "Платёж не прошёл, попробуйте ещё раз."
 
-#: apps/views/payments.py:393
+#: apps/views/payments.py:422
 #, fuzzy
 #| msgid "Payment failed. Please try again."
 msgid "Session expired. Please start the payment again."
 msgstr "Платёж не прошёл, попробуйте ещё раз."
 
-#: apps/views/payments.py:420
+#: apps/views/payments.py:449
 #, python-format
 msgid "Could not resend the code: %(err)s"
 msgstr ""
+
+#: apps/views/payments.py:529
+msgid "Could not verify your Telegram account. Please reopen the link."
+msgstr "Не удалось подтвердить ваш аккаунт Telegram. Откройте ссылку заново."
+
+#: apps/views/payments.py:537
+msgid "Open the app and finish setup first, then claim your gift."
+msgstr "Сначала откройте приложение и завершите настройку, затем получите подарок."
+
+#: apps/views/payments.py:545
+msgid "This gift link is invalid."
+msgstr "Эта ссылка на подарок недействительна."
+
+#: apps/views/payments.py:551
+msgid "This gift has already been claimed or is not available."
+msgstr "Этот подарок уже получен или недоступен."
+
+#: apps/views/payments.py:552
+msgid "You can't claim your own gift."
+msgstr "Вы не можете получить собственный подарок."
+
+#: apps/views/payments.py:556
+msgid "This gift is not available."
+msgstr "Этот подарок недоступен."
+
+#: apps/views/payments.py:561
+msgid "Premium activated! Enjoy your gift."
+msgstr "Premium активирован! Наслаждайтесь подарком."
 
 #: apps/views/share.py:24
 msgid "Forbidden"
@@ -2055,11 +2130,11 @@ msgstr "Неизвестно"
 msgid "Program successfully imported!"
 msgstr "Программа успешно импортирована!"
 
-#: apps/views/users.py:649
+#: apps/views/users.py:647
 msgid "Language saved successfully!"
 msgstr "Язык успешно сохранён!"
 
-#: apps/views/users.py:657
+#: apps/views/users.py:655
 msgid "Selected language doesn't exist."
 msgstr "Выбранный язык не существует."
 
@@ -2324,7 +2399,7 @@ msgstr "Ваш браузер не поддерживает видео"
 
 #: templates/exercises/exercise_detail.html:45
 #: templates/workouts/active_workout.html:1274
-#: templates/workouts/home_session.html:1127
+#: templates/workouts/home_session.html:1129
 msgid "No description available."
 msgstr "Описание отсутствует."
 
@@ -2406,7 +2481,7 @@ msgstr "Название коллекции..."
 
 #: templates/exercises/exercise_list.html:886
 #: templates/panel/exercise_form.html:96 templates/panel/form.html:25
-#: templates/users/language.html:347 templates/users/profile_update.html:485
+#: templates/users/profile_update.html:485
 msgid "Save"
 msgstr "Сохранить"
 
@@ -2461,8 +2536,8 @@ msgid "Delete Program"
 msgstr "Удалить программу"
 
 #: templates/exercises/favorites_list.html:466
-#: templates/workouts/_program_card.html:132
-#: templates/workouts/edition_list.html:515
+#: templates/workouts/_program_card.html:134
+#: templates/workouts/edition_list.html:525
 msgid "w"
 msgstr "н"
 
@@ -2723,8 +2798,8 @@ msgid "Current Plan"
 msgstr "Текущий план"
 
 #: templates/my_trainer/my_trainer.html:327
-#: templates/my_trainer/my_trainer.html:334 templates/users/progress.html:502
-#: templates/users/progress.html:542 templates/users/progress.html:604
+#: templates/my_trainer/my_trainer.html:334 templates/users/progress.html:591
+#: templates/users/progress.html:631 templates/users/progress.html:694
 msgid "Workouts"
 msgstr "Тренировки"
 
@@ -2880,11 +2955,13 @@ msgstr "Изменить"
 #: templates/panel/form.html:7 templates/panel/object_detail.html:7
 #: templates/panel/premade_day_attach.html:26
 #: templates/panel/premade_day_builder.html:79
-#: templates/panel/workout_builder.html:80 templates/payment/otp.html:73
+#: templates/panel/workout_builder.html:80
+#: templates/payment/gift_purchase.html:122
+#: templates/payment/gift_share.html:79 templates/payment/otp.html:73
 #: templates/payment/payment_method.html:331
 #: templates/payment/tariff_select.html:182
 #: templates/users/cancel_subscription.html:460
-#: templates/users/manage_subscription.html:369
+#: templates/users/manage_subscription.html:636
 msgid "Back"
 msgstr "Назад"
 
@@ -3060,7 +3137,7 @@ msgstr "Добавить упражнения"
 
 #: templates/panel/premade_day_builder.html:171
 #: templates/panel/workout_builder.html:192
-msgid "Time (min)"
+msgid "Time (sec)"
 msgstr ""
 
 #: templates/panel/premade_day_builder.html:182
@@ -3077,7 +3154,7 @@ msgstr ""
 msgid "Revenue — last 6 months"
 msgstr "Доход — последние 6 месяцев"
 
-#: templates/panel/reports.html:40 templates/users/progress.html:489
+#: templates/panel/reports.html:40 templates/users/progress.html:565
 msgid "Month"
 msgstr "Месяц"
 
@@ -3134,6 +3211,168 @@ msgstr ""
 msgid "Save program"
 msgstr "Сохранить программу"
 
+#: templates/payment/gift_claim.html:8
+msgid "Claim Premium Gift"
+msgstr "Получить подарок Premium"
+
+#: templates/payment/gift_claim.html:74
+msgid "You've got a gift!"
+msgstr "Вам подарок!"
+
+#: templates/payment/gift_claim.html:75
+msgid "A friend sent you Premium. Claim it to unlock everything."
+msgstr "Друг подарил вам Premium. Активируйте его, чтобы открыть всё."
+
+#: templates/payment/gift_claim.html:76
+#: templates/payment/gift_purchase.html:137
+msgid "MONTH"
+msgstr "МЕСЯЦ"
+
+#: templates/payment/gift_claim.html:76
+#: templates/payment/gift_purchase.html:137
+msgid "PREMIUM"
+msgstr "PREMIUM"
+
+#: templates/payment/gift_claim.html:79 templates/payment/gift_claim.html:97
+msgid "Claim Premium"
+msgstr "Получить Premium"
+
+#: templates/payment/gift_claim.html:82
+msgid "Open the app"
+msgstr "Открыть приложение"
+
+#: templates/payment/gift_claim.html:86
+msgid "Already claimed"
+msgstr "Уже получен"
+
+#: templates/payment/gift_claim.html:87
+msgid "This gift has already been claimed by someone else."
+msgstr "Этот подарок уже получен другим человеком."
+
+#: templates/payment/gift_claim.html:91
+msgid "Invalid gift"
+msgstr "Недействительный подарок"
+
+#: templates/payment/gift_claim.html:92
+msgid "This gift link is invalid or is no longer available."
+msgstr "Эта ссылка на подарок недействительна или больше недоступна."
+
+#: templates/payment/gift_claim.html:96
+msgid "Claiming…"
+msgstr "Получение…"
+
+#: templates/payment/gift_claim.html:98
+#: templates/payment/gift_purchase.html:186 templates/payment/otp.html:117
+#: templates/payment/payment_method.html:427
+#: templates/payment/tariff_select.html:271
+#, fuzzy
+#| msgid "Network error. Please try again."
+msgid "Something went wrong. Please try again."
+msgstr "Ошибка сети. Пожалуйста, попробуйте снова."
+
+#: templates/payment/gift_purchase.html:8
+#: templates/payment/gift_purchase.html:129
+#: templates/payment/gift_share.html:116
+msgid "Gift Premium"
+msgstr "Подарить Premium"
+
+#: templates/payment/gift_purchase.html:130
+msgid ""
+"Buy 1 month of Premium for a friend. You'll get a link to share — the first "
+"person to open it gets Premium."
+msgstr "Подарите другу 1 месяц Premium. Вы получите ссылку — первый, кто её откроет, получит Premium."
+
+#: templates/payment/gift_purchase.html:136
+msgid "Gift"
+msgstr "Подарок"
+
+#: templates/payment/gift_purchase.html:142
+#: templates/payment/payment_method.html:366
+#: templates/payment/tariff_select.html:232
+msgid "Card details"
+msgstr "Данные карты"
+
+#: templates/payment/gift_purchase.html:144
+#: templates/payment/tariff_select.html:234
+msgid "We accept Humo, Uzcard, Visa and Mastercard"
+msgstr "Принимаем Humo, Uzcard, Visa и Mastercard"
+
+#: templates/payment/gift_purchase.html:167
+#: templates/payment/payment_method.html:384
+#: templates/payment/tariff_select.html:257
+msgid "Your payment details are protected"
+msgstr "Ваши платёжные данные защищены"
+
+#: templates/payment/gift_purchase.html:172
+#: templates/payment/gift_purchase.html:183
+msgid "Pay & get gift link"
+msgstr "Оплатить и получить ссылку"
+
+#: templates/payment/gift_purchase.html:178
+msgid "Gifting is not available right now. Please try again later."
+msgstr "Дарение сейчас недоступно. Попробуйте позже."
+
+#: templates/payment/gift_purchase.html:182
+#: templates/payment/payment_method.html:423
+#: templates/payment/tariff_select.html:267
+#, fuzzy
+#| msgid "Pending"
+msgid "Sending…"
+msgstr "В ожидании"
+
+#: templates/payment/gift_purchase.html:184 templates/payment/otp.html:114
+#: templates/payment/payment_method.html:425
+#: templates/payment/tariff_select.html:269
+#, python-format
+msgid "Too many requests. Try again in %%(min)s min."
+msgstr ""
+
+#: templates/payment/gift_share.html:8 templates/payment/gift_share.html:87
+msgid "Your Premium Gift"
+msgstr "Ваш подарок Premium"
+
+#: templates/payment/gift_share.html:90
+msgid "This gift has been claimed. Thank you for sharing Premium!"
+msgstr "Этот подарок уже получен. Спасибо, что делитесь Premium!"
+
+#: templates/payment/gift_share.html:92
+msgid "Claimed"
+msgstr "Получен"
+
+#: templates/payment/gift_share.html:95
+msgid ""
+"Send this link to a friend. The first person to open it and claim gets 1 "
+"month of Premium."
+msgstr "Отправьте эту ссылку другу. Первый, кто откроет и активирует её, получит 1 месяц Premium."
+
+#: templates/payment/gift_share.html:97
+msgid "Ready to share"
+msgstr "Готово к отправке"
+
+#: templates/payment/gift_share.html:104
+msgid "I sent you 1 month of Premium 🎁 Tap to claim it!"
+msgstr "Я отправил вам 1 месяц Premium 🎁 Нажмите, чтобы получить!"
+
+#: templates/payment/gift_share.html:106
+msgid "Share on Telegram"
+msgstr "Поделиться в Telegram"
+
+#: templates/payment/gift_share.html:110
+msgid "Copy link"
+msgstr "Скопировать ссылку"
+
+#: templates/payment/gift_share.html:117
+msgid "You haven't sent a Premium gift yet."
+msgstr "Вы ещё не отправляли подарок Premium."
+
+#: templates/payment/gift_share.html:119
+msgid "Send a gift"
+msgstr "Отправить подарок"
+
+#: templates/payment/gift_share.html:124
+msgid "Link copied"
+msgstr "Ссылка скопирована"
+
 #: templates/payment/otp.html:8
 #, fuzzy
 #| msgid "No payments"
@@ -3177,12 +3416,6 @@ msgstr ""
 msgid "Wrong code. Please try again."
 msgstr "Ошибка сети. Пожалуйста, попробуйте снова."
 
-#: templates/payment/otp.html:114 templates/payment/payment_method.html:425
-#: templates/payment/tariff_select.html:269
-#, python-format
-msgid "Too many requests. Try again in %%(min)s min."
-msgstr ""
-
 #: templates/payment/otp.html:115
 msgid "Too many attempts. Please start the payment again."
 msgstr ""
@@ -3190,13 +3423,6 @@ msgstr ""
 #: templates/payment/otp.html:116
 msgid "A new code has been sent."
 msgstr ""
-
-#: templates/payment/otp.html:117 templates/payment/payment_method.html:427
-#: templates/payment/tariff_select.html:271
-#, fuzzy
-#| msgid "Network error. Please try again."
-msgid "Something went wrong. Please try again."
-msgstr "Ошибка сети. Пожалуйста, попробуйте снова."
 
 #: templates/payment/payment_method.html:8
 msgid "Payment method"
@@ -3220,31 +3446,12 @@ msgstr "Картой"
 msgid "Pay by card"
 msgstr "Оплата картой"
 
-#: templates/payment/payment_method.html:366
-#: templates/payment/tariff_select.html:232
-#, fuzzy
-#| msgid "Exercise details"
-msgid "Card details"
-msgstr "Детали упражнения"
-
-#: templates/payment/payment_method.html:384
-#: templates/payment/tariff_select.html:257
-msgid "Your payment details are protected"
-msgstr "Ваши платёжные данные защищены"
-
 #: templates/payment/payment_method.html:389
 #: templates/payment/payment_method.html:424
 #: templates/payment/tariff_select.html:262
 #: templates/payment/tariff_select.html:268
 msgid "Pay"
 msgstr "Оплатить"
-
-#: templates/payment/payment_method.html:423
-#: templates/payment/tariff_select.html:267
-#, fuzzy
-#| msgid "Pending"
-msgid "Sending…"
-msgstr "В ожидании"
 
 #: templates/payment/premium.html:210
 msgid "Go Premium"
@@ -3286,10 +3493,6 @@ msgstr "мес"
 #: templates/payment/tariff_select.html:216
 msgid "save"
 msgstr "скидка"
-
-#: templates/payment/tariff_select.html:234
-msgid "We accept Humo, Uzcard, Visa and Mastercard"
-msgstr "Принимаем Humo, Uzcard, Visa и Mastercard"
 
 #: templates/users/add-card.html:7
 msgid "Karta bilan to‘lov"
@@ -3346,79 +3549,105 @@ msgstr "Изменение данных"
 msgid "MA'LUMOTLAR"
 msgstr "ДАННЫЕ"
 
-#: templates/users/language.html:8 templates/users/settings.html:269
-msgid "Language settings"
-msgstr "Настройки языка"
-
-#: templates/users/language.html:304
-msgid "LANGUAGE SETTINGS"
-msgstr "НАСТРОЙКИ ЯЗЫКА"
-
-#: templates/users/language.html:318
-msgid "Which language do you want to use in the app?"
-msgstr "Какой язык вы хотите использовать в приложении?"
-
 #: templates/users/manage_subscription.html:8
 msgid "Manage Subscription"
 msgstr "Управление подпиской"
 
-#: templates/users/manage_subscription.html:380
-#| msgid "Premium"
+#: templates/users/manage_subscription.html:648
 msgid "Premium active"
 msgstr "Premium активен"
 
-#: templates/users/manage_subscription.html:393
+#: templates/users/manage_subscription.html:667
 msgid "Next payment date"
 msgstr "Дата следующего платежа"
 
-#: templates/users/manage_subscription.html:396
+#: templates/users/manage_subscription.html:671
 msgid "Not scheduled"
 msgstr "Не запланировано"
 
-#: templates/users/manage_subscription.html:421
-#| msgid "Transactions"
+#: templates/users/manage_subscription.html:690
+#, fuzzy
+#| msgid "Subscription"
+msgid "Upgrade subscription"
+msgstr "Подписка"
+
+#: templates/users/manage_subscription.html:700
+msgid "Your Premium gift"
+msgstr "Ваш подарок Premium"
+
+#: templates/users/manage_subscription.html:700
+msgid "Gift Premium to a friend"
+msgstr "Подарите Premium другу"
+
+#: templates/users/manage_subscription.html:704
+msgid "Claimed — thanks for sharing!"
+msgstr "Получен — спасибо, что поделились!"
+
+#: templates/users/manage_subscription.html:706
+msgid "Tap to view your shareable link"
+msgstr "Нажмите, чтобы посмотреть свою ссылку"
+
+#: templates/users/manage_subscription.html:708
+msgid "Send 1 month of Premium — one time only"
+msgstr "Отправьте 1 месяц Premium — только один раз"
+
+#: templates/users/manage_subscription.html:723
+msgid "Packages"
+msgstr ""
+
+#: templates/users/manage_subscription.html:732
+#, fuzzy
+#| msgid "Current Plan"
+msgid "Current"
+msgstr "Текущий план"
+
+#: templates/users/manage_subscription.html:735
+msgid "UZS"
+msgstr ""
+
+#: templates/users/manage_subscription.html:740
+msgid "Choose"
+msgstr ""
+
+#: templates/users/manage_subscription.html:757
 msgid "Transaction history"
 msgstr "История транзакций"
 
-#: templates/users/manage_subscription.html:428
-#| msgid "Total paid"
+#: templates/users/manage_subscription.html:764
 msgid "Total"
 msgstr "Сумма"
 
-#: templates/users/manage_subscription.html:430
-#| msgid "Actions"
+#: templates/users/manage_subscription.html:766
 msgid "Action"
 msgstr "Действие"
 
-#: templates/users/manage_subscription.html:444
+#: templates/users/manage_subscription.html:781
 #: templates/users/payment_history.html:618
 msgid "Paid"
 msgstr "Оплачено"
 
-#: templates/users/manage_subscription.html:446
+#: templates/users/manage_subscription.html:783
 #: templates/users/payment_history.html:590
 #: templates/users/payment_history.html:619
 msgid "Pending"
 msgstr "В ожидании"
 
-#: templates/users/manage_subscription.html:448
+#: templates/users/manage_subscription.html:786
 #: templates/users/payment_history.html:591
 #: templates/users/payment_history.html:620
 msgid "Canceled"
 msgstr "Отменено"
 
-#: templates/users/manage_subscription.html:453
-#: templates/users/manage_subscription.html:455
-#| msgid "View mode"
+#: templates/users/manage_subscription.html:791
+#: templates/users/manage_subscription.html:796
 msgid "View"
 msgstr "Просмотр"
 
-#: templates/users/manage_subscription.html:465
-#| msgid "No payments"
+#: templates/users/manage_subscription.html:809
 msgid "No payments yet"
 msgstr "Пока нет платежей"
 
-#: templates/users/manage_subscription.html:473
+#: templates/users/manage_subscription.html:817
 msgid "Load more"
 msgstr "Показать ещё"
 
@@ -3516,48 +3745,68 @@ msgstr "РЕДАКТИРОВАТЬ ПРОФИЛЬ"
 msgid "Tap to change photo"
 msgstr "Нажмите, чтобы изменить фото"
 
-#: templates/users/progress.html:479
+#: templates/users/progress.html:555
 msgid "STATISTICS"
 msgstr "СТАТИСТИКА"
 
-#: templates/users/progress.html:487 templates/workouts/program_list.html:669
+#: templates/users/progress.html:563 templates/workouts/program_list.html:669
 msgid "Today"
 msgstr "Сегодня"
 
-#: templates/users/progress.html:490
+#: templates/users/progress.html:566
 msgid "Year"
 msgstr "Год"
 
-#: templates/users/progress.html:511
+#: templates/users/progress.html:576
+msgid "Unlock full statistics"
+msgstr ""
+
+#: templates/users/progress.html:577
+msgid ""
+"Weekly, monthly and yearly statistics are a premium feature. Upgrade to "
+"Premium to see your full progress."
+msgstr ""
+
+#: templates/users/progress.html:578
+#, fuzzy
+#| msgid "Go Premium"
+msgid "Get Premium"
+msgstr "Перейти на Премиум"
+
+#: templates/users/progress.html:579
+msgid "View today's stats"
+msgstr ""
+
+#: templates/users/progress.html:600
 msgid "h"
 msgstr "ч"
 
-#: templates/users/progress.html:512 templates/users/progress.html:606
+#: templates/users/progress.html:601 templates/users/progress.html:696
 msgid "Hours"
 msgstr "Часы"
 
-#: templates/users/progress.html:541
+#: templates/users/progress.html:630
 msgid "Weekly Activity"
 msgstr "Активность за неделю"
 
-#: templates/users/progress.html:564
+#: templates/users/progress.html:653
 msgid "Recent Workouts"
 msgstr "Последние тренировки"
 
-#: templates/users/progress.html:578
+#: templates/users/progress.html:667
 msgid "ex"
 msgstr "упр"
 
-#: templates/users/progress.html:584
+#: templates/users/progress.html:673
 #: templates/workouts/home_workout_detail.html:556
 msgid "min"
 msgstr "мин"
 
-#: templates/users/progress.html:590
+#: templates/users/progress.html:679
 msgid "cal"
 msgstr "кал"
 
-#: templates/users/progress.html:596
+#: templates/users/progress.html:685
 msgid "No workout history yet"
 msgstr "Пока нет истории тренировок"
 
@@ -3578,66 +3827,70 @@ msgstr "Отмена"
 msgid "Tiklash"
 msgstr "Восстановить"
 
-#: templates/users/settings.html:217
+#: templates/users/settings.html:218
 msgid "SETTINGS"
 msgstr "НАСТРОЙКИ"
 
-#: templates/users/settings.html:224
+#: templates/users/settings.html:225
 msgid "HELP & INFO"
 msgstr "ПОМОЩЬ И ИНФОРМАЦИЯ"
 
-#: templates/users/settings.html:229 templates/users/settings.html:236
+#: templates/users/settings.html:230 templates/users/settings.html:237
 msgid "Contract"
 msgstr "Договор"
 
-#: templates/users/settings.html:237
+#: templates/users/settings.html:238
 msgid "Terms of use"
 msgstr "Условия использования"
 
-#: templates/users/settings.html:247 templates/users/settings.html:254
+#: templates/users/settings.html:248 templates/users/settings.html:255
 msgid "FAQ"
 msgstr "Частые вопросы"
 
-#: templates/users/settings.html:255
+#: templates/users/settings.html:256
 msgid "Common questions"
 msgstr "Часто задаваемые вопросы"
 
 #: templates/users/settings.html:270
+msgid "Language settings"
+msgstr "Настройки языка"
+
+#: templates/users/settings.html:271
 msgid "Change language"
 msgstr "Сменить язык"
 
-#: templates/users/settings.html:280 templates/users/settings.html:287
+#: templates/users/settings.html:281 templates/users/settings.html:288
 msgid "Policy"
 msgstr "Политика"
 
-#: templates/users/settings.html:288
+#: templates/users/settings.html:289
 msgid "Privacy & data usage"
 msgstr "Конфиденциальность и использование данных"
 
-#: templates/users/settings.html:302
+#: templates/users/settings.html:303
 msgid "About app"
 msgstr "О приложении"
 
-#: templates/users/settings.html:303
+#: templates/users/settings.html:304
 msgid "Version & info"
 msgstr "Версия и информация"
 
-#: templates/workouts/_program_card.html:64
-#: templates/workouts/program_list.html:804
+#: templates/workouts/_program_card.html:66
+#: templates/workouts/program_list.html:792
 msgid "top"
 msgstr "top"
 
-#: templates/workouts/_program_card.html:79
+#: templates/workouts/_program_card.html:81
 msgid "FOR YOU"
 msgstr "ДЛЯ ВАС"
 
-#: templates/workouts/_program_card.html:152
-#: templates/workouts/edition_list.html:516
+#: templates/workouts/_program_card.html:154
+#: templates/workouts/edition_list.html:526
 msgid "d/week"
 msgstr "дн/нед"
 
 #: templates/workouts/active_workout.html:1117
-#: templates/workouts/home_session.html:1007
+#: templates/workouts/home_session.html:1009
 msgid "EXIT"
 msgstr "ВЫХОД"
 
@@ -3649,22 +3902,22 @@ msgstr "ПРОГРАММЫ"
 #: templates/workouts/active_workout.html:1172
 #: templates/workouts/active_workout.html:1213
 #: templates/workouts/active_workout.html:1272
-#: templates/workouts/home_session.html:981
-#: templates/workouts/home_session.html:1125
+#: templates/workouts/home_session.html:983
+#: templates/workouts/home_session.html:1127
 msgid "Next Up"
 msgstr "Следующее"
 
 #: templates/workouts/active_workout.html:1190
 #: templates/workouts/active_workout.html:1266
-#: templates/workouts/home_session.html:1110
-#: templates/workouts/home_session.html:1121
+#: templates/workouts/home_session.html:1112
+#: templates/workouts/home_session.html:1123
 msgid "Pause"
 msgstr "Пауза"
 
 #: templates/workouts/active_workout.html:1193
 #: templates/workouts/active_workout.html:1268
-#: templates/workouts/home_session.html:1113
-#: templates/workouts/home_session.html:1123
+#: templates/workouts/home_session.html:1115
+#: templates/workouts/home_session.html:1125
 msgid "NEXT"
 msgstr "Следующее"
 
@@ -3680,13 +3933,13 @@ msgstr "Подход 1 завершён"
 
 #: templates/workouts/active_workout.html:1228
 #: templates/workouts/active_workout.html:1270
-#: templates/workouts/home_session.html:996
+#: templates/workouts/home_session.html:998
 msgid "Tap to skip"
 msgstr "Нажмите, чтобы пропустить"
 
 #: templates/workouts/active_workout.html:1230
 #: templates/workouts/active_workout.html:1271
-#: templates/workouts/home_session.html:998
+#: templates/workouts/home_session.html:1000
 msgid "Skip Rest"
 msgstr "Пропустить отдых"
 
@@ -3727,7 +3980,7 @@ msgid "SET"
 msgstr "Подход"
 
 #: templates/workouts/active_workout.html:1263
-#: templates/workouts/home_session.html:1119
+#: templates/workouts/home_session.html:1121
 msgid "OF"
 msgstr "из"
 
@@ -3740,7 +3993,7 @@ msgid "Complete"
 msgstr "Завершено"
 
 #: templates/workouts/active_workout.html:1267
-#: templates/workouts/home_session.html:1122
+#: templates/workouts/home_session.html:1124
 msgid "Resume"
 msgstr "Продолжить"
 
@@ -3752,28 +4005,28 @@ msgstr "все упражнения:"
 msgid "No exercises are included for this program."
 msgstr "В эту программу не добавлено упражнений."
 
-#: templates/workouts/edition_list.html:486
+#: templates/workouts/edition_list.html:496
 msgid "PLANS"
 msgstr "ПЛАНЫ"
 
-#: templates/workouts/edition_list.html:497
+#: templates/workouts/edition_list.html:507
 msgid "About this program"
 msgstr "Об этой программе"
 
-#: templates/workouts/edition_list.html:503
+#: templates/workouts/edition_list.html:513
 msgid "Choose Your Plan"
 msgstr "Выберите ваш план"
 
-#: templates/workouts/edition_list.html:534
+#: templates/workouts/edition_list.html:548
 msgid "No plans available"
 msgstr "Нет доступных планов"
 
-#: templates/workouts/edition_list.html:535
+#: templates/workouts/edition_list.html:549
 msgid "Check back later for workout plans"
 msgstr "Зайдите позже за планами тренировок"
 
 #: templates/workouts/home_program_list.html:2
-#: templates/workouts/plan_weeks.html:304
+#: templates/workouts/plan_weeks.html:358
 msgid "WEEKS"
 msgstr "НЕДЕЛИ"
 
@@ -3781,46 +4034,46 @@ msgstr "НЕДЕЛИ"
 msgid "Workout Session"
 msgstr "Сессия тренировки"
 
-#: templates/workouts/home_session.html:957
+#: templates/workouts/home_session.html:959
 msgid "Exit Workout?"
 msgstr "Выйти из тренировки?"
 
-#: templates/workouts/home_session.html:958
+#: templates/workouts/home_session.html:960
 msgid "Your progress will be lost."
 msgstr "Ваш прогресс будет потерян."
 
-#: templates/workouts/home_session.html:960
+#: templates/workouts/home_session.html:962
 msgid "Continue Workout"
 msgstr "Продолжить тренировку"
 
-#: templates/workouts/home_session.html:961
+#: templates/workouts/home_session.html:963
 msgid "Exit"
 msgstr "Выход"
 
-#: templates/workouts/home_session.html:992
+#: templates/workouts/home_session.html:994
 msgid "REST"
 msgstr "ОТДЫХ"
 
-#: templates/workouts/home_session.html:993
-#: templates/workouts/home_session.html:1124
+#: templates/workouts/home_session.html:995
+#: templates/workouts/home_session.html:1126
 msgid "Round Complete"
 msgstr "Раунд завершен"
 
-#: templates/workouts/home_session.html:1085
-#: templates/workouts/home_session.html:1126
+#: templates/workouts/home_session.html:1087
+#: templates/workouts/home_session.html:1128
 msgid "SEC"
 msgstr "SEC"
 
-#: templates/workouts/home_session.html:1108
+#: templates/workouts/home_session.html:1110
 #: templates/workouts/program_list.html:689
 msgid "START"
 msgstr "НАЧАТЬ"
 
-#: templates/workouts/home_session.html:1118
+#: templates/workouts/home_session.html:1120
 msgid "ROUND"
 msgstr "РАУНД"
 
-#: templates/workouts/home_session.html:1120
+#: templates/workouts/home_session.html:1122
 msgid "EXERCISE"
 msgstr "УПРАЖНЕНИЯ"
 
@@ -3938,11 +4191,11 @@ msgstr "Функция импорта доступна для Premium-подпи
 msgid "Importing..."
 msgstr "Отправка..."
 
-#: templates/workouts/plan_weeks.html:350
+#: templates/workouts/plan_weeks.html:428
 msgid "No weeks available"
 msgstr "Нет доступных недель"
 
-#: templates/workouts/plan_weeks.html:351
+#: templates/workouts/plan_weeks.html:429
 msgid "Check back later for this plan"
 msgstr "Зайдите позже за этим планом"
 
@@ -3966,13 +4219,12 @@ msgid ""
 msgstr "%(plan_count)s план"
 
 #: templates/workouts/program_list.html:677
-#: templates/workouts/program_list.html:812
+#: templates/workouts/program_list.html:800
 msgid "weeks"
 msgstr "недель"
 
 #: templates/workouts/program_list.html:684
-#: templates/workouts/program_list.html:717
-#: templates/workouts/program_list.html:815
+#: templates/workouts/program_list.html:803
 msgid "week"
 msgstr "неделя"
 
@@ -3980,45 +4232,41 @@ msgstr "неделя"
 msgid "CONTINUE"
 msgstr "ПРОДОЛЖИТЬ"
 
-#: templates/workouts/program_list.html:713
-msgid "ONE-TIME WORKOUT"
-msgstr "РАЗОВАЯ ТРЕНИРОВКА"
+#: templates/workouts/program_list.html:704
+msgid "Trends"
+msgstr "В тренде"
 
-#: templates/workouts/program_list.html:728
+#: templates/workouts/program_list.html:723
 msgid "Single session"
 msgstr "Одна сессия"
 
-#: templates/workouts/program_list.html:734
-msgid "START WORKOUT"
-msgstr "НАЧАТЬ"
-
-#: templates/workouts/program_list.html:748
+#: templates/workouts/program_list.html:736
 msgid "EXPLORE PROGRAMS"
 msgstr "ПРОГРАММЫ"
 
-#: templates/workouts/program_list.html:752
+#: templates/workouts/program_list.html:740
 #, fuzzy
 #| msgid "weeks"
 msgid "All levels"
 msgstr "недель"
 
-#: templates/workouts/program_list.html:758
+#: templates/workouts/program_list.html:746
 msgid "View mode"
 msgstr "Режим вида"
 
-#: templates/workouts/program_list.html:759
+#: templates/workouts/program_list.html:747
 msgid "List view"
 msgstr "Список"
 
-#: templates/workouts/program_list.html:768
+#: templates/workouts/program_list.html:756
 msgid "Grid view"
 msgstr "Плитка"
 
-#: templates/workouts/program_list.html:848
+#: templates/workouts/program_list.html:836
 msgid "No programs yet"
 msgstr "Пока нет программ"
 
-#: templates/workouts/program_list.html:849
+#: templates/workouts/program_list.html:837
 msgid "New programs will be added soon"
 msgstr "Новые программы скоро будут добавлены"
 
@@ -4057,6 +4305,18 @@ msgstr "На этот день нет упражнений."
 #: templates/workouts/workout_detail.html:272
 msgid "Start Workout"
 msgstr "Начать тренировку"
+
+#~ msgid "LANGUAGE SETTINGS"
+#~ msgstr "НАСТРОЙКИ ЯЗЫКА"
+
+#~ msgid "Which language do you want to use in the app?"
+#~ msgstr "Какой язык вы хотите использовать в приложении?"
+
+#~ msgid "ONE-TIME WORKOUT"
+#~ msgstr "РАЗОВАЯ ТРЕНИРОВКА"
+
+#~ msgid "START WORKOUT"
+#~ msgstr "НАЧАТЬ"
 
 #~ msgid "Pick from the exercise library"
 #~ msgstr "Выберите из библиотеки упражнений"
@@ -4161,7 +4421,3 @@ msgstr "Начать тренировку"
 #~ msgstr[1] "%(plan_count)s плана"
 #~ msgstr[2] "%(plan_count)s планов"
 #~ msgstr[3] "%(plan_count)s планов"
-
-#: templates/workouts/program_list.html
-msgid "Trends"
-msgstr "В тренде"
