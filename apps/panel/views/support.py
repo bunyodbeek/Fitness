@@ -4,10 +4,13 @@ The list shows one row per user who has written in, newest activity first, with 
 unread badge. Opening a row shows the full thread and lets staff reply; replies are
 saved as ``SupportMessage(is_from_admin=True)`` and surface back in the user's Help
 screen (which polls for them)."""
+from datetime import timedelta
+
 from django.contrib import messages as dj_messages
 from django.db.models import Count, Max, Q
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import DetailView
@@ -17,6 +20,61 @@ from apps.models.support import SupportMessage
 from apps.panel.mixins import StaffRequiredMixin
 from apps.panel.views.base import PanelContextMixin
 from apps.panel.views.crud import PanelListView
+
+# Messages from the same sender within this gap are grouped into one visual block.
+GROUP_GAP_SECONDS = 5 * 60
+
+
+def build_thread_rows(messages):
+    """Turn a time-ordered iterable of ``SupportMessage`` into render rows:
+
+    a list mixing date-separator chips and message rows. Each message is annotated
+    (in-memory, not saved) with ``time_label``, ``group_start`` and ``group_end`` so
+    the template can group consecutive same-sender bubbles and show a timestamp only
+    on the last of each group. Reused by the admin thread and the user Help screen."""
+    msgs = list(messages)
+    today = timezone.localdate()
+    yesterday = today - timedelta(days=1)
+    rows = []
+
+    for i, m in enumerate(msgs):
+        local_dt = timezone.localtime(m.created_at)
+        day = local_dt.date()
+        prev = msgs[i - 1] if i > 0 else None
+        nxt = msgs[i + 1] if i + 1 < len(msgs) else None
+
+        prev_day = timezone.localtime(prev.created_at).date() if prev else None
+        new_day = prev_day != day
+
+        if new_day:
+            rows.append({
+                'sep': True,
+                'label_key': 'today' if day == today else 'yesterday' if day == yesterday else '',
+                'label_date': local_dt.strftime('%d.%m.%Y'),
+            })
+
+        if new_day or prev is None:
+            group_start = True
+        else:
+            gap = (local_dt - timezone.localtime(prev.created_at)).total_seconds()
+            group_start = prev.is_from_admin != m.is_from_admin or gap > GROUP_GAP_SECONDS
+
+        if nxt is None:
+            group_end = True
+        else:
+            nxt_local = timezone.localtime(nxt.created_at)
+            if nxt_local.date() != day:
+                group_end = True
+            else:
+                gap = (nxt_local - local_dt).total_seconds()
+                group_end = nxt.is_from_admin != m.is_from_admin or gap > GROUP_GAP_SECONDS
+
+        m.time_label = local_dt.strftime('%H:%M')
+        m.group_start = group_start
+        m.group_end = group_end
+        rows.append({'sep': False, 'msg': m})
+
+    return rows
 
 
 class ChatListView(PanelListView):
@@ -78,7 +136,9 @@ class ChatThreadView(StaffRequiredMixin, PanelContextMixin, DetailView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx["page_title"] = _("Chat")
-        ctx["chat_messages"] = self.object.support_messages.order_by("created_at")
+        ctx["thread_rows"] = build_thread_rows(
+            self.object.support_messages.order_by("created_at")
+        )
         ctx["back_url"] = reverse("panel:chat")
         return ctx
 
