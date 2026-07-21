@@ -181,6 +181,15 @@
             transform: translateY(-2px);
             box-shadow: 0 6px 28px rgba(255, 215, 0, 0.4);
         }
+        .q-back {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 38px; height: 38px; margin-bottom: 14px;
+            background: #161616; border: 1px solid rgba(255, 215, 0, 0.30);
+            border-radius: 11px; color: #ffd700; cursor: pointer;
+            transition: transform .2s ease, border-color .2s ease;
+        }
+        .q-back:hover { border-color: #ffd700; transform: translateX(-3px); }
+        .q-back svg { flex-shrink: 0; }
         @media (min-width: 720px) {
             h1 { font-size: 26px; }
             .option-btn { font-size: 16px; padding: 16px 20px; }
@@ -190,6 +199,11 @@
 
 <body>
 <div class="container" role="main">
+    {% if edit_mode %}
+    <button type="button" class="q-back" onclick="questionnaireBack()" aria-label="{% trans 'Back' %}">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    {% endif %}
     <div class="progress-bar" aria-hidden="true">
         <div id="progress" class="progress-fill"></div>
     </div>
@@ -423,6 +437,18 @@
         if (currentStep >= totalSteps) return;
         showStep(currentStep + 1);
     }
+
+    // Back button (edit mode only): step back through the questions, and from
+    // the first step leave the questionnaire and return to the profile page.
+    const PROFILE_URL = "{% url 'user_profile' %}";
+    function questionnaireBack() {
+        if (currentStep > 1) {
+            showStep(currentStep - 1);
+        } else {
+            window.location.href = PROFILE_URL;
+        }
+    }
+    window.questionnaireBack = questionnaireBack;
 
     function singleSelect(groupRoot, value) {
         const buttons = groupRoot.querySelectorAll('.option-btn');
