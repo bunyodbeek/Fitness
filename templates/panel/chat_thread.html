@@ -32,7 +32,7 @@
 
 {% block content %}
     <div class="page-head">
-        <h2>{% trans "Chat" %} — {{ chat_user.name|default:chat_user.telegram_username|default:chat_user.pk }}</h2>
+        <h2>{% trans "Chat" %} — {{ chat_user.name|default:chat_user.telegram_id|default:chat_user.pk }}</h2>
         <a href="{{ back_url }}" class="btn">{% trans "Back" %}</a>
     </div>
 

@@ -24,7 +24,7 @@ class ChatListView(PanelListView):
     nav_active = "chat"
     page_title = _("Chat")
     columns = [_("User"), _("Last message"), _("Unread"), _("Updated")]
-    search_fields = ["name", "telegram_username"]
+    search_fields = ["name"]
     open_url_name = "panel:chat_thread"
 
     def get_queryset(self):
@@ -54,7 +54,7 @@ class ChatListView(PanelListView):
             if unread else format_html('<span class="muted">0</span>')
         )
         return [
-            obj.name or obj.telegram_username or f"#{obj.pk}",
+            obj.name or (f"#{obj.telegram_id}" if obj.telegram_id else f"#{obj.pk}"),
             preview,
             unread_cell,
             obj.last_msg_at.strftime("%d.%m.%Y %H:%M") if obj.last_msg_at else "—",
