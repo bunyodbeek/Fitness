@@ -73,7 +73,7 @@
 		<div class="gift-emoji">🎁</div>
 		<h1>{% trans "You've got a gift!" %}</h1>
 		<p class="sub">{% trans "A friend sent you Premium. Claim it to unlock everything." %}</p>
-		<div class="plan-chip">1 {% trans "MONTH" %} · {% trans "PREMIUM" %}</div>
+		<div class="plan-chip">{% if gift.plan %}{{ gift.plan.get_period_display }}{% endif %} · {% trans "PREMIUM" %}</div>
 
 		<button class="btn" id="claimBtn" onclick="claim()">
 			<span class="btn-label">{% trans "Claim Premium" %}</span>

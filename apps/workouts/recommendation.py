@@ -39,6 +39,30 @@ def get_recommended_program(user_profile, workout_type: str | None = None) -> Pr
     if not user_profile:
         return None
 
+    goal_map = {
+        "FL": Program.Goal.FAT_LOSS,
+        "MG": Program.Goal.MUSCLE_GAIN,
+        "RC": Program.Goal.RECOMPOSITION,
+    }
+
+    # ── Home rejimi: tavsiya "home" rejimidagi ADVANCED (murakkab) programmalardan
+    # tanlanadi — individual (tavsiya) bo'lishi shart emas. Avval foydalanuvchi
+    # maqsadiga mos keladigani, bo'lmasa istalgan advanced home programma. ──
+    if workout_type == "home":
+        home_qs = Program.objects.filter(
+            is_active=True,
+            type=Program.ProgramType.ADMIN,
+            workout_type="home",
+            level=Program.Level.ADVANCED,
+            is_one_time=False,
+        )
+        goal = goal_map.get(_goal_short(getattr(user_profile, "fitness_goal", "")))
+        if goal:
+            match = home_qs.filter(goal=goal).order_by("is_premium", "id").first()
+            if match:
+                return match
+        return home_qs.order_by("is_premium", "id").first()
+
     key = f"{_goal_short(getattr(user_profile, 'fitness_goal', ''))}{_gender_token(getattr(user_profile, 'gender', ''))}{_level_token(getattr(user_profile, 'experience_level', ''))}"
     if not key:
         return None
@@ -46,12 +70,6 @@ def get_recommended_program(user_profile, workout_type: str | None = None) -> Pr
     key_goal = key[:2]
     key_gender = "male" if "Male" in key else "female"
     key_level = "beginner" if key.endswith("Beginner") else "advanced"
-
-    goal_map = {
-        "FL": Program.Goal.FAT_LOSS,
-        "MG": Program.Goal.MUSCLE_GAIN,
-        "RC": Program.Goal.RECOMPOSITION,
-    }
 
     base_filter = dict(
         is_active=True,

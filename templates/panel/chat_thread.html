@@ -1,0 +1,70 @@
+{% extends 'panel/base.html' %}
+{% load i18n %}
+
+{% block extra_css %}
+<style>
+    .chat-box {
+        max-width: 720px; display: flex; flex-direction: column;
+        height: calc(100vh - 190px); min-height: 360px;
+    }
+    .chat-log {
+        flex: 1; overflow-y: auto; padding: 18px;
+        display: flex; flex-direction: column; gap: 10px;
+        background: var(--panel-2, #111); border: 1px solid var(--border); border-radius: 14px;
+    }
+    .c-bubble {
+        max-width: 76%; padding: 9px 13px; border-radius: 14px; font-size: 14px;
+        line-height: 1.4; white-space: pre-wrap; word-break: break-word;
+    }
+    .c-bubble .c-time { display: block; font-size: 10px; opacity: 0.55; margin-top: 4px; }
+    .c-user { align-self: flex-start; background: rgba(255,255,255,0.06); border: 1px solid var(--border); }
+    .c-admin { align-self: flex-end; background: linear-gradient(135deg,#ffd700,#ff6b6b); color: #1a1300; }
+    .c-empty { text-align: center; color: var(--muted, #888); margin: auto; font-size: 14px; }
+    .chat-reply { display: flex; gap: 10px; margin-top: 14px; }
+    .chat-reply textarea {
+        flex: 1; resize: none; min-height: 46px; max-height: 140px;
+        padding: 12px 14px; border-radius: 12px; background: var(--panel-2,#111);
+        border: 1px solid var(--border-strong, #333); color: var(--text,#eee); font-size: 14px; font-family: inherit;
+    }
+    .chat-reply textarea:focus { outline: none; border-color: #ffd700; }
+</style>
+{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <h2>{% trans "Chat" %} — {{ chat_user.name|default:chat_user.telegram_username|default:chat_user.pk }}</h2>
+        <a href="{{ back_url }}" class="btn">{% trans "Back" %}</a>
+    </div>
+
+    {% if messages %}
+        {% for m in messages %}<div class="card" style="margin-bottom:12px;border-color:rgba(239,68,68,0.35);color:#f87171;">{{ m }}</div>{% endfor %}
+    {% endif %}
+
+    <div class="chat-box">
+        <div class="chat-log" id="chatLog">
+            {% for m in chat_messages %}
+                <div class="c-bubble {% if m.is_from_admin %}c-admin{% else %}c-user{% endif %}">
+                    {{ m.text }}
+                    <span class="c-time">{{ m.created_at|date:"d.m.Y H:i" }}</span>
+                </div>
+            {% empty %}
+                <div class="c-empty">{% trans "No messages yet." %}</div>
+            {% endfor %}
+        </div>
+
+        <form method="post" class="chat-reply">
+            {% csrf_token %}
+            <textarea name="text" placeholder="{% trans 'Type a reply…' %}" maxlength="2000" required></textarea>
+            <button type="submit" class="btn btn-primary">{% trans "Send" %}</button>
+        </form>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    (function () {
+        const log = document.getElementById('chatLog');
+        if (log) log.scrollTop = log.scrollHeight;
+    })();
+</script>
+{% endblock %}

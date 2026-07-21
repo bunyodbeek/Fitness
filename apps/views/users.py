@@ -10,7 +10,7 @@ from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.files.base import ContentFile
 from django.db.models.aggregates import Sum
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
@@ -156,8 +156,28 @@ class QuestionnaireSubmitAPIView(APIView):
         if not telegram_id:
             return Response({'success': False, 'error': 'Telegram ID topilmadi'}, status=400)
 
+        is_edit = str(data.get('edit', '')).lower() in ('1', 'true', 'yes')
+
         existing_profile = UserProfile.objects.filter(telegram_id=telegram_id).first()
         if existing_profile:
+            # Re-taking the questionnaire from the profile page: persist the new
+            # answers (weight, experience, goal, days, gender) and rebuild the
+            # recommended/auto program so it matches the updated profile.
+            if is_edit:
+                profile = self.create_or_update_profile(existing_profile.user, data)
+                try:
+                    from apps.services.programs import UserProgramService
+                    UserProgramService.reassign_auto_program(profile)
+                except Exception:
+                    print(traceback.format_exc())
+                request.session['show_recommendation_once'] = True
+                login(request, existing_profile.user)
+                return Response({
+                    'success': True,
+                    'redirect_url': reverse('animation'),
+                    'message': 'Profile updated',
+                })
+
             if not existing_profile.onboarding_completed:
                 existing_profile.onboarding_completed = True
                 existing_profile.save(update_fields=['onboarding_completed'])
@@ -261,12 +281,22 @@ class TelegramAuthAPIView(APIView):
 class OnboardingView(TemplateView):
     template_name = 'miniapp/questionarrie.html'
 
+    def _is_edit_mode(self, request):
+        # `?edit=1` lets an already-onboarded user re-take the questionnaire
+        # (from the "Recommended program" button on the profile page).
+        return request.GET.get('edit') in ('1', 'true', 'yes')
+
     def dispatch(self, request, *args, **kwargs):
-        if request.user.is_authenticated:
+        if request.user.is_authenticated and not self._is_edit_mode(request):
             profile = UserProfile.objects.filter(user=request.user).first()
             if profile and profile.onboarding_completed:
                 return redirect('animation')
         return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['edit_mode'] = self._is_edit_mode(self.request)
+        return context
 
 
 from apps.views.partial import PartialTabMixin
@@ -285,7 +315,67 @@ class ProfileView(PartialTabMixin, LoginRequiredMixin, TemplateView):
         is_active = bool(subscription and subscription.is_valid)
         context['subscription_active'] = is_active
         context['days_remaining'] = subscription.days_remaining() if is_active else 0
+
+        # One-time Premium gift the user may have already sent — drives the gift
+        # card CTA under the subscription box. Only a paid (available/claimed)
+        # gift is surfaced; an unpaid draft still routes to the purchase page.
+        from apps.models.payments import PremiumGift
+        gift = PremiumGift.objects.filter(sender=profile).first()
+        context['gift'] = gift if (gift and gift.is_used) else None
         return context
+
+
+class HelpChatView(LoginRequiredMixin, View):
+    """Two-way Help/support chat. The user sends messages here; admin replies
+    (sent from the panel "Chat" section) appear back in this thread. The page
+    polls ``?after=<id>`` (AJAX) to pull new admin replies live."""
+    template_name = 'users/help.html'
+
+    @staticmethod
+    def _serialize(msg):
+        return {
+            'id': msg.id,
+            'text': msg.text,
+            'is_admin': msg.is_from_admin,
+            'time': timezone.localtime(msg.created_at).strftime('%H:%M'),
+        }
+
+    def get(self, request):
+        from apps.models import SupportMessage
+        profile = request.user.profile
+
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            qs = SupportMessage.objects.filter(user=profile)
+            after = request.GET.get('after')
+            if after and str(after).isdigit():
+                qs = qs.filter(id__gt=int(after))
+            messages_list = list(qs.order_by('created_at'))
+            SupportMessage.objects.filter(
+                user=profile, is_from_admin=True, is_read=False,
+            ).update(is_read=True)
+            return JsonResponse({'ok': True, 'messages': [self._serialize(m) for m in messages_list]})
+
+        messages_list = list(
+            SupportMessage.objects.filter(user=profile).order_by('created_at')
+        )
+        SupportMessage.objects.filter(
+            user=profile, is_from_admin=True, is_read=False,
+        ).update(is_read=True)
+        return render(request, self.template_name, {
+            'chat_messages': [self._serialize(m) for m in messages_list],
+        })
+
+    def post(self, request):
+        from apps.models import SupportMessage
+        profile = request.user.profile
+        text = (request.POST.get('text') or '').strip()
+        if not text:
+            return JsonResponse({'ok': False, 'error': 'empty',
+                                 'message': _("Please type a message.")}, status=400)
+        msg = SupportMessage.objects.create(
+            user=profile, text=text[:2000], is_from_admin=False,
+        )
+        return JsonResponse({'ok': True, 'message': self._serialize(msg)})
 
 
 class UpdateProfileView(LoginRequiredMixin, UpdateView):

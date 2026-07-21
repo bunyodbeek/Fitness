@@ -23,6 +23,7 @@ from apps.models.handbook import (
 	HandbookSubCategory,
 	HandbookItem,
 )
+from apps.models.support import SupportMessage
 
 # If you have a favorites.py, add it here:
 # from apps.models.favorites import Favorite, FavoriteExercise, FavoriteProgram

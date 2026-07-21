@@ -18,6 +18,7 @@ from apps.panel.views import reports as rep
 from apps.panel.views import settings as st
 from apps.panel.views import admins as adm
 from apps.panel.views import premade_days as pmd
+from apps.panel.views import support as sup
 
 app_name = "panel"
 
@@ -131,6 +132,10 @@ urlpatterns = [
     # Payments
     path("payments/", pay.PaymentListView.as_view(), name="payments"),
     path("payments/<int:pk>/", pay.PaymentDetailView.as_view(), name="payment_detail"),
+
+    # Chat (support)
+    path("chat/", sup.ChatListView.as_view(), name="chat"),
+    path("chat/<int:pk>/", sup.ChatThreadView.as_view(), name="chat_thread"),
 
     # Reports
     path("reports/", rep.ReportsView.as_view(), name="reports"),

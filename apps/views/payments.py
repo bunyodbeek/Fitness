@@ -469,7 +469,10 @@ class PaymentSuccessView(LoginRequiredMixin, TemplateView):
 # ── Premium gifting ──────────────────────────────────────────────────────────
 
 class GiftPremiumView(LoginRequiredMixin, View):
-	"""Entry point (from Manage Subscription) to gift 1 month of Premium.
+	"""Entry point (from the profile page) to gift Premium to a friend.
+
+	The sender picks any of the active subscription plans (1/3/6/12 months) —
+	the chosen plan is what the recipient receives on claim.
 
 	If the user has already used their one-time gift, they are sent to the share
 	page instead of the purchase form."""
@@ -481,12 +484,35 @@ class GiftPremiumView(LoginRequiredMixin, View):
 		if gift and gift.is_used:
 			return redirect('gift_share')
 
-		# A gift always grants the monthly plan.
-		plan = SubscriptionPlan.objects.filter(is_active=True, period='monthly').first()
-		return render(request, self.template_name, {
-			'plan': plan,
-			'amount': plan.price_uzs if plan else None,
-		})
+		# Same plan list + discount maths as the normal tariff screen so the
+		# gift sender can choose any package, not just the monthly one.
+		plans = SubscriptionPlan.objects.filter(is_active=True).order_by('order')
+		monthly = plans.filter(period='monthly').first()
+		monthly_uzs = monthly.price_uzs if monthly else None
+		monthly_usd = monthly.price_usd if monthly else None
+
+		plan_list = []
+		for p in plans:
+			disc_uzs = disc_usd = 0
+			if monthly_uzs and p.months:
+				full = monthly_uzs * p.months
+				if full:
+					disc_uzs = round((full - p.price_uzs) / full * 100)
+			if monthly_usd and p.months:
+				full = monthly_usd * p.months
+				if full:
+					disc_usd = round((full - p.price_usd) / full * 100)
+			plan_list.append({
+				'id': p.id,
+				'period_display': p.get_period_display(),
+				'months': p.months,
+				'price_uzs': p.price_uzs,
+				'price_usd': p.price_usd,
+				'is_popular': p.is_popular,
+				'discount_uzs': max(disc_uzs, 0),
+				'discount_usd': max(disc_usd, 0),
+			})
+		return render(request, self.template_name, {'plans': plan_list})
 
 
 class GiftShareView(LoginRequiredMixin, TemplateView):

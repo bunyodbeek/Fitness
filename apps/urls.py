@@ -44,6 +44,7 @@ from apps.views.payments import PremiumView, TariffSelectView, PaymentMethodView
 from apps.views.users import (
 	AdminAnalyticsView,
 	ChangeLanguageView,
+	HelpChatView,
 	ManageSubscriptionView,
 	PaymentHistoryView,
 )
@@ -91,6 +92,7 @@ urlpatterns = [
 	path('users/settings/', SettingsView.as_view(), name='settings'),
 	path('users/subscription/', ManageSubscriptionView.as_view(), name='manage_subscription'),
 	path('users/payments/', PaymentHistoryView.as_view(), name='payment_history'),
+	path('users/help/', HelpChatView.as_view(), name='help_chat'),
 	path('change/language/', ChangeLanguageView.as_view(), name='change_language'),
 	
 	# Program assignment/customization

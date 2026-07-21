@@ -443,6 +443,33 @@ class UserProgramService:
 
     @staticmethod
     @transaction.atomic
+    def reassign_auto_program(profile):
+        """Re-pick the auto (recommended) program for a user after they change
+        their questionnaire answers (e.g. beginner → advanced, new goal/weight).
+
+        Unlike ``assign_auto_program_once`` this is NOT one-shot: it deactivates
+        the current auto program and assigns a fresh match based on the updated
+        profile."""
+        if UserProgram is None:
+            return None
+
+        matched_program = (
+            get_recommended_program(profile)
+            or Program.objects.filter(type=Program.ProgramType.ADMIN, is_active=True).first()
+        )
+        if not matched_program:
+            return None
+
+        UserProgram.objects.filter(user=profile, is_active=True).update(is_active=False)
+        return UserProgram.objects.create(
+            user=profile,
+            program=matched_program,
+            is_active=True,
+            assigned_once=True,
+        )
+
+    @staticmethod
+    @transaction.atomic
     def clone_program(source_program: Program, new_owner) -> Program:
         """
         Deep-copy source_program and all its Plans/Weeks/Workouts/WorkoutExercises

@@ -143,6 +143,29 @@ body {
     margin-bottom: 0;
 }
 
+/* ===== GIFT PREMIUM CARD ===== */
+.gift-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(135deg, rgba(255,215,0,0.10), rgba(255,107,107,0.08));
+    border: 1px solid rgba(255, 215, 0, 0.30);
+    border-radius: 16px;
+    padding: 12px 14px;
+    margin: 0 0 12px;
+    text-decoration: none;
+    transition: transform 0.25s, border-color 0.25s;
+    flex-shrink: 0;
+}
+.gift-card:hover { border-color: rgba(255,215,0,0.55); transform: translateY(-2px); }
+.gift-card-icon { font-size: 26px; line-height: 1; flex-shrink: 0; }
+.gift-card-body { flex: 1; min-width: 0; }
+.gift-card-title { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 2px; }
+.gift-card-sub { font-size: 11px; color: rgba(255,255,255,0.55); }
+.gift-card-arrow { color: rgba(255,215,0,0.6); flex-shrink: 0; display: flex; }
+.gift-card svg { fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+
 /* ===== MENU ===== */
 .menu-section {
     display: flex;
@@ -275,6 +298,28 @@ body {
         {% endif %}
     </div>
 
+    <!-- Gift Premium (one-time) -->
+    <a href="{% if gift %}{% url 'gift_share' %}{% else %}{% url 'gift_premium' %}{% endif %}" class="gift-card">
+        <div class="gift-card-icon">🎁</div>
+        <div class="gift-card-body">
+            <div class="gift-card-title">
+                {% if gift %}{% trans "Your Premium gift" %}{% else %}{% trans "Gift Premium to a friend" %}{% endif %}
+            </div>
+            <div class="gift-card-sub">
+                {% if gift and gift.status == 'claimed' %}
+                    {% trans "Claimed — thanks for sharing!" %}
+                {% elif gift %}
+                    {% trans "Tap to view your shareable link" %}
+                {% else %}
+                    {% trans "Choose a package — one time only" %}
+                {% endif %}
+            </div>
+        </div>
+        <div class="gift-card-arrow">
+            <svg width="20" height="20" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+        </div>
+    </a>
+
     <!-- Menu -->
     <div class="menu-section">
 
@@ -350,8 +395,26 @@ body {
             </div>
         </div>
 
+        <!-- Recommended program (re-take questionnaire) -->
+        <div class="menu-card" onclick="window.location.href='{% url 'onboarding' %}?edit=1'">
+            <div class="menu-content">
+                <div class="menu-icon-wrapper">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2l2.9 6.3 6.9.7-5.1 4.6 1.4 6.8L12 17.8 5.9 20.4l1.4-6.8L2.2 9l6.9-.7L12 2z"/>
+                    </svg>
+                </div>
+                <div class="menu-text-wrapper">
+                    <div class="menu-text">{% trans "Recommended program" %}</div>
+                    <div class="menu-subtitle">{% trans "Update your goals & fitness level" %}</div>
+                </div>
+                <div class="menu-arrow">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+                </div>
+            </div>
+        </div>
+
         <!-- Support -->
-        <div class="menu-card" onclick="">
+        <div class="menu-card" onclick="window.location.href='{% url 'help_chat' %}'">
             <div class="menu-content">
                 <div class="menu-icon-wrapper">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">

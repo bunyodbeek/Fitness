@@ -286,6 +286,11 @@
     }
     const csrfToken = getCookie('csrftoken');
 
+    // Edit mode: user re-taking the questionnaire from the profile page.
+    // In this mode we must NOT auto-redirect an already-onboarded user away,
+    // and we tell the backend to update the existing profile + regenerate.
+    const EDIT_MODE = {% if edit_mode %}true{% else %}false{% endif %};
+
     // ---------------- Telegram init ----------------
     const tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
     // Telegram WebApp dokumentatsiyasiga ko'ra ready() chaqirilishi shart —
@@ -352,7 +357,8 @@
         goal: '',
         days: '',
         weight: Number(document.getElementById('weightInput')?.value || 63),
-        workout_type: ''
+        workout_type: '',
+        edit: EDIT_MODE
     };
 
     // -------------- Auto telegram auth (fix url) --------------
@@ -372,7 +378,9 @@
 
             const data = await res.json();
 
-            if (data.onboarding_completed) {
+            // In edit mode we stay on the questionnaire even though onboarding
+            // is already completed — the user is intentionally re-answering.
+            if (data.onboarding_completed && !EDIT_MODE) {
                 window.location.href = data.redirect;
             }
         } catch (e) {

@@ -14,6 +14,7 @@
 		:root {
 			--bg: #000000;
 			--card: rgba(255, 255, 255, 0.04);
+			--card-2: rgba(255, 215, 0, 0.06);
 			--gold: #ffd700;
 			--gold-grad: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
 			--text: #ffffff;
@@ -35,17 +36,66 @@
 		}
 		.back-btn svg { flex-shrink: 0; }
 
-		.hero { text-align: center; padding: 18px var(--side-space) 4px; max-width: 520px; margin: 0 auto; }
-		.gift-emoji { font-size: 46px; line-height: 1; margin-bottom: 10px; }
-		.hero h1 { font-family: 'Bebas Neue', sans-serif; font-size: 30px; letter-spacing: 1px; }
+		.hero { text-align: center; padding: 8px var(--side-space) 4px; max-width: 520px; margin: 0 auto; }
+		.gift-emoji { font-size: 44px; line-height: 1; margin-bottom: 8px; }
+		.hero h1 { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 1px; }
 		.hero p { color: var(--text-dim); font-size: 13px; margin-top: 6px; line-height: 1.5; }
 
+		/* ===== CURRENCY TOGGLE ===== */
+		.currency-toggle {
+			display: flex; margin: 14px var(--side-space) 0; max-width: 520px; margin-left: auto; margin-right: auto;
+			background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 4px;
+		}
+		.currency-toggle button {
+			flex: 1; padding: 10px; border: none; background: transparent; color: var(--text-dim);
+			font-family: 'Bebas Neue', sans-serif; font-size: 15px; letter-spacing: 1px;
+			border-radius: 9px; cursor: pointer; transition: all .2s ease;
+		}
+		.currency-toggle button.active {
+			background: rgba(255, 215, 0, 0.12); color: var(--gold);
+			box-shadow: inset 0 0 0 1px rgba(255, 215, 0, 0.25);
+		}
+
+		/* ===== PLANS ===== */
+		.plans { padding: 14px var(--side-space) 0; max-width: 520px; margin: 0 auto; }
+		.plan {
+			position: relative; display: flex; align-items: center; gap: 14px;
+			padding: 14px 14px; margin-bottom: 10px;
+			background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+			cursor: pointer; transition: all .15s ease;
+		}
+		.plan.selected {
+			border-color: rgba(255, 215, 0, 0.5); background: var(--card-2);
+			box-shadow: inset 0 0 0 1px rgba(255, 215, 0, 0.3);
+		}
+		.radio {
+			width: 22px; height: 22px; border-radius: 50%;
+			border: 2px solid var(--text-dim); flex-shrink: 0; position: relative; transition: all .15s ease;
+		}
+		.plan.selected .radio { border-color: var(--gold); }
+		.plan.selected .radio::after {
+			content: ''; position: absolute; inset: 4px; border-radius: 50%; background: var(--gold);
+		}
+		.plan-info { flex: 1; }
+		.plan-name { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 0.5px; }
+		.plan-price { font-size: 13px; color: var(--text-dim); margin-top: 2px; }
+		.plan-price b { color: var(--text); font-weight: 600; }
+		.badge-popular {
+			position: absolute; top: -9px; left: 16px; background: var(--gold-grad); color: #1a1400;
+			font-size: 10px; font-weight: 700; letter-spacing: 0.5px; padding: 3px 10px; border-radius: 20px;
+		}
+		.discount { flex-shrink: 0; text-align: right; }
+		.discount .pct { font-family: 'Bebas Neue', sans-serif; font-size: 16px; color: var(--gold); line-height: 1; }
+		.discount .lbl { font-size: 10px; color: var(--text-dim); }
+
+		/* ===== LIVE SUMMARY ===== */
 		.summary {
-			margin: 18px var(--side-space) 6px; padding: 16px;
+			margin: 16px var(--side-space) 6px; padding: 16px;
 			background: rgba(255, 215, 0, 0.06); border: 1px solid rgba(255, 215, 0, 0.2);
 			border-radius: 14px; display: flex; justify-content: space-between; align-items: center;
 			max-width: 520px; margin-left: auto; margin-right: auto;
 		}
+		.summary.empty { opacity: 0.5; }
 		.summary .label { font-size: 13px; color: var(--text-dim); }
 		.summary .plan-name { font-family: 'Bebas Neue', sans-serif; font-size: 22px; }
 		.summary .amount { font-family: 'Bebas Neue', sans-serif; font-size: 26px; color: var(--gold); text-align: right; }
@@ -127,18 +177,55 @@
 <div class="hero">
 	<div class="gift-emoji">🎁</div>
 	<h1>{% trans "Gift Premium" %}</h1>
-	<p>{% trans "Buy 1 month of Premium for a friend. You'll get a link to share — the first person to open it gets Premium." %}</p>
+	<p>{% trans "Choose a package to gift a friend. You'll get a link to share — the first person to open it gets Premium." %}</p>
 </div>
 
-{% if plan %}
-<div class="summary">
+{% if plans %}
+{# ===== 1. CURRENCY + PACKAGES ===== #}
+<div class="currency-toggle">
+	<button data-cur="UZS" class="active" onclick="setCurrency('UZS')">UZS</button>
+	<button data-cur="USD" onclick="setCurrency('USD')">USD</button>
+</div>
+
+<div class="plans">
+	{% for plan in plans %}
+	<div class="plan{% if plan.is_popular %} selected{% endif %}"
+	     data-id="{{ plan.id }}"
+	     data-months="{{ plan.months }}"
+	     data-uzs="{{ plan.price_uzs|floatformat:0 }}"
+	     data-usd="{{ plan.price_usd|floatformat:2 }}"
+	     data-disc-uzs="{{ plan.discount_uzs }}"
+	     data-disc-usd="{{ plan.discount_usd }}"
+	     data-pay-url="{% url 'payment_create' plan.id %}"
+	     onclick="selectPlan(this)">
+		{% if plan.is_popular %}<div class="badge-popular">{% trans "MOST POPULAR" %}</div>{% endif %}
+		<div class="radio"></div>
+		<div class="plan-info">
+			<div class="plan-name">{{ plan.months }} {% trans "MONTHS" %}</div>
+			<div class="plan-price">
+				<b class="amount-uzs">{{ plan.price_uzs|floatformat:0 }} UZS</b>
+				<b class="amount-usd" style="display:none">${{ plan.price_usd|floatformat:2 }}</b>
+				<span class="per"> / {% if plan.months == 1 %}{% trans "mo" %}{% else %}{{ plan.months }} {% trans "mo" %}{% endif %}</span>
+			</div>
+		</div>
+		<div class="discount" {% if not plan.discount_uzs %}style="display:none"{% endif %}>
+			<div class="pct disc-val">{{ plan.discount_uzs }}%</div>
+			<div class="lbl">{% trans "save" %}</div>
+		</div>
+	</div>
+	{% endfor %}
+</div>
+
+{# ===== 2. LIVE SUMMARY ===== #}
+<div class="summary" id="summary">
 	<div>
 		<div class="label">{% trans "Gift" %}</div>
-		<div class="plan-name">1 {% trans "MONTH" %} · {% trans "PREMIUM" %}</div>
+		<div class="plan-name" id="summaryPlan">—</div>
 	</div>
-	<div class="amount">{{ plan.price_uzs|floatformat:0 }} UZS</div>
+	<div class="amount" id="summaryAmount">—</div>
 </div>
 
+{# ===== 3. CARD DETAILS ===== #}
 <div class="section-label">{% trans "Card details" %}</div>
 <div class="cards-caption">
 	<span>{% trans "We accept Humo, Uzcard, Visa and Mastercard" %}</span>
@@ -150,7 +237,7 @@
 	</span>
 </div>
 
-<form id="payForm" class="card-wrap" data-pay-url="{% url 'payment_create' plan.id %}">
+<form id="payForm" class="card-wrap">
 	{% csrf_token %}
 	<div class="field-error" id="cardError"></div>
 	<div class="card-fields" id="cardFields">
@@ -184,6 +271,7 @@
 {% trans "Too many requests. Try again in %(min)s min." as t_too_many %}
 {% trans "A request is already being processed. Please wait." as t_in_progress %}
 {% trans "Something went wrong. Please try again." as t_generic %}
+{% trans "mo" as t_mo %}
 <script>
 	const T = {
 		sending: "{{ t_sending|escapejs }}",
@@ -191,6 +279,7 @@
 		tooMany: "{{ t_too_many|escapejs }}",
 		inProgress: "{{ t_in_progress|escapejs }}",
 		generic: "{{ t_generic|escapejs }}",
+		mo: "{{ t_mo|escapejs }}",
 	};
 
 	function goBack() { history.back(); }
@@ -198,12 +287,64 @@
 
 	const form = document.getElementById('payForm');
 	if (form) {
+		let currency = 'UZS';
+		let payUrl = null;
+		let submitting = false;
+
 		const numEl = document.getElementById('cardNumber');
 		const expEl = document.getElementById('cardExpiry');
 		const payBtn = document.getElementById('payBtn');
-		const payUrl = form.dataset.payUrl;
 		const csrf = form.querySelector('[name=csrfmiddlewaretoken]').value;
-		let submitting = false;
+
+		function fmtAmount(el) {
+			if (currency === 'USD') return '$' + el.dataset.usd;
+			return Number(el.dataset.uzs).toLocaleString('en-US').replace(/,/g, ' ') + ' UZS';
+		}
+		function updateSummary() {
+			const sel = document.querySelector('.plan.selected');
+			const summary = document.getElementById('summary');
+			if (!sel) {
+				summary.classList.add('empty');
+				document.getElementById('summaryPlan').textContent = '—';
+				document.getElementById('summaryAmount').textContent = '—';
+				payUrl = null;
+				return;
+			}
+			summary.classList.remove('empty');
+			document.getElementById('summaryPlan').textContent = sel.dataset.months + ' ' + T.mo.toUpperCase();
+			document.getElementById('summaryAmount').textContent = fmtAmount(sel);
+			payUrl = sel.dataset.payUrl;
+		}
+
+		function setCurrency(cur) {
+			currency = cur;
+			document.querySelectorAll('.currency-toggle button').forEach(b =>
+				b.classList.toggle('active', b.dataset.cur === cur));
+			document.querySelectorAll('.plan').forEach(plan => {
+				const uzs = plan.querySelector('.amount-uzs');
+				const usd = plan.querySelector('.amount-usd');
+				const disc = plan.querySelector('.discount');
+				const discVal = plan.querySelector('.disc-val');
+				const d = parseInt(cur === 'USD' ? plan.dataset.discUsd : plan.dataset.discUzs) || 0;
+				uzs.style.display = cur === 'USD' ? 'none' : 'inline';
+				usd.style.display = cur === 'USD' ? 'inline' : 'none';
+				discVal.textContent = d + '%';
+				disc.style.display = d > 0 ? 'block' : 'none';
+			});
+			updateSummary();
+		}
+		window.setCurrency = setCurrency;
+
+		function selectPlan(el) {
+			document.querySelectorAll('.plan').forEach(p => p.classList.remove('selected'));
+			el.classList.add('selected');
+			updateSummary();
+			refreshPay();
+			if (window.innerWidth < 600) {
+				document.querySelector('.section-label').scrollIntoView({ behavior: 'smooth', block: 'start' });
+			}
+		}
+		window.selectPlan = selectPlan;
 
 		function formatCard(el) {
 			let v = el.value.replace(/\D/g, '').slice(0, 16);
@@ -221,7 +362,7 @@
 		function cardValid() {
 			return numEl.value.replace(/\D/g, '').length >= 16 && expEl.value.replace(/\D/g, '').length === 4;
 		}
-		function refreshPay() { payBtn.disabled = !cardValid(); }
+		function refreshPay() { payBtn.disabled = !(payUrl && cardValid()); }
 		function clearCardError() {
 			document.getElementById('cardFields').classList.remove('has-error');
 			document.getElementById('cardError').classList.remove('show');
@@ -243,12 +384,12 @@
 
 		form.addEventListener('submit', async (e) => {
 			e.preventDefault();
-			if (submitting || !cardValid()) return;
+			if (submitting || !payUrl || !cardValid()) return;
 			submitting = true; setLoading(true);
 			try {
 				const body = new FormData();
 				body.append('csrfmiddlewaretoken', csrf);
-				body.append('currency', 'UZS');
+				body.append('currency', currency);
 				body.append('card_number', numEl.value);
 				body.append('expiry', expEl.value);
 				body.append('is_gift', '1');
@@ -277,6 +418,8 @@
 			submitting = false; setLoading(false);
 		});
 
+		// initial state (a popular plan may start selected)
+		setCurrency('UZS');
 		refreshPay();
 	}
 </script>

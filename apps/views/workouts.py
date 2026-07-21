@@ -147,32 +147,38 @@ def build_programs_page_context(request, workout_type):
 	explore_programs = list(explore_qs)
 
 	# ── Recommended hero ──
-	# Tavsiya kartochkasi FAQAT gym rejimida ko'rsatiladi.
-	# Home rejimida mos individual tavsiya programmasi ko'pincha bo'lmaydi va
-	# (eski xulq-atvorda) gym programmasiga "home_program_detail" havolasi
-	# yasalib, ochilganda 404 berardi. Shuning uchun home'da umuman ko'rsatmaymiz.
+	# Gym rejimida tavsiya individual (tavsiya) programmalardan, home rejimida
+	# esa "home" dagi ADVANCED programmalardan tanlanadi (get_recommended_program
+	# ichida hal qilinadi). Har ikki holatda ham tavsiya programmasi tanlangan
+	# rejimga MOS bo'lishi shart (aks holda detail havolasi 404 beradi).
 	recommended_card = None
-	if workout_type == WorkoutType.GYM:
-		recommended = get_recommended_program(profile, workout_type=workout_type) if profile else None
-		# Prefetch plans→weeks→workouts so the hero's _all_workout_ids /
-		# compute_program_progress walks use the cache instead of an N+1 chain.
-		if recommended:
-			recommended = (
-				Program.objects
-				.prefetch_related("plans__weeks__workouts")
-				.filter(pk=recommended.pk)
-				.first()
-			)
-		# Tavsiya programmasi tanlangan rejimga MOS bo'lishi shart (404 oldini olish).
-		if recommended and recommended.workout_type == workout_type and not recommended.is_one_time:
-			rec_ids = _all_workout_ids(recommended)
-			fully_completed = bool(rec_ids) and all(wid in completed_ids for wid in rec_ids)
-			if not fully_completed:
-				recommended_card = {
-					"program": recommended,
-					"url": _program_detail_url(recommended, workout_type),
-					"progress": compute_program_progress(recommended, completed_ids),
-				}
+	recommended = get_recommended_program(profile, workout_type=workout_type) if profile else None
+	# Prefetch plans→weeks→workouts so the hero's _all_workout_ids /
+	# compute_program_progress walks use the cache instead of an N+1 chain.
+	if recommended:
+		recommended = (
+			Program.objects
+			.prefetch_related("plans__weeks__workouts")
+			.filter(pk=recommended.pk)
+			.first()
+		)
+	if recommended and recommended.workout_type == workout_type and not recommended.is_one_time:
+		rec_ids = _all_workout_ids(recommended)
+		fully_completed = bool(rec_ids) and all(wid in completed_ids for wid in rec_ids)
+		if not fully_completed:
+			recommended_card = {
+				"program": recommended,
+				"url": _program_detail_url(recommended, workout_type),
+				"progress": compute_program_progress(recommended, completed_ids),
+			}
+
+	# Home rejimida tavsiya programmasi oddiy katalog (is_individual=False) ichidan
+	# olinadi — shuning uchun grid/kategoriyalarda takrorlanmasligi uchun uni
+	# explore ro'yxatidan chiqarib tashlaymiz (gym'da individual bo'lgani uchun
+	# u allaqachon explore'da bo'lmaydi).
+	if recommended_card is not None:
+		_rid = recommended_card["program"].id
+		explore_programs = [p for p in explore_programs if p.id != _rid]
 
 	# ── One-time cards ──
 	one_time_cards = []

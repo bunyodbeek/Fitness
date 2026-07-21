@@ -92,7 +92,13 @@
 				<span class="status-pill claimed"><span class="dot"></span>{% trans "Claimed" %}</span>
 			</div>
 		{% else %}
-			<p class="sub">{% trans "Send this link to a friend. The first person to open it and claim gets 1 month of Premium." %}</p>
+			<p class="sub">
+				{% if gift.plan %}
+					{% blocktrans with plan=gift.plan.get_period_display %}Send this link to a friend. The first person to open it and claim gets {{ plan }} of Premium.{% endblocktrans %}
+				{% else %}
+					{% trans "Send this link to a friend. The first person to open it and claim gets Premium." %}
+				{% endif %}
+			</p>
 			<div class="status-wrap">
 				<span class="status-pill available"><span class="dot"></span>{% trans "Ready to share" %}</span>
 			</div>
@@ -101,7 +107,7 @@
 
 			<div class="actions">
 				<a class="btn btn-primary" id="shareBtn"
-				   href="https://t.me/share/url?url={{ share_link|urlencode }}&text={% filter urlencode %}{% trans "I sent you 1 month of Premium 🎁 Tap to claim it!" %}{% endfilter %}">
+				   href="https://t.me/share/url?url={{ share_link|urlencode }}&text={% filter urlencode %}{% trans "I sent you Premium 🎁 Tap to claim it!" %}{% endfilter %}">
 					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
 					{% trans "Share on Telegram" %}
 				</a>

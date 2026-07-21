@@ -279,10 +279,11 @@ class PremiumGift(CreatedBaseModel):
 		if not telegram_id:
 			return
 		link = self.share_link
+		plan_name = self.plan.get_period_display() if self.plan else _("Premium")
 		msg = (
 			"🎁 <b>Premium sovg'angiz tayyor!</b>\n"
 			"Quyidagi havolani do'stingizga yuboring — uni birinchi ochgan inson "
-			"1 oylik Premium oladi.\n\n"
+			f"{plan_name} Premium oladi.\n\n"
 			f"{link}"
 		)
 		try:
@@ -316,12 +317,13 @@ class PremiumGift(CreatedBaseModel):
 		self.save(update_fields=['recipient', 'status', 'claimed_at'])
 
 		if getattr(recipient, 'telegram_id', None):
+			plan_name = plan.get_period_display() if plan else _("Premium")
 			try:
 				from apps.management.commands.bot_notisfication import send_notification
 				send_notification(
 					recipient.telegram_id,
 					"🎉 <b>Premium faollashtirildi!</b>\n"
-					f"Sizga 1 oylik Premium sovg'a qilindi. Obuna {sub.end_date.strftime('%d.%m.%Y')} gacha.",
+					f"Sizga {plan_name} Premium sovg'a qilindi. Obuna {sub.end_date.strftime('%d.%m.%Y')} gacha.",
 				)
 			except Exception as exc:
 				import logging

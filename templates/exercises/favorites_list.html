@@ -222,7 +222,7 @@ body { background: #000000; font-family: -apple-system, BlinkMacSystemFont, 'Seg
 /* EXERCISE PICKER MODAL */
 .ex-picker-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.97); z-index: 500; display: none; flex-direction: column; }
 .ex-picker-modal.visible { display: flex; }
-.ex-picker-header { padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.07); display: flex; align-items: center; gap: 12px; background: #0a0a0a; flex-shrink: 0; }
+.ex-picker-header { padding: 16px; padding-top: calc(16px + var(--app-safe-top, 0px)); border-bottom: 1px solid rgba(255,255,255,0.07); display: flex; align-items: center; gap: 12px; background: #0a0a0a; flex-shrink: 0; }
 .ex-picker-search { flex: 1; background: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 11px 14px; color: #fff; font-size: 14px; outline: none; }
 .ex-picker-search:focus { border-color: var(--gold); }
 .ex-picker-search::placeholder { color: rgba(255,255,255,0.3); }
@@ -409,12 +409,17 @@ body { background: #000000; font-family: -apple-system, BlinkMacSystemFont, 'Seg
             </span>
         </a>
 
-        <a href="{% url 'program_import_entry' %}" class="import-program-btn">
+        <a href="{% if user.profile.is_premium %}{% url 'program_import_entry' %}{% else %}{% url 'premium' %}{% endif %}" class="import-program-btn">
             <span class="cp-icon">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v13M8 12l4 4 4-4"/><path d="M3 19h18"/></svg>
             </span>
             <span class="cp-text">
-                <span class="cp-title">{% trans "Import Program" %}</span>
+                <span class="cp-title">
+                    {% trans "Import Program" %}
+                    {% if not user.profile.is_premium %}
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    {% endif %}
+                </span>
             </span>
             <span class="cp-arrow">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
