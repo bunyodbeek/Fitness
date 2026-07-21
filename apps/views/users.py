@@ -322,6 +322,12 @@ class ProfileView(PartialTabMixin, LoginRequiredMixin, TemplateView):
         from apps.models.payments import PremiumGift
         gift = PremiumGift.objects.filter(sender=profile).first()
         context['gift'] = gift if (gift and gift.is_used) else None
+
+        # Unread admin chat replies → profile header bell + Help card badge.
+        from apps.models import SupportMessage
+        context['chat_unread'] = SupportMessage.objects.filter(
+            user=profile, is_from_admin=True, is_read=False,
+        ).count()
         return context
 
 
@@ -338,26 +344,46 @@ class HelpChatView(LoginRequiredMixin, View):
             'text': msg.text,
             'is_admin': msg.is_from_admin,
             'time': timezone.localtime(msg.created_at).strftime('%H:%M'),
+            'image': msg.image.url if msg.image else '',
+            'thumb': msg.thumbnail.url if msg.thumbnail else (msg.image.url if msg.image else ''),
         }
+
+    @staticmethod
+    def _unread(profile):
+        from apps.models import SupportMessage
+        return SupportMessage.objects.filter(
+            user=profile, is_from_admin=True, is_read=False,
+        ).count()
 
     def get(self, request):
         from apps.models import SupportMessage
         profile = request.user.profile
 
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            # Count-only mode (used by the profile bell to poll the badge).
+            if request.GET.get('count'):
+                return JsonResponse({'ok': True, 'count': self._unread(profile)})
+
             qs = SupportMessage.objects.filter(user=profile)
             after = request.GET.get('after')
             if after and str(after).isdigit():
                 qs = qs.filter(id__gt=int(after))
             messages_list = list(qs.order_by('created_at'))
-            SupportMessage.objects.filter(
-                user=profile, is_from_admin=True, is_read=False,
-            ).update(is_read=True)
-            return JsonResponse({'ok': True, 'messages': [self._serialize(m) for m in messages_list]})
+            # Only mark admin replies read when the user is scrolled to the bottom.
+            if request.GET.get('atbottom') == '1':
+                SupportMessage.objects.filter(
+                    user=profile, is_from_admin=True, is_read=False,
+                ).update(is_read=True)
+            return JsonResponse({
+                'ok': True,
+                'messages': [self._serialize(m) for m in messages_list],
+                'unread': self._unread(profile),
+            })
 
         messages_list = list(
             SupportMessage.objects.filter(user=profile).order_by('created_at')
         )
+        # Opening the page marks everything read.
         SupportMessage.objects.filter(
             user=profile, is_from_admin=True, is_read=False,
         ).update(is_read=True)
@@ -369,12 +395,27 @@ class HelpChatView(LoginRequiredMixin, View):
         from apps.models import SupportMessage
         profile = request.user.profile
         text = (request.POST.get('text') or '').strip()
-        if not text:
+        upload = request.FILES.get('image')
+
+        if not text and not upload:
             return JsonResponse({'ok': False, 'error': 'empty',
                                  'message': _("Please type a message.")}, status=400)
-        msg = SupportMessage.objects.create(
-            user=profile, text=text[:2000], is_from_admin=False,
-        )
+
+        image_content = image_name = thumb_content = thumb_name = None
+        if upload:
+            from django.core.exceptions import ValidationError
+            from apps.services.support_images import process_chat_image
+            try:
+                image_content, image_name, thumb_content, thumb_name = process_chat_image(upload)
+            except ValidationError as exc:
+                return JsonResponse({'ok': False, 'error': 'image',
+                                     'message': str(exc.messages[0])}, status=400)
+
+        msg = SupportMessage(user=profile, text=text[:2000], is_from_admin=False)
+        if image_content:
+            msg.image.save(image_name, image_content, save=False)
+            msg.thumbnail.save(thumb_name, thumb_content, save=False)
+        msg.save()
         return JsonResponse({'ok': True, 'message': self._serialize(msg)})
 
 

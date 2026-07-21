@@ -28,6 +28,11 @@ class PanelContextMixin:
         context["page_title"] = self.get_page_title()
         context["header_date"] = f"{_MONTHS[now.month - 1]} {now.year}"
         context["admin_user"] = self.request.user
+        # Global unread chat count → topbar bell + sidebar Chat badge.
+        from apps.models.support import SupportMessage
+        context["chat_unread_total"] = SupportMessage.objects.filter(
+            is_from_admin=False, is_read=False,
+        ).count()
         return context
 
 

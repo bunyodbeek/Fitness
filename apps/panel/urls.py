@@ -135,6 +135,7 @@ urlpatterns = [
 
     # Chat (support)
     path("chat/", sup.ChatListView.as_view(), name="chat"),
+    path("chat/unread/", sup.ChatUnreadView.as_view(), name="chat_unread"),
     path("chat/<int:pk>/", sup.ChatThreadView.as_view(), name="chat_thread"),
 
     # Reports

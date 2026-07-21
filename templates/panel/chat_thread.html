@@ -65,6 +65,37 @@
     .bubble.in  .meta { color: var(--dim); }
     .bubble.out .meta { color: rgba(26,19,0,0.65); }
     .bubble .meta svg { display: block; }
+    .bubble.sending { opacity: 0.65; }
+    .bubble.failed { background: rgba(248,113,113,0.16); border: 1px solid rgba(248,113,113,0.4); color: var(--text); }
+    .retry-btn {
+        background: none; border: none; color: var(--red); cursor: pointer;
+        font-size: 10.5px; font-weight: 700; padding: 0; display: inline-flex; align-items: center; gap: 3px;
+    }
+
+    /* ===== IMAGE IN BUBBLE ===== */
+    .bubble.img-only { padding: 4px; }
+    .img-wrap { position: relative; display: block; line-height: 0; border-radius: 10px; overflow: hidden; }
+    .img-wrap img { max-height: 240px; max-width: 100%; border-radius: 10px; display: block; cursor: pointer; }
+    .bubble.img-only .meta { float: none; display: flex; justify-content: flex-end; margin: 4px 4px 0; }
+    .img-prog { position: absolute; left: 0; bottom: 0; height: 4px; width: 100%; background: rgba(0,0,0,0.35); }
+    .img-prog-bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--gold), #ff9f0a); transition: width .15s; }
+
+    /* ===== ATTACH BUTTON + DRAG STATE ===== */
+    .attach-btn {
+        width: 42px; height: 42px; flex-shrink: 0; border: 1px solid var(--border-strong);
+        background: var(--panel-2); color: var(--dim); border-radius: 12px; cursor: pointer;
+        display: flex; align-items: center; justify-content: center; transition: color .15s, border-color .15s;
+    }
+    .attach-btn:hover { color: var(--gold); border-color: var(--gold); }
+    .chat-log.dragover { outline: 2px dashed var(--gold); outline-offset: -6px; }
+
+    /* ===== LIGHTBOX ===== */
+    .lightbox {
+        position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.9);
+        display: none; align-items: center; justify-content: center; padding: 24px; cursor: zoom-out;
+    }
+    .lightbox.show { display: flex; }
+    .lightbox img { max-width: 100%; max-height: 100%; border-radius: 8px; }
 
     /* ===== EMPTY STATE ===== */
     .chat-empty {
@@ -92,6 +123,7 @@
         border: 1px solid var(--border-strong); color: var(--text); font-size: 14px; font-family: inherit; line-height: 1.4;
     }
     .chat-reply textarea:focus { outline: none; border-color: var(--gold); }
+    .chat-reply .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
 
     @media (max-width: 720px) {
         .chat-box { height: calc(100vh - 170px); }
@@ -124,8 +156,9 @@
                             </div>
                         {% endif %}
                         <div class="msg-row {% if m.is_from_admin %}out{% else %}in{% endif %}{% if m.group_end %} gap-end{% endif %}">
-                            <div class="bubble {% if m.is_from_admin %}out{% else %}in{% endif %}{% if m.group_end %} tail{% endif %}">
-                                <span class="txt">{{ m.text }}</span>
+                            <div class="bubble {% if m.is_from_admin %}out{% else %}in{% endif %}{% if m.group_end %} tail{% endif %}{% if m.image and not m.text %} img-only{% endif %}" data-id="{{ m.id }}">
+                                {% if m.image %}<span class="img-wrap"><img src="{{ m.thumbnail.url|default:m.image.url }}" data-full="{{ m.image.url }}" alt="{% trans 'Image' %}"></span>{% endif %}
+                                {% if m.text %}<span class="txt">{{ m.text }}</span>{% endif %}
                                 {% if m.group_end %}
                                     <span class="meta">
                                         <span class="t">{{ m.time_label }}</span>
@@ -155,12 +188,23 @@
             </button>
         </div>
 
-        <form method="post" class="chat-reply">
+        <form method="post" class="chat-reply" id="composer" enctype="multipart/form-data"
+              data-post-url="{% url 'panel:chat_thread' chat_user.pk %}"
+              data-support-label="{% trans 'Support' %}"
+              data-user-name="{{ chat_user.name|default:chat_user.telegram_id|default:chat_user.pk }}"
+              data-err-type="{% trans 'Only JPEG, PNG, WEBP or GIF images are allowed.' %}"
+              data-err-size="{% trans 'Image is too large (max 5 MB).' %}">
             {% csrf_token %}
-            <textarea name="text" placeholder="{% trans 'Type a reply…' %}" maxlength="2000" required></textarea>
-            <button type="submit" class="btn btn-primary">{% trans "Send" %}</button>
+            <button type="button" class="attach-btn" id="attachBtn" aria-label="{% trans 'Attach image' %}">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+            </button>
+            <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp,image/gif" hidden>
+            <textarea id="msgInput" name="text" rows="1" placeholder="{% trans 'Type a reply…' %}" maxlength="2000"></textarea>
+            <button type="submit" class="btn btn-primary" id="sendBtn" disabled>{% trans "Send" %}</button>
         </form>
     </div>
+
+    <div class="lightbox" id="lightbox"><img id="lightboxImg" src="" alt="{% trans 'Image' %}"></div>
 {% endblock %}
 
 {% block extra_js %}
@@ -170,27 +214,219 @@
         const pill = document.getElementById('newPill');
         if (!log) return;
 
-        function nearBottom() {
-            return log.scrollHeight - log.scrollTop - log.clientHeight < 80;
-        }
-        function scrollToBottom() {
-            log.scrollTop = log.scrollHeight;
-            if (pill) pill.classList.remove('show');
-        }
-        // Expose for the composer / poller (added in later steps).
+        // ---- scroll helpers ----
+        function nearBottom() { return log.scrollHeight - log.scrollTop - log.clientHeight < 80; }
+        function scrollToBottom() { log.scrollTop = log.scrollHeight; if (pill) pill.classList.remove('show'); }
         window.chatScrollToBottom = scrollToBottom;
         window.chatNearBottom = nearBottom;
-        window.chatOnIncoming = function () {
-            if (nearBottom()) scrollToBottom();
-            else if (pill) pill.classList.add('show');
-        };
-
-        log.addEventListener('scroll', function () {
-            if (pill && nearBottom()) pill.classList.remove('show');
-        });
+        window.chatOnIncoming = function () { if (nearBottom()) scrollToBottom(); else if (pill) pill.classList.add('show'); };
+        log.addEventListener('scroll', function () { if (pill && nearBottom()) pill.classList.remove('show'); });
         if (pill) pill.addEventListener('click', scrollToBottom);
-
         scrollToBottom();
+
+        // ---- lightbox (event-delegated, covers server + dynamic images) ----
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightboxImg');
+        function openLightbox(url) { if (!lightbox) return; lightboxImg.src = url; lightbox.classList.add('show'); }
+        if (lightbox) lightbox.addEventListener('click', () => lightbox.classList.remove('show'));
+        log.addEventListener('click', (e) => {
+            const im = e.target.closest('img[data-full]');
+            if (im) openLightbox(im.dataset.full);
+        });
+
+        // ---- composer ----
+        const form = document.getElementById('composer');
+        if (!form) return;
+        const input = document.getElementById('msgInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const attachBtn = document.getElementById('attachBtn');
+        const fileInput = document.getElementById('fileInput');
+        const csrf = form.querySelector('[name=csrfmiddlewaretoken]').value;
+        const POST_URL = form.dataset.postUrl;
+        const SUPPORT_LABEL = form.dataset.supportLabel || 'Support';
+        const ERR_TYPE = form.dataset.errType, ERR_SIZE = form.dataset.errSize;
+        const OK_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+        const MAX_BYTES = 5 * 1024 * 1024;
+
+        const CLOCK = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
+        const CHECK1 = '<svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 6.5l3.2 3.2L11 3"/></svg>';
+        const CHECK2 = '<svg width="15" height="11" viewBox="0 0 18 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 6.5l3.2 3.2L11 3"/><path d="M7 9.5l.6.6L14.5 3"/></svg>';
+        const RETRY = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v4h-4"/></svg>';
+        const RETRY_LABEL = "{% trans 'Retry' %}";
+        const USER_NAME = form.dataset.userName || '';
+        const USER_INITIAL = (USER_NAME.trim()[0] || 'U').toUpperCase();
+
+        // Track which ids are already on screen so polling never duplicates them.
+        let lastId = 0; const seen = new Set();
+        log.querySelectorAll('.bubble[data-id]').forEach(b => { const id = +b.dataset.id; if (id) { seen.add(id); if (id > lastId) lastId = id; } });
+        function markSent(id) { if (id) { seen.add(id); if (id > lastId) lastId = id; } }
+
+        function autosize() { input.style.height = 'auto'; input.style.height = Math.min(input.scrollHeight, 120) + 'px'; }
+        function refresh() { sendBtn.disabled = input.value.trim().length === 0; }
+        input.addEventListener('input', () => { autosize(); refresh(); });
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); form.requestSubmit(); }
+        });
+
+        // Start a message row on either side, handling grouping (demote the
+        // previous last bubble's timestamp/tail so only the newest shows one).
+        function startGroupRow(isAdmin) {
+            const side = isAdmin ? 'out' : 'in';
+            const empty = log.querySelector('.chat-empty'); if (empty) empty.remove();
+            const rows = log.querySelectorAll('.msg-row');
+            const lastRow = rows.length ? rows[rows.length - 1] : null;
+            if (lastRow && lastRow.classList.contains(side)) {
+                const pb = lastRow.querySelector('.bubble');
+                if (pb) { pb.classList.remove('tail'); const pm = pb.querySelector('.meta'); if (pm) pm.remove(); }
+                lastRow.classList.remove('gap-end');
+            } else {
+                const head = document.createElement('div'); head.className = 'grp-head ' + side;
+                const ava = document.createElement('span'); ava.className = 'ava'; ava.textContent = isAdmin ? 'S' : USER_INITIAL;
+                const who = document.createElement('span'); who.className = 'who'; who.textContent = isAdmin ? SUPPORT_LABEL : USER_NAME;
+                head.appendChild(ava); head.appendChild(who); log.insertBefore(head, pill);
+            }
+            const row = document.createElement('div'); row.className = 'msg-row ' + side + ' gap-end';
+            const bubble = document.createElement('div'); bubble.className = 'bubble ' + side + ' tail';
+            row.appendChild(bubble); log.insertBefore(row, pill);
+            return { row, bubble };
+        }
+        function newOutgoingBubble() { const g = startGroupRow(true); g.bubble.classList.add('sending'); return g; }
+
+        // Render a confirmed message (from polling), on the correct side, deduped.
+        function appendConfirmed(m) {
+            if (m.id && seen.has(m.id)) return;
+            if (m.id) { seen.add(m.id); if (m.id > lastId) lastId = m.id; }
+            const g = startGroupRow(m.is_admin); const bubble = g.bubble;
+            if (m.image || m.thumb) {
+                if (!m.text) bubble.classList.add('img-only');
+                const wrap = document.createElement('span'); wrap.className = 'img-wrap';
+                const img = document.createElement('img'); img.src = m.thumb || m.image; if (m.image) img.dataset.full = m.image;
+                wrap.appendChild(img); bubble.appendChild(wrap);
+            }
+            if (m.text) { const t = document.createElement('span'); t.className = 'txt'; t.textContent = m.text; bubble.appendChild(t); }
+            const meta = document.createElement('span'); meta.className = 'meta';
+            meta.innerHTML = '<span class="t">' + (m.time || '') + '</span>' + (m.is_admin ? (m.is_read ? CHECK2 : CHECK1) : '');
+            bubble.appendChild(meta);
+            window.chatOnIncoming();
+        }
+        function failBubble(bubble, meta, onRetry) {
+            bubble.classList.remove('sending'); bubble.classList.add('failed');
+            meta.innerHTML = '';
+            const btn = document.createElement('button');
+            btn.type = 'button'; btn.className = 'retry-btn';
+            btn.innerHTML = RETRY + '<span>' + RETRY_LABEL + '</span>';
+            btn.addEventListener('click', onRetry);
+            meta.appendChild(btn);
+        }
+        function confirmMeta(meta, m) { meta.innerHTML = '<span class="t">' + m.time + '</span>' + CHECK1; }
+
+        // ---- text send ----
+        async function sendText(text, refs) {
+            if (!refs) {
+                const nb = newOutgoingBubble();
+                const txt = document.createElement('span'); txt.className = 'txt'; txt.textContent = text;
+                const meta = document.createElement('span'); meta.className = 'meta';
+                nb.bubble.appendChild(txt); nb.bubble.appendChild(meta);
+                refs = { bubble: nb.bubble, meta: meta };
+            }
+            refs.bubble.classList.remove('failed'); refs.bubble.classList.add('sending');
+            refs.meta.innerHTML = CLOCK; scrollToBottom();
+            try {
+                const body = new FormData(); body.append('csrfmiddlewaretoken', csrf); body.append('text', text);
+                const resp = await fetch(POST_URL, { method: 'POST', headers: { 'X-Requested-With': 'XMLHttpRequest' }, body });
+                const data = await resp.json().catch(() => ({}));
+                if (resp.ok && data.ok && data.message) {
+                    refs.bubble.classList.remove('sending'); refs.bubble.dataset.id = data.message.id;
+                    markSent(data.message.id); confirmMeta(refs.meta, data.message); return;
+                }
+                throw new Error('failed');
+            } catch (_) { failBubble(refs.bubble, refs.meta, () => sendText(text, refs)); }
+        }
+
+        // ---- image send (XHR for upload progress) ----
+        function sendImage(file, refs) {
+            if (file.type && !OK_TYPES.includes(file.type)) { alert(ERR_TYPE); return; }
+            if (file.size > MAX_BYTES) { alert(ERR_SIZE); return; }
+            let bubble, meta, img, bar;
+            if (refs) {
+                bubble = refs.bubble; meta = refs.meta; img = refs.img; bar = refs.bar;
+                bubble.classList.remove('failed'); bubble.classList.add('sending'); meta.innerHTML = CLOCK;
+                if (refs.prog) refs.prog.style.display = ''; if (bar) bar.style.width = '0%';
+            } else {
+                const nb = newOutgoingBubble(); bubble = nb.bubble; bubble.classList.add('img-only');
+                const wrap = document.createElement('span'); wrap.className = 'img-wrap';
+                img = document.createElement('img'); img.src = URL.createObjectURL(file); wrap.appendChild(img);
+                const prog = document.createElement('span'); prog.className = 'img-prog';
+                bar = document.createElement('span'); bar.className = 'img-prog-bar'; prog.appendChild(bar); wrap.appendChild(prog);
+                meta = document.createElement('span'); meta.className = 'meta'; meta.innerHTML = CLOCK;
+                bubble.appendChild(wrap); bubble.appendChild(meta);
+                refs = { bubble: bubble, meta: meta, img: img, bar: bar, prog: prog };
+            }
+            scrollToBottom();
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', POST_URL);
+            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+            xhr.upload.onprogress = (e) => { if (e.lengthComputable && bar) bar.style.width = Math.round(e.loaded / e.total * 100) + '%'; };
+            xhr.onload = () => {
+                let data = {}; try { data = JSON.parse(xhr.responseText); } catch (_) {}
+                if (xhr.status === 200 && data.ok && data.message) {
+                    if (refs.prog) refs.prog.remove();
+                    bubble.classList.remove('sending'); bubble.dataset.id = data.message.id;
+                    markSent(data.message.id);
+                    if (data.message.thumb) img.src = data.message.thumb;
+                    if (data.message.image) img.dataset.full = data.message.image;
+                    confirmMeta(meta, data.message);
+                } else {
+                    if (refs.prog) refs.prog.remove();
+                    if (data && data.message) alert(data.message);
+                    failBubble(bubble, meta, () => sendImage(file, refs));
+                }
+            };
+            xhr.onerror = () => { if (refs.prog) refs.prog.remove(); failBubble(bubble, meta, () => sendImage(file, refs)); };
+            const body = new FormData(); body.append('csrfmiddlewaretoken', csrf); body.append('image', file);
+            xhr.send(body);
+        }
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const text = input.value.trim();
+            if (!text) return;
+            input.value = ''; autosize(); refresh();
+            sendText(text); input.focus();
+        });
+
+        // ---- attach / drag-drop / paste ----
+        attachBtn.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files && fileInput.files[0]) sendImage(fileInput.files[0]);
+            fileInput.value = '';
+        });
+        ['dragenter', 'dragover'].forEach(ev => log.addEventListener(ev, (e) => { e.preventDefault(); log.classList.add('dragover'); }));
+        ['dragleave', 'drop'].forEach(ev => log.addEventListener(ev, (e) => { e.preventDefault(); if (ev !== 'dragleave' || e.target === log) log.classList.remove('dragover'); }));
+        log.addEventListener('drop', (e) => {
+            const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+            if (f && f.type.startsWith('image/')) sendImage(f);
+        });
+        input.addEventListener('paste', (e) => {
+            const items = e.clipboardData && e.clipboardData.items;
+            if (!items) return;
+            for (const it of items) {
+                if (it.kind === 'file' && it.type.startsWith('image/')) { const f = it.getAsFile(); if (f) { e.preventDefault(); sendImage(f); } }
+            }
+        });
+
+        // ---- poll for new user messages (marks them read only when at bottom) ----
+        async function pollThread() {
+            try {
+                const atbottom = nearBottom() ? 1 : 0;
+                const resp = await fetch(POST_URL + '?after=' + lastId + '&atbottom=' + atbottom, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+                const data = await resp.json().catch(() => ({}));
+                if (data.ok && Array.isArray(data.messages)) data.messages.forEach(appendConfirmed);
+            } catch (_) {}
+        }
+        setInterval(pollThread, 12000);
+
+        refresh();
     })();
 </script>
 {% endblock %}

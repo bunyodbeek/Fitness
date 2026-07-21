@@ -8,12 +8,13 @@ from datetime import timedelta
 
 from django.contrib import messages as dj_messages
 from django.db.models import Count, Max, Q
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
-from django.views.generic import DetailView
+from django.views.generic import DetailView, View
 
 from apps.models import UserProfile
 from apps.models.support import SupportMessage
@@ -23,6 +24,20 @@ from apps.panel.views.crud import PanelListView
 
 # Messages from the same sender within this gap are grouped into one visual block.
 GROUP_GAP_SECONDS = 5 * 60
+
+
+def serialize_message(m):
+    """JSON shape for one message — shared by the optimistic-send response and the
+    polling endpoints (both admin and user side)."""
+    return {
+        'id': m.id,
+        'text': m.text,
+        'is_admin': m.is_from_admin,
+        'is_read': m.is_read,
+        'time': timezone.localtime(m.created_at).strftime('%H:%M'),
+        'image': m.image.url if m.image else '',
+        'thumb': m.thumbnail.url if m.thumbnail else (m.image.url if m.image else ''),
+    }
 
 
 def build_thread_rows(messages):
@@ -103,7 +118,12 @@ class ChatListView(PanelListView):
 
     def get_row_cells(self, obj):
         last = obj.support_messages.order_by("-created_at").first()
-        preview = (last.text[:60] + "…") if last and len(last.text) > 60 else (last.text if last else "—")
+        if last is None:
+            preview = "—"
+        elif last.text:
+            preview = (last.text[:60] + "…") if len(last.text) > 60 else last.text
+        else:
+            preview = format_html('<span class="muted">🖼 {}</span>', _("Image"))
         if last and last.is_from_admin:
             preview = format_html('<span class="muted">{}</span> {}', _("You:"), preview)
         unread = obj.unread or 0
@@ -126,6 +146,26 @@ class ChatThreadView(StaffRequiredMixin, PanelContextMixin, DetailView):
     context_object_name = "chat_user"
 
     def get(self, request, *args, **kwargs):
+        # AJAX poll: return messages newer than ?after=<id> as JSON, and mark the
+        # user's messages read only when the admin is scrolled to the bottom.
+        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            self.object = self.get_object()
+            qs = self.object.support_messages.all()
+            after = request.GET.get("after")
+            if after and str(after).isdigit():
+                qs = qs.filter(id__gt=int(after))
+            msgs = list(qs.order_by("created_at"))
+            if request.GET.get("atbottom") == "1":
+                SupportMessage.objects.filter(
+                    user=self.object, is_from_admin=False, is_read=False,
+                ).update(is_read=True)
+            return JsonResponse({
+                "ok": True,
+                "messages": [serialize_message(m) for m in msgs],
+                "unread_total": SupportMessage.objects.filter(
+                    is_from_admin=False, is_read=False).count(),
+            })
+
         response = super().get(request, *args, **kwargs)
         # Mark the user's incoming messages as read once staff opens the thread.
         SupportMessage.objects.filter(
@@ -145,10 +185,42 @@ class ChatThreadView(StaffRequiredMixin, PanelContextMixin, DetailView):
     def post(self, request, *args, **kwargs):
         chat_user = get_object_or_404(UserProfile, pk=kwargs["pk"])
         text = (request.POST.get("text") or "").strip()
-        if text:
-            SupportMessage.objects.create(
-                user=chat_user, text=text[:2000], is_from_admin=True, is_read=False,
-            )
-        else:
-            dj_messages.error(request, _("Message cannot be empty."))
+        upload = request.FILES.get("image")
+        is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
+
+        def fail(message, status=400, code="empty"):
+            if is_ajax:
+                return JsonResponse({"ok": False, "error": code, "message": str(message)}, status=status)
+            dj_messages.error(request, message)
+            return redirect("panel:chat_thread", pk=chat_user.pk)
+
+        if not text and not upload:
+            return fail(_("Message cannot be empty."))
+
+        image_content = image_name = thumb_content = thumb_name = None
+        if upload:
+            from django.core.exceptions import ValidationError
+            from apps.services.support_images import process_chat_image
+            try:
+                image_content, image_name, thumb_content, thumb_name = process_chat_image(upload)
+            except ValidationError as exc:
+                return fail(exc.messages[0], code="image")
+
+        msg = SupportMessage(user=chat_user, text=text[:2000], is_from_admin=True, is_read=False)
+        if image_content:
+            msg.image.save(image_name, image_content, save=False)
+            msg.thumbnail.save(thumb_name, thumb_content, save=False)
+        msg.save()
+
+        if is_ajax:
+            return JsonResponse({"ok": True, "message": serialize_message(msg)})
         return redirect("panel:chat_thread", pk=chat_user.pk)
+
+
+class ChatUnreadView(StaffRequiredMixin, View):
+    """Lightweight JSON endpoint the panel topbar bell polls for the global unread
+    chat count (user messages not yet read by staff)."""
+
+    def get(self, request, *args, **kwargs):
+        count = SupportMessage.objects.filter(is_from_admin=False, is_read=False).count()
+        return JsonResponse({"ok": True, "count": count})

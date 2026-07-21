@@ -33,7 +33,12 @@
         font-size: 14px; line-height: 1.4; word-wrap: break-word; white-space: pre-wrap;
         position: relative;
     }
-    .bubble .time { display: block; font-size: 10px; opacity: 0.55; margin-top: 4px; text-align: right; }
+    .bubble .txt { white-space: pre-wrap; word-break: break-word; overflow-wrap: anywhere; }
+    .bubble .meta {
+        float: right; margin: 6px 0 -1px 10px;
+        display: inline-flex; align-items: center; gap: 4px; font-size: 10px; user-select: none;
+    }
+    .bubble .meta svg { display: block; }
     .bubble.user {
         align-self: flex-end;
         background: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
@@ -44,7 +49,39 @@
         background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08);
         color: #fff; border-bottom-left-radius: 5px;
     }
-    .bubble.admin .time { color: rgba(255,255,255,0.5); }
+    .bubble.user .meta { color: rgba(26,19,0,0.7); }
+    .bubble.admin .meta { color: rgba(255,255,255,0.5); }
+    .bubble.sending { opacity: 0.7; }
+    .bubble.failed {
+        background: rgba(255,107,107,0.18); border: 1px solid rgba(255,107,107,0.5); color: #fff;
+    }
+    .retry-btn {
+        background: none; border: none; color: #ff6b6b; cursor: pointer;
+        font-size: 10px; font-weight: 700; padding: 0; display: inline-flex; align-items: center; gap: 3px;
+    }
+
+    /* ===== IMAGE IN BUBBLE ===== */
+    .bubble.img-only { padding: 4px; }
+    .img-wrap { position: relative; display: block; line-height: 0; border-radius: 12px; overflow: hidden; }
+    .img-wrap img { max-height: 240px; max-width: 100%; border-radius: 12px; display: block; cursor: pointer; }
+    .bubble.img-only .meta { float: none; display: flex; justify-content: flex-end; margin: 4px 4px 0; }
+    .img-prog { position: absolute; left: 0; bottom: 0; height: 4px; width: 100%; background: rgba(0,0,0,0.35); }
+    .img-prog-bar { height: 100%; width: 0%; background: linear-gradient(90deg, #ffd700, #ff6b6b); transition: width .15s; }
+
+    /* ===== ATTACH + DRAG + LIGHTBOX ===== */
+    .attach-btn {
+        width: 44px; height: 44px; flex-shrink: 0; border: 1px solid rgba(255,215,0,0.25);
+        background: #141414; color: rgba(255,255,255,0.6); border-radius: 50%; cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .attach-btn:hover { color: var(--gold); border-color: var(--gold); }
+    .chat-scroll.dragover { outline: 2px dashed var(--gold); outline-offset: -6px; }
+    .lightbox {
+        position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.92);
+        display: none; align-items: center; justify-content: center; padding: 20px; cursor: zoom-out;
+    }
+    .lightbox.show { display: flex; }
+    .lightbox img { max-width: 100%; max-height: 100%; border-radius: 8px; }
 
     .composer {
         display: flex; align-items: flex-end; gap: 8px;
@@ -89,14 +126,21 @@
     </div>
     {{ chat_messages|json_script:"chatData" }}
 
-    <form class="composer" id="composer">
+    <form class="composer" id="composer"
+          data-err-type="{% trans 'Only JPEG, PNG, WEBP or GIF images are allowed.' %}"
+          data-err-size="{% trans 'Image is too large (max 5 MB).' %}">
         {% csrf_token %}
+        <button type="button" class="attach-btn" id="attachBtn" aria-label="{% trans 'Attach image' %}">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+        </button>
+        <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp,image/gif" hidden>
         <textarea id="msgInput" rows="1" placeholder="{% trans 'Type a message…' %}" maxlength="2000"></textarea>
         <button type="submit" class="send-btn" id="sendBtn" disabled aria-label="{% trans 'Send' %}">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
         </button>
     </form>
 </div>
+<div class="lightbox" id="lightbox"><img id="lightboxImg" src="" alt="{% trans 'Image' %}"></div>
 {% endblock %}
 
 {% block bottom_nav %}{% endblock %}
@@ -118,79 +162,195 @@
         catch (_) { initial = []; }
         let lastId = 0;
         const seen = new Set();
+        const isTouch = window.matchMedia('(pointer: coarse)').matches;
 
-        function addBubble(m, scrollToBottom) {
-            if (seen.has(m.id)) return;
-            seen.add(m.id);
-            if (m.id > lastId) lastId = m.id;
+        const CLOCK = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
+        const CHECK1 = '<svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 6.5l3.2 3.2L11 3"/></svg>';
+        const RETRY = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v4h-4"/></svg>';
+        const RETRY_LABEL = "{% trans 'Retry' %}";
+
+        function nearBottom() { return scroll.scrollHeight - scroll.scrollTop - scroll.clientHeight < 120; }
+        function toBottom() { scroll.scrollTop = scroll.scrollHeight; }
+        function hideIntro() { if (intro && scroll.querySelectorAll('.bubble').length) intro.style.display = 'none'; }
+
+        // Build a bubble element. `status`: undefined (confirmed) | 'sending' | 'failed'
+        function makeBubble(m, status) {
             const el = document.createElement('div');
-            el.className = 'bubble ' + (m.is_admin ? 'admin' : 'user');
-            el.dataset.id = m.id;
-            const txt = document.createElement('span');
-            txt.className = 'msg-text';
-            txt.textContent = m.text;
-            const time = document.createElement('span');
-            time.className = 'time';
-            time.textContent = m.time;
-            el.appendChild(txt);
-            el.appendChild(time);
-            scroll.appendChild(el);
-            if (intro && scroll.querySelectorAll('.bubble').length) intro.style.display = 'none';
-            if (scrollToBottom) scroll.scrollTop = scroll.scrollHeight;
+            const imgOnly = (m.image || m.thumb) && !m.text;
+            el.className = 'bubble ' + (m.is_admin ? 'admin' : 'user') + (status === 'sending' ? ' sending' : '') + (imgOnly ? ' img-only' : '');
+            if (m.id) el.dataset.id = m.id;
+            if (m.image || m.thumb) {
+                const wrap = document.createElement('span'); wrap.className = 'img-wrap';
+                const img = document.createElement('img');
+                img.src = m.thumb || m.image;
+                if (m.image) img.dataset.full = m.image;
+                wrap.appendChild(img); el.appendChild(wrap);
+            }
+            if (m.text) { const txt = document.createElement('span'); txt.className = 'txt'; txt.textContent = m.text; el.appendChild(txt); }
+            const meta = document.createElement('span'); meta.className = 'meta';
+            el.appendChild(meta);
+            setMeta(el, meta, m, status);
+            return el;
+        }
+        function setMeta(el, meta, m, status) {
+            if (status === 'sending') { meta.innerHTML = CLOCK; return; }
+            if (status === 'failed') { meta.innerHTML = ''; return; }
+            meta.innerHTML = '<span class="t">' + (m.time || '') + '</span>' + (m.is_admin ? '' : CHECK1);
         }
 
-        // Render server-provided history.
-        initial.forEach(m => addBubble(m, false));
-        scroll.scrollTop = scroll.scrollHeight;
+        // Confirmed message (history / poll). Deduped by id.
+        function addIncoming(m) {
+            if (m.id && seen.has(m.id)) return;
+            if (m.id) { seen.add(m.id); if (m.id > lastId) lastId = m.id; }
+            scroll.appendChild(makeBubble(m));
+            hideIntro();
+        }
+
+        initial.forEach(addIncoming);
+        toBottom();
 
         // ---- composer ----
+        function autosize() { input.style.height = 'auto'; input.style.height = Math.min(input.scrollHeight, 110) + 'px'; }
         function refresh() { sendBtn.disabled = input.value.trim().length === 0; }
-        input.addEventListener('input', () => {
-            input.style.height = 'auto';
-            input.style.height = Math.min(input.scrollHeight, 120) + 'px';
-            refresh();
+        input.addEventListener('input', () => { autosize(); refresh(); });
+        input.addEventListener('keydown', (e) => {
+            // Enter sends on non-touch (desktop); on phones Enter = newline, use the button.
+            if (e.key === 'Enter' && !e.shiftKey && !isTouch) { e.preventDefault(); composer.requestSubmit(); }
         });
 
-        composer.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const text = input.value.trim();
-            if (!text) return;
-            sendBtn.disabled = true;
+        async function send(text, el) {
+            let meta;
+            if (el) { el.className = 'bubble user sending'; meta = el.querySelector('.meta'); meta.innerHTML = CLOCK; }
+            else { el = makeBubble({ text: text, is_admin: false }, 'sending'); meta = el.querySelector('.meta'); scroll.appendChild(el); hideIntro(); toBottom(); }
             try {
                 const body = new FormData();
                 body.append('csrfmiddlewaretoken', csrf);
                 body.append('text', text);
-                const resp = await fetch(HELP_URL, {
-                    method: 'POST',
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
-                    body,
-                });
+                const resp = await fetch(HELP_URL, { method: 'POST', headers: { 'X-Requested-With': 'XMLHttpRequest' }, body });
                 const data = await resp.json().catch(() => ({}));
                 if (resp.ok && data.ok && data.message) {
-                    addBubble(data.message, true);
-                    input.value = '';
-                    input.style.height = 'auto';
+                    const m = data.message;
+                    el.classList.remove('sending');
+                    if (m.id) { el.dataset.id = m.id; seen.add(m.id); if (m.id > lastId) lastId = m.id; }
+                    setMeta(el, meta, m);
+                    return;
                 }
-            } catch (_) {}
-            refresh();
+                throw new Error('failed');
+            } catch (_) {
+                el.classList.remove('sending'); el.classList.add('failed');
+                meta.innerHTML = '';
+                const btn = document.createElement('button');
+                btn.type = 'button'; btn.className = 'retry-btn';
+                btn.innerHTML = RETRY + '<span>' + RETRY_LABEL + '</span>';
+                btn.addEventListener('click', () => { el.classList.remove('failed'); send(text, el); });
+                meta.appendChild(btn);
+            }
+        }
+
+        composer.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const text = input.value.trim();
+            if (!text) return;
+            input.value = ''; autosize(); refresh();
+            send(text);
             input.focus();
         });
 
-        // ---- poll for admin replies ----
+        // ---- image send (XHR for upload progress) ----
+        const attachBtn = document.getElementById('attachBtn');
+        const fileInput = document.getElementById('fileInput');
+        const ERR_TYPE = composer.dataset.errType, ERR_SIZE = composer.dataset.errSize;
+        const OK_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+        const MAX_BYTES = 5 * 1024 * 1024;
+        function notify(msg) { if (window.showToast) window.showToast(msg, 'error'); else alert(msg); }
+
+        function sendImage(file, refs) {
+            if (file.type && !OK_TYPES.includes(file.type)) { notify(ERR_TYPE); return; }
+            if (file.size > MAX_BYTES) { notify(ERR_SIZE); return; }
+            let el, meta, img, bar, prog;
+            if (refs) {
+                el = refs.el; meta = refs.meta; img = refs.img; bar = refs.bar; prog = refs.prog;
+                el.classList.remove('failed'); el.classList.add('sending'); meta.innerHTML = CLOCK;
+                if (prog) prog.style.display = ''; if (bar) bar.style.width = '0%';
+            } else {
+                el = document.createElement('div'); el.className = 'bubble user sending img-only';
+                const wrap = document.createElement('span'); wrap.className = 'img-wrap';
+                img = document.createElement('img'); img.src = URL.createObjectURL(file); wrap.appendChild(img);
+                prog = document.createElement('span'); prog.className = 'img-prog';
+                bar = document.createElement('span'); bar.className = 'img-prog-bar'; prog.appendChild(bar); wrap.appendChild(prog);
+                meta = document.createElement('span'); meta.className = 'meta'; meta.innerHTML = CLOCK;
+                el.appendChild(wrap); el.appendChild(meta);
+                scroll.appendChild(el); hideIntro(); toBottom();
+                refs = { el: el, meta: meta, img: img, bar: bar, prog: prog };
+            }
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', HELP_URL);
+            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+            xhr.upload.onprogress = (e) => { if (e.lengthComputable && bar) bar.style.width = Math.round(e.loaded / e.total * 100) + '%'; };
+            xhr.onload = () => {
+                let data = {}; try { data = JSON.parse(xhr.responseText); } catch (_) {}
+                if (xhr.status === 200 && data.ok && data.message) {
+                    const m = data.message;
+                    if (prog) prog.remove();
+                    el.classList.remove('sending');
+                    if (m.id) { el.dataset.id = m.id; seen.add(m.id); if (m.id > lastId) lastId = m.id; }
+                    if (m.thumb) img.src = m.thumb;
+                    if (m.image) img.dataset.full = m.image;
+                    setMeta(el, meta, m);
+                } else {
+                    if (prog) prog.remove();
+                    if (data && data.message) notify(data.message);
+                    el.classList.remove('sending'); el.classList.add('failed'); meta.innerHTML = '';
+                    const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'retry-btn';
+                    btn.innerHTML = RETRY + '<span>' + RETRY_LABEL + '</span>';
+                    btn.addEventListener('click', () => sendImage(file, refs));
+                    meta.appendChild(btn);
+                }
+            };
+            xhr.onerror = () => {
+                if (prog) prog.remove();
+                el.classList.remove('sending'); el.classList.add('failed'); meta.innerHTML = '';
+                const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'retry-btn';
+                btn.innerHTML = RETRY + '<span>' + RETRY_LABEL + '</span>';
+                btn.addEventListener('click', () => sendImage(file, refs));
+                meta.appendChild(btn);
+            };
+            const body = new FormData(); body.append('csrfmiddlewaretoken', csrf); body.append('image', file);
+            xhr.send(body);
+        }
+
+        attachBtn.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', () => { if (fileInput.files && fileInput.files[0]) sendImage(fileInput.files[0]); fileInput.value = ''; });
+        ['dragenter', 'dragover'].forEach(ev => scroll.addEventListener(ev, (e) => { e.preventDefault(); scroll.classList.add('dragover'); }));
+        ['dragleave', 'drop'].forEach(ev => scroll.addEventListener(ev, (e) => { e.preventDefault(); if (ev !== 'dragleave' || e.target === scroll) scroll.classList.remove('dragover'); }));
+        scroll.addEventListener('drop', (e) => { const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]; if (f && f.type.startsWith('image/')) sendImage(f); });
+        input.addEventListener('paste', (e) => {
+            const items = e.clipboardData && e.clipboardData.items; if (!items) return;
+            for (const it of items) { if (it.kind === 'file' && it.type.startsWith('image/')) { const f = it.getAsFile(); if (f) { e.preventDefault(); sendImage(f); } } }
+        });
+
+        // ---- lightbox ----
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightboxImg');
+        if (lightbox) lightbox.addEventListener('click', () => lightbox.classList.remove('show'));
+        scroll.addEventListener('click', (e) => { const im = e.target.closest('img[data-full]'); if (im) { lightboxImg.src = im.dataset.full; lightbox.classList.add('show'); } });
+
+        // ---- poll for admin replies (mark read only when at bottom) ----
         async function poll() {
             try {
-                const resp = await fetch(HELP_URL + '?after=' + lastId, {
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
-                });
+                const atbottom = nearBottom() ? 1 : 0;
+                const resp = await fetch(HELP_URL + '?after=' + lastId + '&atbottom=' + atbottom, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
                 const data = await resp.json().catch(() => ({}));
                 if (data.ok && Array.isArray(data.messages) && data.messages.length) {
-                    const nearBottom = scroll.scrollHeight - scroll.scrollTop - scroll.clientHeight < 120;
-                    data.messages.forEach(m => addBubble(m, false));
-                    if (nearBottom) scroll.scrollTop = scroll.scrollHeight;
+                    const stick = nearBottom();
+                    data.messages.forEach(addIncoming);
+                    if (stick) toBottom();
                 }
             } catch (_) {}
         }
         setInterval(poll, 5000);
+
+        refresh();
     })();
 </script>
 {% endblock %}

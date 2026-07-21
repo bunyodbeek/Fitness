@@ -137,6 +137,17 @@
             width: 7px; height: 7px; border-radius: 50%;
             background: var(--gold); border: 2px solid var(--panel-2);
         }
+        .count-badge {
+            position: absolute; top: -5px; right: -5px; min-width: 17px; height: 17px;
+            padding: 0 4px; border-radius: 9px; background: var(--red); color: #fff;
+            font-size: 10px; font-weight: 800; line-height: 17px; text-align: center;
+            border: 2px solid var(--panel-2);
+        }
+        .nav-item .nav-count {
+            margin-left: auto; min-width: 18px; height: 18px; padding: 0 5px;
+            border-radius: 9px; background: var(--red); color: #fff;
+            font-size: 10px; font-weight: 800; line-height: 18px; text-align: center;
+        }
         .avatar {
             width: 40px; height: 40px;
             border-radius: 11px;
@@ -252,6 +263,7 @@
                 <a href="{% url 'panel:chat' %}" class="nav-item {% if nav_active == 'chat' %}active{% endif %}">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
                     {% trans "Chat" %}
+                    <span class="nav-count" id="navChatCount"{% if not chat_unread_total %} hidden{% endif %}>{{ chat_unread_total }}</span>
                 </a>
             </div>
             <div class="nav-group">
@@ -335,10 +347,10 @@
             </div>
             <div class="topbar-right">
                 {% block page_actions %}{% endblock %}
-                <button class="icon-btn" aria-label="{% trans 'Notifications' %}">
+                <a href="{% url 'panel:chat' %}" class="icon-btn" id="chatBell" aria-label="{% trans 'Notifications' %}">
                     <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-                    <span class="dot"></span>
-                </button>
+                    <span class="count-badge" id="bellBadge"{% if not chat_unread_total %} hidden{% endif %}>{{ chat_unread_total }}</span>
+                </a>
                 <div class="avatar" title="{{ admin_user.get_username }}">{{ admin_user.get_username|first|upper }}</div>
                 <form method="post" action="{% url 'panel:logout' %}">
                     {% csrf_token %}
@@ -353,6 +365,29 @@
         </main>
     </div>
 </div>
+<script>
+    // Poll the global unread chat count → topbar bell + sidebar Chat badge.
+    (function () {
+        const url = "{% url 'panel:chat_unread' %}";
+        const bell = document.getElementById('bellBadge');
+        const nav = document.getElementById('navChatCount');
+        function apply(n) {
+            [bell, nav].forEach(el => {
+                if (!el) return;
+                if (n > 0) { el.textContent = n > 99 ? '99+' : n; el.hidden = false; }
+                else { el.hidden = true; }
+            });
+        }
+        async function tick() {
+            try {
+                const r = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+                const d = await r.json();
+                if (d && d.ok) apply(d.count);
+            } catch (_) {}
+        }
+        setInterval(tick, 12000);
+    })();
+</script>
 {% block extra_js %}{% endblock %}
 </body>
 </html>
