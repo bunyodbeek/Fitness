@@ -3,96 +3,113 @@ from __future__ import annotations
 from apps.models.workouts import Program
 
 
-def _goal_short(goal: str) -> str:
-    value = (goal or "").strip().lower()
-    mapping = {
-        "fat_loss": "FL",
-        "lose_weight": "FL",
-        "muscle_gain": "MG",
-        "gain_muscle": "MG",
-        "build_body": "MG",
-        "recomposition": "RC",
-        "get_shape": "RC",
-    }
-    return mapping.get(value, "")
+# Questionnaire goal value  →  short code  →  Program.Goal.
+_GOAL_SHORT = {
+    "fat_loss": "FL",
+    "lose_weight": "FL",
+    "muscle_gain": "MG",
+    "gain_muscle": "MG",
+    "build_body": "MG",
+    "recomposition": "RC",
+    "get_shape": "RC",
+}
+
+_GOAL_MAP = {
+    "FL": Program.Goal.FAT_LOSS,
+    "MG": Program.Goal.MUSCLE_GAIN,
+    "RC": Program.Goal.RECOMPOSITION,
+}
 
 
-def _gender_token(gender: str) -> str:
-    value = (gender or "").strip().lower()
-    return "Male" if value == "male" else "Female" if value == "female" else ""
+def _profile_goal(user_profile):
+    """Map the profile's questionnaire goal to a ``Program.Goal`` (or None)."""
+    value = (getattr(user_profile, "fitness_goal", "") or "").strip().lower()
+    return _GOAL_MAP.get(_GOAL_SHORT.get(value, ""))
 
 
-def _level_token(level: str) -> str:
-    value = (level or "").strip().lower()
+def _profile_level(user_profile) -> str:
+    """Collapse experience to the two program levels: beginner / advanced."""
+    value = (getattr(user_profile, "experience_level", "") or "").strip().lower()
     if value == "beginner":
-        return "Beginner"
+        return Program.Level.BEGINNER
     if value in {"intermediate", "advanced"}:
-        return "Advanced"
+        return Program.Level.ADVANCED
     return ""
 
 
+def _ordered(qs):
+    # Free programs first (is_premium False < True), then oldest id — deterministic.
+    return qs.order_by("is_premium", "id")
+
+
+def _recommend_home(goal) -> Program | None:
+    """Home tavsiyasi: "home" rejimidagi ADVANCED programmalardan tanlanadi
+    (individual bo'lishi shart emas). Avval foydalanuvchi maqsadiga mos keladigani,
+    bo'lmasa istalgan advanced home programma."""
+    base = Program.objects.filter(
+        is_active=True,
+        type=Program.ProgramType.ADMIN,
+        workout_type="home",
+        level=Program.Level.ADVANCED,
+        is_one_time=False,
+    )
+    if goal:
+        match = _ordered(base.filter(goal=goal)).first()
+        if match:
+            return match
+    return _ordered(base).first()
+
+
+def _recommend_gym(goal, level, workout_type) -> Program | None:
+    """Gym tavsiyasi FAQAT individual (tavsiya) programmalar ichidan beriladi.
+
+    Moslik bosqichma-bosqich yumshaydi, shunda foydalanuvchi savolnomani qayta
+    to'ldirib MAQSADINI o'zgartirsa, tavsiya ham o'zgaradi (aniq goal+level
+    programma bo'lmasa ham). Tartib: goal+level → goal → level → istalgani."""
+    base = Program.objects.filter(
+        is_active=True,
+        type=Program.ProgramType.ADMIN,
+        is_individual=True,
+        is_one_time=False,
+    )
+    # Tanlangan rejim talab qilingan bo'lsa — faqat shu rejim ichidan (aks holda
+    # boshqa rejim programmasi qaytib, detail havolasi 404 berishi mumkin).
+    if workout_type in {"gym", "home"}:
+        base = base.filter(workout_type=workout_type)
+
+    # 1) Aniq: maqsad + daraja.
+    if goal and level:
+        match = _ordered(base.filter(goal=goal, level=level)).first()
+        if match:
+            return match
+    # 2) Faqat maqsad bo'yicha — maqsad o'zgarsa tavsiya doim o'zgarishini
+    #    ta'minlaydi (aynan shu daraja uchun programma bo'lmasa ham).
+    if goal:
+        match = _ordered(base.filter(goal=goal)).first()
+        if match:
+            return match
+    # 3) Faqat daraja bo'yicha.
+    if level:
+        match = _ordered(base.filter(level=level)).first()
+        if match:
+            return match
+    # 4) Istalgan individual programma (rejim bo'yicha).
+    return _ordered(base).first()
+
+
 def get_recommended_program(user_profile, workout_type: str | None = None) -> Program | None:
-    """
-    Build KEY = {goal_short}{gender}{level} (e.g. FLMaleBeginner)
-    and return the best matching active Program.
+    """Foydalanuvchi profiliga mos eng yaxshi tavsiya programmasini qaytaradi.
+
+    Gym: admin qo'shgan individual (tavsiya) programmalardan.
+    Home: "home" rejimidagi ADVANCED programmalardan.
     """
     if not user_profile:
         return None
 
-    goal_map = {
-        "FL": Program.Goal.FAT_LOSS,
-        "MG": Program.Goal.MUSCLE_GAIN,
-        "RC": Program.Goal.RECOMPOSITION,
-    }
+    goal = _profile_goal(user_profile)
+    level = _profile_level(user_profile)
 
-    # ── Home rejimi: tavsiya "home" rejimidagi ADVANCED (murakkab) programmalardan
-    # tanlanadi — individual (tavsiya) bo'lishi shart emas. Avval foydalanuvchi
-    # maqsadiga mos keladigani, bo'lmasa istalgan advanced home programma. ──
     if workout_type == "home":
-        home_qs = Program.objects.filter(
-            is_active=True,
-            type=Program.ProgramType.ADMIN,
-            workout_type="home",
-            level=Program.Level.ADVANCED,
-            is_one_time=False,
-        )
-        goal = goal_map.get(_goal_short(getattr(user_profile, "fitness_goal", "")))
-        if goal:
-            match = home_qs.filter(goal=goal).order_by("is_premium", "id").first()
-            if match:
-                return match
-        return home_qs.order_by("is_premium", "id").first()
+        return _recommend_home(goal)
 
-    key = f"{_goal_short(getattr(user_profile, 'fitness_goal', ''))}{_gender_token(getattr(user_profile, 'gender', ''))}{_level_token(getattr(user_profile, 'experience_level', ''))}"
-    if not key:
-        return None
-
-    key_goal = key[:2]
-    key_gender = "male" if "Male" in key else "female"
-    key_level = "beginner" if key.endswith("Beginner") else "advanced"
-
-    base_filter = dict(
-        is_active=True,
-        type=Program.ProgramType.ADMIN,
-        goal=goal_map.get(key_goal),
-        level=key_level,
-    )
-    if workout_type in {"gym", "home"}:
-        base_filter["workout_type"] = workout_type
-
-    # Tavsiya FAQAT individual (tavsiya) programmalar ichidan beriladi.
-    individual = Program.objects.filter(
-        **base_filter, is_individual=True, is_one_time=False,
-    ).order_by("is_premium", "id").first()
-    if individual:
-        return individual
-
-    # Maqsad/daraja bo'yicha mos kelmasa — istalgan individual programma (workout_type bo'yicha).
-    fallback_qs = Program.objects.filter(
-        is_active=True, type=Program.ProgramType.ADMIN, is_individual=True, is_one_time=False,
-    )
-    if workout_type in {"gym", "home"}:
-        # Tanlangan rejim talab qilingan bo'lsa — FAQAT shu rejim ichidan qaytaramiz.
-        # Aks holda boshqa rejim programmasi qaytib, detail havolasi 404 berishi mumkin.
-        return fallback_qs.filter(workout_type=workout_type).first()
-    return fallback_qs.first()
+    return _recommend_gym(goal, level, workout_type)
