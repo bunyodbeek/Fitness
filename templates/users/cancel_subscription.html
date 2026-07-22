@@ -425,7 +425,7 @@
 {% block content %}
     <!-- Header -->
     <div class="page-header">
-        <a href="{% url 'subscription_manage' %}" class="back-btn">←</a>
+        <a href="{% url 'manage_subscription' %}" class="back-btn">←</a>
         <h1 class="page-title">{% trans "CANCEL" %}</h1>
         <div class="header-spacer"></div>
     </div>
@@ -447,15 +447,15 @@
                 </div>
                 <ul class="warning-box-list">
                     <li>{% trans "You will lose access to all premium features" %}</li>
-                    <li>{% trans "Your personal training programs will be deleted" %}</li>
-                    <li>{% trans "Your statistics and results will not be saved" %}</li>
+                    <li>{% trans "Premium programs and recommendations will be locked" %}</li>
+                    <li>{% trans "Advanced statistics and insights will be locked" %}</li>
                 </ul>
             </div>
 
             <form method="post">
                 {% csrf_token %}
                 <div class="button-group">
-                    <a href="{% url 'subscription_manage' %}" class="btn btn-secondary">
+                    <a href="{% url 'manage_subscription' %}" class="btn btn-secondary">
                         <span>↩️</span>
                         {% trans "Back" %}
                     </a>

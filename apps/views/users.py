@@ -20,9 +20,28 @@ from django.utils.translation import gettext_lazy as _
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.views.generic import TemplateView, UpdateView, View
 from rest_framework import status
+from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+
+class CsrfExemptSessionAuthentication(SessionAuthentication):
+    """Session authentication without CSRF enforcement.
+
+    The Telegram mini-app is served inside a cross-origin webview
+    (web.telegram.org) with SameSite='None' cookies, so the CSRF cookie/header
+    round-trip is unreliable there. Once ``telegram_auth`` logs the user in,
+    DRF's default ``SessionAuthentication`` would reject the next POST with
+    "CSRF Failed: CSRF token from the 'X-CSRFToken' HTTP header incorrect".
+
+    Identity on these endpoints is instead proven by the HMAC-signed Telegram
+    ``init_data`` (see :func:`parse_init_data`) / ``telegram_id``, so skipping
+    the CSRF check here is safe and mirrors the ``csrf_exempt`` OnboardingView.
+    """
+
+    def enforce_csrf(self, request):
+        return  # intentionally skip CSRF for Telegram mini-app endpoints
 
 from apps.forms import UserProfileForm
 from apps.models import User, UserMotivation, UserProfile
@@ -37,6 +56,8 @@ from apps.utils.tlg_bot import bot_send_message
 
 
 class WorkoutTypeSelectionView(APIView):
+    authentication_classes = [CsrfExemptSessionAuthentication]
+
     def post(self, request, *args, **kwargs):
         workout_type = (request.data.get('workout_type') or '').strip().lower()
         valid_types = {WorkoutType.GYM, WorkoutType.HOME}
@@ -50,6 +71,7 @@ class WorkoutTypeSelectionView(APIView):
 
 
 class LanguageSelectionAPIView(APIView):
+    authentication_classes = [CsrfExemptSessionAuthentication]
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
@@ -68,6 +90,8 @@ class LanguageSelectionAPIView(APIView):
         return response
 
 class QuestionnaireSubmitAPIView(APIView):
+    authentication_classes = [CsrfExemptSessionAuthentication]
+
     def get_or_update_user(self, telegram_id, first_name, last_name):
 
         user, created = User.objects.get_or_create(
@@ -236,6 +260,7 @@ class QuestionnaireSubmitAPIView(APIView):
 
 
 class TelegramAuthAPIView(APIView):
+    authentication_classes = [CsrfExemptSessionAuthentication]
 
     def post(self, request, *args, **kwargs):
         try:
@@ -890,6 +915,29 @@ class ManageSubscriptionView(LoginRequiredMixin, TemplateView):
             'days_remaining': days_remaining,
         })
         return context
+
+
+class CancelSubscriptionView(LoginRequiredMixin, TemplateView):
+    """Confirm + perform a Premium subscription cancellation.
+
+    GET shows the warning/confirm page; POST flips the subscription off so the
+    user immediately loses premium access. Non-premium users have nothing to
+    cancel, so they are bounced back to the manage screen (which itself sends
+    them to the paywall)."""
+    template_name = 'users/cancel_subscription.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.profile.is_premium:
+            return redirect('manage_subscription')
+        return super().dispatch(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        profile = request.user.profile
+        subscription = getattr(profile, 'subscription', None)
+        if subscription and subscription.is_active:
+            subscription.cancel()
+            messages.success(request, _("Your subscription has been canceled."))
+        return redirect('user_profile')
 
 
 class PaymentHistoryView(LoginRequiredMixin, TemplateView):

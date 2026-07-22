@@ -108,6 +108,16 @@ class Subscription(Model):
 		self.is_active = True
 		self.save()
 
+	def cancel(self):
+		"""Cancel the subscription — premium access is revoked immediately.
+
+		``is_valid`` (and therefore ``UserProfile.is_premium``) checks
+		``is_active``, so flipping it off is enough to lock premium features.
+		The row is kept so the payment history and a future re-subscribe stay
+		intact."""
+		self.is_active = False
+		self.save(update_fields=['is_active'])
+
 
 class Payment(CreatedBaseModel):
 	class PaymentStatus(TextChoices):

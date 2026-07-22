@@ -215,6 +215,36 @@
             transform: scale(0.98);
         }
 
+        /* ===== CANCEL SUBSCRIPTION BUTTON ===== */
+        .cancel-sub-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            margin-top: 10px;
+            padding: 13px 18px;
+            border-radius: 14px;
+            background: transparent;
+            border: 1.5px solid rgba(255, 107, 107, 0.35);
+            color: #ff6b6b;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            text-decoration: none;
+            transition: transform 0.15s ease, background 0.15s ease;
+        }
+
+        .cancel-sub-btn svg {
+            stroke: #ff6b6b;
+        }
+
+        .cancel-sub-btn:active {
+            transform: scale(0.98);
+            background: rgba(255, 107, 107, 0.08);
+        }
+
         /* ===== GIFT PREMIUM CARD ===== */
         .gift-card {
             display: flex;
@@ -688,6 +718,14 @@
                     <path d="M12 19V5M5 12l7-7 7 7"/>
                 </svg>
                 {% trans "Upgrade subscription" %}
+            </a>
+
+            <a href="{% url 'cancel_subscription' %}" class="cancel-sub-btn">
+                <svg class="icon" width="16" height="16" viewBox="0 0 24 24" stroke-width="2.1">
+                    <circle cx="12" cy="12" r="9"/>
+                    <path d="M15 9l-6 6M9 9l6 6"/>
+                </svg>
+                {% trans "Cancel subscription" %}
             </a>
         </div>
     {% endif %}

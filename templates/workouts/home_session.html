@@ -185,7 +185,12 @@
         /* ===== SCROLL CONTAINER ===== */
         .scroll-wrap {
             position: fixed;
-            top: 98px;
+            /* The header (54px) and progress bar (~44px) are position:fixed and
+               are pushed down by Telegram's fullscreen top inset (--app-safe-top,
+               shared from base.html). The scroll area must start below BOTH plus
+               that inset, otherwise the exercise name and the top of the video
+               get hidden behind the fixed progress bar. */
+            top: calc(98px + var(--app-safe-top));
             bottom: 80px;
             left: 0;
             right: 0;
