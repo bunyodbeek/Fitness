@@ -5,8 +5,10 @@ from django.db.models import Count, F
 from django.http import Http404
 from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse
+from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _, get_language
 from django.views import View
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import DetailView, ListView, TemplateView
 import math
 
@@ -546,6 +548,11 @@ class WorkoutStartView(LoginRequiredMixin, View):
 		return data
 
 
+# CSRF exempt: gym mashg'uloti yakuni Telegram mini-app'ining cross-origin webview'idan
+# to'liq sahifa form-POST orqali yuboriladi (SameSite=None CSRF cookie'si webview'da
+# tashlanadi -> 403). Sessiya (LoginRequiredMixin) identifikatsiya isboti — OnboardingView
+# va DRF endpointlaridagi bir xil naqsh.
+@method_decorator(csrf_exempt, name='dispatch')
 class WorkoutCompleteView(LoginRequiredMixin, View):
 	forced_workout_type = None
 	template_name = "workouts/workout_complete.html"

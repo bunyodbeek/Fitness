@@ -6,7 +6,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
 from django.http import HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.decorators import method_decorator
 from django.views import View
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import DetailView, ListView, TemplateView
 
 from apps.models.workouts import Plan, Program, Workout, WorkoutType, UserWorkoutProgress, WorkoutProgress, HomeWorkout, \
@@ -267,6 +269,12 @@ class HomeWeekDetailView(WeekPaywallDetailMixin, DetailView):
 		return context
 
 
+# CSRF exempt: mashg'ulot yakuni Telegram mini-app'ining cross-origin webview'idan
+# to'liq sahifa form-POST orqali yuboriladi. U yerda `SameSite=None` CSRF cookie'si
+# ko'p klientlarda (masalan iOS webview) tashlab yuboriladi -> "CSRF token incorrect"
+# (403). Identifikatsiya sessiya (LoginRequiredMixin) orqali isbotlangani uchun bu
+# xavfsiz — OnboardingView va DRF endpointlaridagi bir xil naqsh.
+@method_decorator(csrf_exempt, name='dispatch')
 class HomeWorkoutCompleteView(LoginRequiredMixin, View):
 	template_name = "workouts/home_workout_complete.html"
 	

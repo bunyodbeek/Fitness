@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views import View
-from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from django.views.generic import ListView, DetailView
 from rest_framework import status
 from rest_framework.generics import GenericAPIView
@@ -445,6 +445,10 @@ class CustomProgramStartView(LoginRequiredMixin, View):
 		)
 
 
+# CSRF exempt: maxsus dastur yakuni ham Telegram mini-app webview'idan to'liq sahifa
+# form-POST orqali keladi (SameSite=None CSRF cookie'si webview'da tashlanadi -> 403).
+# Sessiya (LoginRequiredMixin) identifikatsiya isboti — mavjud naqshga mos.
+@method_decorator(csrf_exempt, name='dispatch')
 class CustomProgramCompleteView(LoginRequiredMixin, View):
 	template_name = "workouts/workout_complete.html"
 	
