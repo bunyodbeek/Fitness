@@ -269,6 +269,26 @@ TELEGRAM_BOT_REDIRECT_URL = (
 
 ADMIN_ID = os.getenv('ADMIN_ID')
 
+# Telegram Mini App auth loglari — muvaffaqiyatsiz autentifikatsiya (init_data yo'q,
+# yaroqsiz imzo, eskirgan) qaysi holatda sodir bo'layotganini kuzatish uchun.
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'simple': {'format': '%(asctime)s %(levelname)s [%(name)s] %(message)s'},
+    },
+    'handlers': {
+        'console': {'class': 'logging.StreamHandler', 'formatter': 'simple'},
+    },
+    'loggers': {
+        'apps.telegram_auth': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}
+
 # ATMOS payment gateway (https://docs.atmos.uz)
 ATMOS_API_URL = os.getenv('ATMOS_API_URL', default='https://apigw.atmos.uz')
 ATMOS_STORE_ID = os.getenv('ATMOS_STORE_ID', default='')

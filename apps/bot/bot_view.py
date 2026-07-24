@@ -66,6 +66,9 @@ def _language_keyboard():
 
 
 def _send_webapp_message(chat_id, first_name, lang_code):
+	# MUHIM: Mini App'ni faqat `web_app=` (WebAppInfo) tugmalari orqali ochamiz —
+	# oddiy `url=` tugmalari initData'ni uzatmaydi va "Telegram ID topilmadi"
+	# xatosiga olib keladi. Mini App havolalarini hech qachon url= ga o'zgartirmang.
 	lang_code = lang_code if lang_code in SUPPORTED_LANGUAGES else "en"
 	texts = LANGUAGE_TEXTS[lang_code]
 	

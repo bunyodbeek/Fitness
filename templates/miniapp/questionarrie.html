@@ -7,7 +7,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>{% trans "Fitness Questionnaire — Telegram WebApp" %}</title>
 
+    <!-- Telegram WebApp SDK — <head> ichida SINxron, app kodidan OLDIN yuklanadi. -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+        window.__AUTH_URL = "{% url 'auth_telegram' %}";
+        window.__BOT_DEEPLINK = "{{ telegram_bot_url|escapejs }}";
+    </script>
+    <script src="{% static 'js/tg_auth.js' %}"></script>
     <script src="{% static 'js/tg_viewport.js' %}"></script>
 
     <style>
@@ -285,7 +291,6 @@
 </div>
 
 {% trans "Please enter a valid weight (30 - 300 kg)." as t_weight %}
-{% trans "Error: Telegram ID not found. Please restart the bot." as t_no_id %}
 {% trans "Submitting..." as t_submitting %}
 {% trans "Unknown error from server" as t_unknown %}
 {% trans "Error:" as t_error %}
@@ -294,7 +299,6 @@
     // ---------------- Translations (apostrof-safe) ----------------
     const T = {
         weight:     "{{ t_weight|escapejs }}",
-        noId:       "{{ t_no_id|escapejs }}",
         submitting: "{{ t_submitting|escapejs }}",
         unknown:    "{{ t_unknown|escapejs }}",
         error:      "{{ t_error|escapejs }}",
@@ -317,13 +321,12 @@
 
     // ---------------- Telegram init ----------------
     const tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
-    // Telegram WebApp dokumentatsiyasiga ko'ra ready() chaqirilishi shart —
-    // ba'zi klientlarda u chaqirilmasa initData kech yetib keladi.
-    if (tg) { try { tg.ready(); } catch(e){} try { tg.expand(); } catch(e){} }
+    // ready() + expand() — TgAuth ichida chaqiriladi (SDK poyga holatini hisobga oladi).
+    TgAuth.ready();
 
-    // Brauzerda (shredzville.com) Telegram konteksti yo'q — telegram_id ololmaymiz.
-    // Bunday userni to'g'ridan-to'g'ri Telegram bot'iga yuboramiz (u yerdan mini app
-    // ochilib telegram_id olinadi). tg.platform === 'unknown' => Telegram tashqarisida.
+    // Brauzerda (shredzville.com) Telegram konteksti yo'q — foydalanuvchini
+    // to'g'ridan-to'g'ri Telegram bot'iga yuboramiz (u yerdan mini app ochilib
+    // imzolangan initData olinadi). tg.platform === 'unknown' => Telegram tashqarisida.
     const BOT_URL = "{{ telegram_bot_url|escapejs }}";
     const insideTelegram = !!(tg && tg.platform && tg.platform !== 'unknown');
     // Faqat HAQIQIY Telegram havolasiga yo'naltiramiz (t.me/tg://) — aks holda
@@ -333,49 +336,15 @@
         window.location.replace(BOT_URL);
     }
 
-    // raw initData (imzolangan) — backendda tekshirish/ID ajratish uchun ishonchli manba.
-    function getInitData() {
-        return (tg && tg.initData) ? tg.initData : '';
-    }
-
-    // initData query-stringidan user.id ni ajratib olamiz (initDataUnsafe bo'sh bo'lsa zaxira).
-    function parseIdFromInitData() {
-        try {
-            const raw = getInitData();
-            if (!raw) return null;
-            const params = new URLSearchParams(raw);
-            const userJson = params.get('user');
-            if (!userJson) return null;
-            const u = JSON.parse(userJson);
-            return u && u.id ? u.id : null;
-        } catch (e) { return null; }
-    }
-
-    // telegram_id ni bir nechta manbadan ishonchli aniqlaymiz va keshlaymiz.
-    // Tartib: initDataUnsafe.user.id -> initData parse -> localStorage.
-    function resolveTelegramId() {
-        let id = tg?.initDataUnsafe?.user?.id || parseIdFromInitData();
-        if (id) {
-            try { localStorage.setItem('tg_id', String(id)); } catch (e) {}
-            return id;
-        }
-        try {
-            const cached = localStorage.getItem('tg_id');
-            if (cached) return cached;
-        } catch (e) {}
-        return null;
-    }
-
-    const telegramUser = tg?.initDataUnsafe?.user || null;
+    // Imzolangan xom initData — yagona ishonchli identifikator manbai.
+    // (initDataUnsafe'dan foydalanuvchi ID/ma'lumotlarini O'QIMAYMIZ.)
+    function getInitData() { return TgAuth.getInitData(); }
 
     // ---------------- Form data ----------------
+    // Foydalanuvchi ma'lumotlari (ism/familiya/rasm) backendda imzolangan
+    // initData'dan ajratiladi — bu yerda faqat anketa javoblarini yuboramiz.
     const formData = {
-        telegram_id: resolveTelegramId(),
         init_data: getInitData(),
-        first_name: telegramUser?.first_name || '',
-        last_name: telegramUser?.last_name || '',
-        username: telegramUser?.username || '',
-        photo_url: telegramUser?.photo_url || '',
         gender: '',
         experience: '',
         goal: '',
@@ -385,30 +354,16 @@
         edit: EDIT_MODE
     };
 
-    // -------------- Auto telegram auth (fix url) --------------
+    // -------------- Auto telegram auth --------------
     document.addEventListener("DOMContentLoaded", async () => {
-        const telegramId = resolveTelegramId();
-        const initData = getInitData();
-        // Hech qanday identifikator bo'lmasa — so'rov yubormaymiz.
-        if (!telegramId && !initData) return;
+        // Imzolangan initData'ni backendga yuborib sessiyani o'rnatamiz. initData
+        // bo'sh yoki yaroqsiz bo'lsa, TgAuth "botni qayta oching" ekranini ko'rsatadi.
+        const result = await TgAuth.authenticate();
 
-        try {
-            const res = await fetch('{% url "telegram_auth" %}', {
-                method: "POST",
-                headers: {"Content-Type": "application/json", ...(csrfToken ? {"X-CSRFToken": csrfToken} : {})},
-                credentials: "include",
-                body: JSON.stringify({ telegram_id: telegramId, init_data: initData })
-            });
-
-            const data = await res.json();
-
-            // In edit mode we stay on the questionnaire even though onboarding
-            // is already completed — the user is intentionally re-answering.
-            if (data.onboarding_completed && !EDIT_MODE) {
-                window.location.href = data.redirect;
-            }
-        } catch (e) {
-            console.error(e);
+        // Onboarding allaqachon tugagan bo'lsa (va edit rejimi emas) — animatsiyaga
+        // o'tamiz. Edit rejimida foydalanuvchi ataylab qayta javob beryapti, qolamiz.
+        if (result && result.success && result.onboarding_completed && !EDIT_MODE && result.redirect) {
+            window.location.href = result.redirect;
         }
     });
 
@@ -520,14 +475,13 @@
 
     // -------- Submit --------
     async function submitQuestionnaire() {
-        // ID sahifa ochilganda bo'sh bo'lib, keyin yetib kelishi mumkin —
-        // shuning uchun yuborish paytida qayta aniqlaymiz.
-        formData.telegram_id = resolveTelegramId();
-        formData.init_data = getInitData();
+        // initData sahifa ochilganda bo'sh bo'lib, keyin yetib kelishi mumkin —
+        // shuning uchun yuborish paytida (retry bilan) qayta olamiz.
+        formData.init_data = await TgAuth.getInitDataWithRetry();
 
-        if (!formData.telegram_id && !formData.init_data) {
-            if (tg && tg.showAlert) tg.showAlert(T.noId);
-            else alert(T.noId);
+        if (!formData.init_data) {
+            // Telegram ma'lumotlari yetib kelmadi — "botni qayta oching" ekrani.
+            TgAuth.showReopenScreen();
             return;
         }
 
@@ -540,10 +494,9 @@
         } catch (e) {}
 
         try {
-            const res = await fetch('{% url "questionnaire_submit" %}', {
+            const res = await TgAuth.authedFetch('{% url "questionnaire_submit" %}', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json', ...(csrfToken ? {"X-CSRFToken": csrfToken} : {})},
-                credentials: "include",
+                headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(formData)
             });
 
@@ -555,9 +508,17 @@
             const isOk = (data && (data.success === true || data.ok === true));
 
             if (isOk) {
+                // Sessiya tokenini xotirada saqlaymiz (keyingi so'rovlar uchun).
+                if (data.token) TgAuth.setToken(data.token);
                 // backend should return redirect_url based on session workout_type
                 const redirectUrl = data.redirect_url || (formData.workout_type === 'home' ? "{% url 'home_program_list' %}" : "{% url 'program_list' %}");
                 window.location.href = redirectUrl;
+                return;
+            }
+
+            // Auth xatosi (yaroqsiz/eskirgan initData) — reopen ekrani.
+            if (data && data.code) {
+                TgAuth.showReopenScreen(data.error);
                 return;
             }
 

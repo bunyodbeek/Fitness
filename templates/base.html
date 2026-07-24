@@ -5,8 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>{% block title %}Fitness App{% endblock %}</title>
-    <!-- Telegram WebApp SDK -->
+    <!-- Telegram WebApp SDK — <head> ichida SINxron, app kodidan OLDIN yuklanadi. -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+        window.__AUTH_URL = "{% url 'auth_telegram' %}";
+        window.__BOT_DEEPLINK = "{{ telegram_bot_url|default:''|escapejs }}";
+    </script>
+    <script src="{% static 'js/tg_auth.js' %}"></script>
     <script src="{% static 'js/tg_viewport.js' %}"></script>
     <style>
         :root {
@@ -530,15 +535,14 @@
 <div class="toast-container" id="toastContainer"></div>
 
 <script>
-    const tg = window.Telegram.WebApp;
-    tg.expand();
-    const telegramId = tg.initDataUnsafe?.user?.id;
-    if (telegramId) {
-        localStorage.setItem('telegram_id', telegramId);
-    }
+    const tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
 
-    function getTelegramId() {
-        return localStorage.getItem('telegram_id') || telegramId;
+    // Har bir himoyalangan sahifada sessiya tokenini xotiraga jimgina qayta
+    // yuklaymiz (webview cookie'lari tashlab yuborilgan bo'lsa ham AJAX so'rovlar
+    // Authorization header orqali ishlaydi). Foydalanuvchi ID hech qachon
+    // initDataUnsafe'dan o'qilmaydi — faqat imzolangan initData ishlatiladi.
+    if (window.TgAuth) {
+        TgAuth.authenticate({ silent: true }).catch(function () {});
     }
 
     function goBack() {

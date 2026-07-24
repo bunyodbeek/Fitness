@@ -12,10 +12,21 @@ from __future__ import annotations
 import hashlib
 import hmac
 import json
+import logging
 import time
 from urllib.parse import parse_qsl
 
 from django.conf import settings
+
+logger = logging.getLogger("apps.telegram_auth")
+
+# Auth natijasini frontendga aniq yetkazish uchun xato kodlari. Frontend shu kodga
+# qarab "botni qayta oching" ekranini ko'rsatadi (raw xato o'rniga).
+ERR_MISSING = "missing_init_data"
+ERR_NO_TOKEN = "server_misconfigured"
+ERR_BAD_SIGNATURE = "bad_signature"
+ERR_EXPIRED = "expired"
+ERR_NO_USER = "no_user"
 
 
 def _check_signature(init_data: str, bot_token: str) -> bool:
@@ -34,23 +45,24 @@ def _check_signature(init_data: str, bot_token: str) -> bool:
     return hmac.compare_digest(computed_hash, received_hash)
 
 
-def parse_init_data(init_data: str, *, max_age_seconds: int = 86400) -> dict | None:
-    """Imzoni tekshirib, foydalanuvchi ma'lumotlarini qaytaradi.
+def verify_init_data(init_data: str, *, max_age_seconds: int = 86400):
+    """Imzoni tekshirib, `(user_dict | None, error_code | None)` qaytaradi.
 
-    Yaroqsiz imzo / token yo'q / eskirgan bo'lsa — None.
-    Qaytadi: {'telegram_id', 'first_name', 'last_name', 'username', 'photo_url'} yoki None.
+    Muvaffaqiyatda: `({'telegram_id', 'first_name', ...}, None)`.
+    Xatoda: `(None, ERR_*)` — chaqiruvchi shu kod bo'yicha javob beradi va log yozadi.
     """
     if not init_data:
-        return None
+        return None, ERR_MISSING
 
     bot_token = getattr(settings, "BOT_TOKEN", None) or getattr(
         settings, "TELEGRAM_BOT_TOKEN", None
     )
     if not bot_token:
-        return None
+        logger.error("Telegram auth: BOT_TOKEN sozlanmagan — initData tekshirib bo'lmadi.")
+        return None, ERR_NO_TOKEN
 
     if not _check_signature(init_data, bot_token):
-        return None
+        return None, ERR_BAD_SIGNATURE
 
     pairs = dict(parse_qsl(init_data, keep_blank_values=True))
 
@@ -59,22 +71,22 @@ def parse_init_data(init_data: str, *, max_age_seconds: int = 86400) -> dict | N
     if auth_date and max_age_seconds > 0:
         try:
             if (time.time() - int(auth_date)) > max_age_seconds:
-                return None
+                return None, ERR_EXPIRED
         except (TypeError, ValueError):
-            return None
+            return None, ERR_BAD_SIGNATURE
 
     user_raw = pairs.get("user")
     if not user_raw:
-        return None
+        return None, ERR_NO_USER
 
     try:
         user = json.loads(user_raw)
     except (TypeError, ValueError):
-        return None
+        return None, ERR_NO_USER
 
     telegram_id = user.get("id")
     if not telegram_id:
-        return None
+        return None, ERR_NO_USER
 
     return {
         "telegram_id": telegram_id,
@@ -82,4 +94,14 @@ def parse_init_data(init_data: str, *, max_age_seconds: int = 86400) -> dict | N
         "last_name": user.get("last_name", ""),
         "username": user.get("username", ""),
         "photo_url": user.get("photo_url", ""),
-    }
+    }, None
+
+
+def parse_init_data(init_data: str, *, max_age_seconds: int = 86400) -> dict | None:
+    """Imzoni tekshirib, foydalanuvchi ma'lumotlarini qaytaradi (yoki None).
+
+    Orqaga moslik uchun ingichka o'ram — sabab kodi kerak bo'lsa
+    :func:`verify_init_data` dan foydalaning.
+    """
+    data, _reason = verify_init_data(init_data, max_age_seconds=max_age_seconds)
+    return data

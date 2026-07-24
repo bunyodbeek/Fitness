@@ -13,6 +13,7 @@ import math
 from apps.models import Program, Plan, Week
 from apps.models.workouts import Workout, WorkoutExercise, WorkoutProgress, WorkoutType
 from apps.workouts.recommendation import get_recommended_program
+from apps.services.calorie_calculator import calories_for_gym_workout
 from apps.utils.mixins import PremiumRequiredMixin, WeekPaywallDetailMixin, week_paywall_redirect
 
 
@@ -576,17 +577,21 @@ class WorkoutCompleteView(LoginRequiredMixin, View):
 		if blocked:
 			return blocked
 
-		total_calories = self._safe_float(request.POST.get("total_calories", 0))
 		total_duration = self._safe_int(request.POST.get("total_duration", 0))
 		exercises_completed = self._safe_int(request.POST.get("exercises_completed", 0))
 		total_weight = self._safe_float(request.POST.get("total_weight", 0))
-		
+
+		# Kaloriya SERVER tomonda, haqiqiy timer qiymatidan (yagona manba) hisoblanadi —
+		# klient yuborgan qiymatga ishonmaymiz. Natija tarix yozuvi bilan saqlanadi.
+		calorie_result = calories_for_gym_workout(workout, total_duration, request.user.profile)
+		total_calories = calorie_result.total_calories
+
 		WorkoutProgress.objects.filter(
 			user=request.user.profile,
 			workout=workout,
 			status=WorkoutProgress.Status.IN_PROGRESS,
 		).delete()
-		
+
 		WorkoutProgress.objects.create(
 			user=request.user.profile,
 			workout=workout,
@@ -595,11 +600,12 @@ class WorkoutCompleteView(LoginRequiredMixin, View):
 			exercises_completed=exercises_completed,
 			status=WorkoutProgress.Status.COMPLETED,
 		)
-		
+
 		return render(request, self.get_template_name(request), {
 			"workout": workout,
 			"workout_summary": {
 				"total_calories": total_calories,
+				"calories_estimated": calorie_result.is_estimated,
 				"duration_seconds": total_duration,
 				"exercises_completed": exercises_completed,
 				"total_reps": 0,

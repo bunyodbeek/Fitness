@@ -75,7 +75,8 @@ urlpatterns = [
 	
 	# API endpoints
 	path('api/questionnaire/submit/', QuestionnaireSubmitAPIView.as_view(), name='questionnaire_submit'),
-	path('api/telegram-auth/', TelegramAuthAPIView.as_view(), name='telegram_auth'),
+	# Telegram Mini App sessiya autentifikatsiyasi (imzolangan init_data → sessiya + token).
+	path('api/auth/telegram', TelegramAuthAPIView.as_view(), name='auth_telegram'),
 	path('api/language/select/', LanguageSelectionAPIView.as_view(), name='language_select'),
 	path('api/workout-type/select/', WorkoutTypeSelectionView.as_view(), name='workout_type_select'),
 	path('miniapp/questionnaire/', OnboardingView.as_view(), name='onboarding'),

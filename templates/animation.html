@@ -5,6 +5,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Shredzville</title>
+  <!-- Telegram WebApp SDK — <head> ichida SINxron, app kodidan OLDIN yuklanadi. -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script>
+    window.__AUTH_URL = "{% url 'auth_telegram' %}";
+    window.__BOT_DEEPLINK = "{{ telegram_bot_url|escapejs }}";
+  </script>
+  <script src="{% static 'js/tg_auth.js' %}"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { background: #000; height: 100vh; overflow: hidden; }
@@ -23,14 +30,14 @@
   <source src="{% static 'apps/videos/INTRO.mp4' %}" type="video/mp4">
 </video>
 
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src="{% static 'js/tg_viewport.js' %}"></script>
 <script>
   var _defaultUrl = "{% url 'program_list' %}";
 
   var tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
-  if (tg) { try { tg.expand(); } catch (e) {} }
 
+  // start_param — bu autentifikatsiya ma'lumoti EMAS (import deep-link marshruti),
+  // shuning uchun uni initDataUnsafe'dan o'qish mumkin.
   (function() {
     try {
       var startParam = tg ? (tg.initDataUnsafe || {}).start_param || '' : '';
@@ -42,29 +49,13 @@
     } catch(e) {}
   })();
 
-  function getCookie(name) {
-    var value = '; ' + document.cookie;
-    var parts = value.split('; ' + name + '=');
-    if (parts.length === 2) return parts.pop().split(';').shift();
-    return null;
-  }
-
-  // Kirish nuqtasida foydalanuvchini login qilamiz, shunda sessiya o'rnatiladi va
-  // himoyalangan sahifalar (profil, premium, favorites) birinchi bosishdayoq ochiladi.
-  // Anonim POST'da DRF CSRF talab qilmaydi, lekin token bo'lsa ham yuboramiz.
-  var authPromise = (function() {
-    var telegramId = tg && tg.initDataUnsafe && tg.initDataUnsafe.user
-      ? tg.initDataUnsafe.user.id : null;
-    if (!telegramId) return Promise.resolve();
-    var csrf = getCookie('csrftoken');
-    return fetch("{% url 'telegram_auth' %}", {
-      method: 'POST',
-      headers: Object.assign({'Content-Type': 'application/json'},
-        csrf ? {'X-CSRFToken': csrf} : {}),
-      credentials: 'include',
-      body: JSON.stringify({ telegram_id: telegramId })
-    }).catch(function(e) { console.error('Auth error:', e); });
-  })();
+  // Kirish nuqtasida imzolangan initData ni backendga yuborib sessiya ochamiz —
+  // shunda himoyalangan sahifalar (profil, premium, favorites) birinchi bosishdayoq
+  // ochiladi. Foydalanuvchi ID hech qachon initDataUnsafe'dan o'qilmaydi.
+  // initData bo'sh bo'lsa (silent) reopen ekranini bu yerda ko'rsatmaymiz — auth
+  // questionnaire/keyingi sahifada qayta urinib ko'riladi.
+  var authPromise = TgAuth.authenticate({ silent: true })
+    .catch(function(e) { console.error('Auth error:', e); });
 
   // Sessiya o'rnatilmaguncha redirect qilmaymiz (video tugashi bilan auth tugashini
   // ikkalasini ham kutamiz). Video umuman o'ynamasa, 6s dan keyin baribir o'tamiz.

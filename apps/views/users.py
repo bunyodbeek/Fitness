@@ -20,28 +20,11 @@ from django.utils.translation import gettext_lazy as _
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.views.generic import TemplateView, UpdateView, View
 from rest_framework import status
-from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-
-class CsrfExemptSessionAuthentication(SessionAuthentication):
-    """Session authentication without CSRF enforcement.
-
-    The Telegram mini-app is served inside a cross-origin webview
-    (web.telegram.org) with SameSite='None' cookies, so the CSRF cookie/header
-    round-trip is unreliable there. Once ``telegram_auth`` logs the user in,
-    DRF's default ``SessionAuthentication`` would reject the next POST with
-    "CSRF Failed: CSRF token from the 'X-CSRFToken' HTTP header incorrect".
-
-    Identity on these endpoints is instead proven by the HMAC-signed Telegram
-    ``init_data`` (see :func:`parse_init_data`) / ``telegram_id``, so skipping
-    the CSRF check here is safe and mirrors the ``csrf_exempt`` OnboardingView.
-    """
-
-    def enforce_csrf(self, request):
-        return  # intentionally skip CSRF for Telegram mini-app endpoints
+import logging
 
 from apps.forms import UserProfileForm
 from apps.models import User, UserMotivation, UserProfile
@@ -49,8 +32,38 @@ from apps.models.favorites import CustomProgramProgress
 from apps.models.payments import Subscription, Payment, SubscriptionPlan
 from apps.models.workouts import WorkoutProgress, WorkoutType
 from apps.services.program_progression import create_onboarding_program
-from apps.utils.telegram_webapp import parse_init_data
+from apps.utils.drf_auth import CsrfExemptSessionAuthentication, TelegramTokenAuthentication
+from apps.utils.session_token import make_session_token
+from apps.utils.telegram_webapp import (
+    ERR_EXPIRED,
+    ERR_MISSING,
+    ERR_NO_TOKEN,
+    verify_init_data,
+)
 from apps.utils.tlg_bot import bot_send_message
+
+logger = logging.getLogger("apps.telegram_auth")
+
+# Xato kodini foydalanuvchiga ko'rsatiladigan (Uzbek) matnga bog'laymiz. Frontend
+# `code` bo'yicha "botni qayta oching" ekranini chiqaradi; `error` esa zaxira matn.
+_AUTH_ERROR_MESSAGES = {
+    ERR_MISSING: "Telegram ma'lumotlari topilmadi. Ilovani bot tugmasi orqali oching.",
+    ERR_NO_TOKEN: "Serverda vaqtincha nosozlik. Birozdan so'ng qayta urinib ko'ring.",
+    ERR_EXPIRED: "Sessiya muddati tugagan. Ilovani bot orqali qayta oching.",
+}
+_AUTH_ERROR_DEFAULT = "Autentifikatsiya amalga oshmadi. Ilovani bot tugmasi orqali qayta oching."
+
+
+def _auth_error_response(code, *, http_status=status.HTTP_401_UNAUTHORIZED):
+    """Auth xatosini aniq `code` bilan qaytaradi (frontend reopen ekrani uchun)."""
+    return Response(
+        {
+            "success": False,
+            "code": code,
+            "error": _AUTH_ERROR_MESSAGES.get(code, _AUTH_ERROR_DEFAULT),
+        },
+        status=http_status,
+    )
 
 
 
@@ -90,7 +103,8 @@ class LanguageSelectionAPIView(APIView):
         return response
 
 class QuestionnaireSubmitAPIView(APIView):
-    authentication_classes = [CsrfExemptSessionAuthentication]
+    authentication_classes = [TelegramTokenAuthentication, CsrfExemptSessionAuthentication]
+    permission_classes = [AllowAny]
 
     def get_or_update_user(self, telegram_id, first_name, last_name):
 
@@ -163,10 +177,14 @@ class QuestionnaireSubmitAPIView(APIView):
             workout_type = WorkoutType.GYM
         request.session['workout_type'] = workout_type
 
-        telegram_id = data.get('telegram_id')
-        # Frontend telegram_id bera olmasa — imzolangan init_data'dan ajratamiz.
-        if not telegram_id:
-            verified = parse_init_data(data.get('init_data') or '')
+        # Identifikatsiya: faqat imzolangan `init_data` ga ishonamiz (frontend
+        # yuborgan `telegram_id` ga emas). Zaxira sifatida — allaqachon ochilgan
+        # sessiya (masalan, edit rejimida).
+        telegram_id = None
+        reason = ERR_MISSING
+        init_data = (data.get('init_data') or '').strip()
+        if init_data:
+            verified, reason = verify_init_data(init_data)
             if verified:
                 telegram_id = verified['telegram_id']
                 # Telegramdan kelgan ishonchli ma'lumotlar bilan to'ldiramiz.
@@ -176,9 +194,19 @@ class QuestionnaireSubmitAPIView(APIView):
                 data.setdefault('last_name', verified.get('last_name') or '')
                 data.setdefault('username', verified.get('username') or '')
                 data.setdefault('photo_url', verified.get('photo_url') or '')
+            else:
+                logger.warning("Questionnaire auth rad etildi: code=%s", reason)
+
+        # Zaxira: init_data yo'q, lekin token/sessiya orqali kirgan foydalanuvchi bor.
+        if not telegram_id and request.user.is_authenticated:
+            existing = UserProfile.objects.filter(user=request.user).first()
+            if existing and existing.telegram_id:
+                telegram_id = existing.telegram_id
+                data = data.copy() if hasattr(data, 'copy') else dict(data)
+                data['telegram_id'] = telegram_id
 
         if not telegram_id:
-            return Response({'success': False, 'error': 'Telegram ID topilmadi'}, status=400)
+            return _auth_error_response(reason, http_status=400)
 
         is_edit = str(data.get('edit', '')).lower() in ('1', 'true', 'yes')
 
@@ -198,6 +226,7 @@ class QuestionnaireSubmitAPIView(APIView):
                 login(request, existing_profile.user)
                 return Response({
                     'success': True,
+                    'token': make_session_token(existing_profile.user.id, telegram_id),
                     'redirect_url': reverse('animation'),
                     'message': 'Profile updated',
                 })
@@ -209,6 +238,7 @@ class QuestionnaireSubmitAPIView(APIView):
             login(request, existing_profile.user)
             return Response({
                 'success': True,
+                'token': make_session_token(existing_profile.user.id, telegram_id),
                 'redirect_url': reverse('animation'),
                 'message': 'User already exists'
             })
@@ -247,6 +277,7 @@ class QuestionnaireSubmitAPIView(APIView):
 
             return Response({
                 'success': True,
+                'token': make_session_token(user.id, telegram_id),
                 'message': "Ma'lumotlar saqlandi",
                 'redirect_url': reverse('animation'),
                 'is_new_user': is_new,
@@ -260,45 +291,55 @@ class QuestionnaireSubmitAPIView(APIView):
 
 
 class TelegramAuthAPIView(APIView):
-    authentication_classes = [CsrfExemptSessionAuthentication]
+    """`/api/auth/telegram` — imzolangan `init_data` ni tekshirib sessiya ochadi.
+
+    Faqat HMAC-SHA256 imzosi tekshirilgan `init_data` ga ishonamiz — frontend
+    yuborgan `telegram_id` ga emas (u soxtalashtirilishi va ishonchsiz bo'lishi
+    mumkin). Muvaffaqiyatda Django sessiyasini (cookie) o'rnatamiz va qo'shimcha
+    ravishda holatsiz sessiya tokenini qaytaramiz (webview cookie'lar uchun zaxira).
+    """
+
+    authentication_classes = [TelegramTokenAuthentication, CsrfExemptSessionAuthentication]
+    permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
         try:
-            data = request.data
-            telegram_id = data.get('telegram_id')
+            init_data = (request.data.get('init_data') or '').strip()
 
-            # Frontend telegram_id bera olmasa — imzolangan init_data'dan ajratamiz.
-            if not telegram_id:
-                verified = parse_init_data(data.get('init_data') or '')
-                if verified:
-                    telegram_id = verified['telegram_id']
+            verified, reason = verify_init_data(init_data)
+            if not verified:
+                logger.warning(
+                    "Telegram auth rad etildi: code=%s, init_data_present=%s",
+                    reason, bool(init_data),
+                )
+                return _auth_error_response(reason)
 
-            if not telegram_id:
-                return Response({'success': False, 'error': 'Telegram ID not found'},
-                                status=status.HTTP_400_BAD_REQUEST)
-
+            telegram_id = verified['telegram_id']
             profile = UserProfile.objects.filter(telegram_id=telegram_id).first()
 
             if profile:
                 user = profile.user
                 login(request, user)
-
+                logger.info("Telegram auth OK: telegram_id=%s, user_id=%s", telegram_id, user.id)
                 return Response({
                     'success': True,
+                    'token': make_session_token(user.id, telegram_id),
                     'redirect': reverse_lazy('animation'),
                     'onboarding_completed': profile.onboarding_completed,
-                    'user_id': user.id
+                    'user_id': user.id,
                 })
 
+            # Hali profil yo'q — onboardingga yo'naltiramiz (token onboarding oxirida beriladi).
+            logger.info("Telegram auth OK (yangi user): telegram_id=%s", telegram_id)
             return Response({
                 'success': True,
                 'redirect': reverse_lazy('onboarding'),
                 'onboarding_completed': False,
-                'is_new_user': True
+                'is_new_user': True,
             })
 
         except Exception as e:
-            print(traceback.format_exc())
+            logger.exception("Telegram auth kutilmagan xato: %s", e)
             return Response({'success': False, 'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 

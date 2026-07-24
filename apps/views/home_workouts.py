@@ -15,6 +15,7 @@ from apps.services import UserProgramService
 from apps.services.programs import ProgramGenerationService
 from apps.workouts.recommendation import get_recommended_program
 from apps.utils.home_progression import calculate_home_week_exercise
+from apps.services.calorie_calculator import calories_for_home_workout
 from apps.utils.mixins import WeekPaywallDetailMixin, week_paywall_redirect
 from apps.views.workouts import WorkoutCompleteView, build_programs_page_context
 
@@ -278,20 +279,36 @@ class HomeWorkoutCompleteView(LoginRequiredMixin, View):
 		blocked = week_paywall_redirect(request, workout.week)
 		if blocked:
 			return blocked
-		total_calories = float(request.POST.get("total_calories", 0) or 0)
 		total_duration = int(float(request.POST.get("total_duration", 0) or 0))
-		
+
+		# Kaloriya SERVER tomonda, haqiqiy timer qiymatidan (yagona manba) hisoblanadi.
+		calorie_result = calories_for_home_workout(workout, total_duration, request.user.profile)
+		total_calories = calorie_result.total_calories
+		exercises_completed = workout.workout_exercises.count() * (workout.rounds or 1)
+
 		UserWorkoutProgress.objects.filter(
 			user=request.user.profile,
 			workout=workout,
 		).update(is_finished=True, current_round=workout.rounds)
-		
+
+		# Natijani tarix yozuvi bilan saqlaymiz (statistika/keyingi ko'rsatish uchun) —
+		# qayta hisoblashsiz. Gym oqimidagi kabi COMPLETED yozuv yaratamiz.
+		WorkoutProgress.objects.create(
+			user=request.user.profile,
+			workout=workout,
+			total_calories=total_calories,
+			total_duration_seconds=total_duration,
+			exercises_completed=exercises_completed,
+			status=WorkoutProgress.Status.COMPLETED,
+		)
+
 		return render(request, self.template_name, {
 			"workout": workout,
 			"workout_summary": {
 				"total_calories": total_calories,
+				"calories_estimated": calorie_result.is_estimated,
 				"duration_seconds": total_duration,
-				"exercises_completed": workout.workout_exercises.count() * workout.rounds,
+				"exercises_completed": exercises_completed,
 				"total_weight": 0,
 			}
 		})
