@@ -21,6 +21,7 @@ from apps.models.favorites import FavoriteCollection, Favorite, UserCustomProgra
 from apps.models.workouts import ProgressionSetting
 from apps.services.programs import ProgramGenerationService
 from apps.services.workout_calculator import WorkoutCalculatorService
+from apps.services.calorie_calculator import calories_for_custom_program
 from apps.workouts.recommendation import get_recommended_program
 
 
@@ -480,11 +481,15 @@ class CustomProgramCompleteView(LoginRequiredMixin, View):
 	
 	def post(self, request, pk):
 		program = get_object_or_404(UserCustomProgram, pk=pk, user=request.user.profile, is_active=True)
-		
-		total_calories = self._safe_float(request.POST.get("total_calories", 0))
+
 		total_duration = self._safe_int(request.POST.get("total_duration", 0))
 		exercises_completed = self._safe_int(request.POST.get("exercises_completed", 0))
-		
+
+		# Kaloriya SERVER tomonda, haqiqiy timer qiymatidan (yagona manba) hisoblanadi —
+		# maxsus dastur GYM turida, day-one sets/reps bilan.
+		calorie_result = calories_for_custom_program(program, total_duration, request.user.profile)
+		total_calories = calorie_result.total_calories
+
 		CustomProgramProgress.objects.create(
 			user=request.user.profile,
 			program=program,
@@ -492,7 +497,7 @@ class CustomProgramCompleteView(LoginRequiredMixin, View):
 			total_duration_seconds=total_duration,
 			exercises_completed=exercises_completed,
 		)
-		
+
 		return render(
 			request,
 			self.template_name,
@@ -500,6 +505,7 @@ class CustomProgramCompleteView(LoginRequiredMixin, View):
 				"workout": program,
 				"workout_summary": {
 					"total_calories": total_calories,
+					"calories_estimated": calorie_result.is_estimated,
 					"duration_seconds": total_duration,
 					"exercises_completed": exercises_completed,
 					"total_reps": 0,

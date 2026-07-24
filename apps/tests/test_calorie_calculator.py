@@ -224,3 +224,55 @@ class GymAdapterMappingTests(TestCase):
             weight=70,
         )
         self.assertEqual(result.total_calories, expected.total_calories)
+
+
+class CustomProgramAdapterTests(TestCase):
+    """Maxsus (favorites) dastur adapteri GYM formulasini day-one sets/reps bilan
+    ishlatishini va Exercise.calory/.duration maydonlarini o'qishini tekshiradi."""
+
+    def test_custom_program_uses_day_one_gym_formula(self):
+        from apps.models.exercises import Exercise
+        from apps.models.favorites import Favorite, FavoriteCollection, UserCustomProgram
+        from apps.models.users import User, UserProfile
+        from apps.services.calorie_calculator import calories_for_custom_program
+        from apps.services.workout_calculator import WorkoutCalculatorService
+
+        user = User.objects.create(username="cp_user")
+        profile = UserProfile.objects.create(user=user, weight=70)
+        collection = FavoriteCollection.objects.create(user=profile, name="C")
+
+        # 3 ta mashq -> day one round-robin bilan indeks 0 ni oladi (days_per_week=3).
+        exs = [
+            Exercise.objects.create(name="A", calory=50, duration=2),
+            Exercise.objects.create(name="B", calory=40, duration=3),
+            Exercise.objects.create(name="C", calory=60, duration=2),
+        ]
+        for ex in exs:
+            Favorite.objects.create(user=profile, collection=collection, exercise=ex)
+
+        program = UserCustomProgram.objects.create(
+            user=profile, name="P", collection=collection, weeks=6, is_active=True,
+        )
+
+        result = calories_for_custom_program(program, timer_seconds=10 * 60, profile=profile)
+
+        # day-one qaysi mashqlarni olganini AYNAN generatordan aniqlaymiz, so'ng
+        # o'sha mashqlar uchun toza GYM formulasini kutilgan qiymat sifatida quramiz.
+        by_id = {e.id: e for e in exs}
+        schedule = WorkoutCalculatorService.generate_program(exs, weeks=6, days_per_week=3)
+        day_one = schedule[0]["days"][0]
+        expected_inputs = [
+            GymExerciseInput(
+                rep_cal=by_id[item["exercise_id"]].calory,
+                rep_time_sec=by_id[item["exercise_id"]].duration,
+                sets=day_one["sets"],
+                reps=day_one["reps"],
+            )
+            for item in day_one["exercises"]
+        ]
+        expected = calculate_gym(expected_inputs, timer_seconds=10 * 60, weight=70)
+
+        self.assertGreater(len(expected_inputs), 0)
+        self.assertAlmostEqual(result.exercise_calories, expected.exercise_calories, places=4)
+        self.assertEqual(result.total_calories, expected.total_calories)
+        self.assertFalse(result.is_estimated)

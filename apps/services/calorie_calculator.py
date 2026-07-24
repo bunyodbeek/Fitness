@@ -292,3 +292,46 @@ def calories_for_home_workout(workout, timer_seconds, profile) -> CalorieResult:
 
     weight = getattr(profile, "weight", None)
     return calculate_home(exercises, rounds, timer_seconds, weight)
+
+
+def calories_for_custom_program(program, timer_seconds, profile) -> CalorieResult:
+    """Foydalanuvchi maxsus (favorites) dasturi yakunlanganda kaloriyani hisoblaydi.
+
+    Maxsus dastur GYM turida: yuriladigan sessiya — ``WorkoutCalculatorService``
+    yaratgan jadvalning 1-kuni (day one). Uning sets/reps qiymatlari va kolleksiyadagi
+    mashqlardan foydalanamiz; rep_cal/rep_time esa ``Exercise.calory`` / ``.duration``
+    dan olinadi. Shu tarzda GYM formulasini qayta ishlatamiz (yagona manba).
+    """
+    from apps.models.exercises import Exercise
+    from apps.services.workout_calculator import WorkoutCalculatorService
+
+    exercises: List[GymExerciseInput] = []
+    collection_id = getattr(program, "collection_id", None)
+    if collection_id:
+        exercises_qs = Exercise.objects.filter(
+            favorites__collection_id=collection_id,
+            favorites__user=getattr(program, "user", None),
+        ).distinct()
+        by_id = {ex.id: ex for ex in exercises_qs}
+
+        schedule = WorkoutCalculatorService.generate_program(
+            list(by_id.values()), weeks=getattr(program, "weeks", 6) or 6, days_per_week=3,
+        )
+        day_one = (
+            schedule[0]["days"][0]
+            if schedule and schedule[0]["days"]
+            else {"sets": 3, "reps": 10, "exercises": []}
+        )
+        for item in day_one.get("exercises", []):
+            ex = by_id.get(item.get("exercise_id"))
+            if not ex:
+                continue
+            exercises.append(GymExerciseInput(
+                rep_cal=getattr(ex, "calory", 0) or 0,
+                rep_time_sec=getattr(ex, "duration", 0) or 0,
+                sets=day_one.get("sets", 0) or 0,
+                reps=day_one.get("reps", 0) or 0,
+            ))
+
+    weight = getattr(profile, "weight", None)
+    return calculate_gym(exercises, timer_seconds, weight)
