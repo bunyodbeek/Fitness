@@ -17,7 +17,7 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.utils.translation import activate, get_language
 from django.utils.translation import gettext_lazy as _
-from django.views.decorators.csrf import csrf_exempt, csrf_protect
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView, UpdateView, View
 from rest_framework import status
 from rest_framework.permissions import AllowAny
@@ -820,7 +820,12 @@ class AdminAnalyticsView(TemplateView):
     #     return data
 
 
-@method_decorator(csrf_protect, name='dispatch')
+# CSRF exempt: til almashtirish Telegram mini-app webview'idan to'liq sahifa
+# form-POST orqali keladi. `SameSite=None` CSRF cookie'si ko'p klientlarda
+# (iOS webview, menu button orqali ochilgan yangi webview sessiyasi) tashlab
+# yuboriladi -> "CSRF verification failed" sahifasi va til umuman o'zgarmaydi.
+# Endpoint login talab qiladi va faqat sessiyadagi til afzalligini yozadi.
+@method_decorator(csrf_exempt, name='dispatch')
 class ChangeLanguageView(LoginRequiredMixin, View):
     """Language switch endpoint. The old full-page selector is gone — language is
     now chosen from a bottom-sheet modal on the Settings page — so GET (and the
@@ -843,6 +848,11 @@ class ChangeLanguageView(LoginRequiredMixin, View):
 
             messages.success(request, _("Language saved successfully!"))
 
+            # Botdagi reply keyboard tugmasi (matni va ichidagi mini-app URL'i)
+            # tanlangan tilga bog'liq — uni yangi tilda qayta yuboramiz, aks holda
+            # foydalanuvchi keyingi safar tugmani bosganda eski tilga qaytadi.
+            self._refresh_bot_keyboard(request, new_language_code)
+
             response = HttpResponseRedirect(reverse('settings'))
 
             response.set_cookie(settings.LANGUAGE_COOKIE_NAME, new_language_code)
@@ -852,6 +862,19 @@ class ChangeLanguageView(LoginRequiredMixin, View):
             messages.error(request, _("Selected language doesn't exist."))
 
             return HttpResponseRedirect(reverse('settings'))
+
+    @staticmethod
+    def _refresh_bot_keyboard(request, lang_code):
+        """Push the localized bot keyboard. Telegram xatosi til saqlanishini buzmasin."""
+        telegram_id = getattr(getattr(request.user, 'profile', None), 'telegram_id', None)
+        if not telegram_id:
+            return
+        try:
+            from apps.bot.bot_view import send_language_updated
+
+            send_language_updated(telegram_id, lang_code)
+        except Exception:
+            logger.warning("Bot keyboard tilini yangilash muvaffaqiyatsiz", exc_info=True)
 
 
 # Payment.status → coarse UI bucket used by the template (icon / colour / filter).

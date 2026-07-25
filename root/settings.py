@@ -16,7 +16,22 @@ TELEGRAM_BOT_USERNAME = os.getenv('TELEGRAM_BOT_USERNAME', '')
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 
-DEBUG = os.getenv('DEBUG', 'False') == 'True'
+
+def env_bool(name, default=False):
+    """Read a boolean setting from the environment.
+
+    Truthy: 1, true, yes, on (case-insensitive, whitespace-trimmed). Everything
+    else is False. Robust to `DEBUG=true` / `DEBUG=1` etc. so it can't be silently
+    misconfigured. Unset -> ``default``.
+    """
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    return raw.strip().lower() in {'1', 'true', 'yes', 'on'}
+
+
+# Production-safe default: DEBUG is OFF unless DEBUG=true (1/yes/on) is set in the env.
+DEBUG = env_bool('DEBUG', default=False)
 
 ALLOWED_HOSTS = ['*']
 
@@ -46,9 +61,14 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-	
+
 	'django.middleware.security.SecurityMiddleware',
-	
+	# WhiteNoise: statik fayllarni (CSS/JS) DEBUG=False'da ham to'g'ridan-to'g'ri
+	# ilova orqali xizmat qiladi (nginx sozlanmagan bo'lsa ham). SecurityMiddleware
+	# dan keyin, qolganlaridan oldin turishi kerak. E'tibor: WhiteNoise foydalanuvchi
+	# yuklagan /media/ fayllarini xizmat QILMAYDI — ular uchun nginx/obyekt-saqlash kerak.
+	'whitenoise.middleware.WhiteNoiseMiddleware',
+
 	'corsheaders.middleware.CorsMiddleware',
 	
 	'django.contrib.sessions.middleware.SessionMiddleware',
@@ -221,6 +241,19 @@ STATICFILES_DIRS = [
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
+# WhiteNoise: to'plangan statik fayllarni siqib (gzip/brotli) xizmat qiladi.
+# Manifest EMAS (CompressedStaticFilesStorage) — shablonlarda mavjud bo'lmagan
+# fayl havolasi bo'lsa ham `collectstatic` buzilmasin uchun. `default` (media)
+# odatdagi fayl tizimida qoladi.
+STORAGES = {
+	"default": {
+		"BACKEND": "django.core.files.storage.FileSystemStorage",
+	},
+	"staticfiles": {
+		"BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+	},
+}
+
 MEDIA_URL = '/media/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -281,7 +314,9 @@ LOGGING = {
         'console': {'class': 'logging.StreamHandler', 'formatter': 'simple'},
     },
     'loggers': {
-        'apps.telegram_auth': {
+        # Barcha loyiha loglari (apps.telegram_auth, apps.telegram_bot, apps.calorie, ...)
+        # konsolga chiqadi — production'da monitoring/diagnostika uchun.
+        'apps': {
             'handlers': ['console'],
             'level': 'INFO',
             'propagate': False,
