@@ -174,6 +174,7 @@ class ExerciseForm(forms.ModelForm):
             "description", "description_ru", "description_uz",
             "primary_body_part", "thumbnail", "video",
             "calory", "duration", "workout_type",
+            "is_cardio",
             "exercise_type",
             "start_weight_beginner", "start_weight_advanced",
             "weekly_weight_increment_beginner", "weekly_weight_increment_advanced",

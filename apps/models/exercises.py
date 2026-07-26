@@ -9,6 +9,7 @@ from django.core.files.storage import default_storage
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db.models import (
     CASCADE,
+    BooleanField,
     CharField,
     FileField,
     ForeignKey,
@@ -69,6 +70,12 @@ class Exercise(CreatedBaseModel):
     # progression. HOME exercises ignore all of the fields below.
     exercise_type = CharField(
         _("Exercise type"), max_length=20, choices=ExerciseType.choices, blank=True, default='',
+    )
+
+    is_cardio = BooleanField(
+        _("Cardio"), default=False, db_index=True,
+        help_text=_("Marks this exercise as cardio. Used for auto-inserting a warm-up "
+                    "and for cardio-specific presentation. Independent of muscle group."),
     )
 
     # Reps-based: working weight grows each week by the level-specific increment.
