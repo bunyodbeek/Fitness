@@ -616,11 +616,13 @@
         <h1 class="page-title">{% trans 'WORKOUTS' %}</h1>
     </div>
 
+    {# data-swap: tab_router.js almashtirishni joyida (fragment) bajaradi — to'liq
+       sahifa qayta yuklanmaydi va qarama-qarshi rejim oldindan keshga olinadi. #}
     <div class="mode-switch-wrapper">
         <div class="mode-switch">
-            <a href="{% url 'program_list' %}?type=gym"
+            <a href="{% url 'program_list' %}?type=gym" data-swap
                class="mode-pill {% if active_workout_type == 'gym' %}active{% endif %}">{% trans "Gym" %}</a>
-            <a href="{% url 'program_list' %}?type=home"
+            <a href="{% url 'program_list' %}?type=home" data-swap
                class="mode-pill {% if active_workout_type == 'home' %}active{% endif %}">{% trans "Home" %}</a>
         </div>
     </div>
