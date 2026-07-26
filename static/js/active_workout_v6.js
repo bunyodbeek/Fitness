@@ -601,9 +601,11 @@ const toggleFullscreen = (e) => {
     const exitWithoutSaving=()=>exitRedirectUrl?(window.location.href=exitRedirectUrl):history.back();
     
     const completeExercise=()=>{
-        const ex=exercises[currentExIdx]; if(!ex||ex.type!=='cardio') return;
-        totalCalories+=toFin(ex.calories_per_minute,5)*toFin(ex.duration_minutes,0);
-        totalCompleted+=1; updateExit(); loadExercise(currentExIdx+1);
+        const ei=currentExIdx, ex=exercises[ei];
+        if(!ex) return;
+        const last=Math.max(toFin(ex.sets,1),1)-1;
+        if(isDone(ei,last)) return;
+        didItSet(last);
     };
     
     // ? INIT ?????????????????????????????????????????????????
