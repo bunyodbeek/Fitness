@@ -506,9 +506,7 @@
         <div class="about-card">
             <h2 class="info-title">{% trans "About this program" %}</h2>
             <p class="info-text">
-                {# display_description — admin 3 tilda kiritgan tavsif; oddiy `description`
-                   har doim base (inglizcha) qiymatni ko'rsatardi. Zaxira matn ham tarjima
-                   qilinadigan bo'ldi, aks holda tavsifsiz programmada inglizcha chiqardi. #}
+
                 {% trans "Transform your body with this comprehensive workout program designed for all fitness levels." as default_program_desc %}
                 {{ program.display_description|default:default_program_desc|truncatewords:25 }}
             </p>
