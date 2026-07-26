@@ -736,8 +736,6 @@
                 {% trans "Upgrade subscription" %}
             </a>
 
-            {# Bekor qilingan obuna muddat tugagunicha faol qoladi — shuning uchun
-               "Bekor qilish" tugmasi o'rniga qachongacha ochiqligini ko'rsatamiz. #}
             {% if subscription.is_canceled %}
                 <div class="canceled-note">
                     {% blocktrans with date=subscription.end_date|date:"j F Y" %}Canceled — Premium stays active until {{ date }}{% endblocktrans %}
