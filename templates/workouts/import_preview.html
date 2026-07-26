@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load i18n %}
 
-{% block title %}{% trans "Import" %} — {{ program.name }}{% endblock %}
+{% block title %}{% trans "Import" %} — {{ program.display_name }}{% endblock %}
 {% block bottom_nav %}{% endblock %}
 
 {% block extra_css %}
@@ -75,11 +75,11 @@ body { background: #000; font-family: -apple-system, BlinkMacSystemFont, 'Segoe 
     <div class="program-preview-card">
         <div class="preview-image">
             {% if program.image %}
-                <img src="{{ program.image.url }}" alt="{{ program.name }}">
+                <img src="{{ program.image.url }}" alt="{{ program.display_name }}">
                 <div class="preview-image-overlay"></div>
-                <div class="preview-image-name">{{ program.name|upper }}</div>
+                <div class="preview-image-name">{{ program.display_name|upper }}</div>
             {% else %}
-                {{ program.name|slice:":3"|upper }}
+                {{ program.display_name|slice:":3"|upper }}
             {% endif %}
         </div>
         <div class="preview-body">

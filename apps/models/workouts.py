@@ -199,6 +199,18 @@ class Plan(CreatedBaseModel):
 				raise ValidationError("Plan must contain exactly 6 weeks.")
 	
 	@property
+	def display_name(self):
+		"""Aktiv tildagi plan nomi (`name_uz` / `name_ru`), bo'lmasa base `name`.
+
+		Shablonlar HAR DOIM shuni ishlatishi kerak — `{{ plan.name }}` admin kiritgan
+		bitta tildagi qiymatni ko'rsatadi va til almashtirilganda o'zgarmaydi."""
+		return localized_field(self, 'name')
+
+	@property
+	def display_description(self):
+		return localized_field(self, 'description')
+
+	@property
 	def days_per_week(self):
 		# Iterate the cached relation (reuses a weeks__workouts prefetch) instead of
 		# .filter(week_number=1).first() + .count(), which fire a query per card.
@@ -352,6 +364,14 @@ class Workout(CreatedBaseModel):
 	
 	def __str__(self):
 		return f"{self.week} - {self.title or f'Day {self.day_number}'}"
+
+	@property
+	def display_title(self):
+		"""Aktiv tildagi kun sarlavhasi (`title_uz` / `title_ru`), bo'lmasa `title`.
+
+		Sarlavha umuman kiritilmagan bo'lsa bo'sh satr qaytadi — shablonlar odatdagidek
+		"Day N" ga tushadi."""
+		return localized_field(self, 'title') or ""
 
 
 class GymWorkout(Workout):

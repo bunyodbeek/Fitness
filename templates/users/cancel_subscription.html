@@ -437,7 +437,7 @@
             <h2 class="cancel-title">{% trans "Cancel subscription" %}</h2>
             
             <p class="cancel-description">
-                {% trans "You are about to cancel your subscription. This action will stop your subscription services." %}
+                {% trans "You are about to cancel your subscription. It will not renew, but you keep Premium until the end of the period you already paid for." %}
             </p>
 
             <div class="warning-box">
@@ -446,9 +446,13 @@
                     {% trans "As a result of cancellation:" %}
                 </div>
                 <ul class="warning-box-list">
-                    <li>{% trans "You will lose access to all premium features" %}</li>
-                    <li>{% trans "Premium programs and recommendations will be locked" %}</li>
-                    <li>{% trans "Advanced statistics and insights will be locked" %}</li>
+                    {% if subscription_end %}
+                        <li>{% blocktrans with date=subscription_end|date:"d.m.Y" %}Premium stays active until {{ date }}{% endblocktrans %}</li>
+                    {% else %}
+                        <li>{% trans "Premium stays active until the end of the paid period" %}</li>
+                    {% endif %}
+                    <li>{% trans "Your subscription will not renew after that date" %}</li>
+                    <li>{% trans "Premium features are locked only once the period ends" %}</li>
                 </ul>
             </div>
 

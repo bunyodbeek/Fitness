@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load i18n %}
 
-{% block title %}{{ program.name }} - {% trans "Plans" %}{% endblock %}
+{% block title %}{{ program.display_name }} - {% trans "Plans" %}{% endblock %}
 
 {% block bottom_nav %}{% endblock %}
 
@@ -506,7 +506,11 @@
         <div class="about-card">
             <h2 class="info-title">{% trans "About this program" %}</h2>
             <p class="info-text">
-                {{ program.description|default:"Transform your body with this comprehensive workout program designed for all fitness levels."|truncatewords:25 }}
+                {# display_description — admin 3 tilda kiritgan tavsif; oddiy `description`
+                   har doim base (inglizcha) qiymatni ko'rsatardi. Zaxira matn ham tarjima
+                   qilinadigan bo'ldi, aks holda tavsifsiz programmada inglizcha chiqardi. #}
+                {% trans "Transform your body with this comprehensive workout program designed for all fitness levels." as default_program_desc %}
+                {{ program.display_description|default:default_program_desc|truncatewords:25 }}
             </p>
         </div>
 
@@ -520,7 +524,7 @@
                         {{ forloop.counter }}
                     </div>
                     <div class="edition-content">
-                        <div class="edition-title">{{ plan.name }}</div>
+                        <div class="edition-title">{{ plan.display_name }}</div>
                         <div class="edition-meta">
                             {{ plan.weeks_count }}{% trans "w" %} &bull;
                             {{ plan.weeks.first.workouts.count|default:"?" }}{% trans "d/week" %}

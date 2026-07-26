@@ -8,7 +8,6 @@
 {% block body_attributes %}data-tg-root="1"{% endblock %}
 
 {% block extra_css %}
-    {# Preload the recommended-program cover — it's the LCP element (hero background). #}
     {% if recommended_card.program.image %}
         <link rel="preload" as="image" href="{{ recommended_card.program.image.url }}" fetchpriority="high">
     {% endif %}
@@ -180,8 +179,6 @@
             overflow: hidden;
         }
 
-        /* Recommended kartochkada matn blokini pastroqqa suramiz:
-           badge tepada, matn (nom + tavsif) pastroqda, CTA eng pastda. */
         .hero-card--recommended .hero-textblock {
             margin-top: 44px;
         }
@@ -220,8 +217,7 @@
             padding-top: 6px;
         }
 
-        /* Meta row now lives on the same line as the CTA (left) — must shrink,
-           wrap and never overlap the button on very narrow screens. */
+
         .hero-bottom .hero-inforow {
             flex: 1 1 auto;
             min-width: 0;
@@ -268,9 +264,6 @@
             text-overflow: ellipsis;
         }
 
-        /* ===== LEVEL FILTER (Beginner / Advanced dropdown) =====
-           Compact pill living inside the explore-header, between the
-           title and the list/grid toggle. */
         .level-filter {
             flex-shrink: 0;
         }
@@ -404,9 +397,7 @@
             display: none;
         }
 
-        /* 3 cards fit per row; more than 3 -> horizontal scroll.
-           Tight gap (2 x 7px) keeps the cards as wide as possible so the
-           meta line ("6 weeks | 3x/week") fits without overflowing. */
+
         .cat-card {
             flex: 0 0 calc((100% - 14px) / 3);
             scroll-snap-align: start;
@@ -616,8 +607,7 @@
         <h1 class="page-title">{% trans 'WORKOUTS' %}</h1>
     </div>
 
-    {# data-swap: tab_router.js almashtirishni joyida (fragment) bajaradi — to'liq
-       sahifa qayta yuklanmaydi va qarama-qarshi rejim oldindan keshga olinadi. #}
+
     <div class="mode-switch-wrapper">
         <div class="mode-switch">
             <a href="{% url 'program_list' %}?type=gym" data-swap
@@ -651,7 +641,6 @@
                             {% endif %}
                         </div>
 
-                        {# Meta row + CTA share the bottom line (meta left, button right). #}
                         <div class="hero-bottom">
                             <div class="hero-inforow">
                                 {% if prog.started %}
@@ -844,7 +833,6 @@
 
 {% block extra_js %}
     <script>
-        // Telegram WebView ba'zan mode-switch'ni dublikat qiladi — keraksizlarini olib tashlaymiz.
         (function () {
             const modeSwitches = document.querySelectorAll('.mode-switch');
             if (modeSwitches.length > 1) {

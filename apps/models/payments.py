@@ -65,6 +65,10 @@ class Subscription(Model):
 	start_date = DateTimeField(_("Boshlanish sanasi"), auto_now_add=True)
 	end_date = DateTimeField(_("Tugash sanasi"), editable=False)
 	is_active = BooleanField(_("Faol"), default=True)
+	# Bekor qilingan vaqt. To'ldirilgan bo'lsa — obuna YANGILANMAYDI, lekin
+	# `end_date` gacha premium ochiq qoladi (foydalanuvchi pulini to'lagan davr).
+	# `is_active` bilan aralashtirmang: u "hozir amal qiladimi" degani.
+	canceled_at = DateTimeField(_("Bekor qilingan sana"), null=True, blank=True)
 
 	class Meta:
 		verbose_name = _("Obuna")
@@ -99,6 +103,11 @@ class Subscription(Model):
 			return 1
 		return max((self.end_date - self.start_date).days, 1)
 
+	@property
+	def is_canceled(self) -> bool:
+		"""Bekor qilingan, lekin hali muddati tugamagan bo'lishi mumkin."""
+		return self.canceled_at is not None
+
 	def extend(self, plan=None):
 		"""Renew / extend from current end_date (or now if already expired)."""
 		plan = plan or self.plan
@@ -106,17 +115,30 @@ class Subscription(Model):
 		self.plan = plan
 		self.end_date = plan.get_expiry_date(base)
 		self.is_active = True
+		# Yangi to'lov = bekor qilish bekor bo'ladi (foydalanuvchi qaytadan obuna bo'ldi).
+		self.canceled_at = None
 		self.save()
 
 	def cancel(self):
-		"""Cancel the subscription — premium access is revoked immediately.
+		"""Cancel the subscription — premium stays until the paid period ends.
 
-		``is_valid`` (and therefore ``UserProfile.is_premium``) checks
-		``is_active``, so flipping it off is enough to lock premium features.
-		The row is kept so the payment history and a future re-subscribe stay
-		intact."""
-		self.is_active = False
-		self.save(update_fields=['is_active'])
+		Faqat `canceled_at` yoziladi; `is_active` TEGILMAYDI, shuning uchun
+		``is_valid`` (va ``UserProfile.is_premium``) `end_date` gacha True bo'lib
+		qolaveradi. Foydalanuvchi allaqachon to'lagan davrni yo'qotmaydi — muddat
+		tugagach `is_valid` o'z-o'zidan False bo'ladi.
+
+		Avval bu yerda `is_active = False` qilinardi va premium DARHOL o'chardi.
+
+		Idempotent: qayta chaqirilsa birinchi bekor qilish vaqti saqlanib qoladi."""
+		if self.canceled_at is None:
+			self.canceled_at = timezone.now()
+			self.save(update_fields=['canceled_at'])
+
+	def reactivate(self):
+		"""Bekor qilishni qaytarish — muddat ichida bo'lsa obuna yana yangilanadigan bo'ladi."""
+		if self.canceled_at is not None:
+			self.canceled_at = None
+			self.save(update_fields=['canceled_at'])
 
 
 class Payment(CreatedBaseModel):

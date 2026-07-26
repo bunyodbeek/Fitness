@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load i18n %}
 
-{% block title %}{{ plan.name }} - {% trans "Weeks" %}{% endblock %}
+{% block title %}{{ plan.display_name }} - {% trans "Weeks" %}{% endblock %}
 
 {% block bottom_nav %}{% endblock %}
 
@@ -369,7 +369,7 @@
     {#            <div class="plan-header-placeholder"></div>#}
     {#        {% endif %}#}
     {#        <div class="plan-header-overlay">#}
-    {#            <div class="plan-title">{{ plan.name|upper }}</div>#}
+    {#            <div class="plan-title">{{ plan.display_name|upper }}</div>#}
     {#            <div class="plan-subtitle">#}
     {#                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>#}
     {#                {{ weeks|length }} {% trans "Weeks" %}#}

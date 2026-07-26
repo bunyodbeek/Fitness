@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load i18n %}
 
-{% block title %}{{ workout.title }} - {% trans "Workout" %}{% endblock %}
+{% block title %}{{ workout.display_title }} - {% trans "Workout" %}{% endblock %}
 
 {% block bottom_nav %}{% endblock %}
 
@@ -477,7 +477,7 @@
             📅 {% trans "Day" %} {{ workout.day_number }}
         </div>
         <div class="hero-title">
-            {% if workout.title %}{{ workout.title }}{% else %}{% blocktrans with num=workout.day_number %}Day {{ num }}{% endblocktrans %}{% endif %}
+            {% if workout.display_title %}{{ workout.display_title }}{% else %}{% blocktrans with num=workout.day_number %}Day {{ num }}{% endblocktrans %}{% endif %}
         </div>
         <div class="hero-stats">
             <div class="hero-stat">

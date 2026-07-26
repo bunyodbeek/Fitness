@@ -15,6 +15,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.utils.decorators import method_decorator
+from django.utils.formats import date_format
 from django.utils.translation import activate, get_language
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.csrf import csrf_exempt
@@ -539,10 +540,12 @@ class ProgressView(LoginRequiredMixin, TemplateView):
 
         profile, _created = UserProfile.objects.get_or_create(user=self.request.user)
 
-        # Statistics are a premium feature. Free users may only view *today's*
-        # stats; any other period (week/month/year/all) is locked behind premium.
+        # Statistics are partly free: *today* and *this week* are always available
+        # (weekly progress is the core feedback loop — locking it made the app feel
+        # useless to free users). Month / year / all-time stay premium.
+        FREE_PERIODS = {'today', 'week'}
         is_premium = profile.is_premium
-        stats_locked = (not is_premium) and period != 'today'
+        stats_locked = (not is_premium) and period not in FREE_PERIODS
         context['is_premium'] = is_premium
         context['stats_locked'] = stats_locked
         context['period'] = period
@@ -984,10 +987,11 @@ class ManageSubscriptionView(LoginRequiredMixin, TemplateView):
 class CancelSubscriptionView(LoginRequiredMixin, TemplateView):
     """Confirm + perform a Premium subscription cancellation.
 
-    GET shows the warning/confirm page; POST flips the subscription off so the
-    user immediately loses premium access. Non-premium users have nothing to
-    cancel, so they are bounced back to the manage screen (which itself sends
-    them to the paywall)."""
+    GET shows the confirm page; POST marks the subscription as canceled so it
+    will not renew — premium access CONTINUES until ``end_date``, the period the
+    user already paid for (see ``Subscription.cancel``). Non-premium users have
+    nothing to cancel, so they are bounced back to the manage screen (which itself
+    sends them to the paywall)."""
     template_name = 'users/cancel_subscription.html'
 
     def dispatch(self, request, *args, **kwargs):
@@ -995,12 +999,25 @@ class CancelSubscriptionView(LoginRequiredMixin, TemplateView):
             return redirect('manage_subscription')
         return super().dispatch(request, *args, **kwargs)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        subscription = getattr(self.request.user.profile, 'subscription', None)
+        # Sahifada "premium qachongacha ochiq qoladi" sanasini ko'rsatamiz.
+        context['subscription'] = subscription
+        context['subscription_end'] = getattr(subscription, 'end_date', None)
+        return context
+
     def post(self, request, *args, **kwargs):
         profile = request.user.profile
         subscription = getattr(profile, 'subscription', None)
-        if subscription and subscription.is_active:
+        if subscription and subscription.is_valid:
             subscription.cancel()
-            messages.success(request, _("Your subscription has been canceled."))
+            if subscription.end_date:
+                messages.success(request, _(
+                    "Your subscription has been canceled. Premium stays active until %(date)s."
+                ) % {'date': date_format(timezone.localtime(subscription.end_date), 'd.m.Y')})
+            else:
+                messages.success(request, _("Your subscription has been canceled."))
         return redirect('user_profile')
 
 

@@ -134,16 +134,18 @@ body { background: #000000; font-family: -apple-system, BlinkMacSystemFont, 'Seg
         {% for ex in exercises %}
         <div class="ex-picker-item" id="pickerItem{{ ex.id }}"
              data-id="{{ ex.id }}"
-             data-name="{{ ex.name|escapejs }}"
-             data-muscle="{{ ex.primary_body_part }}"
+             data-name="{{ ex.display_name|escapejs }}"
+             data-muscle="{{ ex.get_primary_body_part_display }}"
              data-thumb="{% if ex.thumbnail %}{{ ex.thumbnail.url }}{% endif %}"
              onclick="toggleExerciseSelection({{ ex.id }})">
             <div class="ex-picker-thumb">
-                {% if ex.thumbnail %}<img src="{{ ex.thumbnail.url }}" alt="{{ ex.name }}">{% else %}<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5h11v11h-11z"/><path d="M2 9v6M22 9v6M6.5 12H2M22 12h-4.5"/></svg>{% endif %}
+                {% if ex.thumbnail %}<img src="{{ ex.thumbnail.url }}" alt="{{ ex.display_name }}">{% else %}<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5h11v11h-11z"/><path d="M2 9v6M22 9v6M6.5 12H2M22 12h-4.5"/></svg>{% endif %}
             </div>
             <div class="ex-picker-info">
-                <div class="ex-picker-name">{{ ex.name }}</div>
-                <div class="ex-picker-meta">{{ ex.primary_body_part }}</div>
+                {# display_name — aktiv tildagi nom (name_uz / name_ru), aks holda ro'yxat
+                   foydalanuvchi tanlagan tildan qat'i nazar bitta tilda chiqadi. #}
+                <div class="ex-picker-name">{{ ex.display_name }}</div>
+                <div class="ex-picker-meta">{{ ex.get_primary_body_part_display }}</div>
             </div>
             <div class="ex-picker-check">✓</div>
         </div>
@@ -558,10 +560,16 @@ async function saveProgram() {
         ? `/${LANG}/favorites/custom-program/${PROGRAM_ID}/edit/save/`
         : `/${LANG}/favorites/custom-program/create/`;
 
+    function resetButton() {
+        btn.disabled = false;
+        btn.textContent = IS_EDIT ? I18N.updateProgram : I18N.saveProgram;
+    }
+
     try {
         const res = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF },
+            credentials: 'same-origin',
             body: JSON.stringify({
                 name: document.getElementById('programName').value.trim(),
                 goal: selectedGoal,
@@ -569,18 +577,23 @@ async function saveProgram() {
                 days
             }),
         });
-        const data = await res.json();
-        if (data.success) {
+
+        // Server xato sahifasi (403/500) JSON emas — uni res.json() ichida "portlatib"
+        // yubormaymiz, aks holda har qanday server xatosi "Tarmoq xatosi" bo'lib
+        // ko'rinadi va sababini topib bo'lmaydi.
+        let data = null;
+        try { data = await res.json(); } catch { data = null; }
+
+        if (res.ok && data && data.success) {
             window.location.href = data.redirect_url || `/${LANG}/favorites/`;
-        } else {
-            alert(data.error || I18N.errorSavingProgram);
-            btn.disabled = false;
-            btn.textContent = IS_EDIT ? I18N.updateProgram : I18N.saveProgram;
+            return;
         }
+        alert((data && data.error) || `${I18N.errorSavingProgram} (HTTP ${res.status})`);
+        resetButton();
     } catch {
+        // Bu yerga faqat haqiqiy tarmoq uzilishida tushamiz.
         alert(I18N.networkError);
-        btn.disabled = false;
-        btn.textContent = IS_EDIT ? I18N.updateProgram : I18N.saveProgram;
+        resetButton();
     }
 }
 

@@ -509,7 +509,7 @@
                     <div class="day-content">
                         <div class="day-name">
                             {% if workout.title %}
-                                {{ workout.title }}
+                                {{ workout.display_title }}
                             {% else %}
                                 {% blocktrans with num=workout.day_number %}Day {{ num }}{% endblocktrans %}
                             {% endif %}

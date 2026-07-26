@@ -245,6 +245,22 @@
             background: rgba(255, 107, 107, 0.08);
         }
 
+        /* Bekor qilingan, ammo hali amal qiladigan obuna haqidagi eslatma. */
+        .canceled-note {
+            width: 100%;
+            margin-top: 10px;
+            padding: 13px 18px;
+            border-radius: 14px;
+            background: rgba(255, 107, 107, 0.06);
+            border: 1.5px solid rgba(255, 107, 107, 0.25);
+            color: #ff9b9b;
+            font-size: 11.5px;
+            font-weight: 700;
+            line-height: 1.45;
+            text-align: center;
+            letter-spacing: 0.3px;
+        }
+
         /* ===== GIFT PREMIUM CARD ===== */
         .gift-card {
             display: flex;
@@ -720,13 +736,21 @@
                 {% trans "Upgrade subscription" %}
             </a>
 
-            <a href="{% url 'cancel_subscription' %}" class="cancel-sub-btn">
-                <svg class="icon" width="16" height="16" viewBox="0 0 24 24" stroke-width="2.1">
-                    <circle cx="12" cy="12" r="9"/>
-                    <path d="M15 9l-6 6M9 9l6 6"/>
-                </svg>
-                {% trans "Cancel subscription" %}
-            </a>
+            {# Bekor qilingan obuna muddat tugagunicha faol qoladi — shuning uchun
+               "Bekor qilish" tugmasi o'rniga qachongacha ochiqligini ko'rsatamiz. #}
+            {% if subscription.is_canceled %}
+                <div class="canceled-note">
+                    {% blocktrans with date=subscription.end_date|date:"j F Y" %}Canceled — Premium stays active until {{ date }}{% endblocktrans %}
+                </div>
+            {% else %}
+                <a href="{% url 'cancel_subscription' %}" class="cancel-sub-btn">
+                    <svg class="icon" width="16" height="16" viewBox="0 0 24 24" stroke-width="2.1">
+                        <circle cx="12" cy="12" r="9"/>
+                        <path d="M15 9l-6 6M9 9l6 6"/>
+                    </svg>
+                    {% trans "Cancel subscription" %}
+                </a>
+            {% endif %}
         </div>
     {% endif %}
 

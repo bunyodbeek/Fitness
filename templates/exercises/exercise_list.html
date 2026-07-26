@@ -814,7 +814,7 @@ background: #0d0f18;
                         <span>{% if exercise.is_favorited %}🌟{% else %}☆{% endif %}</span>
                     </div>
                     {% if exercise.thumbnail %}
-                        <img src="{{ exercise.thumbnail.url }}" alt="{{ exercise.name }}" class="exercise-image">
+                        <img src="{{ exercise.thumbnail.url }}" alt="{{ exercise.display_name }}" class="exercise-image">
                     {% else %}
                         <div class="exercise-placeholder">🏋️</div>
                     {% endif %}

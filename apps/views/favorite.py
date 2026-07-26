@@ -520,11 +520,22 @@ class CustomProgramCompleteView(LoginRequiredMixin, View):
 
 
 
+# CSRF exempt: dastur saqlash Telegram mini-app webview'idan `fetch()` orqali keladi.
+# CSRF cookie'si `SameSite=None` bo'lgani uchun ko'p webview'larda tashlab yuboriladi ->
+# Django 403 qaytaradi, JS esa uni JSON deb o'qiyolmay "Tarmoq xatosi" deb ko'rsatadi
+# (foydalanuvchi dasturni umuman saqlay olmaydi). LoginRequiredMixin identifikatsiya
+# isboti bo'lib qoladi — `CustomProgramCompleteView` va `ChangeLanguageView` bilan bir xil naqsh.
+@method_decorator(csrf_exempt, name='dispatch')
 class CustomProgramCreateView(LoginRequiredMixin, View):
 	template_name = "exercises/custom_program_create.html"
-	
+
 	def get(self, request):
-		exercises = Exercise.objects.filter(workout_type='gym').order_by('name')
+		# display_name aktiv tilga qarab ishlaydi — saralashni ham shu tilda qilamiz,
+		# aks holda ro'yxat ruscha/o'zbekcha nomlar bilan alifbo tartibida bo'lmaydi.
+		exercises = sorted(
+			Exercise.objects.filter(workout_type='gym'),
+			key=lambda ex: (ex.display_name or "").lower(),
+		)
 		return render(request, self.template_name, {'exercises': exercises})
 	
 	def post(self, request):
@@ -647,8 +658,12 @@ class CustomProgramEditView(LoginRequiredMixin, View):
 			type=Program.ProgramType.CUSTOM,
 			created_by=request.user.profile,
 		)
-		exercises = Exercise.objects.filter(workout_type='gym').order_by('name')
-		
+		# Aktiv tildagi nom bo'yicha saralash (qarang: CustomProgramCreateView.get).
+		exercises = sorted(
+			Exercise.objects.filter(workout_type='gym'),
+			key=lambda ex: (ex.display_name or "").lower(),
+		)
+
 		# Week 1 dan mavjud data olish
 		plan = program.plans.first()
 		existing_days = []
@@ -684,6 +699,8 @@ class CustomProgramEditView(LoginRequiredMixin, View):
 		})
 
 
+# CSRF exempt: `CustomProgramCreateView` bilan bir xil sabab (webview'da CSRF cookie yo'q).
+@method_decorator(csrf_exempt, name='dispatch')
 class CustomProgramEditSaveView(LoginRequiredMixin, View):
 	def post(self, request, pk):
 		import json
