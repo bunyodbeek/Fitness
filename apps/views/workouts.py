@@ -537,7 +537,7 @@ class WorkoutStartView(LoginRequiredMixin, View):
 				"duration_minutes": float(wex.minutes or 0),
 				"rest_seconds": int(getattr(wex, 'rest_seconds', 60)),
 				"calories_per_minute": float(getattr(wex, 'calories_per_minute', 5.0)),
-				"type": "cardio" if (wex.minutes or 0) > 0 and (wex.sets or 1) <= 1 else "strength",
+				"type": "strength",
 				"exercise_type": getattr(ex, 'exercise_type', '') or '',
 				"duration_seconds": int(wex.duration_seconds) if getattr(wex, 'duration_seconds', None) is not None else None,
 				"recommended_weight": float(getattr(wex, 'recommended_weight', 0)),
@@ -557,6 +557,35 @@ class WorkoutCompleteView(LoginRequiredMixin, View):
 	forced_workout_type = None
 	template_name = "workouts/workout_complete.html"
 	
+	@staticmethod
+	def _completion_status(request, workout):
+		"""COMPLETED unless the program requires its cardio entry and it was skipped.
+
+		Off by default (``auto_cardio_blocks_completion``): cardio is treated as a
+		warm-up, so skipping it still completes the day. When a program turns the
+		switch on, a day whose auto-cardio set was not finished is recorded as
+		IN_PROGRESS and therefore never counts towards the completed-week markers.
+		"""
+		completed = WorkoutProgress.Status.COMPLETED
+		program = workout.week.plan.program
+		if not program.auto_cardio_blocks_completion:
+			return completed
+
+		cardio_ids = set(
+			WorkoutExercise.objects.filter(workout=workout, is_auto_cardio=True)
+			.values_list("exercise_id", flat=True)
+		)
+		if not cardio_ids:
+			return completed
+
+		raw = request.POST.get("completed_exercise_ids", "")
+		done_ids = {int(v) for v in raw.split(",") if v.strip().isdigit()}
+		if not done_ids:
+			return completed
+		if cardio_ids & done_ids:
+			return completed
+		return WorkoutProgress.Status.IN_PROGRESS
+
 	@staticmethod
 	def _safe_float(value, default=0.0):
 		try:
@@ -605,7 +634,7 @@ class WorkoutCompleteView(LoginRequiredMixin, View):
 			total_calories=total_calories,
 			total_duration_seconds=total_duration,
 			exercises_completed=exercises_completed,
-			status=WorkoutProgress.Status.COMPLETED,
+			status=self._completion_status(request, workout),
 		)
 
 		return render(request, self.get_template_name(request), {

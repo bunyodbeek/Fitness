@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-26 19:58+0500\n"
+"POT-Creation-Date: 2026-07-26 21:27+0500\n"
 "PO-Revision-Date: 2026-05-22 12:00+0500\n"
 "Last-Translator: Claude AI\n"
 "Language-Team: Uzbek\n"
@@ -149,97 +149,98 @@ msgstr "Foydalanuvchi faolligi"
 msgid "UserActivities"
 msgstr "Foydalanuvchi faoliyatlari"
 
-#: apps/models/exercises.py:27 templates/exercises/body_parts.html:397
+#: apps/models/exercises.py:28 templates/exercises/body_parts.html:397
 msgid "Shoulders"
 msgstr "Yelkalar"
 
-#: apps/models/exercises.py:28 templates/exercises/body_parts.html:406
+#: apps/models/exercises.py:29 templates/exercises/body_parts.html:406
 msgid "Chest"
 msgstr "Ko'krak"
 
-#: apps/models/exercises.py:29 templates/exercises/body_parts.html:416
+#: apps/models/exercises.py:30 templates/exercises/body_parts.html:416
 msgid "Biceps"
 msgstr "Biseps"
 
-#: apps/models/exercises.py:30 templates/exercises/body_parts.html:426
+#: apps/models/exercises.py:31 templates/exercises/body_parts.html:426
 msgid "Forearm"
 msgstr "Bilak"
 
-#: apps/models/exercises.py:31 templates/exercises/body_parts.html:435
+#: apps/models/exercises.py:32 templates/exercises/body_parts.html:435
 msgid "Abs"
 msgstr "Qorin"
 
-#: apps/models/exercises.py:32 templates/exercises/body_parts.html:445
+#: apps/models/exercises.py:33 templates/exercises/body_parts.html:445
 msgid "Obliques"
 msgstr "Yon qorin"
 
-#: apps/models/exercises.py:33 templates/exercises/body_parts.html:454
+#: apps/models/exercises.py:34 templates/exercises/body_parts.html:454
 msgid "Quads"
 msgstr "Kvadriseps"
 
-#: apps/models/exercises.py:34 templates/exercises/body_parts.html:464
+#: apps/models/exercises.py:35 templates/exercises/body_parts.html:464
 msgid "Adductors"
 msgstr "Adduktorlar"
 
-#: apps/models/exercises.py:35 templates/exercises/body_parts.html:529
+#: apps/models/exercises.py:36 templates/exercises/body_parts.html:529
 msgid "Abductors"
 msgstr "Abduktorlar"
 
-#: apps/models/exercises.py:36 templates/exercises/body_parts.html:480
+#: apps/models/exercises.py:37 templates/exercises/body_parts.html:480
 msgid "Traps"
 msgstr "Trapetsiya"
 
-#: apps/models/exercises.py:37 templates/exercises/body_parts.html:490
+#: apps/models/exercises.py:38 templates/exercises/body_parts.html:490
 msgid "Triceps"
 msgstr "Triseps"
 
-#: apps/models/exercises.py:38 templates/exercises/body_parts.html:499
+#: apps/models/exercises.py:39 templates/exercises/body_parts.html:499
 msgid "Lats"
 msgstr "Keng mushaklar"
 
-#: apps/models/exercises.py:39 templates/exercises/body_parts.html:509
+#: apps/models/exercises.py:40 templates/exercises/body_parts.html:509
 msgid "Lower back"
 msgstr "Bel"
 
-#: apps/models/exercises.py:40 templates/exercises/body_parts.html:519
+#: apps/models/exercises.py:41 templates/exercises/body_parts.html:519
 msgid "Glutes"
 msgstr "Dumba"
 
-#: apps/models/exercises.py:41 templates/exercises/body_parts.html:539
+#: apps/models/exercises.py:42 templates/exercises/body_parts.html:539
 msgid "Hamstrings"
 msgstr "Orqa son"
 
-#: apps/models/exercises.py:42 templates/exercises/body_parts.html:548
+#: apps/models/exercises.py:43 templates/exercises/body_parts.html:548
 msgid "Calves"
 msgstr "Boldir"
 
-#: apps/models/exercises.py:43 templates/exercises/body_parts.html:387
+#: apps/models/exercises.py:44 apps/models/exercises.py:76
+#: templates/exercises/body_parts.html:387
 msgid "Cardio"
 msgstr "Kardio"
 
-#: apps/models/exercises.py:47 apps/panel/views/premade_days.py:28
+#: apps/models/exercises.py:48 apps/panel/views/premade_days.py:28
 #: apps/panel/views/premade_days.py:223 apps/panel/views/programs.py:43
 #: templates/miniapp/questionarrie.html:221
 #: templates/workouts/program_list.html:611
 msgid "Gym"
 msgstr "Sport zal"
 
-#: apps/models/exercises.py:48 apps/panel/views/premade_days.py:28
+#: apps/models/exercises.py:49 apps/panel/views/premade_days.py:28
 #: apps/panel/views/premade_days.py:223 apps/panel/views/programs.py:44
 #: templates/miniapp/questionarrie.html:222
 #: templates/workouts/program_list.html:613
 msgid "Home"
 msgstr "Uy"
 
-#: apps/models/exercises.py:51
+#: apps/models/exercises.py:52
 msgid "Reps based"
 msgstr "Takrorlar bo'yicha"
 
-#: apps/models/exercises.py:52
+#: apps/models/exercises.py:53
 msgid "Time based"
 msgstr "Vaqt bo'yicha"
 
-#: apps/models/exercises.py:54 apps/models/users.py:55
+#: apps/models/exercises.py:55 apps/models/users.py:55
 #: apps/panel/views/exercises.py:14 apps/panel/views/premade_days.py:40
 #: apps/panel/views/programs.py:81 apps/panel/views/programs.py:148
 #: apps/panel/views/programs.py:849 apps/panel/views/programs.py:937
@@ -249,90 +250,98 @@ msgstr "Vaqt bo'yicha"
 msgid "Name"
 msgstr "Nomi"
 
-#: apps/models/exercises.py:55
+#: apps/models/exercises.py:56
 msgid "Russian Name"
 msgstr "Ruscha nomi"
 
-#: apps/models/exercises.py:56
+#: apps/models/exercises.py:57
 msgid "Uzbek Name"
 msgstr "O'zbekcha nomi"
 
-#: apps/models/exercises.py:57 templates/exercises/exercise_detail.html:43
+#: apps/models/exercises.py:58 templates/exercises/exercise_detail.html:43
 #: templates/handbooks/item_detail.html:377
 msgid "Description"
 msgstr "Tavsif"
 
-#: apps/models/exercises.py:58
+#: apps/models/exercises.py:59
 msgid "Russian Description"
 msgstr "Ruscha tavsif"
 
-#: apps/models/exercises.py:59
+#: apps/models/exercises.py:60
 msgid "Uzbek Description"
 msgstr "O'zbekcha tavsif"
 
-#: apps/models/exercises.py:60
+#: apps/models/exercises.py:61
 msgid "Muscle Group"
 msgstr "Mushak guruhi"
 
-#: apps/models/exercises.py:61 apps/panel/views/support.py:126
+#: apps/models/exercises.py:62 apps/panel/views/support.py:126
 #: templates/panel/chat_thread.html:160 templates/panel/chat_thread.html:207
 #: templates/users/help.html:143
 msgid "Image"
 msgstr "Rasm"
 
-#: apps/models/exercises.py:63 apps/panel/views/exercises.py:14
+#: apps/models/exercises.py:64 apps/panel/views/exercises.py:14
 #: apps/panel/views/tracking.py:15 templates/users/progress.html:610
 #: templates/users/progress.html:694
 msgid "Calories"
 msgstr "Kaloriyalar"
 
-#: apps/models/exercises.py:64 apps/panel/views/exercises.py:14
+#: apps/models/exercises.py:65 apps/panel/views/exercises.py:14
 #: templates/workouts/home_workout_complete.html:257
 #: templates/workouts/workout_complete.html:257
 msgid "Duration"
 msgstr "Davomiyligi"
 
-#: apps/models/exercises.py:65
+#: apps/models/exercises.py:66
 msgid "Workout type"
 msgstr "Mashg'ulot turi"
 
-#: apps/models/exercises.py:71
+#: apps/models/exercises.py:72
 msgid "Exercise type"
 msgstr "Mashq turi"
 
-#: apps/models/exercises.py:78
+#: apps/models/exercises.py:77
+msgid ""
+"Marks this exercise as cardio. Used for auto-inserting a warm-up and for "
+"cardio-specific presentation. Independent of muscle group."
+msgstr ""
+"Mashqni kardio deb belgilaydi. Avtomatik qizdirish qo'shish va kardio "
+"ko'rinishi uchun ishlatiladi. Mushak guruhiga bog'liq emas."
+
+#: apps/models/exercises.py:85
 msgid "Recommended weight (W1)"
 msgstr "Tavsiya etiladigan og'irlik (W1)"
 
-#: apps/models/exercises.py:79
+#: apps/models/exercises.py:86
 msgid "Start weight — advanced (kg)"
 msgstr "Boshlang'ich vazn — tajribali (kg)"
 
-#: apps/models/exercises.py:80
+#: apps/models/exercises.py:87
 msgid "Weekly weight increment — beginner (kg)"
 msgstr "Haftalik vazn oshishi — boshlovchi (kg)"
 
-#: apps/models/exercises.py:81
+#: apps/models/exercises.py:88
 msgid "Weekly weight increment — advanced (kg)"
 msgstr "Haftalik vazn oshishi — tajribali (kg)"
 
-#: apps/models/exercises.py:84
+#: apps/models/exercises.py:91
 msgid "Start time — beginner (sec)"
 msgstr "Boshlang'ich vaqt — boshlovchi (sek)"
 
-#: apps/models/exercises.py:85
+#: apps/models/exercises.py:92
 msgid "Start time — advanced (sec)"
 msgstr "Boshlang'ich vaqt — tajribali (sek)"
 
-#: apps/models/exercises.py:86
+#: apps/models/exercises.py:93
 msgid "Weekly time increment — beginner (sec)"
 msgstr "Haftalik vaqt oshishi — boshlovchi (sek)"
 
-#: apps/models/exercises.py:87
+#: apps/models/exercises.py:94
 msgid "Weekly time increment — advanced (sec)"
 msgstr "Haftalik vaqt oshishi — tajribali (sek)"
 
-#: apps/models/exercises.py:91 apps/models/exercises.py:193
+#: apps/models/exercises.py:98 apps/models/exercises.py:200
 #: apps/panel/views/programs.py:506
 #: templates/exercises/custom_program_create.html:284
 #: templates/exercises/exercise_detail.html:16
@@ -341,7 +350,7 @@ msgstr "Haftalik vaqt oshishi — tajribali (sek)"
 msgid "Exercise"
 msgstr "Mashq"
 
-#: apps/models/exercises.py:92 apps/panel/views/exercises.py:13
+#: apps/models/exercises.py:99 apps/panel/views/exercises.py:13
 #: apps/panel/views/premade_days.py:40 apps/panel/views/programs.py:405
 #: apps/panel/views/programs.py:503 apps/panel/views/programs.py:849
 #: templates/exercises/custom_program_create.html:275
@@ -356,23 +365,23 @@ msgstr "Mashq"
 msgid "Exercises"
 msgstr "Mashqlar"
 
-#: apps/models/exercises.py:194
+#: apps/models/exercises.py:201
 msgid "Stem Number"
 msgstr "Bosqich raqami"
 
-#: apps/models/exercises.py:195
+#: apps/models/exercises.py:202
 msgid "Text"
 msgstr "Matn"
 
-#: apps/models/exercises.py:196
+#: apps/models/exercises.py:203
 msgid "Uzbek Text"
 msgstr "O'zbekcha matn"
 
-#: apps/models/exercises.py:201
+#: apps/models/exercises.py:208
 msgid "ExerciseInstruction"
 msgstr "Mashq ko'rsatmasi"
 
-#: apps/models/exercises.py:202
+#: apps/models/exercises.py:209
 msgid "ExerciseInstructions"
 msgstr "Mashq ko'rsatmalari"
 
@@ -704,12 +713,12 @@ msgstr "Metrik"
 msgid "English"
 msgstr "Inglizcha"
 
-#: apps/models/users.py:44 apps/models/workouts.py:144
+#: apps/models/users.py:44 apps/models/workouts.py:168
 #: templates/miniapp/questionarrie.html:240
 msgid "Beginner"
 msgstr "Boshlang'ich"
 
-#: apps/models/users.py:45 apps/models/workouts.py:145
+#: apps/models/users.py:45 apps/models/workouts.py:169
 #: templates/miniapp/questionarrie.html:243
 msgid "Advanced"
 msgstr "Ilg'or"
@@ -832,7 +841,7 @@ msgstr "Boshlanmagan"
 msgid "Unfinished"
 msgstr "Tugallanmagan"
 
-#: apps/models/users.py:132 apps/models/workouts.py:535
+#: apps/models/users.py:132 apps/models/workouts.py:566
 #: apps/panel/views/payments.py:61
 #: templates/workouts/home_workout_complete.html:277
 #: templates/workouts/home_workout_detail.html:470
@@ -892,36 +901,84 @@ msgstr "Rekompozitsiya"
 msgid "General fitness"
 msgstr "Umumiy fitnes"
 
-#: apps/models/workouts.py:162 apps/panel/views/programs.py:255
+#: apps/models/workouts.py:92
+msgid "Auto cardio"
+msgstr "Avtomatik kardio"
+
+#: apps/models/workouts.py:93
+msgid "Insert a cardio exercise as the first exercise of every training day."
+msgstr "Har bir mashg'ulot kunining birinchi mashqi sifatida kardio qo'shish."
+
+#: apps/models/workouts.py:97
+msgid "Cardio exercise"
+msgstr "Kardio mashq"
+
+#: apps/models/workouts.py:99
+msgid "Which cardio exercise to insert. Only exercises marked as cardio are listed."
+msgstr "Qaysi kardio mashq qo'shiladi. Ro'yxatda faqat kardio deb belgilangan mashqlar."
+
+#: apps/models/workouts.py:102
+msgid "Cardio sets"
+msgstr "Kardio yondashuvlari"
+
+#: apps/models/workouts.py:103
+msgid "Use more than one set for interval-style cardio."
+msgstr "Interval kardio uchun bittadan ko'p yondashuv kiriting."
+
+#: apps/models/workouts.py:106
+msgid "Cardio duration (sec)"
+msgstr "Kardio davomiyligi (sek)"
+
+#: apps/models/workouts.py:107
+msgid "Duration of each cardio set, in seconds."
+msgstr "Har bir kardio yondashuvining davomiyligi, sekundda."
+
+#: apps/models/workouts.py:110
+msgid "Cardio required to complete a day"
+msgstr "Kunni yakunlash uchun kardio majburiy"
+
+#: apps/models/workouts.py:111
+msgid "If enabled, a training day only counts as complete when the cardio entry is done. Off by default: cardio is treated as a warm-up."
+msgstr "Yoqilgan bo'lsa, kun faqat kardio bajarilgandan keyin yakunlangan hisoblanadi. Standart holatda o'chiq: kardio qizdirish deb qaraladi."
+
+#: apps/models/workouts.py:186 apps/panel/views/programs.py:255
 msgid "Difficulty"
 msgstr "Murakkablik"
 
-#: apps/models/workouts.py:163
+#: apps/models/workouts.py:187
 msgid "Which exercise values this plan uses: beginner or advanced."
 msgstr ""
 "Bu plan qaysi mashq qiymatlaridan foydalanadi: boshlovchi yoki tajribali."
 
-#: apps/models/workouts.py:534
+#: apps/models/workouts.py:385
+msgid "Cardio removed"
+msgstr "Kardio o'chirilgan"
+
+#: apps/models/workouts.py:386
+msgid "Set when an admin deletes this day's auto-inserted cardio entry. Regeneration will not restore it while this is set."
+msgstr "Admin shu kunning avtomatik qo'shilgan kardiosini o'chirganda o'rnatiladi. Bu belgi turganda qayta yaratish uni tiklamaydi."
+
+#: apps/models/workouts.py:565
 msgid "In progress"
 msgstr "Jarayonda"
 
-#: apps/panel/forms.py:102
+#: apps/panel/forms.py:106
 msgid "Generate remaining weeks (up to the plan's week count)"
 msgstr "Qolgan haftalarni yaratish (plan haftalari soniga qadar)"
 
-#: apps/panel/forms.py:103
+#: apps/panel/forms.py:107
 msgid "If checked, the missing weeks after this one are created automatically."
 msgstr ""
 "Belgilansa, shu haftadan keyingi yetishmayotgan haftalar avtomatik "
 "yaratiladi."
 
-#: apps/panel/forms.py:138
+#: apps/panel/forms.py:142
 msgid "Manual weight — keep this value on difficulty change / regeneration"
 msgstr ""
 "Qo'lda kiritilgan vazn — murakkablik o'zgarganda / qayta yaratilganda "
 "saqlansin"
 
-#: apps/panel/forms.py:141
+#: apps/panel/forms.py:145
 msgid ""
 "Auto-enabled when you change the weight. Untick (without changing the "
 "weight) to hand it back to automatic calculation."
@@ -929,23 +986,23 @@ msgstr ""
 "Vaznni o'zgartirganingizda avtomatik yoqiladi. Avtomatik hisoblashga "
 "qaytarish uchun belgini oling (vaznni o'zgartirmasdan)."
 
-#: apps/panel/forms.py:188
+#: apps/panel/forms.py:193
 msgid "Start weight — beginner (kg)"
 msgstr "Boshlang'ich vazn — boshlovchi (kg)"
 
-#: apps/panel/forms.py:212
+#: apps/panel/forms.py:217
 msgid "Required for reps-based exercises."
 msgstr "Takrorlarga asoslangan mashqlar uchun majburiy."
 
-#: apps/panel/forms.py:216
+#: apps/panel/forms.py:221
 msgid "Required for time-based exercises."
 msgstr "Vaqtga asoslangan mashqlar uchun majburiy."
 
-#: apps/panel/forms.py:302 templates/panel/login.html:63
+#: apps/panel/forms.py:307 templates/panel/login.html:63
 msgid "Password"
 msgstr "Parol"
 
-#: apps/panel/forms.py:303
+#: apps/panel/forms.py:308
 msgid "Leave blank to keep the current password."
 msgstr "Joriy parolni saqlash uchun bo'sh qoldiring."
 
@@ -1788,7 +1845,7 @@ msgstr "Xabar bo'sh bo'lishi mumkin emas."
 msgid "Tracking"
 msgstr "Kuzatuv"
 
-#: apps/panel/views/tracking.py:15 templates/workouts/active_workout.html:1121
+#: apps/panel/views/tracking.py:15 templates/workouts/active_workout.html:1186
 #: templates/workouts/home_session.html:1018
 #: templates/workouts/home_workout_complete.html:237
 #: templates/workouts/home_workout_detail.html:4
@@ -2276,7 +2333,7 @@ msgid "Your browser doesn't support video tag"
 msgstr "Brauzeringiz videoni qo'llab-quvvatlamaydi"
 
 #: templates/exercises/exercise_detail.html:45
-#: templates/workouts/active_workout.html:1274
+#: templates/workouts/active_workout.html:1339
 #: templates/workouts/home_session.html:1134
 msgid "No description available."
 msgstr "Tavsif mavjud emas."
@@ -3752,113 +3809,127 @@ msgstr "SIZ UCHUN"
 msgid "d/week"
 msgstr "kun/hafta"
 
-#: templates/workouts/active_workout.html:1117
+#: templates/workouts/active_workout.html:1182
 #: templates/workouts/home_session.html:1014
 msgid "EXIT"
 msgstr "CHIQISH"
 
-#: templates/workouts/active_workout.html:1131
-#: templates/workouts/active_workout.html:1273
+#: templates/workouts/active_workout.html:1196
+#: templates/workouts/active_workout.html:1338
 msgid "PROGRESS"
 msgstr "MASHG'ULOTLAR"
 
-#: templates/workouts/active_workout.html:1172
-#: templates/workouts/active_workout.html:1213
-#: templates/workouts/active_workout.html:1272
+#: templates/workouts/active_workout.html:1237
+#: templates/workouts/active_workout.html:1278
+#: templates/workouts/active_workout.html:1337
 #: templates/workouts/home_session.html:988
 #: templates/workouts/home_session.html:1132
 msgid "Next Up"
 msgstr "Keyingisi"
 
-#: templates/workouts/active_workout.html:1190
-#: templates/workouts/active_workout.html:1266
+#: templates/workouts/active_workout.html:1255
+#: templates/workouts/active_workout.html:1331
 #: templates/workouts/home_session.html:1117
 #: templates/workouts/home_session.html:1128
 msgid "Pause"
 msgstr "Pauza"
 
-#: templates/workouts/active_workout.html:1193
-#: templates/workouts/active_workout.html:1268
+#: templates/workouts/active_workout.html:1258
+#: templates/workouts/active_workout.html:1333
 #: templates/workouts/home_session.html:1120
 #: templates/workouts/home_session.html:1130
 msgid "NEXT"
 msgstr "Keyngisi"
 
-#: templates/workouts/active_workout.html:1224
-#: templates/workouts/active_workout.html:1269
+#: templates/workouts/active_workout.html:1289
+#: templates/workouts/active_workout.html:1334
 #: templates/workouts/home_workout_detail.html:510
 msgid "Rest"
 msgstr "Dam olish"
 
-#: templates/workouts/active_workout.html:1225
+#: templates/workouts/active_workout.html:1290
 msgid "Set 1 Complete"
 msgstr "To'lov amalga oshirildi"
 
-#: templates/workouts/active_workout.html:1228
-#: templates/workouts/active_workout.html:1270
+#: templates/workouts/active_workout.html:1293
+#: templates/workouts/active_workout.html:1335
 #: templates/workouts/home_session.html:1003
 msgid "Tap to skip"
 msgstr "O'tkazib yuborish uchun bosing"
 
-#: templates/workouts/active_workout.html:1230
-#: templates/workouts/active_workout.html:1271
+#: templates/workouts/active_workout.html:1295
+#: templates/workouts/active_workout.html:1336
 #: templates/workouts/home_session.html:1005
 msgid "Skip Rest"
 msgstr "Dam olishni o'tkazish"
 
-#: templates/workouts/active_workout.html:1237
+#: templates/workouts/active_workout.html:1302
 msgid "Finish Workout?"
 msgstr "Mashg'ulotni yakunlash?"
 
-#: templates/workouts/active_workout.html:1238
+#: templates/workouts/active_workout.html:1303
 msgid "You have not completed all exercises."
 msgstr "Siz barcha mashqlarni tugatmadingiz"
 
-#: templates/workouts/active_workout.html:1240
+#: templates/workouts/active_workout.html:1305
 msgid "Save & Exit"
 msgstr "Saqlash joyi"
 
-#: templates/workouts/active_workout.html:1241
+#: templates/workouts/active_workout.html:1306
 msgid "Exit without Saving"
 msgstr "Saqlamasdan chiqish"
 
-#: templates/workouts/active_workout.html:1242
+#: templates/workouts/active_workout.html:1307
 msgid "Return to Workout"
 msgstr "Mashgulotga qaytish"
 
-#: templates/workouts/active_workout.html:1259
+#: templates/workouts/active_workout.html:1324
 msgid "Did It"
 msgstr "Bajarildi"
 
-#: templates/workouts/active_workout.html:1260
+#: templates/workouts/active_workout.html:1325
 msgid "KG"
 msgstr "KG"
 
-#: templates/workouts/active_workout.html:1261
+#: templates/workouts/active_workout.html:1326
 msgid "REPS"
 msgstr "TAKROR"
 
-#: templates/workouts/active_workout.html:1262
+#: templates/workouts/active_workout.html:1327
 msgid "SET"
 msgstr "SET"
 
-#: templates/workouts/active_workout.html:1263
+#: templates/workouts/active_workout.html:1328
 #: templates/workouts/home_session.html:1126
 msgid "OF"
 msgstr "/"
 
-#: templates/workouts/active_workout.html:1264
+#: templates/workouts/active_workout.html:1329
 msgid "Set"
 msgstr "Setlar"
 
-#: templates/workouts/active_workout.html:1265
+#: templates/workouts/active_workout.html:1330
 msgid "Complete"
 msgstr "Tugatildi"
 
-#: templates/workouts/active_workout.html:1267
+#: templates/workouts/active_workout.html:1332
 #: templates/workouts/home_session.html:1129
 msgid "Resume"
 msgstr "Davom etish"
+
+#: templates/workouts/active_workout.html:1340
+#: templates/workouts/home_session.html:1092
+#: templates/workouts/home_session.html:1133
+msgid "SEC"
+msgstr "SEK"
+
+#: templates/workouts/active_workout.html:1341
+msgid "Tap to start"
+msgstr "Boshlash uchun bosing"
+
+#: templates/workouts/active_workout.html:1342
+msgid "Reset"
+msgstr "Tiklash"
 
 #: templates/workouts/edition_detail.html:534
 msgid "all exercises:"
@@ -3929,11 +4000,6 @@ msgstr "DAM OLISH"
 #: templates/workouts/home_session.html:1131
 msgid "Round Complete"
 msgstr "Round tugatildi"
-
-#: templates/workouts/home_session.html:1092
-#: templates/workouts/home_session.html:1133
-msgid "SEC"
-msgstr "SEK"
 
 #: templates/workouts/home_session.html:1115
 #: templates/workouts/program_list.html:677

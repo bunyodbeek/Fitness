@@ -88,6 +88,30 @@ class Program(CreatedBaseModel):
 	# Atomik incrementlanadigan ochilishlar soni — "POPULAR" badge uchun.
 	view_count = PositiveIntegerField(default=0, db_index=True, verbose_name="Ochilishlar soni")
 
+	auto_cardio_enabled = BooleanField(
+		_("Auto cardio"), default=False,
+		help_text=_("Insert a cardio exercise as the first exercise of every training day."),
+	)
+	auto_cardio_exercise = ForeignKey(
+		"apps.Exercise", SET_NULL, null=True, blank=True, related_name="auto_cardio_programs",
+		verbose_name=_("Cardio exercise"),
+		limit_choices_to={"is_cardio": True},
+		help_text=_("Which cardio exercise to insert. Only exercises marked as cardio are listed."),
+	)
+	auto_cardio_sets = PositiveIntegerField(
+		_("Cardio sets"), default=1,
+		help_text=_("Use more than one set for interval-style cardio."),
+	)
+	auto_cardio_duration_seconds = PositiveIntegerField(
+		_("Cardio duration (sec)"), default=600,
+		help_text=_("Duration of each cardio set, in seconds."),
+	)
+	auto_cardio_blocks_completion = BooleanField(
+		_("Cardio required to complete a day"), default=False,
+		help_text=_("If enabled, a training day only counts as complete when the cardio "
+		            "entry is done. Off by default: cardio is treated as a warm-up."),
+	)
+
 	class Meta:
 		verbose_name = "Program"
 		verbose_name_plural = "Programs"
@@ -356,6 +380,12 @@ class Workout(CreatedBaseModel):
 		verbose_name="Apply to all 6 weeks",
 		help_text="Belgilansa, ushbu kun mashqlari 2-6 haftalarga progression bilan nusxalanadi."
 	)
+
+	cardio_removed = BooleanField(
+		_("Cardio removed"), default=False,
+		help_text=_("Set when an admin deletes this day's auto-inserted cardio entry. "
+		            "Regeneration will not restore it while this is set."),
+	)
 	
 	class Meta:
 		verbose_name = "Workout"
@@ -446,6 +476,7 @@ class WorkoutExercise(Model):
 	# True when an admin hand-edited this row's weight/time. Such rows are left
 	# untouched by weight recomputation (difficulty change / regeneration).
 	is_weight_manual = BooleanField(default=False, verbose_name="Manual weight/time")
+	is_auto_cardio = BooleanField(default=False, verbose_name="Auto-inserted cardio")
 	order = IntegerField(default=0)
 	minutes = PositiveIntegerField(
 		default=0,

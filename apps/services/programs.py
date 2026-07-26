@@ -73,7 +73,21 @@ class ProgramGenerationService:
             Week.objects.get_or_create(plan=plan, week_number=i)
 
     @staticmethod
+    def ensure_auto_cardio(plan) -> int:
+        from apps.services.auto_cardio import ensure_plan_cardio
+
+        if plan.program.workout_type == "home":
+            return 0
+        return ensure_plan_cardio(plan)
+
+    @staticmethod
     def generate_progression_from_week_one(instance: WorkoutExercise):
+        # Auto-inserted cardio is governed by the program's cardio settings, not by
+        # the weekly progression rules. Ramping it here would overwrite the
+        # configured duration with a catalog-derived value.
+        if instance.is_auto_cardio:
+            return
+
         plan = instance.workout.week.plan
         config: ProgressionSetting = plan.progression_config
 
@@ -154,6 +168,7 @@ class ProgramGenerationService:
                     "order":              instance.order,
                     "minutes":            instance.minutes,
                     "source_week_one":    instance,
+                    "is_auto_cardio":     instance.is_auto_cardio,
                 },
             )
 
@@ -177,6 +192,8 @@ class ProgramGenerationService:
             else:
                 ProgramGenerationService.generate_progression_from_week_one(seed)
             count += 1
+
+        ProgramGenerationService.ensure_auto_cardio(plan)
         return count
 
     @staticmethod

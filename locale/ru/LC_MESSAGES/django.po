@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-26 19:58+0500\n"
+"POT-Creation-Date: 2026-07-26 21:27+0500\n"
 "PO-Revision-Date: 2026-05-22 12:00+0500\n"
 "Last-Translator: Claude AI\n"
 "Language-Team: Russian\n"
@@ -150,97 +150,98 @@ msgstr "Активность пользователя"
 msgid "UserActivities"
 msgstr "Активности пользователей"
 
-#: apps/models/exercises.py:27 templates/exercises/body_parts.html:397
+#: apps/models/exercises.py:28 templates/exercises/body_parts.html:397
 msgid "Shoulders"
 msgstr "Плечи"
 
-#: apps/models/exercises.py:28 templates/exercises/body_parts.html:406
+#: apps/models/exercises.py:29 templates/exercises/body_parts.html:406
 msgid "Chest"
 msgstr "Грудь"
 
-#: apps/models/exercises.py:29 templates/exercises/body_parts.html:416
+#: apps/models/exercises.py:30 templates/exercises/body_parts.html:416
 msgid "Biceps"
 msgstr "Бицепс"
 
-#: apps/models/exercises.py:30 templates/exercises/body_parts.html:426
+#: apps/models/exercises.py:31 templates/exercises/body_parts.html:426
 msgid "Forearm"
 msgstr "Предплечье"
 
-#: apps/models/exercises.py:31 templates/exercises/body_parts.html:435
+#: apps/models/exercises.py:32 templates/exercises/body_parts.html:435
 msgid "Abs"
 msgstr "Пресс"
 
-#: apps/models/exercises.py:32 templates/exercises/body_parts.html:445
+#: apps/models/exercises.py:33 templates/exercises/body_parts.html:445
 msgid "Obliques"
 msgstr "Косые"
 
-#: apps/models/exercises.py:33 templates/exercises/body_parts.html:454
+#: apps/models/exercises.py:34 templates/exercises/body_parts.html:454
 msgid "Quads"
 msgstr "Квадрицепсы"
 
-#: apps/models/exercises.py:34 templates/exercises/body_parts.html:464
+#: apps/models/exercises.py:35 templates/exercises/body_parts.html:464
 msgid "Adductors"
 msgstr "Приводящие мышцы"
 
-#: apps/models/exercises.py:35 templates/exercises/body_parts.html:529
+#: apps/models/exercises.py:36 templates/exercises/body_parts.html:529
 msgid "Abductors"
 msgstr "Отводящие"
 
-#: apps/models/exercises.py:36 templates/exercises/body_parts.html:480
+#: apps/models/exercises.py:37 templates/exercises/body_parts.html:480
 msgid "Traps"
 msgstr "Трапеции"
 
-#: apps/models/exercises.py:37 templates/exercises/body_parts.html:490
+#: apps/models/exercises.py:38 templates/exercises/body_parts.html:490
 msgid "Triceps"
 msgstr "Трицепс"
 
-#: apps/models/exercises.py:38 templates/exercises/body_parts.html:499
+#: apps/models/exercises.py:39 templates/exercises/body_parts.html:499
 msgid "Lats"
 msgstr "Широчайшие мышцы спины"
 
-#: apps/models/exercises.py:39 templates/exercises/body_parts.html:509
+#: apps/models/exercises.py:40 templates/exercises/body_parts.html:509
 msgid "Lower back"
 msgstr "Поясница"
 
-#: apps/models/exercises.py:40 templates/exercises/body_parts.html:519
+#: apps/models/exercises.py:41 templates/exercises/body_parts.html:519
 msgid "Glutes"
 msgstr "Ягодичные мышцы"
 
-#: apps/models/exercises.py:41 templates/exercises/body_parts.html:539
+#: apps/models/exercises.py:42 templates/exercises/body_parts.html:539
 msgid "Hamstrings"
 msgstr "Задняя поверхность бедра"
 
-#: apps/models/exercises.py:42 templates/exercises/body_parts.html:548
+#: apps/models/exercises.py:43 templates/exercises/body_parts.html:548
 msgid "Calves"
 msgstr "Икроножные мышцы"
 
-#: apps/models/exercises.py:43 templates/exercises/body_parts.html:387
+#: apps/models/exercises.py:44 apps/models/exercises.py:76
+#: templates/exercises/body_parts.html:387
 msgid "Cardio"
 msgstr "Кардио"
 
-#: apps/models/exercises.py:47 apps/panel/views/premade_days.py:28
+#: apps/models/exercises.py:48 apps/panel/views/premade_days.py:28
 #: apps/panel/views/premade_days.py:223 apps/panel/views/programs.py:43
 #: templates/miniapp/questionarrie.html:221
 #: templates/workouts/program_list.html:611
 msgid "Gym"
 msgstr "Тренажёрный зал"
 
-#: apps/models/exercises.py:48 apps/panel/views/premade_days.py:28
+#: apps/models/exercises.py:49 apps/panel/views/premade_days.py:28
 #: apps/panel/views/premade_days.py:223 apps/panel/views/programs.py:44
 #: templates/miniapp/questionarrie.html:222
 #: templates/workouts/program_list.html:613
 msgid "Home"
 msgstr "Дома"
 
-#: apps/models/exercises.py:51
+#: apps/models/exercises.py:52
 msgid "Reps based"
 msgstr "По повторениям"
 
-#: apps/models/exercises.py:52
+#: apps/models/exercises.py:53
 msgid "Time based"
 msgstr "По времени"
 
-#: apps/models/exercises.py:54 apps/models/users.py:55
+#: apps/models/exercises.py:55 apps/models/users.py:55
 #: apps/panel/views/exercises.py:14 apps/panel/views/premade_days.py:40
 #: apps/panel/views/programs.py:81 apps/panel/views/programs.py:148
 #: apps/panel/views/programs.py:849 apps/panel/views/programs.py:937
@@ -250,90 +251,98 @@ msgstr "По времени"
 msgid "Name"
 msgstr "Название"
 
-#: apps/models/exercises.py:55
+#: apps/models/exercises.py:56
 msgid "Russian Name"
 msgstr "Русское название"
 
-#: apps/models/exercises.py:56
+#: apps/models/exercises.py:57
 msgid "Uzbek Name"
 msgstr "Узбекское название"
 
-#: apps/models/exercises.py:57 templates/exercises/exercise_detail.html:43
+#: apps/models/exercises.py:58 templates/exercises/exercise_detail.html:43
 #: templates/handbooks/item_detail.html:377
 msgid "Description"
 msgstr "Описание"
 
-#: apps/models/exercises.py:58
+#: apps/models/exercises.py:59
 msgid "Russian Description"
 msgstr "Русское описание"
 
-#: apps/models/exercises.py:59
+#: apps/models/exercises.py:60
 msgid "Uzbek Description"
 msgstr "Узбекское описание"
 
-#: apps/models/exercises.py:60
+#: apps/models/exercises.py:61
 msgid "Muscle Group"
 msgstr "Группа мышц"
 
-#: apps/models/exercises.py:61 apps/panel/views/support.py:126
+#: apps/models/exercises.py:62 apps/panel/views/support.py:126
 #: templates/panel/chat_thread.html:160 templates/panel/chat_thread.html:207
 #: templates/users/help.html:143
 msgid "Image"
 msgstr "Изображение"
 
-#: apps/models/exercises.py:63 apps/panel/views/exercises.py:14
+#: apps/models/exercises.py:64 apps/panel/views/exercises.py:14
 #: apps/panel/views/tracking.py:15 templates/users/progress.html:610
 #: templates/users/progress.html:694
 msgid "Calories"
 msgstr "Калории"
 
-#: apps/models/exercises.py:64 apps/panel/views/exercises.py:14
+#: apps/models/exercises.py:65 apps/panel/views/exercises.py:14
 #: templates/workouts/home_workout_complete.html:257
 #: templates/workouts/workout_complete.html:257
 msgid "Duration"
 msgstr "Длительность"
 
-#: apps/models/exercises.py:65
+#: apps/models/exercises.py:66
 msgid "Workout type"
 msgstr "Тип тренировки"
 
-#: apps/models/exercises.py:71
+#: apps/models/exercises.py:72
 msgid "Exercise type"
 msgstr "Тип упражнения"
 
-#: apps/models/exercises.py:78
+#: apps/models/exercises.py:77
+msgid ""
+"Marks this exercise as cardio. Used for auto-inserting a warm-up and for "
+"cardio-specific presentation. Independent of muscle group."
+msgstr ""
+"Отмечает упражнение как кардио. Используется для автодобавления разминки и "
+"для оформления кардио. Не зависит от группы мышц."
+
+#: apps/models/exercises.py:85
 msgid "Recommended weight (W1)"
 msgstr "Рекомендуемый вес (W1)"
 
-#: apps/models/exercises.py:79
+#: apps/models/exercises.py:86
 msgid "Start weight — advanced (kg)"
 msgstr "Начальный вес — продвинутый (кг)"
 
-#: apps/models/exercises.py:80
+#: apps/models/exercises.py:87
 msgid "Weekly weight increment — beginner (kg)"
 msgstr "Недельная прибавка веса — новичок (кг)"
 
-#: apps/models/exercises.py:81
+#: apps/models/exercises.py:88
 msgid "Weekly weight increment — advanced (kg)"
 msgstr "Недельная прибавка веса — продвинутый (кг)"
 
-#: apps/models/exercises.py:84
+#: apps/models/exercises.py:91
 msgid "Start time — beginner (sec)"
 msgstr "Начальное время — новичок (сек)"
 
-#: apps/models/exercises.py:85
+#: apps/models/exercises.py:92
 msgid "Start time — advanced (sec)"
 msgstr "Начальное время — продвинутый (сек)"
 
-#: apps/models/exercises.py:86
+#: apps/models/exercises.py:93
 msgid "Weekly time increment — beginner (sec)"
 msgstr "Недельная прибавка времени — новичок (сек)"
 
-#: apps/models/exercises.py:87
+#: apps/models/exercises.py:94
 msgid "Weekly time increment — advanced (sec)"
 msgstr "Недельная прибавка времени — продвинутый (сек)"
 
-#: apps/models/exercises.py:91 apps/models/exercises.py:193
+#: apps/models/exercises.py:98 apps/models/exercises.py:200
 #: apps/panel/views/programs.py:506
 #: templates/exercises/custom_program_create.html:284
 #: templates/exercises/exercise_detail.html:16
@@ -342,7 +351,7 @@ msgstr "Недельная прибавка времени — продвину�
 msgid "Exercise"
 msgstr "Упражнение"
 
-#: apps/models/exercises.py:92 apps/panel/views/exercises.py:13
+#: apps/models/exercises.py:99 apps/panel/views/exercises.py:13
 #: apps/panel/views/premade_days.py:40 apps/panel/views/programs.py:405
 #: apps/panel/views/programs.py:503 apps/panel/views/programs.py:849
 #: templates/exercises/custom_program_create.html:275
@@ -357,23 +366,23 @@ msgstr "Упражнение"
 msgid "Exercises"
 msgstr "Упражнения"
 
-#: apps/models/exercises.py:194
+#: apps/models/exercises.py:201
 msgid "Stem Number"
 msgstr "Номер шага"
 
-#: apps/models/exercises.py:195
+#: apps/models/exercises.py:202
 msgid "Text"
 msgstr "Текст"
 
-#: apps/models/exercises.py:196
+#: apps/models/exercises.py:203
 msgid "Uzbek Text"
 msgstr "Узбекский текст"
 
-#: apps/models/exercises.py:201
+#: apps/models/exercises.py:208
 msgid "ExerciseInstruction"
 msgstr "Инструкция упражнения"
 
-#: apps/models/exercises.py:202
+#: apps/models/exercises.py:209
 msgid "ExerciseInstructions"
 msgstr "Инструкции упражнений"
 
@@ -705,12 +714,12 @@ msgstr "Метрическая"
 msgid "English"
 msgstr "Английская"
 
-#: apps/models/users.py:44 apps/models/workouts.py:144
+#: apps/models/users.py:44 apps/models/workouts.py:168
 #: templates/miniapp/questionarrie.html:240
 msgid "Beginner"
 msgstr "Начинающий"
 
-#: apps/models/users.py:45 apps/models/workouts.py:145
+#: apps/models/users.py:45 apps/models/workouts.py:169
 #: templates/miniapp/questionarrie.html:243
 msgid "Advanced"
 msgstr "Продвинутый"
@@ -833,7 +842,7 @@ msgstr "Не начато"
 msgid "Unfinished"
 msgstr "Не завершено"
 
-#: apps/models/users.py:132 apps/models/workouts.py:535
+#: apps/models/users.py:132 apps/models/workouts.py:566
 #: apps/panel/views/payments.py:61
 #: templates/workouts/home_workout_complete.html:277
 #: templates/workouts/home_workout_detail.html:470
@@ -893,33 +902,81 @@ msgstr "Рекомпозиция"
 msgid "General fitness"
 msgstr "Общий фитнес"
 
-#: apps/models/workouts.py:162 apps/panel/views/programs.py:255
+#: apps/models/workouts.py:92
+msgid "Auto cardio"
+msgstr "Автокардио"
+
+#: apps/models/workouts.py:93
+msgid "Insert a cardio exercise as the first exercise of every training day."
+msgstr "Добавлять кардио первым упражнением каждого тренировочного дня."
+
+#: apps/models/workouts.py:97
+msgid "Cardio exercise"
+msgstr "Кардио-упражнение"
+
+#: apps/models/workouts.py:99
+msgid "Which cardio exercise to insert. Only exercises marked as cardio are listed."
+msgstr "Какое кардио-упражнение добавлять. В списке только упражнения, отмеченные как кардио."
+
+#: apps/models/workouts.py:102
+msgid "Cardio sets"
+msgstr "Подходы кардио"
+
+#: apps/models/workouts.py:103
+msgid "Use more than one set for interval-style cardio."
+msgstr "Укажите больше одного подхода для интервального кардио."
+
+#: apps/models/workouts.py:106
+msgid "Cardio duration (sec)"
+msgstr "Длительность кардио (сек)"
+
+#: apps/models/workouts.py:107
+msgid "Duration of each cardio set, in seconds."
+msgstr "Длительность каждого подхода кардио, в секундах."
+
+#: apps/models/workouts.py:110
+msgid "Cardio required to complete a day"
+msgstr "Кардио обязательно для завершения дня"
+
+#: apps/models/workouts.py:111
+msgid "If enabled, a training day only counts as complete when the cardio entry is done. Off by default: cardio is treated as a warm-up."
+msgstr "Если включено, день считается завершённым только после выполнения кардио. По умолчанию выключено: кардио считается разминкой."
+
+#: apps/models/workouts.py:186 apps/panel/views/programs.py:255
 msgid "Difficulty"
 msgstr "Сложность"
 
-#: apps/models/workouts.py:163
+#: apps/models/workouts.py:187
 msgid "Which exercise values this plan uses: beginner or advanced."
 msgstr ""
 "Какие значения упражнений использует план: для новичка или продвинутого."
 
-#: apps/models/workouts.py:534
+#: apps/models/workouts.py:385
+msgid "Cardio removed"
+msgstr "Кардио удалено"
+
+#: apps/models/workouts.py:386
+msgid "Set when an admin deletes this day's auto-inserted cardio entry. Regeneration will not restore it while this is set."
+msgstr "Устанавливается, когда админ удаляет автодобавленное кардио этого дня. Пока флаг установлен, регенерация его не восстановит."
+
+#: apps/models/workouts.py:565
 msgid "In progress"
 msgstr "В процессе"
 
-#: apps/panel/forms.py:102
+#: apps/panel/forms.py:106
 msgid "Generate remaining weeks (up to the plan's week count)"
 msgstr "Создать оставшиеся недели (до числа недель плана)"
 
-#: apps/panel/forms.py:103
+#: apps/panel/forms.py:107
 msgid "If checked, the missing weeks after this one are created automatically."
 msgstr "Если отмечено, недостающие недели после этой создаются автоматически."
 
-#: apps/panel/forms.py:138
+#: apps/panel/forms.py:142
 msgid "Manual weight — keep this value on difficulty change / regeneration"
 msgstr ""
 "Ручной вес — сохранять это значение при смене сложности / перегенерации"
 
-#: apps/panel/forms.py:141
+#: apps/panel/forms.py:145
 msgid ""
 "Auto-enabled when you change the weight. Untick (without changing the "
 "weight) to hand it back to automatic calculation."
@@ -927,23 +984,23 @@ msgstr ""
 "Включается автоматически при изменении веса. Снимите галочку (не меняя вес), "
 "чтобы вернуть автоматический расчёт."
 
-#: apps/panel/forms.py:188
+#: apps/panel/forms.py:193
 msgid "Start weight — beginner (kg)"
 msgstr "Начальный вес — новичок (кг)"
 
-#: apps/panel/forms.py:212
+#: apps/panel/forms.py:217
 msgid "Required for reps-based exercises."
 msgstr "Обязательно для упражнений на повторения."
 
-#: apps/panel/forms.py:216
+#: apps/panel/forms.py:221
 msgid "Required for time-based exercises."
 msgstr "Обязательно для упражнений на время."
 
-#: apps/panel/forms.py:302 templates/panel/login.html:63
+#: apps/panel/forms.py:307 templates/panel/login.html:63
 msgid "Password"
 msgstr "Пароль"
 
-#: apps/panel/forms.py:303
+#: apps/panel/forms.py:308
 msgid "Leave blank to keep the current password."
 msgstr "Оставьте пустым, чтобы сохранить текущий пароль."
 
@@ -1785,7 +1842,7 @@ msgstr "Сообщение не может быть пустым."
 msgid "Tracking"
 msgstr "Отслеживание"
 
-#: apps/panel/views/tracking.py:15 templates/workouts/active_workout.html:1121
+#: apps/panel/views/tracking.py:15 templates/workouts/active_workout.html:1186
 #: templates/workouts/home_session.html:1018
 #: templates/workouts/home_workout_complete.html:237
 #: templates/workouts/home_workout_detail.html:4
@@ -2287,7 +2344,7 @@ msgid "Your browser doesn't support video tag"
 msgstr "Ваш браузер не поддерживает видео"
 
 #: templates/exercises/exercise_detail.html:45
-#: templates/workouts/active_workout.html:1274
+#: templates/workouts/active_workout.html:1339
 #: templates/workouts/home_session.html:1134
 msgid "No description available."
 msgstr "Описание отсутствует."
@@ -3766,113 +3823,127 @@ msgstr "ДЛЯ ВАС"
 msgid "d/week"
 msgstr "дн/нед"
 
-#: templates/workouts/active_workout.html:1117
+#: templates/workouts/active_workout.html:1182
 #: templates/workouts/home_session.html:1014
 msgid "EXIT"
 msgstr "ВЫХОД"
 
-#: templates/workouts/active_workout.html:1131
-#: templates/workouts/active_workout.html:1273
+#: templates/workouts/active_workout.html:1196
+#: templates/workouts/active_workout.html:1338
 msgid "PROGRESS"
 msgstr "ПРОГРАММЫ"
 
-#: templates/workouts/active_workout.html:1172
-#: templates/workouts/active_workout.html:1213
-#: templates/workouts/active_workout.html:1272
+#: templates/workouts/active_workout.html:1237
+#: templates/workouts/active_workout.html:1278
+#: templates/workouts/active_workout.html:1337
 #: templates/workouts/home_session.html:988
 #: templates/workouts/home_session.html:1132
 msgid "Next Up"
 msgstr "Следующее"
 
-#: templates/workouts/active_workout.html:1190
-#: templates/workouts/active_workout.html:1266
+#: templates/workouts/active_workout.html:1255
+#: templates/workouts/active_workout.html:1331
 #: templates/workouts/home_session.html:1117
 #: templates/workouts/home_session.html:1128
 msgid "Pause"
 msgstr "Пауза"
 
-#: templates/workouts/active_workout.html:1193
-#: templates/workouts/active_workout.html:1268
+#: templates/workouts/active_workout.html:1258
+#: templates/workouts/active_workout.html:1333
 #: templates/workouts/home_session.html:1120
 #: templates/workouts/home_session.html:1130
 msgid "NEXT"
 msgstr "Следующее"
 
-#: templates/workouts/active_workout.html:1224
-#: templates/workouts/active_workout.html:1269
+#: templates/workouts/active_workout.html:1289
+#: templates/workouts/active_workout.html:1334
 #: templates/workouts/home_workout_detail.html:510
 msgid "Rest"
 msgstr "Отдых"
 
-#: templates/workouts/active_workout.html:1225
+#: templates/workouts/active_workout.html:1290
 msgid "Set 1 Complete"
 msgstr "Подход 1 завершён"
 
-#: templates/workouts/active_workout.html:1228
-#: templates/workouts/active_workout.html:1270
+#: templates/workouts/active_workout.html:1293
+#: templates/workouts/active_workout.html:1335
 #: templates/workouts/home_session.html:1003
 msgid "Tap to skip"
 msgstr "Нажмите, чтобы пропустить"
 
-#: templates/workouts/active_workout.html:1230
-#: templates/workouts/active_workout.html:1271
+#: templates/workouts/active_workout.html:1295
+#: templates/workouts/active_workout.html:1336
 #: templates/workouts/home_session.html:1005
 msgid "Skip Rest"
 msgstr "Пропустить отдых"
 
-#: templates/workouts/active_workout.html:1237
+#: templates/workouts/active_workout.html:1302
 msgid "Finish Workout?"
 msgstr "Тренировка"
 
-#: templates/workouts/active_workout.html:1238
+#: templates/workouts/active_workout.html:1303
 msgid "You have not completed all exercises."
 msgstr "Вы не выполнили все упражнения."
 
-#: templates/workouts/active_workout.html:1240
+#: templates/workouts/active_workout.html:1305
 msgid "Save & Exit"
 msgstr "Сохранить и выйти"
 
-#: templates/workouts/active_workout.html:1241
+#: templates/workouts/active_workout.html:1306
 msgid "Exit without Saving"
 msgstr "выйти без сохранения"
 
-#: templates/workouts/active_workout.html:1242
+#: templates/workouts/active_workout.html:1307
 msgid "Return to Workout"
 msgstr "Вернуться к тренировке"
 
-#: templates/workouts/active_workout.html:1259
+#: templates/workouts/active_workout.html:1324
 msgid "Did It"
 msgstr "Выполнить"
 
-#: templates/workouts/active_workout.html:1260
+#: templates/workouts/active_workout.html:1325
 msgid "KG"
 msgstr "кг"
 
-#: templates/workouts/active_workout.html:1261
+#: templates/workouts/active_workout.html:1326
 msgid "REPS"
 msgstr "Повторений"
 
-#: templates/workouts/active_workout.html:1262
+#: templates/workouts/active_workout.html:1327
 msgid "SET"
 msgstr "Подход"
 
-#: templates/workouts/active_workout.html:1263
+#: templates/workouts/active_workout.html:1328
 #: templates/workouts/home_session.html:1126
 msgid "OF"
 msgstr "из"
 
-#: templates/workouts/active_workout.html:1264
+#: templates/workouts/active_workout.html:1329
 msgid "Set"
 msgstr "Подходы"
 
-#: templates/workouts/active_workout.html:1265
+#: templates/workouts/active_workout.html:1330
 msgid "Complete"
 msgstr "Завершено"
 
-#: templates/workouts/active_workout.html:1267
+#: templates/workouts/active_workout.html:1332
 #: templates/workouts/home_session.html:1129
 msgid "Resume"
 msgstr "Продолжить"
+
+#: templates/workouts/active_workout.html:1340
+#: templates/workouts/home_session.html:1092
+#: templates/workouts/home_session.html:1133
+msgid "SEC"
+msgstr "СЕК"
+
+#: templates/workouts/active_workout.html:1341
+msgid "Tap to start"
+msgstr "Нажмите, чтобы начать"
+
+#: templates/workouts/active_workout.html:1342
+msgid "Reset"
+msgstr "Сброс"
 
 #: templates/workouts/edition_detail.html:534
 msgid "all exercises:"
@@ -3943,11 +4014,6 @@ msgstr "ОТДЫХ"
 #: templates/workouts/home_session.html:1131
 msgid "Round Complete"
 msgstr "Раунд завершен"
-
-#: templates/workouts/home_session.html:1092
-#: templates/workouts/home_session.html:1133
-msgid "SEC"
-msgstr "SEC"
 
 #: templates/workouts/home_session.html:1115
 #: templates/workouts/program_list.html:677

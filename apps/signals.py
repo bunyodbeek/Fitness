@@ -1,9 +1,10 @@
 from django.apps import apps as django_apps
-from django.db.models.signals import post_save, pre_save
+from django.db.models.signals import post_save, pre_delete, pre_save
 from django.dispatch import receiver
 from apps.models import WorkoutExercise
-from apps.models.workouts import WorkoutType
+from apps.models.workouts import Workout, WorkoutType
 from apps.services import image_optim
+from apps.services.auto_cardio import tombstone_suppressed
 from apps.services.programs import ProgramGenerationService
 
 
@@ -31,6 +32,44 @@ def auto_generate_workout_exercise_weeks(sender, instance, created, **kwargs):
 	else:
 		# Gym workout - default progression
 		ProgramGenerationService.generate_progression_from_week_one(instance)
+
+
+def _delete_originated_from_workout_exercise(origin) -> bool:
+	if origin is None:
+		return False
+	if isinstance(origin, WorkoutExercise):
+		return True
+	model = getattr(origin, "model", None)
+	return model is not None and issubclass(model, WorkoutExercise)
+
+
+@receiver(pre_delete, sender=WorkoutExercise)
+def tombstone_removed_auto_cardio(sender, instance, origin=None, **kwargs):
+	"""Record that an admin removed a day's auto-inserted cardio entry.
+
+	A deleted row is indistinguishable from one that was never generated, so
+	regeneration needs an explicit marker to respect the removal. Only direct
+	deletions count: ``origin`` is the WorkoutExercise (or a WorkoutExercise
+	queryset) for an admin/bulk delete, but the parent object for a cascade, so
+	deleting a Workout/Week/Plan or the Exercise itself never tombstones.
+	Generator-initiated deletes run inside ``suppress_cardio_tombstone()``.
+	"""
+	if not instance.is_auto_cardio or tombstone_suppressed():
+		return
+	if not _delete_originated_from_workout_exercise(origin):
+		return
+	Workout.objects.filter(pk=instance.workout_id).update(cardio_removed=True)
+
+
+@receiver(post_save, sender=WorkoutExercise)
+def clear_cardio_tombstone_on_manual_add(sender, instance, created, **kwargs):
+	"""An admin re-adding cardio to a day clears that day's tombstone."""
+	if not created or tombstone_suppressed():
+		return
+	exercise = getattr(instance, "exercise", None)
+	if not exercise or not getattr(exercise, "is_cardio", False):
+		return
+	Workout.objects.filter(pk=instance.workout_id, cardio_removed=True).update(cardio_removed=False)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
