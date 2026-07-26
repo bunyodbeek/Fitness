@@ -357,13 +357,27 @@
         }
         .lang-row.active .lang-check { opacity: 1; transform: scale(1); }
         .lang-check svg { flex-shrink: 0; }
+
+        /* Bosilgan zahoti javob: tanlangan qator darhol "active" bo'ladi va
+           spinner aylanadi — sahifa qayta yuklanguncha ekran "qotib qolgandek"
+           ko'rinmasin. */
+        .lang-form.busy .lang-row { pointer-events: none; }
+        .lang-form.busy .lang-row:not(.pending) { opacity: 0.45; }
+        .lang-row.pending .lang-check { opacity: 1; transform: scale(1); }
+        .lang-row.pending .lang-check svg { display: none; }
+        .lang-row.pending .lang-check::after {
+            content: ''; width: 18px; height: 18px; border-radius: 50%;
+            border: 2px solid rgba(255, 215, 0, 0.25); border-top-color: var(--gold);
+            animation: langSpin 0.7s linear infinite;
+        }
+        @keyframes langSpin { to { transform: rotate(360deg); } }
     </style>
 
     <div class="lang-overlay" id="langModal" onclick="if(event.target===this)closeLangModal()">
         <div class="lang-sheet" role="dialog" aria-modal="true" aria-label="{% trans 'Select language' %}">
             <div class="lang-grip"></div>
             <div class="lang-sheet-title">{% trans "Select language" %}</div>
-            <form method="post" action="{% url 'change_language' %}" class="lang-form">
+            <form method="post" action="{% url 'change_language' %}" class="lang-form" id="langForm">
                 {% csrf_token %}
                 {% for code, name in LANGUAGES %}
                     <button type="submit" name="language" value="{{ code }}"
@@ -381,6 +395,41 @@
     <script>
         function openLangModal() { document.getElementById('langModal').classList.add('active'); }
         function closeLangModal() { document.getElementById('langModal').classList.remove('active'); }
+
+        // Til almashtirish — POST + to'liq sahifa qayta yuklanishi. Server javobi
+        // tez bo'lsa ham webview qayta render qilguncha bir oz vaqt ketadi, shu
+        // paytda foydalanuvchi hech qanday o'zgarishni ko'rmasdi. Endi bosilgan
+        // qator darhol tanlangandek ko'rinadi va spinner aylanadi; qayta bosish
+        // (ikkilangan POST) esa bloklanadi.
+        (function () {
+            var form = document.getElementById('langForm');
+            if (!form) return;
+            var busy = false;
+
+            form.addEventListener('click', function (event) {
+                var row = event.target.closest('.lang-row');
+                if (!row) return;
+                if (busy) { event.preventDefault(); return; }
+                busy = true;
+                form.querySelectorAll('.lang-row').forEach(function (el) {
+                    el.classList.remove('active');
+                });
+                row.classList.add('active', 'pending');
+                form.classList.add('busy');
+                if (window.Telegram && Telegram.WebApp && Telegram.WebApp.HapticFeedback) {
+                    try { Telegram.WebApp.HapticFeedback.impactOccurred('light'); } catch (e) {}
+                }
+            });
+
+            // Orqaga qaytishda (bfcache) forma "band" holatda qotib qolmasin.
+            window.addEventListener('pageshow', function () {
+                busy = false;
+                form.classList.remove('busy');
+                form.querySelectorAll('.lang-row.pending').forEach(function (el) {
+                    el.classList.remove('pending');
+                });
+            });
+        })();
     </script>
 
     <!-- PDF.js -->

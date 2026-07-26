@@ -1,21 +1,23 @@
+import html
 import logging
+import os
 
+from django.core.cache import cache
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from telebot.types import (
 	InlineKeyboardButton,
 	InlineKeyboardMarkup,
-	KeyboardButton,
 	MenuButtonWebApp,
-	ReplyKeyboardMarkup,
+	ReplyKeyboardRemove,
 	Update,
 	WebAppInfo,
 
 )
 
 from apps.bot.bot import bot
-from root.settings import ADMIN_ID, WEBAPP_URL
+from root.settings import ADMIN_ID, BOT_INTRO_VIDEO, MEDIA_ROOT, WEBAPP_URL
 
 # Logging
 logging.basicConfig(
@@ -27,33 +29,46 @@ logger = logging.getLogger(__name__)
 SUPPORTED_LANGUAGES = ("uz", "ru", "en")
 LANGUAGE_TEXTS = {
 	"uz": {
-		"choose_language": "🌐 Tilni tanlang:",
+		# Til tanlangandan keyingi motivatsion xabar.
 		"welcome": (
-			"💪 Xush kelibsiz, {first_name}!\n\n"
-			"Tanangizni o'zgartirishga tayyormisiz?\n\n"
-			"Quyidagi tugma orqali shaxsiy mashg'ulot rejangizni yarating! 🚀"
+			"🔥 <b>{first_name}</b>, yo'lingiz aynan shu yerdan boshlanadi!\n\n"
+			"Har bir mashg'ulot — bu o'zingizga bergan va'da. Bahona qidirmang — "
+			"natija yarating.\n\n"
+			"💪 Bugungi kuchli qaroringiz — ertangi kuchli tanangiz.\n\n"
+			"Quyidagi tugmani bosing va shaxsiy mashg'ulot rejangizni yarating! 🚀"
 		),
 		"start_button": "🏋️ Fitness'ni boshlash",
 	},
 	"ru": {
-		"choose_language": "🌐 Выберите язык:",
 		"welcome": (
-			"💪 Добро пожаловать, {first_name}!\n\n"
-			"Готовы трансформировать своё тело?\n\n"
-			"Нажмите кнопку ниже, чтобы создать персональный план тренировок! 🚀"
+			"🔥 <b>{first_name}</b>, ваш путь начинается прямо сейчас!\n\n"
+			"Каждая тренировка — это обещание самому себе. Не ищите оправданий — "
+			"создавайте результат.\n\n"
+			"💪 Сильное решение сегодня — сильное тело завтра.\n\n"
+			"Нажмите кнопку ниже и составьте свой персональный план тренировок! 🚀"
 		),
 		"start_button": "🏋️ Начать Fitness",
 	},
 	"en": {
-		"choose_language": "🌐 Choose your language:",
 		"welcome": (
-			"💪 Welcome, {first_name}!\n\n"
-			"Ready to transform your body?\n\n"
-			"Tap the button below to create your personalized workout plan! 🚀"
+			"🔥 <b>{first_name}</b>, your journey starts right now!\n\n"
+			"Every workout is a promise you keep to yourself. No excuses — "
+			"just results.\n\n"
+			"💪 A strong decision today builds a strong body tomorrow.\n\n"
+			"Tap the button below and build your personal workout plan! 🚀"
 		),
 		"start_button": "🏋️ Start Fitness",
 	},
 }
+
+# Intro videoning izohi (caption). `/start` paytida foydalanuvchining tili hali
+# noma'lum, shuning uchun uchala tilda ham yozamiz.
+INTRO_CAPTION = (
+	"🏋️ <b>Shredzville</b> — shaxsiy fitness murabbiyingiz.\n\n"
+	"🇺🇿 Tilni tanlang\n"
+	"🇷🇺 Выберите язык\n"
+	"🇺🇸 Choose your language"
+)
 
 
 def _language_keyboard():
@@ -69,12 +84,6 @@ def _language_keyboard():
 # Menu button matni (xabar maydoni yonidagi tugma). Brend nomi — ataylab
 # tarjima qilinmaydi, shunda til almashganda tugmani yangilash shart emas.
 MENU_BUTTON_TEXT = "Fitness"
-
-LANGUAGE_SAVED_TEXTS = {
-	"uz": "✅ Til o'zgartirildi.",
-	"ru": "✅ Язык изменён.",
-	"en": "✅ Language updated.",
-}
 
 
 def _normalize_lang(lang_code):
@@ -99,20 +108,99 @@ def miniapp_url(lang_code=None):
 
 
 def _webapp_keyboard(lang_code):
-	"""Xabar bilan birga keladigan, pastda doim turuvchi reply keyboard.
+	"""Motivatsion xabar ostidagi inline "Mini App'ni ochish" tugmasi.
 
-	Xabar ostidagi inline web_app tugmasi ATAYLAB yo'q: u reply keyboard bilan
-	takrorlanadi va ba'zi klientlarda barqaror ishlamaydi (bosilganda ochilmaydi).
+	Ilgari bu yerda pastda doim turuvchi `ReplyKeyboardMarkup` bor edi. U olib
+	tashlandi: klaviatura maydonini egallab turardi, xabar yozishga xalaqit berardi
+	va uni yangilashning yagona yo'li chatga qo'shimcha xabar yuborish edi (til
+	almashganda bot "spam" qilardi). Inline `web_app` tugmasi ham initData'ni
+	xuddi shunday uzatadi.
 	"""
 	texts = LANGUAGE_TEXTS[lang_code]
-	keyboard = ReplyKeyboardMarkup(resize_keyboard=True, is_persistent=True)
+	keyboard = InlineKeyboardMarkup()
 	keyboard.add(
-		KeyboardButton(
+		InlineKeyboardButton(
 			text=texts["start_button"],
 			web_app=WebAppInfo(url=miniapp_url(lang_code)),
 		)
 	)
 	return keyboard
+
+
+def _drop_reply_keyboard(chat_id):
+	"""Eski, "yopishib qolgan" reply keyboard'ni chatdan olib tashlaydi.
+
+	`ReplyKeyboardRemove`ni faqat xabar bilan birga yuborish mumkin, shuning uchun
+	bir martalik xabar yuborib, darhol o'chiramiz — klaviatura o'chirilgani xabar
+	o'chirilgandan keyin ham saqlanib qoladi. Avval reply tugmasini ko'rgan
+	foydalanuvchilar uchun kerak; yangi foydalanuvchilarga zarari yo'q.
+	"""
+	try:
+		msg = bot.send_message(
+			chat_id, "⌛", reply_markup=ReplyKeyboardRemove(), disable_notification=True
+		)
+		bot.delete_message(chat_id, msg.message_id)
+	except Exception:
+		logger.debug("Reply keyboard'ni olib tashlab bo'lmadi (chat_id=%s)", chat_id, exc_info=True)
+
+
+# Yuklangan intro video `file_id`si keshda saqlanadi — aks holda har bir `/start`da
+# video qaytadan yuklanib, javob bir necha soniyaga cho'ziladi.
+INTRO_VIDEO_CACHE_KEY = "bot:intro_video_file_id"
+
+
+def _intro_video_ref():
+	"""Intro video manbasi: Telegram `file_id`, https URL yoki lokal fayl yo'li.
+
+	`BOT_INTRO_VIDEO` env o'zgaruvchisi ustuvor (file_id yoki to'g'ridan-to'g'ri
+	URL bo'lishi mumkin), aks holda `media/bot/intro.mp4` qaraladi. Ikkalasi ham
+	bo'lmasa — bo'sh satr qaytadi va bot matnli xabarga tushadi.
+	"""
+	configured = (BOT_INTRO_VIDEO or "").strip()
+	if configured:
+		return configured
+	local = os.path.join(MEDIA_ROOT, "bot", "intro.mp4")
+	return local if os.path.exists(local) else ""
+
+
+def _send_intro_video(chat_id, keyboard):
+	"""Intro videoni til tugmalari bilan yuboradi. Muvaffaqiyat holatini qaytaradi."""
+	cached_id = cache.get(INTRO_VIDEO_CACHE_KEY)
+	if cached_id:
+		try:
+			bot.send_video(
+				chat_id, cached_id, caption=INTRO_CAPTION,
+				reply_markup=keyboard, supports_streaming=True,
+			)
+			return True
+		except Exception:
+			# file_id eskirgan (masalan, bot tokeni almashgan) — qaytadan yuklaymiz.
+			cache.delete(INTRO_VIDEO_CACHE_KEY)
+
+	ref = _intro_video_ref()
+	if not ref:
+		return False
+
+	try:
+		if os.path.isabs(ref) and os.path.exists(ref):
+			with open(ref, "rb") as video:
+				sent = bot.send_video(
+					chat_id, video, caption=INTRO_CAPTION,
+					reply_markup=keyboard, supports_streaming=True,
+				)
+		else:
+			sent = bot.send_video(
+				chat_id, ref, caption=INTRO_CAPTION,
+				reply_markup=keyboard, supports_streaming=True,
+			)
+	except Exception:
+		logger.warning("Intro videoni yuborib bo'lmadi (chat_id=%s)", chat_id, exc_info=True)
+		return False
+
+	file_id = getattr(getattr(sent, "video", None), "file_id", None)
+	if file_id:
+		cache.set(INTRO_VIDEO_CACHE_KEY, file_id, None)  # muddatsiz
+	return True
 
 
 def _set_menu_button(chat_id, lang_code):
@@ -136,42 +224,19 @@ def _set_menu_button(chat_id, lang_code):
 		logger.warning("set_chat_menu_button ishlamadi (chat_id=%s)", chat_id, exc_info=True)
 
 
-def _send_webapp_message(chat_id, first_name, lang_code):
+def _send_motivation_message(chat_id, first_name, lang_code):
+	"""Til tanlangandan keyingi motivatsion xabar + Mini App'ni ochish tugmasi."""
 	lang_code = _normalize_lang(lang_code)
 	texts = LANGUAGE_TEXTS[lang_code]
 
 	_set_menu_button(chat_id, lang_code)
 
-	# Reply keyboard xuddi shu xabar bilan birga keladi — "Tanangizni o'zgartirishga
-	# tayyormisiz?" xabari ko'rinishi bilanoq tugma pastda paydo bo'ladi (avvalgi
-	# "." bo'sh xabar kerak emas).
+	# Bot parse_mode="HTML" bilan ishlaydi — ism ichidagi `<`/`&` xabarni buzmasin.
 	bot.send_message(
 		chat_id,
-		texts["welcome"].format(first_name=first_name or "User"),
+		texts["welcome"].format(first_name=html.escape(first_name or "Champion")),
 		reply_markup=_webapp_keyboard(lang_code),
 	)
-
-
-def send_language_updated(chat_id, lang_code):
-	"""Ilova ichida til o'zgartirilgach — reply keyboard'ni yangi tilda qayta yuborish.
-
-	Reply keyboard'ni xabar yubormasdan yangilashning imkoni yo'q, shuning uchun
-	qisqa tasdiq xabari bilan yuboramiz. Aks holda tugma matni va uning ichidagi
-	mini app URL'i eski tilda qolib ketadi va foydalanuvchi tilni o'zgartirgandan
-	keyin ham eski tildagi ilovaga qaytadi. Hech qachon exception ko'tarmaydi.
-	"""
-	lang_code = _normalize_lang(lang_code)
-	try:
-		_set_menu_button(chat_id, lang_code)
-		bot.send_message(
-			chat_id,
-			LANGUAGE_SAVED_TEXTS[lang_code],
-			reply_markup=_webapp_keyboard(lang_code),
-		)
-		return True
-	except Exception:
-		logger.warning("send_language_updated ishlamadi (chat_id=%s)", chat_id, exc_info=True)
-		return False
 
 
 GIFT_CLAIM_TEXTS = {
@@ -214,6 +279,10 @@ def start(message):
 	# BotFather'dagi eski, til prefiksi qotib qolgan URL o'rniga `/app/`.
 	_set_menu_button(message.chat.id, _normalize_lang(getattr(user, "language_code", "")))
 
+	# Eski persistent reply keyboard'ni tozalaymiz (endi ishlatilmaydi) — gift
+	# deep-link bilan kelganlarda ham.
+	_drop_reply_keyboard(message.chat.id)
+
 	# Deep link: `/start gift_<code>` → open the gift claim page directly.
 	parts = (message.text or "").split(maxsplit=1)
 	param = parts[1].strip() if len(parts) > 1 else ""
@@ -223,11 +292,11 @@ def start(message):
 			_send_gift_claim(message, code)
 			return
 
-	bot.send_message(
-		message.chat.id,
-		LANGUAGE_TEXTS["en"]["choose_language"],
-		reply_markup=_language_keyboard(),
-	)
+	# Yangi tartib: avval ilova haqidagi intro video + til tugmalari bitta xabarda.
+	# Video sozlanmagan bo'lsa yoki yuborilmasa — o'sha matn oddiy xabar sifatida.
+	keyboard = _language_keyboard()
+	if not _send_intro_video(message.chat.id, keyboard):
+		bot.send_message(message.chat.id, INTRO_CAPTION, reply_markup=keyboard)
 
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith("lang:"))
@@ -238,6 +307,8 @@ def handle_language_selection(call):
 		lang_code = "en"
 	
 	bot.answer_callback_query(call.id)
+	# Til tanlandi — intro video ostidagi tugmalarni olib tashlaymiz, video esa
+	# chatda qoladi.
 	try:
 		bot.edit_message_reply_markup(
 			chat_id=call.message.chat.id,
@@ -246,8 +317,8 @@ def handle_language_selection(call):
 		)
 	except Exception:
 		pass
-	
-	_send_webapp_message(
+
+	_send_motivation_message(
 		chat_id=call.message.chat.id,
 		first_name=user.first_name,
 		lang_code=lang_code,

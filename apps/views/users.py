@@ -848,33 +848,33 @@ class ChangeLanguageView(LoginRequiredMixin, View):
 
             messages.success(request, _("Language saved successfully!"))
 
-            # Botdagi reply keyboard tugmasi (matni va ichidagi mini-app URL'i)
-            # tanlangan tilga bog'liq — uni yangi tilda qayta yuboramiz, aks holda
-            # foydalanuvchi keyingi safar tugmani bosganda eski tilga qaytadi.
-            self._refresh_bot_keyboard(request, new_language_code)
-
+            # DIQQAT: bu yerdan botga HECH NARSA yuborilmaydi. Ilgari har bir til
+            # almashtirishda `send_language_updated()` chaqirilardi (setChatMenuButton
+            # + sendMessage) — bu ikkita blokirovka qiluvchi Telegram API so'rovi
+            # bo'lib, javobni 2-3 soniyaga kechiktirardi (foydalanuvchiga "hech nima
+            # o'zgarmayapti" bo'lib ko'rinardi) va ustiga chatga keraksiz xabar
+            # yuborardi. Endi kerak ham emas: bot tugmalari `/app/` manziliga ishora
+            # qiladi va til har ochilishda shu yerda saqlangan afzallikdan olinadi
+            # (apps.views.miniapp.MiniAppEntryView).
             response = HttpResponseRedirect(reverse('settings'))
 
-            response.set_cookie(settings.LANGUAGE_COOKIE_NAME, new_language_code)
+            # Telegram webview'da cookie uchinchi tomon kontekstida bo'lishi mumkin —
+            # SameSite=None/Secure bo'lmasa tashlab yuboriladi va til "yopishmaydi"
+            # (MiniAppEntryView ham aynan shunday yozadi).
+            response.set_cookie(
+                settings.LANGUAGE_COOKIE_NAME,
+                new_language_code,
+                max_age=settings.LANGUAGE_COOKIE_AGE,
+                path=settings.LANGUAGE_COOKIE_PATH,
+                samesite="None",
+                secure=True,
+            )
 
             return response
         else:
             messages.error(request, _("Selected language doesn't exist."))
 
             return HttpResponseRedirect(reverse('settings'))
-
-    @staticmethod
-    def _refresh_bot_keyboard(request, lang_code):
-        """Push the localized bot keyboard. Telegram xatosi til saqlanishini buzmasin."""
-        telegram_id = getattr(getattr(request.user, 'profile', None), 'telegram_id', None)
-        if not telegram_id:
-            return
-        try:
-            from apps.bot.bot_view import send_language_updated
-
-            send_language_updated(telegram_id, lang_code)
-        except Exception:
-            logger.warning("Bot keyboard tilini yangilash muvaffaqiyatsiz", exc_info=True)
 
 
 # Payment.status → coarse UI bucket used by the template (icon / colour / filter).

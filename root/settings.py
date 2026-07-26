@@ -302,6 +302,14 @@ TELEGRAM_BOT_REDIRECT_URL = (
 
 ADMIN_ID = os.getenv('ADMIN_ID')
 
+# `/start` bosilganda yuboriladigan intro video (til tugmalari xuddi shu xabarda
+# keladi). Qiymat sifatida Telegram `file_id` yoki to'g'ridan-to'g'ri https URL
+# berish mumkin. Bo'sh bo'lsa — `media/bot/intro.mp4` ishlatiladi, u ham bo'lmasa
+# bot faqat matnli til tanlash xabarini yuboradi.
+# Birinchi yuborishdan keyin `file_id` keshlanadi, shuning uchun video har safar
+# qaytadan yuklanmaydi (apps.bot.bot_view.INTRO_VIDEO_CACHE_KEY).
+BOT_INTRO_VIDEO = os.getenv('BOT_INTRO_VIDEO', '')
+
 # Telegram Mini App auth loglari — muvaffaqiyatsiz autentifikatsiya (init_data yo'q,
 # yaroqsiz imzo, eskirgan) qaysi holatda sodir bo'layotganini kuzatish uchun.
 LOGGING = {
