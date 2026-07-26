@@ -491,9 +491,6 @@
             100% { background-position: -200% 0; }
         }
 
-        /* Soft swap state (Gym <-> Home mode pills). The layout is identical between
-           modes, so a cold fetch dims the current page instead of flashing a skeleton.
-           Normally invisible: the counterpart mode is prefetched and paints instantly. */
         #content.tab-swapping {
             opacity: 0.55;
             pointer-events: none;

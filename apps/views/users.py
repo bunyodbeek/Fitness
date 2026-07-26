@@ -395,6 +395,15 @@ class ProfileView(PartialTabMixin, LoginRequiredMixin, TemplateView):
         context['chat_unread'] = SupportMessage.objects.filter(
             user=profile, is_from_admin=True, is_read=False,
         ).count()
+
+        social_links = [
+            ('instagram', settings.SOCIAL_INSTAGRAM_URL),
+            ('telegram', settings.SOCIAL_TELEGRAM_URL),
+            ('youtube', settings.SOCIAL_YOUTUBE_URL),
+        ]
+        context['social_links'] = [
+            {'name': name, 'url': url} for name, url in social_links if url
+        ]
         return context
 
 

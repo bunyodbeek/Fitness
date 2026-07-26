@@ -142,8 +142,7 @@ body { background: #000000; font-family: -apple-system, BlinkMacSystemFont, 'Seg
                 {% if ex.thumbnail %}<img src="{{ ex.thumbnail.url }}" alt="{{ ex.display_name }}">{% else %}<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5h11v11h-11z"/><path d="M2 9v6M22 9v6M6.5 12H2M22 12h-4.5"/></svg>{% endif %}
             </div>
             <div class="ex-picker-info">
-                {# display_name — aktiv tildagi nom (name_uz / name_ru), aks holda ro'yxat
-                   foydalanuvchi tanlagan tildan qat'i nazar bitta tilda chiqadi. #}
+
                 <div class="ex-picker-name">{{ ex.display_name }}</div>
                 <div class="ex-picker-meta">{{ ex.get_primary_body_part_display }}</div>
             </div>
@@ -578,9 +577,6 @@ async function saveProgram() {
             }),
         });
 
-        // Server xato sahifasi (403/500) JSON emas — uni res.json() ichida "portlatib"
-        // yubormaymiz, aks holda har qanday server xatosi "Tarmoq xatosi" bo'lib
-        // ko'rinadi va sababini topib bo'lmaydi.
         let data = null;
         try { data = await res.json(); } catch { data = null; }
 
@@ -591,7 +587,6 @@ async function saveProgram() {
         alert((data && data.error) || `${I18N.errorSavingProgram} (HTTP ${res.status})`);
         resetButton();
     } catch {
-        // Bu yerga faqat haqiqiy tarmoq uzilishida tushamiz.
         alert(I18N.networkError);
         resetButton();
     }

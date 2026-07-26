@@ -310,6 +310,10 @@ ADMIN_ID = os.getenv('ADMIN_ID')
 # qaytadan yuklanmaydi (apps.bot.bot_view.INTRO_VIDEO_CACHE_KEY).
 BOT_INTRO_VIDEO = os.getenv('BOT_INTRO_VIDEO', '')
 
+SOCIAL_INSTAGRAM_URL = os.getenv('SOCIAL_INSTAGRAM_URL', '').strip()
+SOCIAL_TELEGRAM_URL = os.getenv('SOCIAL_TELEGRAM_URL', '').strip()
+SOCIAL_YOUTUBE_URL = os.getenv('SOCIAL_YOUTUBE_URL', '').strip()
+
 # Telegram Mini App auth loglari — muvaffaqiyatsiz autentifikatsiya (init_data yo'q,
 # yaroqsiz imzo, eskirgan) qaysi holatda sodir bo'layotganini kuzatish uchun.
 LOGGING = {

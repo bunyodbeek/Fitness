@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-26 19:09+0500\n"
+"POT-Creation-Date: 2026-07-26 19:58+0500\n"
 "PO-Revision-Date: 2026-05-22 12:00+0500\n"
 "Last-Translator: Claude AI\n"
 "Language-Team: Uzbek\n"
@@ -37,8 +37,10 @@ msgid "Narxlar (mustaqil)"
 msgstr "Narxlar (mustaqil)"
 
 #: apps/admin/payments.py:20
-msgid "UZS va USD narxlari bir-biriga bog‘liq emas — har birini alohida belgilang."
-msgstr "UZS va USD narxlari bir-biriga bog‘liq emas — har birini alohida belgilang."
+msgid ""
+"UZS va USD narxlari bir-biriga bog‘liq emas — har birini alohida belgilang."
+msgstr ""
+"UZS va USD narxlari bir-biriga bog‘liq emas — har birini alohida belgilang."
 
 #: apps/admin/payments.py:22
 msgid "Holat"
@@ -56,12 +58,12 @@ msgstr "Tanlanganlarni bekor qilish"
 msgid "Subscription Plan"
 msgstr "Obuna tarifi"
 
-#: apps/admin/users.py:24 templates/users/manage_subscription.html:683
-#: templates/users/profile_detail.html:301
+#: apps/admin/users.py:24 templates/users/manage_subscription.html:682
+#: templates/users/profile_detail.html:355
 msgid "Subscription"
 msgstr "Obuna"
 
-#: apps/admin/users.py:28 templates/users/manage_subscription.html:726
+#: apps/admin/users.py:28 templates/users/manage_subscription.html:725
 msgid "Days remaining"
 msgstr "Qolgan kunlar"
 
@@ -69,9 +71,9 @@ msgstr "Qolgan kunlar"
 #: apps/models/payments.py:352 apps/models/workouts.py:75
 #: apps/panel/views/users.py:15 templates/panel/dashboard.html:126
 #: templates/payment/premium.html:8
-#: templates/users/manage_subscription.html:782
+#: templates/users/manage_subscription.html:779
 #: templates/workouts/_program_card.html:62
-#: templates/workouts/edition_list.html:539
+#: templates/workouts/edition_list.html:537
 msgid "Premium"
 msgstr "Premium"
 
@@ -218,14 +220,14 @@ msgstr "Kardio"
 #: apps/models/exercises.py:47 apps/panel/views/premade_days.py:28
 #: apps/panel/views/premade_days.py:223 apps/panel/views/programs.py:43
 #: templates/miniapp/questionarrie.html:221
-#: templates/workouts/program_list.html:614
+#: templates/workouts/program_list.html:611
 msgid "Gym"
 msgstr "Sport zal"
 
 #: apps/models/exercises.py:48 apps/panel/views/premade_days.py:28
 #: apps/panel/views/premade_days.py:223 apps/panel/views/programs.py:44
 #: templates/miniapp/questionarrie.html:222
-#: templates/workouts/program_list.html:616
+#: templates/workouts/program_list.html:613
 msgid "Home"
 msgstr "Uy"
 
@@ -242,7 +244,7 @@ msgstr "Vaqt bo'yicha"
 #: apps/panel/views/programs.py:81 apps/panel/views/programs.py:148
 #: apps/panel/views/programs.py:849 apps/panel/views/programs.py:937
 #: apps/panel/views/users.py:23
-#: templates/exercises/custom_program_create.html:274
+#: templates/exercises/custom_program_create.html:273
 #: templates/panel/dashboard.html:118
 msgid "Name"
 msgstr "Nomi"
@@ -279,8 +281,8 @@ msgid "Image"
 msgstr "Rasm"
 
 #: apps/models/exercises.py:63 apps/panel/views/exercises.py:14
-#: apps/panel/views/tracking.py:15 templates/users/progress.html:612
-#: templates/users/progress.html:696
+#: apps/panel/views/tracking.py:15 templates/users/progress.html:610
+#: templates/users/progress.html:694
 msgid "Calories"
 msgstr "Kaloriyalar"
 
@@ -332,7 +334,7 @@ msgstr "Haftalik vaqt oshishi — tajribali (sek)"
 
 #: apps/models/exercises.py:91 apps/models/exercises.py:193
 #: apps/panel/views/programs.py:506
-#: templates/exercises/custom_program_create.html:285
+#: templates/exercises/custom_program_create.html:284
 #: templates/exercises/exercise_detail.html:16
 #: templates/exercises/favorites_list.html:569
 #: templates/workouts/home_workout_detail.html:535
@@ -342,12 +344,12 @@ msgstr "Mashq"
 #: apps/models/exercises.py:92 apps/panel/views/exercises.py:13
 #: apps/panel/views/premade_days.py:40 apps/panel/views/programs.py:405
 #: apps/panel/views/programs.py:503 apps/panel/views/programs.py:849
-#: templates/exercises/custom_program_create.html:276
-#: templates/exercises/custom_program_create.html:286
+#: templates/exercises/custom_program_create.html:275
+#: templates/exercises/custom_program_create.html:285
 #: templates/exercises/exercise_list.html:4
 #: templates/exercises/favorites_list.html:570 templates/panel/base.html:301
 #: templates/panel/premade_day_builder.html:92
-#: templates/panel/workout_builder.html:94 templates/users/progress.html:622
+#: templates/panel/workout_builder.html:94 templates/users/progress.html:620
 #: templates/workouts/home_workout_detail.html:485
 #: templates/workouts/home_workout_detail.html:516
 #: templates/workouts/import_preview.html:99
@@ -560,7 +562,7 @@ msgstr "Muvaffaqiyatsiz"
 #: apps/panel/views/payments.py:58 apps/panel/views/subscriptions.py:15
 #: apps/panel/views/tracking.py:15 apps/panel/views/users.py:23
 #: templates/panel/dashboard.html:118
-#: templates/users/manage_subscription.html:772
+#: templates/users/manage_subscription.html:769
 msgid "Status"
 msgstr "Holat"
 
@@ -741,7 +743,7 @@ msgid "Birth date"
 msgstr "Tug'ilgan sana"
 
 #: apps/models/users.py:59 apps/panel/views/programs.py:506
-#: apps/views/users.py:683 templates/panel/premade_day_builder.html:176
+#: apps/views/users.py:692 templates/panel/premade_day_builder.html:176
 #: templates/panel/workout_builder.html:197
 msgid "Weight"
 msgstr "Og'irlik"
@@ -834,7 +836,7 @@ msgstr "Tugallanmagan"
 #: apps/panel/views/payments.py:61
 #: templates/workouts/home_workout_complete.html:277
 #: templates/workouts/home_workout_detail.html:470
-#: templates/workouts/plan_weeks.html:415
+#: templates/workouts/plan_weeks.html:397
 #: templates/workouts/workout_complete.html:289
 msgid "Completed"
 msgstr "Tugatildi"
@@ -859,14 +861,14 @@ msgid "Completed at"
 msgstr "Tugatilgan vaqt"
 
 #: apps/models/users.py:152 apps/panel/views/programs.py:506
-#: templates/exercises/custom_program_create.html:287
+#: templates/exercises/custom_program_create.html:286
 #: templates/panel/premade_day_builder.html:174
 #: templates/panel/workout_builder.html:195
 msgid "Sets"
 msgstr "Setlar"
 
 #: apps/models/users.py:153 apps/panel/views/programs.py:506
-#: templates/exercises/custom_program_create.html:288
+#: templates/exercises/custom_program_create.html:287
 #: templates/panel/premade_day_builder.html:175
 #: templates/panel/workout_builder.html:196
 msgid "Reps"
@@ -881,8 +883,8 @@ msgid "Muscle gain"
 msgstr "Mushak yig'ish"
 
 #: apps/models/workouts.py:57
-#: templates/exercises/custom_program_create.html:200
-#: templates/exercises/custom_program_create.html:268
+#: templates/exercises/custom_program_create.html:199
+#: templates/exercises/custom_program_create.html:267
 msgid "Recomposition"
 msgstr "Rekompozitsiya"
 
@@ -896,7 +898,8 @@ msgstr "Murakkablik"
 
 #: apps/models/workouts.py:163
 msgid "Which exercise values this plan uses: beginner or advanced."
-msgstr "Bu plan qaysi mashq qiymatlaridan foydalanadi: boshlovchi yoki tajribali."
+msgstr ""
+"Bu plan qaysi mashq qiymatlaridan foydalanadi: boshlovchi yoki tajribali."
 
 #: apps/models/workouts.py:534
 msgid "In progress"
@@ -914,11 +917,17 @@ msgstr ""
 
 #: apps/panel/forms.py:138
 msgid "Manual weight — keep this value on difficulty change / regeneration"
-msgstr "Qo'lda kiritilgan vazn — murakkablik o'zgarganda / qayta yaratilganda saqlansin"
+msgstr ""
+"Qo'lda kiritilgan vazn — murakkablik o'zgarganda / qayta yaratilganda "
+"saqlansin"
 
 #: apps/panel/forms.py:141
-msgid "Auto-enabled when you change the weight. Untick (without changing the weight) to hand it back to automatic calculation."
-msgstr "Vaznni o'zgartirganingizda avtomatik yoqiladi. Avtomatik hisoblashga qaytarish uchun belgini oling (vaznni o'zgartirmasdan)."
+msgid ""
+"Auto-enabled when you change the weight. Untick (without changing the "
+"weight) to hand it back to automatic calculation."
+msgstr ""
+"Vaznni o'zgartirganingizda avtomatik yoqiladi. Avtomatik hisoblashga "
+"qaytarish uchun belgini oling (vaznni o'zgartirmasdan)."
 
 #: apps/panel/forms.py:188
 msgid "Start weight — beginner (kg)"
@@ -1048,31 +1057,31 @@ msgstr "Noyabr"
 msgid "December"
 msgstr "Dekabr"
 
-#: apps/panel/views/dashboard.py:20 templates/users/progress.html:638
+#: apps/panel/views/dashboard.py:20 templates/users/progress.html:636
 msgid "Mon"
 msgstr "Dush"
 
-#: apps/panel/views/dashboard.py:20 templates/users/progress.html:639
+#: apps/panel/views/dashboard.py:20 templates/users/progress.html:637
 msgid "Tue"
 msgstr "Sesh"
 
-#: apps/panel/views/dashboard.py:20 templates/users/progress.html:640
+#: apps/panel/views/dashboard.py:20 templates/users/progress.html:638
 msgid "Wed"
 msgstr "Chor"
 
-#: apps/panel/views/dashboard.py:20 templates/users/progress.html:641
+#: apps/panel/views/dashboard.py:20 templates/users/progress.html:639
 msgid "Thu"
 msgstr "Pay"
 
-#: apps/panel/views/dashboard.py:20 templates/users/progress.html:642
+#: apps/panel/views/dashboard.py:20 templates/users/progress.html:640
 msgid "Fri"
 msgstr "Jum"
 
-#: apps/panel/views/dashboard.py:20 templates/users/progress.html:643
+#: apps/panel/views/dashboard.py:20 templates/users/progress.html:641
 msgid "Sat"
 msgstr "Shan"
 
-#: apps/panel/views/dashboard.py:20 templates/users/progress.html:644
+#: apps/panel/views/dashboard.py:20 templates/users/progress.html:642
 msgid "Sun"
 msgstr "Yak"
 
@@ -1214,7 +1223,7 @@ msgid "Method"
 msgstr "Usul"
 
 #: apps/panel/views/payments.py:24 apps/panel/views/tracking.py:15
-#: templates/users/manage_subscription.html:770
+#: templates/users/manage_subscription.html:767
 msgid "Date"
 msgstr "Sana"
 
@@ -1223,7 +1232,7 @@ msgid "Payment"
 msgstr "To'lov"
 
 #: apps/panel/views/payments.py:56 apps/panel/views/subscriptions.py:15
-#: templates/users/manage_subscription.html:703
+#: templates/users/manage_subscription.html:702
 msgid "Plan"
 msgstr "Tarif"
 
@@ -1286,7 +1295,7 @@ msgstr "«%(name)s» tayyor kuni %(num)d-kun sifatida qo'shildi."
 
 #: apps/panel/views/programs.py:42 templates/handbooks/category_items.html:552
 #: templates/handbooks/category_items.html:569
-#: templates/users/payment_history.html:588 templates/users/progress.html:568
+#: templates/users/payment_history.html:588 templates/users/progress.html:567
 msgid "All"
 msgstr "Hammasi"
 
@@ -1307,8 +1316,8 @@ msgstr "Daraja"
 
 #: apps/panel/views/programs.py:81 apps/panel/views/programs.py:931
 #: apps/panel/views/users.py:23
-#: templates/exercises/custom_program_create.html:245
-#: templates/exercises/custom_program_create.html:275
+#: templates/exercises/custom_program_create.html:244
+#: templates/exercises/custom_program_create.html:274
 #: templates/workouts/import_preview.html:109
 msgid "Goal"
 msgstr "Maqsad"
@@ -1335,7 +1344,7 @@ msgstr "Dastur"
 
 #: apps/panel/views/programs.py:148 apps/panel/views/programs.py:256
 #: apps/panel/views/programs.py:270 apps/panel/views/programs.py:937
-#: templates/exercises/custom_program_create.html:249
+#: templates/exercises/custom_program_create.html:248
 #: templates/my_trainer/my_trainer.html:342
 #: templates/workouts/plan_weeks.html:4
 msgid "Weeks"
@@ -1355,8 +1364,11 @@ msgid "Edit plan"
 msgstr "Planni tahrirlash"
 
 #: apps/panel/views/programs.py:216
-msgid "Difficulty changed — auto weights/times recomputed (manual overrides kept)."
-msgstr "Murakkablik o'zgardi — avtomatik vazn/vaqt qayta hisoblandi (qo'lda kiritilganlari saqlandi)."
+msgid ""
+"Difficulty changed — auto weights/times recomputed (manual overrides kept)."
+msgstr ""
+"Murakkablik o'zgardi — avtomatik vazn/vaqt qayta hisoblandi (qo'lda "
+"kiritilganlari saqlandi)."
 
 #: apps/panel/views/programs.py:231
 msgid "Delete plan"
@@ -1372,8 +1384,13 @@ msgid "Not set"
 msgstr "Belgilanmagan"
 
 #: apps/panel/views/programs.py:261
-msgid "Tip: open a week-1 day and use “Build / add exercises” to pick a progression rule and add exercises — weeks 2..N then auto-fill."
-msgstr "Maslahat: 1-hafta kunini oching va «Mashqlarni yig'ish / qo'shish» orqali progressiya qoidasini tanlab mashqlar qo'shing — 2..N haftalar avtomatik to'ladi."
+msgid ""
+"Tip: open a week-1 day and use “Build / add exercises” to pick a progression "
+"rule and add exercises — weeks 2..N then auto-fill."
+msgstr ""
+"Maslahat: 1-hafta kunini oching va «Mashqlarni yig'ish / qo'shish» orqali "
+"progressiya qoidasini tanlab mashqlar qo'shing — 2..N haftalar avtomatik "
+"to'ladi."
 
 #: apps/panel/views/programs.py:266 templates/panel/detail.html:21
 msgid "Get link"
@@ -1391,17 +1408,17 @@ msgstr "Boshqa plan havolasini joylashtiring…"
 msgid "Add week"
 msgstr "Hafta qo'shish"
 
-#: apps/panel/views/programs.py:273 templates/users/progress.html:565
+#: apps/panel/views/programs.py:273 templates/users/progress.html:564
 #: templates/workouts/home_workout_detail.html:462
 #: templates/workouts/home_workout_week.html:1
-#: templates/workouts/plan_weeks.html:393
-#: templates/workouts/plan_weeks.html:414 templates/workouts/week_days.html:4
+#: templates/workouts/plan_weeks.html:375
+#: templates/workouts/plan_weeks.html:396 templates/workouts/week_days.html:4
 #: templates/workouts/week_days.html:470
 msgid "Week"
 msgstr "Hafta"
 
-#: apps/panel/views/programs.py:273 templates/workouts/plan_weeks.html:396
-#: templates/workouts/plan_weeks.html:418 templates/workouts/week_days.html:4
+#: apps/panel/views/programs.py:273 templates/workouts/plan_weeks.html:378
+#: templates/workouts/plan_weeks.html:400 templates/workouts/week_days.html:4
 msgid "Days"
 msgstr "Kunlar"
 
@@ -1419,12 +1436,17 @@ msgstr "Planni o'ziga import qilib bo'lmaydi."
 
 #: apps/panel/views/programs.py:331
 #, python-format
-msgid "Imported %(n)d day(s). Weeks 2..N were regenerated for this plan's difficulty."
-msgstr "%(n)d ta kun import qilindi. 2..N haftalar ushbu plan murakkabligiga qarab qayta yaratildi."
+msgid ""
+"Imported %(n)d day(s). Weeks 2..N were regenerated for this plan's "
+"difficulty."
+msgstr ""
+"%(n)d ta kun import qilindi. 2..N haftalar ushbu plan murakkabligiga qarab "
+"qayta yaratildi."
 
 #: apps/panel/views/programs.py:335
 msgid "Nothing to import — the source plan has no week-1 days."
-msgstr "Import qilish uchun hech narsa yo'q — manba planda 1-hafta kunlari yo'q."
+msgstr ""
+"Import qilish uchun hech narsa yo'q — manba planda 1-hafta kunlari yo'q."
 
 #: apps/panel/views/programs.py:349
 msgid "Week created."
@@ -1447,7 +1469,7 @@ msgid "Add day"
 msgstr "Kun qo'shish"
 
 #: apps/panel/views/programs.py:405 apps/panel/views/programs.py:494
-#: templates/exercises/custom_program_create.html:281
+#: templates/exercises/custom_program_create.html:280
 #: templates/workouts/home_workout_detail.html:464
 #: templates/workouts/home_workout_detail.html:477
 #: templates/workouts/week_days.html:504
@@ -1484,8 +1506,12 @@ msgid "Apply to all weeks"
 msgstr "Barcha haftalarga qo'llash"
 
 #: apps/panel/views/programs.py:500
-msgid "Week-1 day with 'apply to all weeks' on: saving an exercise here auto-generates weeks 2..N via progression."
-msgstr "«Barcha haftalarga qo'llash» yoqilgan 1-hafta kuni: bu yerda mashq saqlansa, 2..N haftalar progressiya bo'yicha avtomatik yaratiladi."
+msgid ""
+"Week-1 day with 'apply to all weeks' on: saving an exercise here auto-"
+"generates weeks 2..N via progression."
+msgstr ""
+"«Barcha haftalarga qo'llash» yoqilgan 1-hafta kuni: bu yerda mashq saqlansa, "
+"2..N haftalar progressiya bo'yicha avtomatik yaratiladi."
 
 #: apps/panel/views/programs.py:505
 msgid "Build / add exercises"
@@ -1543,7 +1569,8 @@ msgstr "Individual dastur qo'shish"
 
 #: apps/panel/views/programs.py:794
 msgid "Individual program created. Now add a plan and build its weeks."
-msgstr "Individual dastur yaratildi. Endi plan qo'shing va haftalarini yig'ing."
+msgstr ""
+"Individual dastur yaratildi. Endi plan qo'shing va haftalarini yig'ing."
 
 #: apps/panel/views/programs.py:806
 msgid "Edit individual program"
@@ -1973,28 +2000,29 @@ msgstr "Noma'lum"
 msgid "Program successfully imported!"
 msgstr "Dastur muvaffaqiyatli import qilindi!"
 
-#: apps/views/users.py:469
+#: apps/views/users.py:478
 msgid "Please type a message."
 msgstr "Iltimos, xabar yozing."
 
-#: apps/views/users.py:852
+#: apps/views/users.py:861
 msgid "Language saved successfully!"
 msgstr "Til muvaffaqiyatli saqlandi!"
 
-#: apps/views/users.py:878
+#: apps/views/users.py:887
 msgid "Selected language doesn't exist."
 msgstr "Tanlangan til mavjud emas."
 
-#: apps/views/users.py:1017
+#: apps/views/users.py:1026
 #, python-format
-msgid "Your subscription has been canceled. Premium stays active until %(date)s."
+msgid ""
+"Your subscription has been canceled. Premium stays active until %(date)s."
 msgstr "Obunangiz bekor qilindi. Premium %(date)s gacha faol qoladi."
 
-#: apps/views/users.py:1020
+#: apps/views/users.py:1029
 msgid "Your subscription has been canceled."
 msgstr "Obunangiz bekor qilindi."
 
-#: apps/views/workouts.py:30 templates/exercises/custom_program_create.html:196
+#: apps/views/workouts.py:30 templates/exercises/custom_program_create.html:195
 msgid "Build size & strength"
 msgstr "Hajm va kuch oshirish"
 
@@ -2021,9 +2049,19 @@ msgstr "Premium obuna berish"
 
 #: templates/admin/make_premium.html:8
 #, python-format
-msgid "\n        Select a plan to grant premium to <strong>%(count)s</strong> user.\n    "
-msgid_plural "\n        Select a plan to grant premium to <strong>%(count)s</strong> users.\n    "
-msgstr[0] "\n        <strong>%(count)s</strong> foydalanuvchiga premium berish uchun tarifni tanlang.\n    "
+msgid ""
+"\n"
+"        Select a plan to grant premium to <strong>%(count)s</strong> user.\n"
+"    "
+msgid_plural ""
+"\n"
+"        Select a plan to grant premium to <strong>%(count)s</strong> users.\n"
+"    "
+msgstr[0] ""
+"\n"
+"        <strong>%(count)s</strong> foydalanuvchiga premium berish uchun "
+"tarifni tanlang.\n"
+"    "
 
 #: templates/admin/make_premium.html:36
 msgid "Grant Premium"
@@ -2036,24 +2074,24 @@ msgstr "Premium berish"
 msgid "Cancel"
 msgstr "Bekor qilish"
 
-#: templates/base.html:513 templates/workouts/program_list.html:607
+#: templates/base.html:510 templates/workouts/program_list.html:604
 msgid "WORKOUTS"
 msgstr "MASHG'ULOTLAR"
 
-#: templates/base.html:520 templates/exercises/body_parts.html:365
+#: templates/base.html:517 templates/exercises/body_parts.html:365
 #: templates/exercises/favorites_list.html:390
 msgid "EXERCISES"
 msgstr "MASHQLAR"
 
-#: templates/base.html:526
+#: templates/base.html:523
 msgid "HANDBOOK"
 msgstr "QO'LLANMA"
 
-#: templates/base.html:532
+#: templates/base.html:529
 msgid "FAVORITES"
 msgstr "SEVIMLILAR"
 
-#: templates/base.html:538 templates/users/profile_detail.html:256
+#: templates/base.html:535 templates/users/profile_detail.html:310
 msgid "PROFILE"
 msgstr "PROFIL"
 
@@ -2062,7 +2100,7 @@ msgid "Exercises - Body Parts"
 msgstr "Mashqlar — Tana qismlari"
 
 #: templates/exercises/custom_program_create.html:4
-#: templates/exercises/custom_program_create.html:166
+#: templates/exercises/custom_program_create.html:165
 #: templates/exercises/favorites_list.html:401
 msgid "Create Program"
 msgstr "Mashg'ulot yaratish"
@@ -2073,158 +2111,158 @@ msgstr "Mashg'ulot yaratish"
 msgid "Search exercises..."
 msgstr "Mashqlarni qidirish..."
 
-#: templates/exercises/custom_program_create.html:156
-#: templates/exercises/custom_program_create.html:283
+#: templates/exercises/custom_program_create.html:155
+#: templates/exercises/custom_program_create.html:282
 #: templates/exercises/favorites_list.html:371
 #: templates/exercises/favorites_list.html:567
 msgid "Select exercises"
 msgstr "Mashqlarni tanlang"
 
-#: templates/exercises/custom_program_create.html:177
-#: templates/exercises/custom_program_create.html:241
+#: templates/exercises/custom_program_create.html:176
+#: templates/exercises/custom_program_create.html:240
 msgid "Program Name"
 msgstr "Mashg'ulot nomi"
 
-#: templates/exercises/custom_program_create.html:178
+#: templates/exercises/custom_program_create.html:177
 msgid "Give your program a name"
 msgstr "Mashgg'ulotingizga nom bering"
 
-#: templates/exercises/custom_program_create.html:180
+#: templates/exercises/custom_program_create.html:179
 msgid "e.g. My Strength Program"
 msgstr "masalan Mening kuchli dasturim"
 
-#: templates/exercises/custom_program_create.html:185
+#: templates/exercises/custom_program_create.html:184
 msgid "Your Goal"
 msgstr "Maqsadingiz"
 
-#: templates/exercises/custom_program_create.html:186
+#: templates/exercises/custom_program_create.html:185
 msgid "What do you want to achieve?"
 msgstr "Nimaga erishmoqchisiz"
 
-#: templates/exercises/custom_program_create.html:190
-#: templates/exercises/custom_program_create.html:266
+#: templates/exercises/custom_program_create.html:189
+#: templates/exercises/custom_program_create.html:265
 msgid "Fat Loss"
 msgstr "Yog' yo'qotish"
 
-#: templates/exercises/custom_program_create.html:191
+#: templates/exercises/custom_program_create.html:190
 msgid "Burn calories & slim down"
 msgstr "Kaloriyalarni yoqing & ozing"
 
-#: templates/exercises/custom_program_create.html:195
-#: templates/exercises/custom_program_create.html:267
+#: templates/exercises/custom_program_create.html:194
+#: templates/exercises/custom_program_create.html:266
 msgid "Muscle Gain"
 msgstr "Mushak yig'ish"
 
-#: templates/exercises/custom_program_create.html:201
+#: templates/exercises/custom_program_create.html:200
 msgid "Lose fat, gain muscle"
 msgstr "Yog' yo'qotish, mushak o'stirish"
 
-#: templates/exercises/custom_program_create.html:205
-#: templates/exercises/custom_program_create.html:269
+#: templates/exercises/custom_program_create.html:204
+#: templates/exercises/custom_program_create.html:268
 msgid "General Fitness"
 msgstr "Umumiy fitnes"
 
-#: templates/exercises/custom_program_create.html:206
+#: templates/exercises/custom_program_create.html:205
 msgid "Overall health & fitness"
 msgstr "Umumiy salomatlik & fitnes"
 
-#: templates/exercises/custom_program_create.html:213
+#: templates/exercises/custom_program_create.html:212
 msgid "Build Your Days"
 msgstr "Kunlaringizni yarating"
 
-#: templates/exercises/custom_program_create.html:214
+#: templates/exercises/custom_program_create.html:213
 msgid "Choose workouts per week, then add exercises"
 msgstr "Haftalik mashg'ulotlarni tanlang, keyin mashqlarni qo'shing"
 
-#: templates/exercises/custom_program_create.html:218
-#: templates/exercises/custom_program_create.html:222
-#: templates/exercises/custom_program_create.html:226
-#: templates/exercises/custom_program_create.html:289
+#: templates/exercises/custom_program_create.html:217
+#: templates/exercises/custom_program_create.html:221
+#: templates/exercises/custom_program_create.html:225
+#: templates/exercises/custom_program_create.html:288
 msgid "days/week"
 msgstr "kun/hafta"
 
-#: templates/exercises/custom_program_create.html:237
+#: templates/exercises/custom_program_create.html:236
 msgid "Review & Save"
 msgstr "Ko‘rib chiqish & saqlash"
 
-#: templates/exercises/custom_program_create.html:238
+#: templates/exercises/custom_program_create.html:237
 msgid "Check your program before saving"
 msgstr "Saqlashdan oldin mashg'ulotingizni tekshiring"
 
-#: templates/exercises/custom_program_create.html:250
+#: templates/exercises/custom_program_create.html:249
 #, python-format
 msgid "%(weeks)s week"
 msgid_plural "%(weeks)s weeks"
 msgstr[0] "%(weeks)s hafta"
 
-#: templates/exercises/custom_program_create.html:253
+#: templates/exercises/custom_program_create.html:252
 msgid "Days/week"
 msgstr "Kun/Hafta"
 
-#: templates/exercises/custom_program_create.html:263
-#: templates/exercises/custom_program_create.html:280
+#: templates/exercises/custom_program_create.html:262
+#: templates/exercises/custom_program_create.html:279
 msgid "Continue"
 msgstr "Davom etish"
 
-#: templates/exercises/custom_program_create.html:270
+#: templates/exercises/custom_program_create.html:269
 msgid "Please enter a program name"
 msgstr "Mashg'ulot nomini kiriting"
 
-#: templates/exercises/custom_program_create.html:271
+#: templates/exercises/custom_program_create.html:270
 msgid "Please select a goal"
 msgstr "Ilitmos maqsadingizni tanlang"
 
-#: templates/exercises/custom_program_create.html:272
+#: templates/exercises/custom_program_create.html:271
 msgid "Please select days per week"
 msgstr "Haftasiga mashg'ulot kunlari tanlang"
 
-#: templates/exercises/custom_program_create.html:273
+#: templates/exercises/custom_program_create.html:272
 msgid "Please add at least 1 exercise"
 msgstr "Iltimos kamida bitta mashq qo'shing"
 
-#: templates/exercises/custom_program_create.html:277
+#: templates/exercises/custom_program_create.html:276
 msgid "Review"
 msgstr "Ko‘rib chiqish"
 
-#: templates/exercises/custom_program_create.html:278
+#: templates/exercises/custom_program_create.html:277
 msgid "Update Program"
 msgstr "Mashg'ulotni yangilash"
 
-#: templates/exercises/custom_program_create.html:279
+#: templates/exercises/custom_program_create.html:278
 msgid "Save Program"
 msgstr "Mashg'ulotni saqlash"
 
-#: templates/exercises/custom_program_create.html:282
+#: templates/exercises/custom_program_create.html:281
 msgid "Add Exercise"
 msgstr "Mashq qo'shish"
 
-#: templates/exercises/custom_program_create.html:284
+#: templates/exercises/custom_program_create.html:283
 #: templates/exercises/favorites_list.html:568 templates/panel/detail.html:52
 #: templates/panel/detail.html:58 templates/panel/detail.html:109
 #: templates/panel/list.html:21
 msgid "Add"
 msgstr "Qo'shish"
 
-#: templates/exercises/custom_program_create.html:290
+#: templates/exercises/custom_program_create.html:289
 msgid "exercise"
 msgstr "mashq"
 
-#: templates/exercises/custom_program_create.html:291
+#: templates/exercises/custom_program_create.html:290
 #: templates/exercises/exercise_list.html:866
 #: templates/panel/premade_day_attach.html:39
 #: templates/workouts/week_days.html:520
 msgid "exercises"
 msgstr "mashq"
 
-#: templates/exercises/custom_program_create.html:292
+#: templates/exercises/custom_program_create.html:291
 msgid "Saving..."
 msgstr "Saqlanmoqda..."
 
-#: templates/exercises/custom_program_create.html:293
+#: templates/exercises/custom_program_create.html:292
 msgid "Error saving program"
 msgstr "Mashg'ulotni saqlashda xatolik"
 
-#: templates/exercises/custom_program_create.html:294
+#: templates/exercises/custom_program_create.html:293
 #: templates/miniapp/questionarrie.html:297
 msgid "Network error. Please try again."
 msgstr "Tarmoq xatosi. Iltimos, qayta urinib ko'ring."
@@ -2375,7 +2413,7 @@ msgstr "mashg'ulotni o'chirish"
 
 #: templates/exercises/favorites_list.html:471
 #: templates/workouts/_program_card.html:134
-#: templates/workouts/edition_list.html:529
+#: templates/workouts/edition_list.html:527
 msgid "w"
 msgstr "hafta"
 
@@ -2551,7 +2589,7 @@ msgstr "Fitness So'rovnomasi — Telegram WebApp"
 #: templates/payment/payment_method.html:331
 #: templates/payment/tariff_select.html:182
 #: templates/users/cancel_subscription.html:464 templates/users/help.html:115
-#: templates/users/manage_subscription.html:682
+#: templates/users/manage_subscription.html:681
 msgid "Back"
 msgstr "Orqaga"
 
@@ -2566,14 +2604,6 @@ msgstr "Keling, asosiy ma'lumotlardan boshlaymiz"
 #: templates/miniapp/questionarrie.html:237
 msgid "How would you describe your gym experience?"
 msgstr "Sport zalidagi tajribangizni qanday baholaysiz?"
-
-#: templates/miniapp/questionarrie.html:240
-msgid "Training for less than 6 mos"
-msgstr "6 oydan kam mashq qilganman"
-
-#: templates/miniapp/questionarrie.html:243
-msgid "Training for more than 2 yrs"
-msgstr "2 yildan ko'proq mashq qilganman"
 
 #: templates/miniapp/questionarrie.html:250
 msgid "What's your current fitness objective?"
@@ -2648,8 +2678,8 @@ msgid "Current Plan"
 msgstr "Joriy reja"
 
 #: templates/my_trainer/my_trainer.html:327
-#: templates/my_trainer/my_trainer.html:334 templates/users/progress.html:592
-#: templates/users/progress.html:632 templates/users/progress.html:695
+#: templates/my_trainer/my_trainer.html:334 templates/users/progress.html:590
+#: templates/users/progress.html:630 templates/users/progress.html:693
 msgid "Workouts"
 msgstr "Mashg'ulotlar"
 
@@ -2706,7 +2736,7 @@ msgstr "Moliya"
 msgid "System"
 msgstr "Tizim"
 
-#: templates/panel/base.html:327 templates/users/profile_detail.html:394
+#: templates/panel/base.html:327 templates/users/profile_detail.html:448
 #: templates/users/settings.html:6
 msgid "Settings"
 msgstr "Sozlamalar"
@@ -2720,7 +2750,7 @@ msgid "Log out"
 msgstr "Chiqish"
 
 #: templates/panel/chat_thread.html:149 templates/users/progress.html:563
-#: templates/workouts/program_list.html:660
+#: templates/workouts/program_list.html:657
 msgid "Today"
 msgstr "Bugun"
 
@@ -2729,7 +2759,7 @@ msgid "Yesterday"
 msgstr "Kecha"
 
 #: templates/panel/chat_thread.html:155 templates/panel/chat_thread.html:193
-#: templates/users/profile_detail.html:431
+#: templates/users/profile_detail.html:485
 msgid "Support"
 msgstr "Qo'llab-quvvatlash"
 
@@ -2820,8 +2850,11 @@ msgid "Import"
 msgstr "Import"
 
 #: templates/panel/detail.html:73
-msgid "Copies days & set/rep values only. Weights/times use this plan's difficulty."
-msgstr "Faqat kunlar va yondashuv/takror qiymatlari nusxalanadi. Vazn va vaqt ushbu plan murakkabligidan olinadi."
+msgid ""
+"Copies days & set/rep values only. Weights/times use this plan's difficulty."
+msgstr ""
+"Faqat kunlar va yondashuv/takror qiymatlari nusxalanadi. Vazn va vaqt ushbu "
+"plan murakkabligidan olinadi."
 
 #: templates/panel/detail.html:82 templates/panel/detail.html:117
 #: templates/panel/list.html:40
@@ -2847,8 +2880,11 @@ msgid "Could not generate link."
 msgstr "Havola yaratib bo'lmadi."
 
 #: templates/panel/exercise_form.html:57
-msgid "GYM only. The working weight or hold time grows each week across the program."
-msgstr "Faqat zal uchun. Ishchi vazn yoki ushlab turish vaqti dastur davomida har hafta oshib boradi."
+msgid ""
+"GYM only. The working weight or hold time grows each week across the program."
+msgstr ""
+"Faqat zal uchun. Ishchi vazn yoki ushlab turish vaqti dastur davomida har "
+"hafta oshib boradi."
 
 #: templates/panel/list.html:14
 msgid "Search..."
@@ -2876,8 +2912,12 @@ msgid "This section is being built."
 msgstr "Bu bo'lim ishlab chiqilmoqda."
 
 #: templates/panel/premade_day_attach.html:30
-msgid "Pick a pre-made day to add to this week. Its exercises are copied into a new day — later edits to the pre-made day will not affect this plan."
-msgstr "Shu haftaga qo'shish uchun tayyor kunni tanlang. Uning mashqlari yangi kunga nusxalanadi — tayyor kun keyin o'zgartirilsa, bu planga ta'sir qilmaydi."
+msgid ""
+"Pick a pre-made day to add to this week. Its exercises are copied into a new "
+"day — later edits to the pre-made day will not affect this plan."
+msgstr ""
+"Shu haftaga qo'shish uchun tayyor kunni tanlang. Uning mashqlari yangi kunga "
+"nusxalanadi — tayyor kun keyin o'zgartirilsa, bu planga ta'sir qilmaydi."
 
 #: templates/panel/premade_day_attach.html:41
 #: templates/workouts/import_preview.html:70
@@ -2912,8 +2952,11 @@ msgid "Day settings"
 msgstr "Kun sozlamalari"
 
 #: templates/panel/premade_day_builder.html:105
-msgid "A reusable day. When attached to a plan, these exercises are copied into it."
-msgstr "Qayta ishlatiladigan kun. Planga biriktirilganda bu mashqlar unga nusxalanadi."
+msgid ""
+"A reusable day. When attached to a plan, these exercises are copied into it."
+msgstr ""
+"Qayta ishlatiladigan kun. Planga biriktirilganda bu mashqlar unga "
+"nusxalanadi."
 
 #: templates/panel/premade_day_builder.html:110
 #: templates/panel/workout_builder.html:120
@@ -2938,7 +2981,8 @@ msgstr "Nomi bo'yicha qidirish..."
 #: templates/panel/premade_day_builder.html:146
 #: templates/panel/workout_builder.html:166
 msgid "No exercises for this mode yet. Add some in the Exercises section."
-msgstr "Bu rejim uchun hozircha mashqlar yo'q. Ularni «Mashqlar» bo'limida qo'shing."
+msgstr ""
+"Bu rejim uchun hozircha mashqlar yo'q. Ularni «Mashqlar» bo'limida qo'shing."
 
 #: templates/panel/premade_day_builder.html:150
 #: templates/panel/premade_day_builder.html:236
@@ -2966,7 +3010,7 @@ msgstr "Olib tashlash"
 msgid "Revenue — last 6 months"
 msgstr "Daromad — oxirgi 6 oy"
 
-#: templates/panel/reports.html:40 templates/users/progress.html:566
+#: templates/panel/reports.html:40 templates/users/progress.html:565
 msgid "Month"
 msgstr "Oy"
 
@@ -2987,12 +3031,20 @@ msgid "One-time settings"
 msgstr "Bir martalik dastur sozlamalari"
 
 #: templates/panel/workout_builder.html:110
-msgid "A single-session program: just exercises with sets / reps / weight. No weeks or progression."
-msgstr "Bitta mashg'ulotlik dastur: faqat yondashuv / takror / vazn bilan mashqlar. Hafta va progressiyasiz."
+msgid ""
+"A single-session program: just exercises with sets / reps / weight. No weeks "
+"or progression."
+msgstr ""
+"Bitta mashg'ulotlik dastur: faqat yondashuv / takror / vazn bilan mashqlar. "
+"Hafta va progressiyasiz."
 
 #: templates/panel/workout_builder.html:114
-msgid "The progression rule is set on the plan. Week-1 days here seed the exercises; weeks 2..N are generated from them."
-msgstr "Progressiya qoidasi planda belgilanadi. 1-hafta kunlari mashqlarni belgilaydi; 2..N haftalar ulardan yaratiladi."
+msgid ""
+"The progression rule is set on the plan. Week-1 days here seed the "
+"exercises; weeks 2..N are generated from them."
+msgstr ""
+"Progressiya qoidasi planda belgilanadi. 1-hafta kunlari mashqlarni "
+"belgilaydi; 2..N haftalar ulardan yaratiladi."
 
 #: templates/panel/workout_builder.html:115
 msgid "edit plan rule"
@@ -3003,8 +3055,11 @@ msgid "Apply to all weeks (auto-generate 2..N)"
 msgstr "Barcha haftalarga qo'llash (2..N avtomatik yaratiladi)"
 
 #: templates/panel/workout_builder.html:130
-msgid "Note: weeks 2..N are auto-generated from week 1. Editing here is manual."
-msgstr "Eslatma: 2..N haftalar 1-haftadan avtomatik yaratiladi. Bu yerdagi o'zgartirishlar qo'lda kiritiladi."
+msgid ""
+"Note: weeks 2..N are auto-generated from week 1. Editing here is manual."
+msgstr ""
+"Eslatma: 2..N haftalar 1-haftadan avtomatik yaratiladi. Bu yerdagi "
+"o'zgartirishlar qo'lda kiritiladi."
 
 #: templates/panel/workout_builder.html:134
 msgid "Save program"
@@ -3068,8 +3123,12 @@ msgid "Gift Premium"
 msgstr "Premium sovg'a qilish"
 
 #: templates/payment/gift_purchase.html:180
-msgid "Choose a package to gift a friend. You'll get a link to share — the first person to open it gets Premium."
-msgstr "Do'stingizga sovg'a qilish uchun paketni tanlang. Sizga havola beriladi — uni birinchi ochgan odam Premium oladi."
+msgid ""
+"Choose a package to gift a friend. You'll get a link to share — the first "
+"person to open it gets Premium."
+msgstr ""
+"Do'stingizga sovg'a qilish uchun paketni tanlang. Sizga havola beriladi — "
+"uni birinchi ochgan odam Premium oladi."
 
 #: templates/payment/gift_purchase.html:201
 #: templates/payment/tariff_select.html:204
@@ -3151,12 +3210,20 @@ msgstr "Olindi"
 
 #: templates/payment/gift_share.html:97
 #, python-format
-msgid "Send this link to a friend. The first person to open it and claim gets %(plan)s of Premium."
-msgstr "Bu havolani do'stingizga yuboring. Uni birinchi ochib, sovg'ani olgan odam %(plan)s Premium oladi."
+msgid ""
+"Send this link to a friend. The first person to open it and claim gets "
+"%(plan)s of Premium."
+msgstr ""
+"Bu havolani do'stingizga yuboring. Uni birinchi ochib, sovg'ani olgan odam "
+"%(plan)s Premium oladi."
 
 #: templates/payment/gift_share.html:99
-msgid "Send this link to a friend. The first person to open it and claim gets Premium."
-msgstr "Bu havolani do'stingizga yuboring. Uni birinchi ochib, sovg'ani olgan odam Premium oladi."
+msgid ""
+"Send this link to a friend. The first person to open it and claim gets "
+"Premium."
+msgstr ""
+"Bu havolani do'stingizga yuboring. Uni birinchi ochib, sovg'ani olgan odam "
+"Premium oladi."
 
 #: templates/payment/gift_share.html:103
 msgid "Ready to share"
@@ -3302,13 +3369,17 @@ msgid "CANCEL"
 msgstr "BEKOR QILISH"
 
 #: templates/users/cancel_subscription.html:437
-#: templates/users/manage_subscription.html:751
+#: templates/users/manage_subscription.html:748
 msgid "Cancel subscription"
 msgstr "Obunani bekor qilish"
 
 #: templates/users/cancel_subscription.html:440
-msgid "You are about to cancel your subscription. It will not renew, but you keep Premium until the end of the period you already paid for."
-msgstr "Siz obunani bekor qilmoqchisiz. U yangilanmaydi, lekin siz to'lagan davr oxirigacha Premium saqlanib qoladi."
+msgid ""
+"You are about to cancel your subscription. It will not renew, but you keep "
+"Premium until the end of the period you already paid for."
+msgstr ""
+"Siz obunani bekor qilmoqchisiz. U yangilanmaydi, lekin siz to'lagan davr "
+"oxirigacha Premium saqlanib qoladi."
 
 #: templates/users/cancel_subscription.html:446
 msgid "As a result of cancellation:"
@@ -3344,13 +3415,16 @@ msgid "MA'LUMOTLAR"
 msgstr "MA'LUMOTLAR"
 
 #: templates/users/help.html:5 templates/users/help.html:117
-#: templates/users/profile_detail.html:430
+#: templates/users/profile_detail.html:484
 msgid "Help"
 msgstr "Yordam"
 
 #: templates/users/help.html:124
-msgid "Ask us anything — write your question below and our team will reply here."
-msgstr "Istalgan savolni bering — savolingizni quyida yozing, jamoamiz shu yerda javob beradi."
+msgid ""
+"Ask us anything — write your question below and our team will reply here."
+msgstr ""
+"Istalgan savolni bering — savolingizni quyida yozing, jamoamiz shu yerda "
+"javob beradi."
 
 #: templates/users/help.html:137
 msgid "Type a message…"
@@ -3360,66 +3434,66 @@ msgstr "Xabar yozing…"
 msgid "Manage Subscription"
 msgstr "Obunani boshqarish"
 
-#: templates/users/manage_subscription.html:694
+#: templates/users/manage_subscription.html:693
 msgid "Premium active"
 msgstr "Premium faol"
 
-#: templates/users/manage_subscription.html:713
+#: templates/users/manage_subscription.html:712
 msgid "Next payment date"
 msgstr "Keyingi to'lov sanasi"
 
-#: templates/users/manage_subscription.html:717
+#: templates/users/manage_subscription.html:716
 msgid "Not scheduled"
 msgstr "Rejalashtirilmagan"
 
-#: templates/users/manage_subscription.html:736
+#: templates/users/manage_subscription.html:735
 msgid "Upgrade subscription"
 msgstr "Obunani yaxshilash"
 
-#: templates/users/manage_subscription.html:743
+#: templates/users/manage_subscription.html:740
 #, python-format
 msgid "Canceled — Premium stays active until %(date)s"
 msgstr "Bekor qilingan — Premium %(date)s gacha faol"
 
-#: templates/users/manage_subscription.html:764
+#: templates/users/manage_subscription.html:761
 msgid "Transaction history"
 msgstr "Tranzaksiyalar tarixi"
 
-#: templates/users/manage_subscription.html:771
+#: templates/users/manage_subscription.html:768
 msgid "Total"
 msgstr "Jami"
 
-#: templates/users/manage_subscription.html:773
+#: templates/users/manage_subscription.html:770
 msgid "Action"
 msgstr "Amal"
 
-#: templates/users/manage_subscription.html:788
+#: templates/users/manage_subscription.html:785
 #: templates/users/payment_history.html:618
 msgid "Paid"
 msgstr "To'landi"
 
-#: templates/users/manage_subscription.html:790
+#: templates/users/manage_subscription.html:787
 #: templates/users/payment_history.html:590
 #: templates/users/payment_history.html:619
 msgid "Pending"
 msgstr "Kutilmoqda"
 
-#: templates/users/manage_subscription.html:793
+#: templates/users/manage_subscription.html:790
 #: templates/users/payment_history.html:591
 #: templates/users/payment_history.html:620
 msgid "Canceled"
 msgstr "Bekor qilindi"
 
-#: templates/users/manage_subscription.html:798
-#: templates/users/manage_subscription.html:803
+#: templates/users/manage_subscription.html:795
+#: templates/users/manage_subscription.html:800
 msgid "View"
 msgstr "Ko'rish"
 
-#: templates/users/manage_subscription.html:816
+#: templates/users/manage_subscription.html:813
 msgid "No payments yet"
 msgstr "Hozircha to'lovlar yo'q"
 
-#: templates/users/manage_subscription.html:824
+#: templates/users/manage_subscription.html:821
 msgid "Load more"
 msgstr "Ko'proq yuklash"
 
@@ -3452,79 +3526,83 @@ msgstr "Muvaffaqiyatli"
 msgid "No payment history yet"
 msgstr "Hozircha to'lovlar tarixi yo'q"
 
-#: templates/users/profile_detail.html:294
+#: templates/users/profile_detail.html:348
 msgid "Until the end of the subscription"
 msgstr "Obuna tugashiga"
 
-#: templates/users/profile_detail.html:296
+#: templates/users/profile_detail.html:350
 #, python-format
 msgid "%(counter)s day"
 msgid_plural "%(counter)s days"
 msgstr[0] "%(counter)s kun"
 
-#: templates/users/profile_detail.html:298
+#: templates/users/profile_detail.html:352
 msgid "Last day today"
 msgstr "Bugun oxirgi kun"
 
-#: templates/users/profile_detail.html:302
+#: templates/users/profile_detail.html:356
 msgid "Inactive"
 msgstr "Faol emas"
 
-#: templates/users/profile_detail.html:311
+#: templates/users/profile_detail.html:365
 msgid "Your Premium gift"
 msgstr "Sizning Premium sovg'angiz"
 
-#: templates/users/profile_detail.html:311
+#: templates/users/profile_detail.html:365
 msgid "Gift Premium to a friend"
 msgstr "Do'stingizga Premium sovg'a qiling"
 
-#: templates/users/profile_detail.html:315
+#: templates/users/profile_detail.html:369
 msgid "Claimed — thanks for sharing!"
 msgstr "Olindi — ulashganingiz uchun rahmat!"
 
-#: templates/users/profile_detail.html:317
+#: templates/users/profile_detail.html:371
 msgid "Tap to view your shareable link"
 msgstr "Ulashish havolasini ko'rish uchun bosing"
 
-#: templates/users/profile_detail.html:319
+#: templates/users/profile_detail.html:373
 msgid "Choose a package — one time only"
 msgstr "Paketni tanlang — faqat bir marta"
 
-#: templates/users/profile_detail.html:340
+#: templates/users/profile_detail.html:394
 msgid "Manage subscription"
 msgstr "Obunani boshqarish"
 
-#: templates/users/profile_detail.html:341
+#: templates/users/profile_detail.html:395
 msgid "Plans & pricing"
 msgstr "Rejalar va narxlar"
 
-#: templates/users/profile_detail.html:358
+#: templates/users/profile_detail.html:412
 msgid "Profile"
 msgstr "Profil"
 
-#: templates/users/profile_detail.html:359
+#: templates/users/profile_detail.html:413
 msgid "Edit information"
 msgstr "Ma'lumotlarni tahrirlash"
 
-#: templates/users/profile_detail.html:376
+#: templates/users/profile_detail.html:430
 msgid "Statistics"
 msgstr "Statistika"
 
-#: templates/users/profile_detail.html:377
+#: templates/users/profile_detail.html:431
 msgid "your results"
 msgstr "natijalaringiz"
 
-#: templates/users/profile_detail.html:395
+#: templates/users/profile_detail.html:449
 msgid "All settings"
 msgstr "Barcha sozlamalar"
 
-#: templates/users/profile_detail.html:412
+#: templates/users/profile_detail.html:466
 msgid "Recommended program"
 msgstr "Tavsiya etilgan dastur"
 
-#: templates/users/profile_detail.html:413
+#: templates/users/profile_detail.html:467
 msgid "Update your goals & fitness level"
 msgstr "Maqsad va tayyorgarlik darajangizni yangilang"
+
+#: templates/users/profile_detail.html:498
+msgid "Follow us"
+msgstr "Bizni kuzatib boring"
 
 #: templates/users/profile_update.html:432
 msgid "EDIT PROFILE"
@@ -3538,56 +3616,60 @@ msgstr "Rasmni o'zgartirish uchun bosing"
 msgid "STATISTICS"
 msgstr "Statistikalar"
 
-#: templates/users/progress.html:567
+#: templates/users/progress.html:566
 msgid "Year"
 msgstr "Yil"
 
-#: templates/users/progress.html:577
+#: templates/users/progress.html:575
 msgid "Unlock full statistics"
 msgstr "To'liq statistikani oching"
 
-#: templates/users/progress.html:578
-msgid "Monthly and yearly statistics are a premium feature. Upgrade to Premium to see your full progress."
-msgstr "Oylik va yillik statistika — premium imkoniyat. Butun progressni ko'rish uchun Premium'ga o'ting."
+#: templates/users/progress.html:576
+msgid ""
+"Monthly and yearly statistics are a premium feature. Upgrade to Premium to "
+"see your full progress."
+msgstr ""
+"Oylik va yillik statistika — premium imkoniyat. Butun progressni ko'rish "
+"uchun Premium'ga o'ting."
 
-#: templates/users/progress.html:579
+#: templates/users/progress.html:577
 msgid "Get Premium"
 msgstr "Premium olish"
 
-#: templates/users/progress.html:580
+#: templates/users/progress.html:578
 msgid "View this week's stats"
 msgstr "Shu haftalik statistikani ko'rish"
 
-#: templates/users/progress.html:601
+#: templates/users/progress.html:599
 msgid "h"
 msgstr "s"
 
-#: templates/users/progress.html:602 templates/users/progress.html:697
+#: templates/users/progress.html:600 templates/users/progress.html:695
 msgid "Hours"
 msgstr "Soat"
 
-#: templates/users/progress.html:631
+#: templates/users/progress.html:629
 msgid "Weekly Activity"
 msgstr "Haftalik faollik"
 
-#: templates/users/progress.html:654
+#: templates/users/progress.html:652
 msgid "Recent Workouts"
 msgstr "Oxirgi mashg'ulotlar"
 
-#: templates/users/progress.html:668
+#: templates/users/progress.html:666
 msgid "ex"
 msgstr "mash"
 
-#: templates/users/progress.html:674
+#: templates/users/progress.html:672
 #: templates/workouts/home_workout_detail.html:556
 msgid "min"
 msgstr "daq"
 
-#: templates/users/progress.html:680
+#: templates/users/progress.html:678
 msgid "cal"
 msgstr "kal"
 
-#: templates/users/progress.html:686
+#: templates/users/progress.html:684
 msgid "No workout history yet"
 msgstr "Hozircha mashg'ulot tarixi yo'q"
 
@@ -3657,7 +3739,7 @@ msgid "Version & info"
 msgstr "Versiya va ma'lumot"
 
 #: templates/workouts/_program_card.html:66
-#: templates/workouts/program_list.html:783
+#: templates/workouts/program_list.html:780
 msgid "top"
 msgstr "top"
 
@@ -3666,7 +3748,7 @@ msgid "FOR YOU"
 msgstr "SIZ UCHUN"
 
 #: templates/workouts/_program_card.html:154
-#: templates/workouts/edition_list.html:530
+#: templates/workouts/edition_list.html:528
 msgid "d/week"
 msgstr "kun/hafta"
 
@@ -3794,19 +3876,23 @@ msgstr "REJALAR"
 msgid "About this program"
 msgstr "Mashg'ulot haqida"
 
-#: templates/workouts/edition_list.html:512
-msgid "Transform your body with this comprehensive workout program designed for all fitness levels."
-msgstr "Har qanday tayyorgarlik darajasiga mos ushbu keng qamrovli mashg'ulot dasturi bilan tanangizni o'zgartiring."
+#: templates/workouts/edition_list.html:510
+msgid ""
+"Transform your body with this comprehensive workout program designed for all "
+"fitness levels."
+msgstr ""
+"Har qanday tayyorgarlik darajasiga mos ushbu keng qamrovli mashg'ulot "
+"dasturi bilan tanangizni o'zgartiring."
 
-#: templates/workouts/edition_list.html:517
+#: templates/workouts/edition_list.html:515
 msgid "Choose Your Plan"
 msgstr "Rejangizni tanlang"
 
-#: templates/workouts/edition_list.html:552
+#: templates/workouts/edition_list.html:550
 msgid "No plans available"
 msgstr "Rejalar mavjud emas"
 
-#: templates/workouts/edition_list.html:553
+#: templates/workouts/edition_list.html:551
 msgid "Check back later for workout plans"
 msgstr "Mashg'ulot rejalari uchun keyinroq tekshiring"
 
@@ -3850,7 +3936,7 @@ msgid "SEC"
 msgstr "SEK"
 
 #: templates/workouts/home_session.html:1115
-#: templates/workouts/program_list.html:680
+#: templates/workouts/program_list.html:677
 msgid "START"
 msgstr "BOSHLASH"
 
@@ -3965,11 +4051,11 @@ msgstr "Import funksiyasi Premium a'zolar uchun mavjud."
 msgid "Importing..."
 msgstr "Import qilinmoqda..."
 
-#: templates/workouts/plan_weeks.html:428
+#: templates/workouts/plan_weeks.html:410
 msgid "No weeks available"
 msgstr "Haftalar mavjud emas"
 
-#: templates/workouts/plan_weeks.html:429
+#: templates/workouts/plan_weeks.html:411
 msgid "Check back later for this plan"
 msgstr "Bu reja uchun keyinroq tekshiring"
 
@@ -3977,62 +4063,64 @@ msgstr "Bu reja uchun keyinroq tekshiring"
 msgid "All Workouts"
 msgstr "Barcha mashg'ulotlar"
 
-#: templates/workouts/program_list.html:635
+#: templates/workouts/program_list.html:632
 msgid "RECOMMENDED FOR YOU"
 msgstr "SIZGA TAVSIYA"
 
-#: templates/workouts/program_list.html:651
+#: templates/workouts/program_list.html:648
 #, python-format
-msgid "Week %(w)s of\n                                            %(t)s"
+msgid ""
+"Week %(w)s of\n"
+"                                            %(t)s"
 msgstr "%(t)s dan %(w)s-hafta"
 
-#: templates/workouts/program_list.html:668
-#: templates/workouts/program_list.html:791
+#: templates/workouts/program_list.html:665
+#: templates/workouts/program_list.html:788
 msgid "weeks"
 msgstr "hafta"
 
-#: templates/workouts/program_list.html:675
-#: templates/workouts/program_list.html:794
+#: templates/workouts/program_list.html:672
+#: templates/workouts/program_list.html:791
 msgid "week"
 msgstr "hafta"
 
-#: templates/workouts/program_list.html:680
+#: templates/workouts/program_list.html:677
 msgid "CONTINUE"
 msgstr "DAVOM ETISH"
 
-#: templates/workouts/program_list.html:695
+#: templates/workouts/program_list.html:692
 msgid "Trends"
 msgstr "Trendda"
 
-#: templates/workouts/program_list.html:714
+#: templates/workouts/program_list.html:711
 msgid "Single session"
 msgstr "Bitta mashg'ulot"
 
-#: templates/workouts/program_list.html:727
+#: templates/workouts/program_list.html:724
 msgid "EXPLORE PROGRAMS"
 msgstr "PROGRAMMALAR"
 
-#: templates/workouts/program_list.html:731
+#: templates/workouts/program_list.html:728
 msgid "All levels"
 msgstr "Barcha darajalar"
 
-#: templates/workouts/program_list.html:737
+#: templates/workouts/program_list.html:734
 msgid "View mode"
 msgstr "Ko'rinish"
 
-#: templates/workouts/program_list.html:738
+#: templates/workouts/program_list.html:735
 msgid "List view"
 msgstr "Ro'yxat ko'rinishi"
 
-#: templates/workouts/program_list.html:747
+#: templates/workouts/program_list.html:744
 msgid "Grid view"
 msgstr "Plitka ko'rinishi"
 
-#: templates/workouts/program_list.html:827
+#: templates/workouts/program_list.html:824
 msgid "No programs yet"
 msgstr "Hozircha mashg'ulotlar yo'q"
 
-#: templates/workouts/program_list.html:828
+#: templates/workouts/program_list.html:825
 msgid "New programs will be added soon"
 msgstr "Yangi mashg'ulotlar tez orada qo'shiladi"
 
@@ -4071,6 +4159,12 @@ msgstr "Bu kunda mashqlar mavjud emas."
 #: templates/workouts/workout_detail.html:272
 msgid "Start Workout"
 msgstr "Mashg'ulotni boshlash"
+
+#~ msgid "Training for less than 6 mos"
+#~ msgstr "6 oydan kam mashq qilganman"
+
+#~ msgid "Training for more than 2 yrs"
+#~ msgstr "2 yildan ko'proq mashq qilganman"
 
 #~ msgid "Error: Telegram ID not found. Please restart the bot."
 #~ msgstr "Xato: Telegram ID topilmadi. Botni qayta ishga tushiring."

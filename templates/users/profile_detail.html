@@ -48,13 +48,67 @@ body {
 }
 .page-title svg { flex-shrink: 0; }
 
-/* Sarlavhadagi "qo'ng'iroq" tugmasi olib tashlandi — o'qilmagan xabarlar soni
-   menyudagi "Help" kartochkasidagi belgida ko'rinadi (.chat-badge). */
 .chat-badge {
     min-width: 17px; height: 17px; padding: 0 4px; border-radius: 9px;
     background: #ff5252; color: #fff; font-size: 10px; font-weight: 800;
     line-height: 17px; text-align: center;
     display: inline-block; flex-shrink: 0; margin-left: 6px;
+}
+
+.social-block {
+    margin: 22px auto 8px;
+    text-align: center;
+}
+.social-title {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.35);
+    margin-bottom: 12px;
+}
+.social-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+.social-btn {
+    width: 46px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.75);
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+.social-btn svg {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+}
+.social-btn:active {
+    transform: scale(0.94);
+}
+.social-btn--instagram:hover {
+    color: #fff;
+    border-color: rgba(225, 48, 108, 0.55);
+    background: rgba(225, 48, 108, 0.14);
+}
+.social-btn--telegram:hover {
+    color: #fff;
+    border-color: rgba(41, 171, 226, 0.55);
+    background: rgba(41, 171, 226, 0.14);
+}
+.social-btn--youtube:hover {
+    color: #fff;
+    border-color: rgba(255, 0, 0, 0.5);
+    background: rgba(255, 0, 0, 0.13);
 }
 
 .container {
@@ -438,13 +492,41 @@ body {
         </div>
 
     </div>
+
+    {% if social_links %}
+    <div class="social-block">
+        <div class="social-title">{% trans "Follow us" %}</div>
+        <div class="social-row">
+            {% for link in social_links %}
+                <a href="{{ link.url }}" class="social-btn social-btn--{{ link.name }}"
+                   target="_blank" rel="noopener noreferrer" aria-label="{{ link.name|capfirst }}">
+                    {% if link.name == 'instagram' %}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2.5" y="2.5" width="19" height="19" rx="5.5"/>
+                            <circle cx="12" cy="12" r="4.2"/>
+                            <circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" stroke="none"/>
+                        </svg>
+                    {% elif link.name == 'telegram' %}
+                        <svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                            <path d="M21.7 3.3 2.9 10.6c-1.1.4-1.1 1.1-.2 1.4l4.8 1.5 1.8 5.6c.2.6.4.8.8.8.4 0 .6-.2.9-.5l2.3-2.2 4.7 3.5c.9.5 1.5.2 1.7-.8l3.1-14.5c.3-1.3-.5-1.8-1.1-1.5zM7.9 13.2l10.2-6.4c.5-.3.9-.1.6.2l-8.7 7.9-.3 3.6-1.8-5.3z"/>
+                        </svg>
+                    {% else %}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="5" width="20" height="14" rx="4"/>
+                            <path d="M10.2 9.3v5.4l4.6-2.7z" fill="currentColor" stroke="none"/>
+                        </svg>
+                    {% endif %}
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
 </div>
 
 {% endblock %}
 
 {% block extra_js %}
 <script>
-    // Poll unread chat count → Help card badge (sarlavhadagi qo'ng'iroq olib tashlangan).
     (function () {
         const url = "{% url 'help_chat' %}?count=1";
         const card = document.getElementById('helpCardBadge');

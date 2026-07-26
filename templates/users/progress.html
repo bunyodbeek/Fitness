@@ -561,7 +561,6 @@
     <!-- Period Selector -->
     <div class="period-selector">
         <button class="period-btn {% if period == 'today' %}active{% endif %}" data-period="today">{% trans "Today" %}</button>
-        {# "Today" va "Week" — bepul (qulf belgisi yo'q). Qolganlari premium. #}
         <button class="period-btn {% if period == 'week' or not period %}active{% endif %}" data-period="week">{% trans "Week" %}</button>
         <button class="period-btn {% if period == 'month' %}active{% endif %}" data-period="month">{% trans "Month" %}{% if not is_premium %} <span class="period-lock">🔒</span>{% endif %}</button>
         <button class="period-btn {% if period == 'year' %}active{% endif %}" data-period="year">{% trans "Year" %}{% if not is_premium %} <span class="period-lock">🔒</span>{% endif %}</button>
@@ -569,7 +568,6 @@
     </div>
 
     {% if stats_locked %}
-    <!-- Premium paywall — free users get today + this week; longer ranges are premium -->
     <div class="paywall-card">
         <div class="paywall-icon">
             <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
