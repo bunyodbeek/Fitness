@@ -6,11 +6,16 @@ from django.urls import include, path
 from django.views.generic.base import RedirectView
 from django.views.decorators.csrf import csrf_exempt # Buni qo'shing
 from apps.bot.bot_view import TelegramWebhookView# Webhook view funksiyangizni import qiling
+from apps.views.miniapp import MiniAppEntryView
 from apps.views.payments import AtmosCallbackView
 
 # 1. Tildan mustaqil (prefiksiz) URL'lar
 urlpatterns = [
     path('bot/webhook/', csrf_exempt(TelegramWebhookView.as_view()), name='bot_webhook'),
+    # Mini App kirish nuqtasi: BotFather'dagi "Main Mini App" (chat ro'yxatidagi OPEN
+    # tugmasi) va menu button shu manzilga ishora qiladi — u tilni har safar qayta
+    # aniqlaydi, shuning uchun hech qachon eski tilda "qotib" qolmaydi.
+    path('app/', MiniAppEntryView.as_view(), name='miniapp_entry'),
     # Atmos to'lov tizimi natija (callback) URL'i — til prefiksisiz
     path('payments/atmos/callback/', AtmosCallbackView.as_view(), name='atmos_callback'),
     path('favicon.ico', RedirectView.as_view(url='/static/images/default_exercise.svg', permanent=False)),

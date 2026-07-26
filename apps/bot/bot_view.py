@@ -7,7 +7,7 @@ from telebot.types import (
 	InlineKeyboardButton,
 	InlineKeyboardMarkup,
 	KeyboardButton,
-	MenuButtonCommands,
+	MenuButtonWebApp,
 	ReplyKeyboardMarkup,
 	Update,
 	WebAppInfo,
@@ -66,6 +66,10 @@ def _language_keyboard():
 	return keyboard
 
 
+# Menu button matni (xabar maydoni yonidagi tugma). Brend nomi — ataylab
+# tarjima qilinmaydi, shunda til almashganda tugmani yangilash shart emas.
+MENU_BUTTON_TEXT = "Fitness"
+
 LANGUAGE_SAVED_TEXTS = {
 	"uz": "✅ Til o'zgartirildi.",
 	"ru": "✅ Язык изменён.",
@@ -78,12 +82,24 @@ def _normalize_lang(lang_code):
 	return lang_code if lang_code in SUPPORTED_LANGUAGES else "en"
 
 
-def _webapp_keyboard(lang_code):
-	"""Mini App'ning YAGONA kirish nuqtasi — pastda doim turuvchi reply keyboard.
+def miniapp_url(lang_code=None):
+	"""Mini App kirish manzili — HAR DOIM til prefiksisiz `/app/`.
+
+	`/app/` (`apps.views.miniapp.MiniAppEntryView`) tilni har ochilishda qayta
+	aniqlaydi: ilovada saqlangan tanlov → `?lang=` (botdagi tanlov) → klient tili.
+	Shu sababli tugmalar ichidagi URL hech qachon eskirmaydi — foydalanuvchi ilovada
+	tilni almashtirsa, eski xabardagi tugma ham yangi tilni ochadi.
 
 	MUHIM: Mini App'ni faqat `web_app=` (WebAppInfo) tugmalari orqali ochamiz —
 	oddiy `url=` tugmalari initData'ni uzatmaydi va "Telegram ID topilmadi"
 	xatosiga olib keladi. Mini App havolalarini hech qachon url= ga o'zgartirmang.
+	"""
+	base = f"{WEBAPP_URL}/app/"
+	return f"{base}?lang={lang_code}" if lang_code else base
+
+
+def _webapp_keyboard(lang_code):
+	"""Xabar bilan birga keladigan, pastda doim turuvchi reply keyboard.
 
 	Xabar ostidagi inline web_app tugmasi ATAYLAB yo'q: u reply keyboard bilan
 	takrorlanadi va ba'zi klientlarda barqaror ishlamaydi (bosilganda ochilmaydi).
@@ -93,26 +109,29 @@ def _webapp_keyboard(lang_code):
 	keyboard.add(
 		KeyboardButton(
 			text=texts["start_button"],
-			web_app=WebAppInfo(url=f"{WEBAPP_URL}/{lang_code}/miniapp/questionnaire/"),
+			web_app=WebAppInfo(url=miniapp_url(lang_code)),
 		)
 	)
 	return keyboard
 
 
-def _use_commands_menu(chat_id):
-	"""Xabar maydoni yonidagi chat menyu tugmasini "commands" ga o'tkazadi.
+def _set_menu_button(chat_id, lang_code):
+	"""Xabar maydoni chap tomonidagi menu button'ni Mini App tugmasiga aylantiradi.
 
-	BotFather'da global menu button Web App sifatida sozlangan ("Fitness"). Uning
-	URL'i qat'iy: til prefiksi hech qachon yangilanmaydi, shuning uchun ilovada til
-	o'zgartirilgandan keyin ham eski tildagi sahifani ochadi. Bundan tashqari u
-	alohida webview sessiyasini ochib, cookie'lari yo'qolgan holatda POST'larni
-	buzadi (CSRF xatosi). Mini App faqat localizatsiya qilingan reply keyboard
-	orqali ochilishi kerak, shuning uchun har bir chatda bu tugmani olib tashlaymiz.
-
-	MenuButtonDefault EMAS — "default" global (BotFather) tugmaga qaytaradi.
+	Bu — PravaOL'dagi "PravaOL" tugmasining ayni o'zi (MenuButtonWebApp). Chat
+	bo'yicha o'rnatiladi va BotFather'dagi global qiymatdan ustun turadi; URL esa
+	til prefiksisiz `/app/` bo'lgani uchun til almashganda ham to'g'ri ishlaydi
+	(ilgari bu tugma qat'iy til prefiksi bilan sozlangani uchun muammo tug'dirardi).
 	"""
 	try:
-		bot.set_chat_menu_button(chat_id=chat_id, menu_button=MenuButtonCommands())
+		bot.set_chat_menu_button(
+			chat_id=chat_id,
+			menu_button=MenuButtonWebApp(
+				type="web_app",  # telebot buni pozitsion argument sifatida talab qiladi
+				text=MENU_BUTTON_TEXT,
+				web_app=WebAppInfo(url=miniapp_url(lang_code)),
+			),
+		)
 	except Exception:
 		logger.warning("set_chat_menu_button ishlamadi (chat_id=%s)", chat_id, exc_info=True)
 
@@ -121,7 +140,7 @@ def _send_webapp_message(chat_id, first_name, lang_code):
 	lang_code = _normalize_lang(lang_code)
 	texts = LANGUAGE_TEXTS[lang_code]
 
-	_use_commands_menu(chat_id)
+	_set_menu_button(chat_id, lang_code)
 
 	# Reply keyboard xuddi shu xabar bilan birga keladi — "Tanangizni o'zgartirishga
 	# tayyormisiz?" xabari ko'rinishi bilanoq tugma pastda paydo bo'ladi (avvalgi
@@ -143,7 +162,7 @@ def send_language_updated(chat_id, lang_code):
 	"""
 	lang_code = _normalize_lang(lang_code)
 	try:
-		_use_commands_menu(chat_id)
+		_set_menu_button(chat_id, lang_code)
 		bot.send_message(
 			chat_id,
 			LANGUAGE_SAVED_TEXTS[lang_code],
@@ -191,8 +210,9 @@ def _send_gift_claim(message, code):
 def start(message):
 	user = message.from_user
 
-	# Xabar maydoni yonidagi eski Web App menyu tugmasini darhol olib tashlaymiz.
-	_use_commands_menu(message.chat.id)
+	# Menu button'ni (xabar maydoni yonidagi tugma) darhol o'rnatamiz/yangilaymiz —
+	# BotFather'dagi eski, til prefiksi qotib qolgan URL o'rniga `/app/`.
+	_set_menu_button(message.chat.id, _normalize_lang(getattr(user, "language_code", "")))
 
 	# Deep link: `/start gift_<code>` → open the gift claim page directly.
 	parts = (message.text or "").split(maxsplit=1)
