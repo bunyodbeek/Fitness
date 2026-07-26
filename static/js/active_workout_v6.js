@@ -26,6 +26,8 @@
         nextUp:   'Next Up',
         progress: 'PROGRESS',
         noDesc:   'No description available.',
+        tapToStart:'Tap to start',
+        reset:    'Reset',
     }, CFG.translations || {});
 
     // Bajarilgan set uchun tasdiq (tick) belgisi
@@ -280,6 +282,191 @@ const toggleFullscreen = (e) => {
         if (video) video.pause();
     };
     
+    const TIMER_STORE_KEY = 'awTimer:' + (location.pathname || 'workout');
+    const timers = {};
+    let timerRaf = null;
+    let wakeLock = null;
+
+    const tKey = (ei, si) => `${ei}_${si}`;
+
+    const loadTimerStore = () => {
+        try { return JSON.parse(sessionStorage.getItem(TIMER_STORE_KEY) || '{}') || {}; }
+        catch (e) { return {}; }
+    };
+
+    const saveTimerStore = () => {
+        try {
+            const out = {};
+            Object.keys(timers).forEach(k => {
+                const t = timers[k];
+                if (t && (t.startedAt || t.accMs > 0)) {
+                    out[k] = { durMs: t.durMs, accMs: t.accMs, startedAt: t.startedAt };
+                }
+            });
+            sessionStorage.setItem(TIMER_STORE_KEY, JSON.stringify(out));
+        } catch (e) {}
+    };
+
+    const clearTimerState = (ei, si) => {
+        delete timers[tKey(ei, si)];
+        saveTimerStore();
+    };
+
+    const timerRemainingMs = t => {
+        if (!t) return 0;
+        const spent = t.accMs + (t.startedAt ? (Date.now() - t.startedAt) : 0);
+        return t.durMs - spent;
+    };
+
+    const requestWake = () => {
+        try {
+            if (!navigator.wakeLock || wakeLock) return;
+            navigator.wakeLock.request('screen').then(l => { wakeLock = l; }).catch(() => {});
+        } catch (e) {}
+    };
+
+    const releaseWake = () => {
+        try { if (wakeLock) { wakeLock.release().catch(() => {}); wakeLock = null; } } catch (e) { wakeLock = null; }
+    };
+
+    const timerHaptic = () => {
+        try {
+            const wa = window.Telegram && window.Telegram.WebApp;
+            const h = wa && wa.HapticFeedback;
+            if (h && typeof h.notificationOccurred === 'function') h.notificationOccurred('success');
+        } catch (e) {}
+    };
+
+    const timerBeep = () => {
+        try {
+            const Ctx = window.AudioContext || window.webkitAudioContext;
+            if (!Ctx) return;
+            const ctx = new Ctx();
+            const osc = ctx.createOscillator(), gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(880, ctx.currentTime);
+            gain.gain.setValueAtTime(0.001, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.25, ctx.currentTime + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.45);
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.46);
+            osc.onended = () => { try { ctx.close(); } catch (e) {} };
+        } catch (e) {}
+    };
+
+    const paintTimer = (ei, si) => {
+        const el = $(`tm_${ei}_${si}`);
+        if (!el) return;
+        const t = timers[tKey(ei, si)];
+        const remain = t ? timerRemainingMs(t) : (toFin(exercises[ei]?.duration_seconds, 0) * 1000);
+        const secs = Math.max(0, Math.ceil(remain / 1000));
+        el.textContent = String(secs);
+        const running = !!(t && t.startedAt);
+        el.classList.toggle('running', running);
+        el.classList.toggle('paused', !!(t && !t.startedAt && t.accMs > 0));
+        el.classList.toggle('final', running && secs <= 3);
+        const rst = $(`tr_${ei}_${si}`);
+        if (rst) rst.classList.toggle('show', !!(t && (t.startedAt || t.accMs > 0)));
+    };
+
+    const anyTimerRunning = () => Object.keys(timers).some(k => timers[k] && timers[k].startedAt);
+
+    const timerLoop = () => {
+        timerRaf = null;
+        let live = false;
+        Object.keys(timers).forEach(k => {
+            const t = timers[k];
+            if (!t || !t.startedAt) return;
+            const [ei, si] = k.split('_').map(Number);
+            if (timerRemainingMs(t) <= 0) { finishTimer(ei, si); return; }
+            paintTimer(ei, si);
+            live = true;
+        });
+        if (live) timerRaf = requestAnimationFrame(timerLoop);
+        else releaseWake();
+    };
+
+    const kickTimerLoop = () => { if (!timerRaf) timerRaf = requestAnimationFrame(timerLoop); };
+
+    const finishTimer = (ei, si) => {
+        clearTimerState(ei, si);
+        releaseWake();
+        timerHaptic();
+        timerBeep();
+        const el = $(`tm_${ei}_${si}`);
+        if (el) { el.textContent = '0'; el.classList.remove('running', 'final', 'paused'); }
+        if (ei === currentExIdx && !isDone(ei, si)) didItSet(si);
+    };
+
+    const pauseTimer = (ei, si) => {
+        const t = timers[tKey(ei, si)];
+        if (!t || !t.startedAt) return;
+        t.accMs += Date.now() - t.startedAt;
+        t.startedAt = null;
+        saveTimerStore();
+        paintTimer(ei, si);
+        if (!anyTimerRunning()) releaseWake();
+    };
+
+    const startTimerFor = (ei, si) => {
+        Object.keys(timers).forEach(k => {
+            if (k !== tKey(ei, si) && timers[k] && timers[k].startedAt) {
+                const [oei, osi] = k.split('_').map(Number);
+                pauseTimer(oei, osi);
+            }
+        });
+        const durMs = Math.max(1, toFin(exercises[ei]?.duration_seconds, 0)) * 1000;
+        const t = timers[tKey(ei, si)] || (timers[tKey(ei, si)] = { durMs, accMs: 0, startedAt: null });
+        t.durMs = durMs;
+        t.startedAt = Date.now();
+        saveTimerStore();
+        requestWake();
+        paintTimer(ei, si);
+        kickTimerLoop();
+    };
+
+    const toggleTimer = (ei, si) => {
+        if (isDone(ei, si)) return;
+        const t = timers[tKey(ei, si)];
+        if (t && t.startedAt) pauseTimer(ei, si);
+        else startTimerFor(ei, si);
+    };
+
+    const resetTimer = (ei, si) => {
+        clearTimerState(ei, si);
+        releaseWake();
+        paintTimer(ei, si);
+    };
+
+    const syncTimersFromClock = () => {
+        Object.keys(timers).forEach(k => {
+            const t = timers[k];
+            if (!t || !t.startedAt) return;
+            const [ei, si] = k.split('_').map(Number);
+            if (timerRemainingMs(t) <= 0) finishTimer(ei, si);
+            else paintTimer(ei, si);
+        });
+        if (anyTimerRunning()) kickTimerLoop();
+    };
+
+    const restoreTimers = () => {
+        const stored = loadTimerStore();
+        Object.keys(stored).forEach(k => {
+            const s = stored[k];
+            if (s && typeof s.durMs === 'number') {
+                timers[k] = { durMs: s.durMs, accMs: toFin(s.accMs, 0), startedAt: s.startedAt || null };
+            }
+        });
+        syncTimersFromClock();
+    };
+
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) syncTimersFromClock();
+    });
+    window.addEventListener('focus', syncTimersFromClock);
+    window.addEventListener('pagehide', saveTimerStore);
+
     // ?? SET CARDS ???????????????????????????????????????????
     const renderSetCards = () => {
         const ex=exercises[currentExIdx], wr=$('setsWrapper');
@@ -352,7 +539,37 @@ const toggleFullscreen = (e) => {
             const div=document.createElement('div'); div.className='set-divider';
     
             const rZone=document.createElement('div'); rZone.className='set-reps-zone';
-            rZone.innerHTML=`<span class="r-num">${rStr}</span><span class="r-lbl">${isTime?T.sec:T.reps}</span>`;
+            if (isTime && !done) {
+                const ei=currentExIdx, si=i;
+                rZone.classList.add('is-timer');
+
+                const tEl=document.createElement('span');
+                tEl.className='r-num r-timer';
+                tEl.id=`tm_${ei}_${si}`;
+                tEl.textContent=rStr;
+                tEl.setAttribute('role','button');
+                tEl.setAttribute('tabindex','0');
+                tEl.setAttribute('aria-label', T.tapToStart);
+                tEl.addEventListener('click', e => { e.stopPropagation(); toggleTimer(ei, si); });
+
+                const lEl=document.createElement('span');
+                lEl.className='r-lbl';
+                lEl.textContent=T.sec;
+
+                const rEl=document.createElement('span');
+                rEl.className='r-reset';
+                rEl.id=`tr_${ei}_${si}`;
+                rEl.textContent=T.reset;
+                rEl.setAttribute('role','button');
+                rEl.setAttribute('tabindex','0');
+                rEl.addEventListener('click', e => { e.stopPropagation(); resetTimer(ei, si); });
+
+                rZone.appendChild(tEl);
+                rZone.appendChild(lEl);
+                rZone.appendChild(rEl);
+            } else {
+                rZone.innerHTML=`<span class="r-num">${rStr}</span><span class="r-lbl">${isTime?T.sec:T.reps}</span>`;
+            }
     
             const diCell=document.createElement('div');
             diCell.className='did-it-cell';
@@ -370,6 +587,11 @@ const toggleFullscreen = (e) => {
             card.appendChild(rZone);
             card.appendChild(diCell);
             wr.appendChild(card);
+        }
+
+        if (isTime) {
+            for (let i=0; i<ex.sets; i++) paintTimer(currentExIdx, i);
+            if (anyTimerRunning()) kickTimerLoop();
         }
     };
     
@@ -390,6 +612,7 @@ const toggleFullscreen = (e) => {
             totalWeight += w * ex.reps;
             totalCompleted += 1;
             markD(ei, i);
+            clearTimerState(ei, i);
         }
     
         updateExit();
@@ -617,6 +840,7 @@ const toggleFullscreen = (e) => {
     
     document.addEventListener('DOMContentLoaded',()=>{
         buildSegments();
+        restoreTimers();
         loadExercise(initialExIdx);
         updateExit();
     });
