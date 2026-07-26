@@ -537,7 +537,7 @@ class WorkoutStartView(LoginRequiredMixin, View):
 				"duration_minutes": float(wex.minutes or 0),
 				"rest_seconds": int(getattr(wex, 'rest_seconds', 60)),
 				"calories_per_minute": float(getattr(wex, 'calories_per_minute', 5.0)),
-				"type": "cardio" if (wex.minutes or 0) > 0 and (wex.sets or 1) <= 1 else "strength",
+				"type": "strength",
 				"exercise_type": getattr(ex, 'exercise_type', '') or '',
 				"duration_seconds": int(wex.duration_seconds) if getattr(wex, 'duration_seconds', None) is not None else None,
 				"recommended_weight": float(getattr(wex, 'recommended_weight', 0)),
