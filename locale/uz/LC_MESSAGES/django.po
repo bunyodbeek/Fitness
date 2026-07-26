@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-26 21:18+0500\n"
+"POT-Creation-Date: 2026-07-26 21:27+0500\n"
 "PO-Revision-Date: 2026-05-22 12:00+0500\n"
 "Last-Translator: Claude AI\n"
 "Language-Team: Uzbek\n"
@@ -302,8 +302,12 @@ msgid "Exercise type"
 msgstr "Mashq turi"
 
 #: apps/models/exercises.py:77
-msgid "Marks this exercise as cardio. Used for auto-inserting a warm-up and for cardio-specific presentation. Independent of muscle group."
-msgstr "Mashqni kardio deb belgilaydi. Avtomatik qizdirish qo'shish va kardio ko'rinishi uchun ishlatiladi. Mushak guruhiga bog'liq emas."
+msgid ""
+"Marks this exercise as cardio. Used for auto-inserting a warm-up and for "
+"cardio-specific presentation. Independent of muscle group."
+msgstr ""
+"Mashqni kardio deb belgilaydi. Avtomatik qizdirish qo'shish va kardio "
+"ko'rinishi uchun ishlatiladi. Mushak guruhiga bog'liq emas."
 
 #: apps/models/exercises.py:85
 msgid "Recommended weight (W1)"
@@ -709,12 +713,12 @@ msgstr "Metrik"
 msgid "English"
 msgstr "Inglizcha"
 
-#: apps/models/users.py:44 apps/models/workouts.py:144
+#: apps/models/users.py:44 apps/models/workouts.py:168
 #: templates/miniapp/questionarrie.html:240
 msgid "Beginner"
 msgstr "Boshlang'ich"
 
-#: apps/models/users.py:45 apps/models/workouts.py:145
+#: apps/models/users.py:45 apps/models/workouts.py:169
 #: templates/miniapp/questionarrie.html:243
 msgid "Advanced"
 msgstr "Ilg'or"
@@ -837,7 +841,7 @@ msgstr "Boshlanmagan"
 msgid "Unfinished"
 msgstr "Tugallanmagan"
 
-#: apps/models/users.py:132 apps/models/workouts.py:535
+#: apps/models/users.py:132 apps/models/workouts.py:566
 #: apps/panel/views/payments.py:61
 #: templates/workouts/home_workout_complete.html:277
 #: templates/workouts/home_workout_detail.html:470
@@ -897,36 +901,84 @@ msgstr "Rekompozitsiya"
 msgid "General fitness"
 msgstr "Umumiy fitnes"
 
-#: apps/models/workouts.py:162 apps/panel/views/programs.py:255
+#: apps/models/workouts.py:92
+msgid "Auto cardio"
+msgstr "Avtomatik kardio"
+
+#: apps/models/workouts.py:93
+msgid "Insert a cardio exercise as the first exercise of every training day."
+msgstr "Har bir mashg'ulot kunining birinchi mashqi sifatida kardio qo'shish."
+
+#: apps/models/workouts.py:97
+msgid "Cardio exercise"
+msgstr "Kardio mashq"
+
+#: apps/models/workouts.py:99
+msgid "Which cardio exercise to insert. Only exercises marked as cardio are listed."
+msgstr "Qaysi kardio mashq qo'shiladi. Ro'yxatda faqat kardio deb belgilangan mashqlar."
+
+#: apps/models/workouts.py:102
+msgid "Cardio sets"
+msgstr "Kardio yondashuvlari"
+
+#: apps/models/workouts.py:103
+msgid "Use more than one set for interval-style cardio."
+msgstr "Interval kardio uchun bittadan ko'p yondashuv kiriting."
+
+#: apps/models/workouts.py:106
+msgid "Cardio duration (sec)"
+msgstr "Kardio davomiyligi (sek)"
+
+#: apps/models/workouts.py:107
+msgid "Duration of each cardio set, in seconds."
+msgstr "Har bir kardio yondashuvining davomiyligi, sekundda."
+
+#: apps/models/workouts.py:110
+msgid "Cardio required to complete a day"
+msgstr "Kunni yakunlash uchun kardio majburiy"
+
+#: apps/models/workouts.py:111
+msgid "If enabled, a training day only counts as complete when the cardio entry is done. Off by default: cardio is treated as a warm-up."
+msgstr "Yoqilgan bo'lsa, kun faqat kardio bajarilgandan keyin yakunlangan hisoblanadi. Standart holatda o'chiq: kardio qizdirish deb qaraladi."
+
+#: apps/models/workouts.py:186 apps/panel/views/programs.py:255
 msgid "Difficulty"
 msgstr "Murakkablik"
 
-#: apps/models/workouts.py:163
+#: apps/models/workouts.py:187
 msgid "Which exercise values this plan uses: beginner or advanced."
 msgstr ""
 "Bu plan qaysi mashq qiymatlaridan foydalanadi: boshlovchi yoki tajribali."
 
-#: apps/models/workouts.py:534
+#: apps/models/workouts.py:385
+msgid "Cardio removed"
+msgstr "Kardio o'chirilgan"
+
+#: apps/models/workouts.py:386
+msgid "Set when an admin deletes this day's auto-inserted cardio entry. Regeneration will not restore it while this is set."
+msgstr "Admin shu kunning avtomatik qo'shilgan kardiosini o'chirganda o'rnatiladi. Bu belgi turganda qayta yaratish uni tiklamaydi."
+
+#: apps/models/workouts.py:565
 msgid "In progress"
 msgstr "Jarayonda"
 
-#: apps/panel/forms.py:102
+#: apps/panel/forms.py:106
 msgid "Generate remaining weeks (up to the plan's week count)"
 msgstr "Qolgan haftalarni yaratish (plan haftalari soniga qadar)"
 
-#: apps/panel/forms.py:103
+#: apps/panel/forms.py:107
 msgid "If checked, the missing weeks after this one are created automatically."
 msgstr ""
 "Belgilansa, shu haftadan keyingi yetishmayotgan haftalar avtomatik "
 "yaratiladi."
 
-#: apps/panel/forms.py:138
+#: apps/panel/forms.py:142
 msgid "Manual weight — keep this value on difficulty change / regeneration"
 msgstr ""
 "Qo'lda kiritilgan vazn — murakkablik o'zgarganda / qayta yaratilganda "
 "saqlansin"
 
-#: apps/panel/forms.py:141
+#: apps/panel/forms.py:145
 msgid ""
 "Auto-enabled when you change the weight. Untick (without changing the "
 "weight) to hand it back to automatic calculation."
@@ -934,23 +986,23 @@ msgstr ""
 "Vaznni o'zgartirganingizda avtomatik yoqiladi. Avtomatik hisoblashga "
 "qaytarish uchun belgini oling (vaznni o'zgartirmasdan)."
 
-#: apps/panel/forms.py:189
+#: apps/panel/forms.py:193
 msgid "Start weight — beginner (kg)"
 msgstr "Boshlang'ich vazn — boshlovchi (kg)"
 
-#: apps/panel/forms.py:213
+#: apps/panel/forms.py:217
 msgid "Required for reps-based exercises."
 msgstr "Takrorlarga asoslangan mashqlar uchun majburiy."
 
-#: apps/panel/forms.py:217
+#: apps/panel/forms.py:221
 msgid "Required for time-based exercises."
 msgstr "Vaqtga asoslangan mashqlar uchun majburiy."
 
-#: apps/panel/forms.py:303 templates/panel/login.html:63
+#: apps/panel/forms.py:307 templates/panel/login.html:63
 msgid "Password"
 msgstr "Parol"
 
-#: apps/panel/forms.py:304
+#: apps/panel/forms.py:308
 msgid "Leave blank to keep the current password."
 msgstr "Joriy parolni saqlash uchun bo'sh qoldiring."
 

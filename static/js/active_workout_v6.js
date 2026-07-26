@@ -807,10 +807,16 @@ const toggleFullscreen = (e) => {
             if(exitRedirectUrl){ window.location.href=exitRedirectUrl; return; }
             form.action=urls.complete||window.location.pathname;
         }
+        const completedIds=[];
+        Object.keys(doneSets).forEach(k=>{
+            const ex=exercises[Number(k)];
+            if(ex&&ex.exercise_id&&doneN(Number(k))>0) completedIds.push(ex.exercise_id);
+        });
         const fields={
             csrfmiddlewaretoken:csrfToken,action,save_progress:'true',
             total_duration:totalSecs,total_calories:totalCalories.toFixed(2),
             exercises_completed:totalCompleted,total_weight:totalWeight.toFixed(2),
+            completed_exercise_ids:completedIds.join(','),
         };
         if(action==='exit'){ fields.current_exercise_index=currentExIdx; fields.current_set=doneN(currentExIdx)+1; }
         Object.entries(fields).forEach(([n,v])=>{

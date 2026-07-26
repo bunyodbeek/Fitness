@@ -49,6 +49,8 @@ class ProgramForm(forms.ModelForm):
             "description", "description_uz", "description_ru",
             "image", "workout_type", "level", "goal",
             "is_active",
+            "auto_cardio_enabled", "auto_cardio_exercise", "auto_cardio_sets",
+            "auto_cardio_duration_seconds", "auto_cardio_blocks_completion",
         ]
 
 
@@ -61,6 +63,8 @@ class IndividualProgramForm(forms.ModelForm):
             "name", "name_uz", "name_ru",
             "description", "description_uz", "description_ru",
             "image", "workout_type", "level", "goal", "is_active",
+            "auto_cardio_enabled", "auto_cardio_exercise", "auto_cardio_sets",
+            "auto_cardio_duration_seconds", "auto_cardio_blocks_completion",
         ]
 
 

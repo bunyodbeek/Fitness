@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-26 21:18+0500\n"
+"POT-Creation-Date: 2026-07-26 21:27+0500\n"
 "PO-Revision-Date: 2026-05-22 12:00+0500\n"
 "Last-Translator: Claude AI\n"
 "Language-Team: Russian\n"
@@ -303,8 +303,12 @@ msgid "Exercise type"
 msgstr "Тип упражнения"
 
 #: apps/models/exercises.py:77
-msgid "Marks this exercise as cardio. Used for auto-inserting a warm-up and for cardio-specific presentation. Independent of muscle group."
-msgstr "Отмечает упражнение как кардио. Используется для автодобавления разминки и для оформления кардио. Не зависит от группы мышц."
+msgid ""
+"Marks this exercise as cardio. Used for auto-inserting a warm-up and for "
+"cardio-specific presentation. Independent of muscle group."
+msgstr ""
+"Отмечает упражнение как кардио. Используется для автодобавления разминки и "
+"для оформления кардио. Не зависит от группы мышц."
 
 #: apps/models/exercises.py:85
 msgid "Recommended weight (W1)"
@@ -710,12 +714,12 @@ msgstr "Метрическая"
 msgid "English"
 msgstr "Английская"
 
-#: apps/models/users.py:44 apps/models/workouts.py:144
+#: apps/models/users.py:44 apps/models/workouts.py:168
 #: templates/miniapp/questionarrie.html:240
 msgid "Beginner"
 msgstr "Начинающий"
 
-#: apps/models/users.py:45 apps/models/workouts.py:145
+#: apps/models/users.py:45 apps/models/workouts.py:169
 #: templates/miniapp/questionarrie.html:243
 msgid "Advanced"
 msgstr "Продвинутый"
@@ -838,7 +842,7 @@ msgstr "Не начато"
 msgid "Unfinished"
 msgstr "Не завершено"
 
-#: apps/models/users.py:132 apps/models/workouts.py:535
+#: apps/models/users.py:132 apps/models/workouts.py:566
 #: apps/panel/views/payments.py:61
 #: templates/workouts/home_workout_complete.html:277
 #: templates/workouts/home_workout_detail.html:470
@@ -898,33 +902,81 @@ msgstr "Рекомпозиция"
 msgid "General fitness"
 msgstr "Общий фитнес"
 
-#: apps/models/workouts.py:162 apps/panel/views/programs.py:255
+#: apps/models/workouts.py:92
+msgid "Auto cardio"
+msgstr "Автокардио"
+
+#: apps/models/workouts.py:93
+msgid "Insert a cardio exercise as the first exercise of every training day."
+msgstr "Добавлять кардио первым упражнением каждого тренировочного дня."
+
+#: apps/models/workouts.py:97
+msgid "Cardio exercise"
+msgstr "Кардио-упражнение"
+
+#: apps/models/workouts.py:99
+msgid "Which cardio exercise to insert. Only exercises marked as cardio are listed."
+msgstr "Какое кардио-упражнение добавлять. В списке только упражнения, отмеченные как кардио."
+
+#: apps/models/workouts.py:102
+msgid "Cardio sets"
+msgstr "Подходы кардио"
+
+#: apps/models/workouts.py:103
+msgid "Use more than one set for interval-style cardio."
+msgstr "Укажите больше одного подхода для интервального кардио."
+
+#: apps/models/workouts.py:106
+msgid "Cardio duration (sec)"
+msgstr "Длительность кардио (сек)"
+
+#: apps/models/workouts.py:107
+msgid "Duration of each cardio set, in seconds."
+msgstr "Длительность каждого подхода кардио, в секундах."
+
+#: apps/models/workouts.py:110
+msgid "Cardio required to complete a day"
+msgstr "Кардио обязательно для завершения дня"
+
+#: apps/models/workouts.py:111
+msgid "If enabled, a training day only counts as complete when the cardio entry is done. Off by default: cardio is treated as a warm-up."
+msgstr "Если включено, день считается завершённым только после выполнения кардио. По умолчанию выключено: кардио считается разминкой."
+
+#: apps/models/workouts.py:186 apps/panel/views/programs.py:255
 msgid "Difficulty"
 msgstr "Сложность"
 
-#: apps/models/workouts.py:163
+#: apps/models/workouts.py:187
 msgid "Which exercise values this plan uses: beginner or advanced."
 msgstr ""
 "Какие значения упражнений использует план: для новичка или продвинутого."
 
-#: apps/models/workouts.py:534
+#: apps/models/workouts.py:385
+msgid "Cardio removed"
+msgstr "Кардио удалено"
+
+#: apps/models/workouts.py:386
+msgid "Set when an admin deletes this day's auto-inserted cardio entry. Regeneration will not restore it while this is set."
+msgstr "Устанавливается, когда админ удаляет автодобавленное кардио этого дня. Пока флаг установлен, регенерация его не восстановит."
+
+#: apps/models/workouts.py:565
 msgid "In progress"
 msgstr "В процессе"
 
-#: apps/panel/forms.py:102
+#: apps/panel/forms.py:106
 msgid "Generate remaining weeks (up to the plan's week count)"
 msgstr "Создать оставшиеся недели (до числа недель плана)"
 
-#: apps/panel/forms.py:103
+#: apps/panel/forms.py:107
 msgid "If checked, the missing weeks after this one are created automatically."
 msgstr "Если отмечено, недостающие недели после этой создаются автоматически."
 
-#: apps/panel/forms.py:138
+#: apps/panel/forms.py:142
 msgid "Manual weight — keep this value on difficulty change / regeneration"
 msgstr ""
 "Ручной вес — сохранять это значение при смене сложности / перегенерации"
 
-#: apps/panel/forms.py:141
+#: apps/panel/forms.py:145
 msgid ""
 "Auto-enabled when you change the weight. Untick (without changing the "
 "weight) to hand it back to automatic calculation."
@@ -932,23 +984,23 @@ msgstr ""
 "Включается автоматически при изменении веса. Снимите галочку (не меняя вес), "
 "чтобы вернуть автоматический расчёт."
 
-#: apps/panel/forms.py:189
+#: apps/panel/forms.py:193
 msgid "Start weight — beginner (kg)"
 msgstr "Начальный вес — новичок (кг)"
 
-#: apps/panel/forms.py:213
+#: apps/panel/forms.py:217
 msgid "Required for reps-based exercises."
 msgstr "Обязательно для упражнений на повторения."
 
-#: apps/panel/forms.py:217
+#: apps/panel/forms.py:221
 msgid "Required for time-based exercises."
 msgstr "Обязательно для упражнений на время."
 
-#: apps/panel/forms.py:303 templates/panel/login.html:63
+#: apps/panel/forms.py:307 templates/panel/login.html:63
 msgid "Password"
 msgstr "Пароль"
 
-#: apps/panel/forms.py:304
+#: apps/panel/forms.py:308
 msgid "Leave blank to keep the current password."
 msgstr "Оставьте пустым, чтобы сохранить текущий пароль."
 
