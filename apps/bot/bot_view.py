@@ -32,9 +32,7 @@ LANGUAGE_TEXTS = {
 		# Til tanlangandan keyingi motivatsion xabar.
 		"welcome": (
 			"🔥 <b>{first_name}</b>, yo'lingiz aynan shu yerdan boshlanadi!\n\n"
-			"Har bir mashg'ulot — bu o'zingizga bergan va'da. Bahona qidirmang — "
-			"natija yarating.\n\n"
-			"💪 Bugungi kuchli qaroringiz — ertangi kuchli tanangiz.\n\n"
+			
 			"Quyidagi tugmani bosing va shaxsiy mashg'ulot rejangizni yarating! 🚀"
 		),
 		"start_button": "🏋️ Fitness'ni boshlash",
@@ -42,9 +40,7 @@ LANGUAGE_TEXTS = {
 	"ru": {
 		"welcome": (
 			"🔥 <b>{first_name}</b>, ваш путь начинается прямо сейчас!\n\n"
-			"Каждая тренировка — это обещание самому себе. Не ищите оправданий — "
-			"создавайте результат.\n\n"
-			"💪 Сильное решение сегодня — сильное тело завтра.\n\n"
+		
 			"Нажмите кнопку ниже и составьте свой персональный план тренировок! 🚀"
 		),
 		"start_button": "🏋️ Начать Fitness",
@@ -52,9 +48,7 @@ LANGUAGE_TEXTS = {
 	"en": {
 		"welcome": (
 			"🔥 <b>{first_name}</b>, your journey starts right now!\n\n"
-			"Every workout is a promise you keep to yourself. No excuses — "
-			"just results.\n\n"
-			"💪 A strong decision today builds a strong body tomorrow.\n\n"
+			
 			"Tap the button below and build your personal workout plan! 🚀"
 		),
 		"start_button": "🏋️ Start Fitness",
