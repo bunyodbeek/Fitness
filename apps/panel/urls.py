@@ -19,6 +19,7 @@ from apps.panel.views import settings as st
 from apps.panel.views import admins as adm
 from apps.panel.views import premade_days as pmd
 from apps.panel.views import support as sup
+from apps.panel.views import promo as pc
 
 app_name = "panel"
 
@@ -41,6 +42,14 @@ urlpatterns = [
     path("subscriptions/add/", sub.SubscriptionCreateView.as_view(), name="subscription_add"),
     path("subscriptions/<int:pk>/edit/", sub.SubscriptionUpdateView.as_view(), name="subscription_edit"),
     path("subscriptions/<int:pk>/delete/", sub.SubscriptionDeleteView.as_view(), name="subscription_delete"),
+
+    # Promo codes (Finance)
+    path("promo-codes/", pc.PromoCodeListView.as_view(), name="promo_codes"),
+    path("promo-codes/add/", pc.PromoCodeCreateView.as_view(), name="promo_code_add"),
+    path("promo-codes/<int:pk>/edit/", pc.PromoCodeUpdateView.as_view(), name="promo_code_edit"),
+    path("promo-codes/<int:pk>/delete/", pc.PromoCodeDeleteView.as_view(), name="promo_code_delete"),
+    path("promo-codes/<int:pk>/report/", pc.PromoCodeReportView.as_view(), name="promo_code_report"),
+    path("promo-codes/<int:pk>/report.csv", pc.PromoCodeExportView.as_view(), name="promo_code_export"),
 
     # Tracking
     path("tracking/", tr.TrackingListView.as_view(), name="tracking"),

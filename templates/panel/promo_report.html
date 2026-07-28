@@ -1,0 +1,79 @@
+{% extends 'panel/base.html' %}
+{% load i18n %}
+
+{% block extra_css %}
+<style>
+    .promo-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
+    .promo-meta { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .promo-code {
+        font-size: 22px; font-weight: 800; letter-spacing: 2px; color: var(--gold);
+        padding: 8px 16px; border-radius: 12px;
+        background: rgba(255, 215, 0, 0.08); border: 1px solid rgba(255, 215, 0, 0.3);
+    }
+    .promo-owner { color: var(--dim); font-size: 13.5px; }
+    .promo-actions { display: flex; gap: 10px; }
+    .promo-totals { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+    .promo-totals .card .v { font-size: 22px; font-weight: 800; }
+    .promo-totals .card .l { color: var(--dim); font-size: 12.5px; margin-top: 4px; }
+    .promo-empty { padding: 40px 20px; text-align: center; color: var(--dim); font-size: 14px; }
+    .num { text-align: right; white-space: nowrap; }
+    @media (max-width: 1000px) { .promo-totals { grid-template-columns: repeat(2, 1fr); } }
+</style>
+{% endblock %}
+
+{% block content %}
+    <div class="promo-head">
+        <div class="promo-meta">
+            <span class="promo-code">{{ promo.code }}</span>
+            <span class="promo-owner">
+                {% if promo.owner_label %}{{ promo.owner_label }} ·{% endif %}
+                {{ promo.discount_percent }}% {% trans "OFF" %}
+                {% if promo.max_redemptions %} · {% trans "limit" %}: {{ promo.max_redemptions }}{% endif %}
+                {% if promo.expires_at %} · {% trans "until" %} {{ promo.expires_at|date:"d.m.Y" }}{% endif %}
+            </span>
+        </div>
+        <div class="promo-actions">
+            <a href="{{ back_url }}" class="btn">{% trans "Back" %}</a>
+            <a href="{{ export_url }}" class="btn btn-primary">{% trans "Export CSV" %}</a>
+        </div>
+    </div>
+
+    <div class="promo-totals">
+        {% for t in totals %}
+        <div class="card"><div class="v">{{ t.value }}</div><div class="l">{{ t.label }}</div></div>
+        {% endfor %}
+    </div>
+
+    <div class="card" style="padding:0;overflow:hidden;">
+        {% if redemptions %}
+        <div style="overflow-x:auto;">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>{% trans "Date" %}</th>
+                        <th>{% trans "User" %}</th>
+                        <th>{% trans "Plan" %}</th>
+                        <th class="num">{% trans "Original" %}</th>
+                        <th class="num">{% trans "Discount" %}</th>
+                        <th class="num">{% trans "Paid" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in redemptions %}
+                    <tr>
+                        <td>{{ r.redeemed_at|date:"d.m.Y H:i" }}</td>
+                        <td>{{ r.user.name|default:"—" }}</td>
+                        <td>{% if r.payment.plan %}{{ r.payment.plan.get_period_display }}{% else %}—{% endif %}</td>
+                        <td class="num">{{ r.original_price|floatformat:0 }}</td>
+                        <td class="num">−{{ r.discount_amount_applied|floatformat:0 }}</td>
+                        <td class="num"><strong>{{ r.final_price|floatformat:0 }}</strong></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="promo-empty">{% trans "This code has not been used yet." %}</div>
+        {% endif %}
+    </div>
+{% endblock %}
