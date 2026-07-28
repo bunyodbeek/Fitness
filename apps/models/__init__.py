@@ -30,6 +30,7 @@ from apps.models.payments import (
 	Subscription,
 	SubscriptionPlan,
 )
+from apps.models.promo import PromoCode, PromoRedemption
 from apps.models.favorites import (
 	Favorite,
 	FavoriteCollection,
