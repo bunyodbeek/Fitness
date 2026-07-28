@@ -174,6 +174,22 @@
 			cursor: pointer;
 		}
 
+		/* ===== GATE NOTE (7 kunlik muddat tugagach) ===== */
+		.gate-note {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			margin: 0 var(--side-space) 10px;
+			padding: 11px 13px;
+			background: var(--card);
+			border: 1px solid var(--border);
+			border-radius: 14px;
+		}
+		.gate-note svg { width: 20px; height: 20px; color: var(--gold); flex-shrink: 0; }
+		.gate-note div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+		.gate-note strong { font-size: 13.5px; font-weight: 700; color: var(--text); }
+		.gate-note span { font-size: 12px; color: var(--text-dim); line-height: 1.35; }
+
 		/* ===== VERY SMALL PHONES ===== */
 		@media (max-width: 360px) {
 			:root { --side-space: 10px; }
@@ -183,10 +199,14 @@
 	</style>
 </head>
 <body>
+	{# Gate rejimida yopish tugmasi YO'Q — bu qasddan. Bepul muddat tugagach
+	   ilovaga qaytish yo'li faqat to'lov orqali (yoki mini app'ni yopish). #}
+	{% if not gate %}
 	<!-- CLOSE (X) -->
 	<button class="close-btn" onclick="goBack()" aria-label="{% trans 'Close' %}">
 		<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
 	</button>
+	{% endif %}
 
 	<div class="hero">
 		<div class="crown">
@@ -194,6 +214,18 @@
 		</div>
 		<h1>PREMIUM</h1>
 	</div>
+
+	{% if gate %}
+	<div class="gate-note">
+		<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+			<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+		</svg>
+		<div>
+			<strong>{% trans "Your free week is over" %}</strong>
+			<span>{% trans "Subscribe to unlock your workouts again." %}</span>
+		</div>
+	</div>
+	{% endif %}
 
 	<div class="benefits">
 		{% for benefit in benefits %}
@@ -208,7 +240,9 @@
 
 	<div class="footer">
 		<a href="{% url 'tariff_select' %}" class="btn-primary">{% trans "Go Premium" %}</a>
+		{% if not gate %}
 		<button class="btn-ghost" onclick="goBack()">{% trans "Later" %}</button>
+		{% endif %}
 	</div>
 
 	<script>
@@ -222,5 +256,25 @@
     }
 }
 	</script>
+	{% if gate %}
+	<script>
+		// Gate rejimi: Telegram'ning orqaga tugmasi ko'rinmasin va tarixdagi
+		// orqaga bosish gate'ni tark eta olmasin. Bu FAQAT UX — haqiqiy nazorat
+		// serverda (PaywallGateMiddleware), shuning uchun buni chetlab o'tish
+		// hech narsa ochmaydi.
+		try { if (tg && tg.BackButton) tg.BackButton.hide(); } catch (e) {}
+		history.replaceState(null, '', location.href);
+		window.addEventListener('popstate', function () {
+			history.pushState(null, '', location.href);
+		});
+		history.pushState(null, '', location.href);
+		// Sinov tugadi — keshdagi tab fragmentlari endi yaroqsiz.
+		try {
+			Object.keys(sessionStorage).forEach(function (k) {
+				if (k.indexOf('tabfrag:') === 0) sessionStorage.removeItem(k);
+			});
+		} catch (e) {}
+	</script>
+	{% endif %}
 </body>
 </html>

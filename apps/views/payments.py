@@ -40,12 +40,40 @@ PREMIUM_BENEFITS = [
 
 
 class PremiumView(LoginRequiredMixin, TemplateView):
-	"""Screen 5 — premium benefits / paywall."""
+	"""Screen 5 — premium benefits / paywall.
+
+	YUMSHOQ paywall: hafta darajasidagi qulf (``Week.is_locked_for``) shu yerga
+	yo'naltiradi, foydalanuvchi "Keyinroq" bosib orqaga qaytishi mumkin."""
 	template_name = 'payment/premium.html'
 
 	def get_context_data(self, **kwargs):
 		ctx = super().get_context_data(**kwargs)
 		ctx['benefits'] = PREMIUM_BENEFITS
+		return ctx
+
+
+class PaywallGateView(LoginRequiredMixin, TemplateView):
+	"""QATTIQ paywall: 7 kunlik bepul muddat tugagach yagona ochiq sahifa.
+
+	`PremiumView` bilan bitta shablonni bo'lishadi, farqi — ``gate`` bayrog'i
+	yopish (X) tugmasi va "Keyinroq" havolasini olib tashlaydi. Telegram
+	WebView'da yagona chiqish yo'li: to'lash yoki mini app'ni yopish.
+
+	To'lagan (yoki sinovi hali tugamagan) foydalanuvchi bu yerga kirsa, uni
+	ilovaga qaytaramiz — aks holda obunani sotib olgan odam gate sahifasida
+	qolib ketardi."""
+	template_name = 'payment/premium.html'
+
+	def dispatch(self, request, *args, **kwargs):
+		profile = getattr(request.user, 'profile', None)
+		if profile is not None and profile.has_app_access:
+			return redirect('program_list')
+		return super().dispatch(request, *args, **kwargs)
+
+	def get_context_data(self, **kwargs):
+		ctx = super().get_context_data(**kwargs)
+		ctx['benefits'] = PREMIUM_BENEFITS
+		ctx['gate'] = True
 		return ctx
 
 

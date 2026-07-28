@@ -81,7 +81,13 @@ MIDDLEWARE = [
 	'django.contrib.auth.middleware.AuthenticationMiddleware',
 	'apps.middleware.TelegramLoginRedirectMiddleware',
 	'apps.middleware.TelegramProfileRedirectMiddleware',
-	
+
+	# 7 kunlik bepul muddat tugagach ilovani premium sahifasida qulflaydi.
+	# `AuthenticationMiddleware` dan KEYIN turishi shart (request.user kerak) va
+	# `TelegramProfileRedirectMiddleware` dan keyin — profili yo'q foydalanuvchi
+	# avval onboardingga yo'naltirilsin, gate'ga emas.
+	'apps.middleware.PaywallGateMiddleware',
+
 	'django.contrib.messages.middleware.MessageMiddleware',
 
 	# Telegram mini app frame'da (iframe/webview) ochilishi uchun X-Frame-Options'ni

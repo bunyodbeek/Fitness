@@ -40,7 +40,7 @@ from apps.views.favorite import (
 	CustomProgramStartView,
 	CustomProgramCompleteView, CustomProgramEditView, CustomProgramEditSaveView,
 )
-from apps.views.payments import PremiumView, TariffSelectView, PaymentMethodView, PaymentCreateView, PaymentSuccessView, PaymentOtpView, PaymentOtpResendView, GiftPremiumView, GiftShareView, GiftClaimView
+from apps.views.payments import PremiumView, PaywallGateView, TariffSelectView, PaymentMethodView, PaymentCreateView, PaymentSuccessView, PaymentOtpView, PaymentOtpResendView, GiftPremiumView, GiftShareView, GiftClaimView
 from apps.views.users import (
 	AdminAnalyticsView,
 	ChangeLanguageView,
@@ -186,6 +186,8 @@ urlpatterns = [
 	path('programs/import/<str:token>/', ImportProgramPreviewView.as_view(), name='program_import_preview'),
 
 	path('premium/', PremiumView.as_view(), name='premium'),
+	# Qattiq paywall — 7 kunlik bepul muddat tugagach yagona ochiq sahifa.
+	path('premium/required/', PaywallGateView.as_view(), name='paywall_gate'),
 	path('premium/tariffs/', TariffSelectView.as_view(), name='tariff_select'),
 	path('premium/tariffs/<int:plan_id>/method/', PaymentMethodView.as_view(), name='payment_method'),
 	path('premium/tariffs/<int:plan_id>/pay/', PaymentCreateView.as_view(), name='payment_create'),

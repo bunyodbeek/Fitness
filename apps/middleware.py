@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect
 from urllib.parse import urlparse
 
@@ -123,3 +123,79 @@ class TelegramProfileRedirectMiddleware:
             )
 
         return redirect(bot_url)
+
+
+class PaywallGateMiddleware:
+    """7 kunlik bepul muddat tugagach ilovani premium sahifasida qulflaydi.
+
+    Ro'yxatdan o'tgandan 7 kun o'tgan va faol obunasi bo'lmagan foydalanuvchi
+    QAYSI sahifani so'rashidan qat'i nazar premium sahifasiga yo'naltiriladi.
+    Ochiq qoladigan yagona manzillar — `apps/utils/paywall.py` dagi ro'yxat
+    (kirish, onboarding, to'lov zanjiri, Atmos callback, admin panel).
+
+    Nima uchun middleware: qoida BITTA joyda tursin, view va shablonlarga
+    tarqalgan `if` lar bo'lmasin. Har bir so'rovda ishlaydi, shuning uchun
+    Telegram'da mini app qayta ochilganda ham (sessiya o'rtasida) tekshiruv
+    o'tkazib yuborilmaydi.
+
+    Tab router fragmentlari (`?partial=1`) uchun redirect EMAS, ichida
+    `location.replace(...)` bo'lgan kichik HTML bo'lagi qaytariladi: `inject()`
+    fragmentdagi `<script>` larni qayta ishga tushiradi, shuning uchun brauzer
+    to'liq sahifa yuklashiga o'tadi. Oddiy redirect bo'lsa `fetch` unga ergashib,
+    butun gate sahifasini tab ichiga joylab qo'yardi. Bu yo'l eskirgan
+    `sessionStorage` keshini ham o'zi tuzatadi.
+    """
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        blocked = self._gate_response(request)
+        if blocked is not None:
+            return blocked
+        return self.get_response(request)
+
+    @staticmethod
+    def _is_fragment(request):
+        return (
+            request.GET.get("partial") == "1"
+            or request.headers.get("X-Requested-With") == "XMLHttpRequest"
+        )
+
+    def _gate_response(self, request):
+        from apps.utils.paywall import (
+            gate_url, is_exempt_path, is_exempt_route, user_is_gated,
+        )
+
+        path = request.path
+        if is_exempt_path(path):
+            return None
+        if not user_is_gated(getattr(request, "user", None)):
+            return None
+        if is_exempt_route(path):
+            return None
+
+        target = gate_url()
+
+        # Tartib muhim. Fragment tekshiruvi BIRINCHI: tab router'ning `fetch` i
+        # `Accept: */*` yuboradi, shuning uchun "HTML so'ramayapti" degan
+        # xulosaga kelib uni JSON bilan rad etib bo'lmaydi.
+        if self._is_fragment(request):
+            return HttpResponse(
+                '<script>window.location.replace("%s");</script>' % target,
+                content_type="text/html; charset=utf-8",
+                headers={"Cache-Control": "no-store"},
+            )
+
+        # Yozuv amallari va aniq JSON so'ragan klientlar — redirect emas, 403.
+        # Sahifadan sahifaga o'tish (GET) esa DOIM redirect: `Accept` ga qarab
+        # qaror qilish mo'rt, chunki uni har bir klient har xil yuboradi.
+        accept = request.headers.get("Accept", "")
+        wants_json = "application/json" in accept and "text/html" not in accept
+        if request.method not in ("GET", "HEAD") or wants_json:
+            return JsonResponse(
+                {"success": False, "error": "subscription_required", "redirect": target},
+                status=403,
+            )
+
+        return redirect(target)
