@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-26 21:27+0500\n"
+"POT-Creation-Date: 2026-07-28 22:36+0500\n"
 "PO-Revision-Date: 2026-05-22 12:00+0500\n"
 "Last-Translator: Claude AI\n"
 "Language-Team: Uzbek\n"
@@ -28,7 +28,7 @@ msgid "Media"
 msgstr "Media"
 
 #: apps/admin/payments.py:17 apps/models/payments.py:64
-#: apps/models/payments.py:163 apps/models/payments.py:266
+#: apps/models/payments.py:163 apps/models/payments.py:292
 msgid "Tarif"
 msgstr "Tarif"
 
@@ -67,8 +67,8 @@ msgstr "Obuna"
 msgid "Days remaining"
 msgstr "Qolgan kunlar"
 
-#: apps/admin/users.py:39 apps/models/payments.py:314
-#: apps/models/payments.py:352 apps/models/workouts.py:75
+#: apps/admin/users.py:39 apps/models/payments.py:340
+#: apps/models/payments.py:378 apps/models/workouts.py:75
 #: apps/panel/views/users.py:15 templates/panel/dashboard.html:126
 #: templates/payment/premium.html:8
 #: templates/users/manage_subscription.html:779
@@ -240,7 +240,7 @@ msgstr "Takrorlar bo'yicha"
 msgid "Time based"
 msgstr "Vaqt bo'yicha"
 
-#: apps/models/exercises.py:55 apps/models/users.py:55
+#: apps/models/exercises.py:55 apps/models/users.py:62
 #: apps/panel/views/exercises.py:14 apps/panel/views/premade_days.py:40
 #: apps/panel/views/programs.py:81 apps/panel/views/programs.py:148
 #: apps/panel/views/programs.py:849 apps/panel/views/programs.py:937
@@ -506,7 +506,7 @@ msgid "Eng mashhur"
 msgstr "Eng mashhur"
 
 #: apps/models/payments.py:30 apps/models/payments.py:67
-#: apps/models/payments.py:258
+#: apps/models/payments.py:284 apps/models/promo.py:48
 msgid "Faol"
 msgstr "Faol"
 
@@ -526,7 +526,7 @@ msgstr "Obuna tariflari"
 #: apps/panel/views/payments.py:24 apps/panel/views/payments.py:54
 #: apps/panel/views/programs.py:47 apps/panel/views/subscriptions.py:15
 #: apps/panel/views/support.py:99 apps/panel/views/tracking.py:15
-#: templates/panel/chat_thread.html:155
+#: templates/panel/chat_thread.html:155 templates/panel/promo_report.html:54
 msgid "User"
 msgstr "Foydalanuvchi"
 
@@ -543,6 +543,7 @@ msgid "Bekor qilingan sana"
 msgstr "Bekor qilingan sana"
 
 #: apps/models/payments.py:74 apps/models/payments.py:165
+#: apps/models/promo.py:133
 msgid "Obuna"
 msgstr "Obuna"
 
@@ -550,7 +551,7 @@ msgstr "Obuna"
 msgid "Obunalar"
 msgstr "Obunalar"
 
-#: apps/models/payments.py:146 apps/models/payments.py:257
+#: apps/models/payments.py:146 apps/models/payments.py:283
 msgid "Kutilmoqda"
 msgstr "Kutilmoqda"
 
@@ -566,11 +567,11 @@ msgstr "Bajarildi"
 msgid "Muvaffaqiyatsiz"
 msgstr "Muvaffaqiyatsiz"
 
-#: apps/models/payments.py:167 apps/models/payments.py:270
-#: apps/models/users.py:135 apps/panel/views/payments.py:24
-#: apps/panel/views/payments.py:58 apps/panel/views/subscriptions.py:15
-#: apps/panel/views/tracking.py:15 apps/panel/views/users.py:23
-#: templates/panel/dashboard.html:118
+#: apps/models/payments.py:167 apps/models/payments.py:296
+#: apps/models/users.py:197 apps/panel/views/payments.py:24
+#: apps/panel/views/payments.py:58 apps/panel/views/promo.py:35
+#: apps/panel/views/subscriptions.py:15 apps/panel/views/tracking.py:15
+#: apps/panel/views/users.py:23 templates/panel/dashboard.html:118
 #: templates/users/manage_subscription.html:769
 msgid "Status"
 msgstr "Holat"
@@ -599,69 +600,139 @@ msgstr "Avto to'lov urinishi"
 msgid "Bajarilgan sana"
 msgstr "Bajarilgan sana"
 
-#: apps/models/payments.py:178
+#: apps/models/payments.py:180 apps/models/promo.py:38 apps/models/promo.py:60
+#: apps/models/promo.py:119
+msgid "Promo kod"
+msgstr "Promo kod"
+
+#: apps/models/payments.py:183
+msgid "Chegirmasiz summa"
+msgstr "Chegirmasiz summa"
+
+#: apps/models/payments.py:188
 msgid "Sovg'a to'lovi"
 msgstr "Sovg'a to'lovi"
 
-#: apps/models/payments.py:181
+#: apps/models/payments.py:191
 msgid "Atmos transaction id"
 msgstr "Atmos tranzaksiya ID"
 
-#: apps/models/payments.py:184
+#: apps/models/payments.py:194
 msgid "Created At MS"
 msgstr "Yaratilgan vaqt (MS)"
 
-#: apps/models/payments.py:185
+#: apps/models/payments.py:195
 msgid "Perform Time"
 msgstr "Bajarilish vaqti"
 
-#: apps/models/payments.py:186
+#: apps/models/payments.py:196
 msgid "Cancel Time"
 msgstr "Bekor qilish vaqti"
 
-#: apps/models/payments.py:187
+#: apps/models/payments.py:197
 msgid "State"
 msgstr "Holat"
 
-#: apps/models/payments.py:192 apps/models/payments.py:268
+#: apps/models/payments.py:202 apps/models/payments.py:294
+#: apps/models/promo.py:129
 msgid "To'lov"
 msgstr "To'lov"
 
-#: apps/models/payments.py:193
+#: apps/models/payments.py:203
 msgid "To'lovlar"
 msgstr "To'lovlar"
 
-#: apps/models/payments.py:259
+#: apps/models/payments.py:285
 msgid "Olingan"
 msgstr "Olingan"
 
-#: apps/models/payments.py:262
+#: apps/models/payments.py:288
 msgid "Yuboruvchi"
 msgstr "Yuboruvchi"
 
-#: apps/models/payments.py:264
+#: apps/models/payments.py:290
 msgid "Qabul qiluvchi"
 msgstr "Qabul qiluvchi"
 
-#: apps/models/payments.py:269
+#: apps/models/payments.py:295
 msgid "Kod"
 msgstr "Kod"
 
-#: apps/models/payments.py:271
+#: apps/models/payments.py:297
 msgid "Olingan sana"
 msgstr "Olingan sana"
 
-#: apps/models/payments.py:274
+#: apps/models/payments.py:300
 msgid "Premium sovg'a"
 msgstr "Premium sovg'a"
 
-#: apps/models/payments.py:275
+#: apps/models/payments.py:301
 msgid "Premium sovg'alar"
 msgstr "Premium sovg'alar"
 
-#: apps/models/support.py:22
+#: apps/models/promo.py:32
+msgid "The code may contain only Latin letters A-Z and digits 0-9."
+msgstr "Kodda faqat lotin harflari A-Z va raqamlar 0-9 bo'lishi mumkin."
+
+#: apps/models/promo.py:39
+msgid "Latin letters and digits only. Case does not matter when entering."
+msgstr "Faqat lotin harflari va raqamlar. Kiritishda katta-kichik harf farq qilmaydi."
+
+#: apps/models/promo.py:42
+msgid "Chegirma (%)"
+msgstr "Chegirma (%)"
+
+#: apps/models/promo.py:47
+msgid "Egasi (trener/sotuvchi)"
+msgstr "Egasi (trener/sotuvchi)"
+
+#: apps/models/promo.py:49
+msgid "Amal qilish muddati"
+msgstr "Amal qilish muddati"
+
+#: apps/models/promo.py:51
+msgid "Maksimal ishlatilish soni"
+msgstr "Maksimal ishlatilish soni"
+
+#: apps/models/promo.py:52
+msgid "Leave empty for unlimited."
+msgstr "Cheksiz bo'lishi uchun bo'sh qoldiring."
+
+#: apps/models/promo.py:56
+msgid "Kim yaratdi"
+msgstr "Kim yaratdi"
+
+#: apps/models/promo.py:61
+msgid "Promo kodlar"
+msgstr "Promo kodlar"
+
+#: apps/models/promo.py:122 apps/models/support.py:22
 msgid "Foydalanuvchi"
 msgstr "Foydalanuvchi"
+
+#: apps/models/promo.py:136
+msgid "Asl narx"
+msgstr "Asl narx"
+
+#: apps/models/promo.py:137
+msgid "Chegirma summasi"
+msgstr "Chegirma summasi"
+
+#: apps/models/promo.py:138
+msgid "Yakuniy narx"
+msgstr "Yakuniy narx"
+
+#: apps/models/promo.py:139
+msgid "Ishlatilgan sana"
+msgstr "Ishlatilgan sana"
+
+#: apps/models/promo.py:142
+msgid "Promo kod ishlatilishi"
+msgstr "Promo kod ishlatilishi"
+
+#: apps/models/promo.py:143
+msgid "Promo kod ishlatilishlari"
+msgstr "Promo kod ishlatilishlari"
 
 #: apps/models/support.py:23
 msgid "Xabar"
@@ -697,151 +768,155 @@ msgstr "Chat"
 msgid "A message must have text or an image."
 msgstr "Xabarda matn yoki rasm bo'lishi shart."
 
-#: apps/models/users.py:36 templates/miniapp/questionarrie.html:230
+#: apps/models/users.py:43 templates/miniapp/questionarrie.html:230
 msgid "Male"
 msgstr "Erkak"
 
-#: apps/models/users.py:37 templates/miniapp/questionarrie.html:231
+#: apps/models/users.py:44 templates/miniapp/questionarrie.html:231
 msgid "Female"
 msgstr "Ayol"
 
-#: apps/models/users.py:40
+#: apps/models/users.py:47
 msgid "Metric"
 msgstr "Metrik"
 
-#: apps/models/users.py:41
+#: apps/models/users.py:48
 msgid "English"
 msgstr "Inglizcha"
 
-#: apps/models/users.py:44 apps/models/workouts.py:168
+#: apps/models/users.py:51 apps/models/workouts.py:168
 #: templates/miniapp/questionarrie.html:240
 msgid "Beginner"
 msgstr "Boshlang'ich"
 
-#: apps/models/users.py:45 apps/models/workouts.py:169
+#: apps/models/users.py:52 apps/models/workouts.py:169
 #: templates/miniapp/questionarrie.html:243
 msgid "Advanced"
 msgstr "Ilg'or"
 
-#: apps/models/users.py:48
+#: apps/models/users.py:55
 msgid "Build a great body"
 msgstr "Ajoyib tana yaratish"
 
-#: apps/models/users.py:49 templates/miniapp/questionarrie.html:253
+#: apps/models/users.py:56 templates/miniapp/questionarrie.html:253
 msgid "Lose weight"
 msgstr "Vazn tashlash"
 
-#: apps/models/users.py:50 templates/miniapp/questionarrie.html:254
+#: apps/models/users.py:57 templates/miniapp/questionarrie.html:254
 msgid "Gain muscle"
 msgstr "Mushak oshirish"
 
-#: apps/models/users.py:51 templates/miniapp/questionarrie.html:252
+#: apps/models/users.py:58 templates/miniapp/questionarrie.html:252
 msgid "Get in shape"
 msgstr "Formaga kirish"
 
-#: apps/models/users.py:56
+#: apps/models/users.py:63
 msgid "Avatar"
 msgstr "Avatar"
 
-#: apps/models/users.py:57
+#: apps/models/users.py:64
 msgid "Gender"
 msgstr "Jins"
 
-#: apps/models/users.py:58
+#: apps/models/users.py:65
 msgid "Birth date"
 msgstr "Tug'ilgan sana"
 
-#: apps/models/users.py:59 apps/panel/views/programs.py:506
+#: apps/models/users.py:66 apps/panel/views/programs.py:506
 #: apps/views/users.py:692 templates/panel/premade_day_builder.html:176
 #: templates/panel/workout_builder.html:197
 msgid "Weight"
 msgstr "Og'irlik"
 
-#: apps/models/users.py:60
+#: apps/models/users.py:67
 msgid "Height"
 msgstr "Bo'y"
 
-#: apps/models/users.py:61
+#: apps/models/users.py:68
 msgid "Experience level"
 msgstr "Tajriba darajasi"
 
-#: apps/models/users.py:62
+#: apps/models/users.py:69
 msgid "Fitness goal"
 msgstr "Fitness maqsadi"
 
-#: apps/models/users.py:63
+#: apps/models/users.py:70
 msgid "Workout days per week"
 msgstr "Haftasiga mashg'ulot kunlari"
 
-#: apps/models/users.py:64
+#: apps/models/users.py:71
 msgid "Unit system"
 msgstr "O'lchov tizimi"
 
-#: apps/models/users.py:65
+#: apps/models/users.py:72
 msgid "Onboarding completed"
 msgstr "So'rovnoma yakunlandi"
 
-#: apps/models/users.py:68
+#: apps/models/users.py:81
+msgid "Trial started at"
+msgstr "Sinov boshlangan sana"
+
+#: apps/models/users.py:84
 msgid "User Profile"
 msgstr "Foydalanuvchi profili"
 
-#: apps/models/users.py:69
+#: apps/models/users.py:85
 msgid "User Profiles"
 msgstr "Foydalanuvchi profillari"
 
-#: apps/models/users.py:97
+#: apps/models/users.py:159
 msgid "I want a healthy lifestyle"
 msgstr "Sog'lom turmush tarzini xohlayman"
 
-#: apps/models/users.py:98
+#: apps/models/users.py:160
 msgid "Improve my physique"
 msgstr "Jismoniy ko'rinishimni yaxshilash"
 
-#: apps/models/users.py:99
+#: apps/models/users.py:161
 msgid "Get stronger every day"
 msgstr "Har kuni kuchliroq bo'lish"
 
-#: apps/models/users.py:100
+#: apps/models/users.py:162
 msgid "I like a good challenge"
 msgstr "Qiyinchiliklarni yoqtiraman"
 
-#: apps/models/users.py:103
+#: apps/models/users.py:165
 msgid "Motivation"
 msgstr "Motivatsiya"
 
-#: apps/models/users.py:107
+#: apps/models/users.py:169
 msgid "User Motivation"
 msgstr "Foydalanuvchi motivatsiyasi"
 
-#: apps/models/users.py:108
+#: apps/models/users.py:170
 msgid "User Motivations"
 msgstr "Foydalanuvchi motivatsiyalari"
 
-#: apps/models/users.py:117
+#: apps/models/users.py:179
 msgid "Is active"
 msgstr "Faol"
 
-#: apps/models/users.py:118
+#: apps/models/users.py:180
 msgid "Assigned once"
 msgstr "Bir marta tayinlangan"
 
-#: apps/models/users.py:121
+#: apps/models/users.py:183
 msgid "User Program"
 msgstr "Foydalanuvchi mashg'uloti"
 
-#: apps/models/users.py:122
+#: apps/models/users.py:184
 msgid "User Programs"
 msgstr "Foydalanuvchi mashg'ulotlari"
 
-#: apps/models/users.py:130
+#: apps/models/users.py:192
 msgid "Not started"
 msgstr "Boshlanmagan"
 
-#: apps/models/users.py:131
+#: apps/models/users.py:193
 msgid "Unfinished"
 msgstr "Tugallanmagan"
 
-#: apps/models/users.py:132 apps/models/workouts.py:566
+#: apps/models/users.py:194 apps/models/workouts.py:566
 #: apps/panel/views/payments.py:61
 #: templates/workouts/home_workout_complete.html:277
 #: templates/workouts/home_workout_detail.html:470
@@ -850,33 +925,33 @@ msgstr "Tugallanmagan"
 msgid "Completed"
 msgstr "Tugatildi"
 
-#: apps/models/users.py:136 apps/panel/views/programs.py:148
+#: apps/models/users.py:198 apps/panel/views/programs.py:148
 #: apps/panel/views/programs.py:506 apps/panel/views/settings.py:21
 msgid "Order"
 msgstr "Tartib"
 
-#: apps/models/users.py:137 apps/panel/views/handbook.py:27
+#: apps/models/users.py:199 apps/panel/views/handbook.py:27
 #: apps/panel/views/handbook.py:95 apps/panel/views/handbook.py:109
 #: apps/panel/views/handbook.py:183 apps/panel/views/programs.py:405
 msgid "Title"
 msgstr "Sarlavha"
 
-#: apps/models/users.py:138
+#: apps/models/users.py:200
 msgid "Body part"
 msgstr "Tana qismi"
 
-#: apps/models/users.py:139
+#: apps/models/users.py:201
 msgid "Completed at"
 msgstr "Tugatilgan vaqt"
 
-#: apps/models/users.py:152 apps/panel/views/programs.py:506
+#: apps/models/users.py:214 apps/panel/views/programs.py:506
 #: templates/exercises/custom_program_create.html:286
 #: templates/panel/premade_day_builder.html:174
 #: templates/panel/workout_builder.html:195
 msgid "Sets"
 msgstr "Setlar"
 
-#: apps/models/users.py:153 apps/panel/views/programs.py:506
+#: apps/models/users.py:215 apps/panel/views/programs.py:506
 #: templates/exercises/custom_program_create.html:287
 #: templates/panel/premade_day_builder.html:175
 #: templates/panel/workout_builder.html:196
@@ -914,8 +989,11 @@ msgid "Cardio exercise"
 msgstr "Kardio mashq"
 
 #: apps/models/workouts.py:99
-msgid "Which cardio exercise to insert. Only exercises marked as cardio are listed."
-msgstr "Qaysi kardio mashq qo'shiladi. Ro'yxatda faqat kardio deb belgilangan mashqlar."
+msgid ""
+"Which cardio exercise to insert. Only exercises marked as cardio are listed."
+msgstr ""
+"Qaysi kardio mashq qo'shiladi. Ro'yxatda faqat kardio deb belgilangan "
+"mashqlar."
 
 #: apps/models/workouts.py:102
 msgid "Cardio sets"
@@ -938,8 +1016,12 @@ msgid "Cardio required to complete a day"
 msgstr "Kunni yakunlash uchun kardio majburiy"
 
 #: apps/models/workouts.py:111
-msgid "If enabled, a training day only counts as complete when the cardio entry is done. Off by default: cardio is treated as a warm-up."
-msgstr "Yoqilgan bo'lsa, kun faqat kardio bajarilgandan keyin yakunlangan hisoblanadi. Standart holatda o'chiq: kardio qizdirish deb qaraladi."
+msgid ""
+"If enabled, a training day only counts as complete when the cardio entry is "
+"done. Off by default: cardio is treated as a warm-up."
+msgstr ""
+"Yoqilgan bo'lsa, kun faqat kardio bajarilgandan keyin yakunlangan "
+"hisoblanadi. Standart holatda o'chiq: kardio qizdirish deb qaraladi."
 
 #: apps/models/workouts.py:186 apps/panel/views/programs.py:255
 msgid "Difficulty"
@@ -955,30 +1037,34 @@ msgid "Cardio removed"
 msgstr "Kardio o'chirilgan"
 
 #: apps/models/workouts.py:386
-msgid "Set when an admin deletes this day's auto-inserted cardio entry. Regeneration will not restore it while this is set."
-msgstr "Admin shu kunning avtomatik qo'shilgan kardiosini o'chirganda o'rnatiladi. Bu belgi turganda qayta yaratish uni tiklamaydi."
+msgid ""
+"Set when an admin deletes this day's auto-inserted cardio entry. "
+"Regeneration will not restore it while this is set."
+msgstr ""
+"Admin shu kunning avtomatik qo'shilgan kardiosini o'chirganda o'rnatiladi. "
+"Bu belgi turganda qayta yaratish uni tiklamaydi."
 
 #: apps/models/workouts.py:565
 msgid "In progress"
 msgstr "Jarayonda"
 
-#: apps/panel/forms.py:106
+#: apps/panel/forms.py:107
 msgid "Generate remaining weeks (up to the plan's week count)"
 msgstr "Qolgan haftalarni yaratish (plan haftalari soniga qadar)"
 
-#: apps/panel/forms.py:107
+#: apps/panel/forms.py:108
 msgid "If checked, the missing weeks after this one are created automatically."
 msgstr ""
 "Belgilansa, shu haftadan keyingi yetishmayotgan haftalar avtomatik "
 "yaratiladi."
 
-#: apps/panel/forms.py:142
+#: apps/panel/forms.py:143
 msgid "Manual weight — keep this value on difficulty change / regeneration"
 msgstr ""
 "Qo'lda kiritilgan vazn — murakkablik o'zgarganda / qayta yaratilganda "
 "saqlansin"
 
-#: apps/panel/forms.py:145
+#: apps/panel/forms.py:146
 msgid ""
 "Auto-enabled when you change the weight. Untick (without changing the "
 "weight) to hand it back to automatic calculation."
@@ -986,23 +1072,23 @@ msgstr ""
 "Vaznni o'zgartirganingizda avtomatik yoqiladi. Avtomatik hisoblashga "
 "qaytarish uchun belgini oling (vaznni o'zgartirmasdan)."
 
-#: apps/panel/forms.py:193
+#: apps/panel/forms.py:194
 msgid "Start weight — beginner (kg)"
 msgstr "Boshlang'ich vazn — boshlovchi (kg)"
 
-#: apps/panel/forms.py:217
+#: apps/panel/forms.py:218
 msgid "Required for reps-based exercises."
 msgstr "Takrorlarga asoslangan mashqlar uchun majburiy."
 
-#: apps/panel/forms.py:221
+#: apps/panel/forms.py:222
 msgid "Required for time-based exercises."
 msgstr "Vaqtga asoslangan mashqlar uchun majburiy."
 
-#: apps/panel/forms.py:307 templates/panel/login.html:63
+#: apps/panel/forms.py:308 templates/panel/login.html:63
 msgid "Password"
 msgstr "Parol"
 
-#: apps/panel/forms.py:308
+#: apps/panel/forms.py:309
 msgid "Leave blank to keep the current password."
 msgstr "Joriy parolni saqlash uchun bo'sh qoldiring."
 
@@ -1018,7 +1104,7 @@ msgstr "Ha"
 msgid "No"
 msgstr "Yo'q"
 
-#: apps/panel/views/admins.py:23 templates/panel/base.html:331
+#: apps/panel/views/admins.py:23 templates/panel/base.html:335
 msgid "Admins"
 msgstr "Adminlar"
 
@@ -1209,7 +1295,8 @@ msgstr "Materiallar"
 #: apps/panel/views/handbook.py:27 apps/panel/views/handbook.py:95
 #: apps/panel/views/handbook.py:109 apps/panel/views/handbook.py:183
 #: apps/panel/views/programs.py:81 apps/panel/views/programs.py:849
-#: apps/panel/views/settings.py:21 apps/panel/views/subscriptions.py:27
+#: apps/panel/views/promo.py:64 apps/panel/views/settings.py:21
+#: apps/panel/views/subscriptions.py:27
 #: templates/my_trainer/my_trainer.html:342
 msgid "Active"
 msgstr "Faol"
@@ -1280,6 +1367,7 @@ msgid "Method"
 msgstr "Usul"
 
 #: apps/panel/views/payments.py:24 apps/panel/views/tracking.py:15
+#: templates/panel/promo_report.html:53
 #: templates/users/manage_subscription.html:767
 msgid "Date"
 msgstr "Sana"
@@ -1289,6 +1377,7 @@ msgid "Payment"
 msgstr "To'lov"
 
 #: apps/panel/views/payments.py:56 apps/panel/views/subscriptions.py:15
+#: templates/panel/promo_report.html:55
 #: templates/users/manage_subscription.html:702
 msgid "Plan"
 msgstr "Tarif"
@@ -1297,7 +1386,7 @@ msgstr "Tarif"
 msgid "Auto payment"
 msgstr "Avto to'lov"
 
-#: apps/panel/views/payments.py:60
+#: apps/panel/views/payments.py:60 apps/panel/views/promo.py:35
 msgid "Created"
 msgstr "Yaratilgan"
 
@@ -1737,7 +1826,80 @@ msgstr "Uy progressiyasini tahrirlash"
 msgid "Delete home progression"
 msgstr "Uy progressiyasini o'chirish"
 
-#: apps/panel/views/reports.py:32 templates/panel/base.html:320
+#: apps/panel/views/promo.py:32 templates/panel/base.html:320
+msgid "Promo codes"
+msgstr "Promo kodlar"
+
+#: apps/panel/views/promo.py:34
+#, fuzzy
+#| msgid "Copy Code"
+msgid "Code"
+msgstr "Kodni nusxalash"
+
+#: apps/panel/views/promo.py:34
+msgid "Owner"
+msgstr "Egasi"
+
+#: apps/panel/views/promo.py:34 templates/panel/promo_report.html:57
+msgid "Discount"
+msgstr "Chegirma"
+
+#: apps/panel/views/promo.py:34 apps/panel/views/promo.py:138
+msgid "Redemptions"
+msgstr "Ishlatilishlar"
+
+#: apps/panel/views/promo.py:35
+#, fuzzy
+#| msgid "Revenue (UZS)"
+msgid "Revenue"
+msgstr "Daromad (UZS)"
+
+#: apps/panel/views/promo.py:42 apps/panel/views/promo.py:85
+msgid "Add promo code"
+msgstr "Promo kod qo'shish"
+
+#: apps/panel/views/promo.py:58 templates/users/profile_detail.html:356
+msgid "Inactive"
+msgstr "Faol emas"
+
+#: apps/panel/views/promo.py:60 apps/panel/views/subscriptions.py:29
+msgid "Expired"
+msgstr "Muddati tugagan"
+
+#: apps/panel/views/promo.py:62
+msgid "Limit reached"
+msgstr "Limit tugadi"
+
+#: apps/panel/views/promo.py:87
+msgid "Promo code created."
+msgstr "Promo kod yaratildi."
+
+#: apps/panel/views/promo.py:98
+msgid "Edit promo code"
+msgstr "Promo kodni tahrirlash"
+
+#: apps/panel/views/promo.py:105
+msgid "Delete promo code"
+msgstr "Promo kodni o'chirish"
+
+#: apps/panel/views/promo.py:126
+#, python-format
+msgid "Promo code: %(code)s"
+msgstr "Promo kod: %(code)s"
+
+#: apps/panel/views/promo.py:141
+msgid "Revenue collected"
+msgstr "Tushgan summa"
+
+#: apps/panel/views/promo.py:142
+msgid "Discount given"
+msgstr "Berilgan chegirma"
+
+#: apps/panel/views/promo.py:143
+msgid "Gross before discount"
+msgstr "Chegirmagacha jami"
+
+#: apps/panel/views/reports.py:32 templates/panel/base.html:324
 msgid "Reports"
 msgstr "Hisobotlar"
 
@@ -1804,10 +1966,6 @@ msgstr "Tugash"
 #: apps/panel/views/subscriptions.py:20 apps/panel/views/subscriptions.py:43
 msgid "Add subscription"
 msgstr "Obuna qo'shish"
-
-#: apps/panel/views/subscriptions.py:29
-msgid "Expired"
-msgstr "Muddati tugagan"
 
 #: apps/panel/views/subscriptions.py:45
 msgid "Subscription created."
@@ -1903,6 +2061,30 @@ msgstr "Foydalanuvchini tahrirlash"
 msgid "Delete user"
 msgstr "Foydalanuvchini o'chirish"
 
+#: apps/services/promo.py:34
+msgid "Enter a promo code."
+msgstr "Promo kodni kiriting."
+
+#: apps/services/promo.py:35
+msgid "This promo code does not exist."
+msgstr "Bunday promo kod mavjud emas."
+
+#: apps/services/promo.py:36
+msgid "This promo code is no longer active."
+msgstr "Bu promo kod endi faol emas."
+
+#: apps/services/promo.py:37
+msgid "This promo code has expired."
+msgstr "Bu promo kodning muddati tugagan."
+
+#: apps/services/promo.py:38
+msgid "This promo code has reached its usage limit."
+msgstr "Bu promo kod ishlatilish limitiga yetgan."
+
+#: apps/services/promo.py:39
+msgid "A promo code can only be used on your first purchase."
+msgstr "Promo kod faqat birinchi xaridda ishlatiladi."
+
 #: apps/services/support_images.py:26 templates/panel/chat_thread.html:196
 #: templates/users/help.html:131
 msgid "Image is too large (max 5 MB)."
@@ -1917,131 +2099,131 @@ msgstr "Qo'llab-quvvatlanmaydigan yoki buzuq rasm."
 msgid "Only JPEG, PNG, WEBP or GIF images are allowed."
 msgstr "Faqat JPEG, PNG, WEBP yoki GIF rasmlar ruxsat etiladi."
 
-#: apps/views/payments.py:32
+#: apps/views/payments.py:33
 msgid "Individual workout programs for home and gym"
 msgstr "Uy va sport zali uchun individual mashg‘ulot dasturlari"
 
-#: apps/views/payments.py:33
+#: apps/views/payments.py:34
 msgid "Full access to all 10 plans inside each program"
 msgstr "Har bir dastur ichidagi barcha 10 ta rejaga to‘liq kirish"
 
-#: apps/views/payments.py:34
+#: apps/views/payments.py:35
 msgid "Complete 6-week system in every gym plan"
 msgstr "Har bir sport zali rejasida to‘liq 6 haftalik tizim"
 
-#: apps/views/payments.py:35
+#: apps/views/payments.py:36
 msgid "Complete 4-week system in every home workout plan"
 msgstr "Har bir uy mashg‘ulot rejasida to‘liq 4 haftalik tizim"
 
-#: apps/views/payments.py:36
+#: apps/views/payments.py:37
 msgid "Free access to marathons and challenges"
 msgstr "Marafon va challenge’larga bepul kirish"
 
-#: apps/views/payments.py:37
+#: apps/views/payments.py:38
 msgid "Create your own program in the Favorites section"
 msgstr "Sevimlilar bo‘limida o‘z dasturingizni yaratish imkoniyati"
 
-#: apps/views/payments.py:38
+#: apps/views/payments.py:39
 msgid "Workout statistics and history"
 msgstr "Mashg‘ulot statistikasi va tarixi"
 
-#: apps/views/payments.py:176
+#: apps/views/payments.py:259
 msgid "You have already sent a Premium gift."
 msgstr "Siz allaqachon Premium sovg'a yuborgansiz."
 
-#: apps/views/payments.py:194
+#: apps/views/payments.py:277
 msgid "Enter a valid card number and expiry date."
 msgstr "Karta raqami va amal qilish muddatini to'g'ri kiriting."
 
-#: apps/views/payments.py:220 apps/views/payments.py:429
+#: apps/views/payments.py:329 apps/views/payments.py:540
 msgid "Too many requests. Please try again later."
 msgstr "So'rovlar juda ko'p. Keyinroq urinib ko'ring."
 
-#: apps/views/payments.py:230 apps/views/payments.py:435
+#: apps/views/payments.py:339 apps/views/payments.py:546
 #: templates/payment/gift_purchase.html:272
 #: templates/payment/payment_method.html:426
-#: templates/payment/tariff_select.html:270
+#: templates/payment/tariff_select.html:351
 msgid "A request is already being processed. Please wait."
 msgstr "So'rov allaqachon bajarilmoqda. Iltimos, kuting."
 
-#: apps/views/payments.py:278
+#: apps/views/payments.py:389
 #, python-format
 msgid "Payment could not be started: %(err)s"
 msgstr "To'lovni boshlab bo'lmadi: %(err)s"
 
-#: apps/views/payments.py:323
+#: apps/views/payments.py:434
 msgid "Too many attempts. Please try again later."
 msgstr "Urinishlar juda ko'p. Keyinroq urinib ko'ring."
 
-#: apps/views/payments.py:330 templates/payment/otp.html:110
+#: apps/views/payments.py:441 templates/payment/otp.html:110
 msgid "Enter the SMS code."
 msgstr "SMS kodini kiriting."
 
-#: apps/views/payments.py:343
+#: apps/views/payments.py:454
 #, python-format
 msgid "Confirmation failed: %(err)s"
 msgstr "Tasdiqlash amalga oshmadi: %(err)s"
 
-#: apps/views/payments.py:362
+#: apps/views/payments.py:473
 msgid "Too many attempts. Please request a new code later."
 msgstr "Urinishlar juda ko'p. Keyinroq yangi kod so'rang."
 
-#: apps/views/payments.py:366
+#: apps/views/payments.py:477
 #, python-format
 msgid "Wrong code. %(n)s attempt(s) left."
 msgstr "Kod noto'g'ri. %(n)s ta urinish qoldi."
 
 # ---- Payment UX (Atmos errors + merged tariff/card page) ----
-#: apps/views/payments.py:379 templates/payment/otp.html:112
+#: apps/views/payments.py:490 templates/payment/otp.html:112
 msgid "Insufficient funds on the card"
 msgstr "Kartada mablag' yetarli emas"
 
-#: apps/views/payments.py:384 templates/payment/otp.html:113
+#: apps/views/payments.py:495 templates/payment/otp.html:113
 msgid "The code has expired. Please request a new one."
 msgstr "Kod muddati tugadi. Iltimos, yangi kod so'rang."
 
-#: apps/views/payments.py:389
+#: apps/views/payments.py:500
 msgid "There was a problem with the card. Please try another card."
 msgstr "Karta bilan muammo yuz berdi. Boshqa karta bilan urinib ko'ring."
 
-#: apps/views/payments.py:393
+#: apps/views/payments.py:504
 msgid "Payment failed. Please try again."
 msgstr "To'lov amalga oshmadi, qayta urinib ko'ring."
 
-#: apps/views/payments.py:422
+#: apps/views/payments.py:533
 msgid "Session expired. Please start the payment again."
 msgstr "Sessiya muddati tugadi. Iltimos, to'lovni qaytadan boshlang."
 
-#: apps/views/payments.py:449
+#: apps/views/payments.py:560
 #, python-format
 msgid "Could not resend the code: %(err)s"
 msgstr "Kodni qayta yuborib bo'lmadi: %(err)s"
 
-#: apps/views/payments.py:555
+#: apps/views/payments.py:669
 msgid "Could not verify your Telegram account. Please reopen the link."
 msgstr "Telegram hisobingizni tasdiqlab bo'lmadi. Havolani qayta oching."
 
-#: apps/views/payments.py:563
+#: apps/views/payments.py:677
 msgid "Open the app and finish setup first, then claim your gift."
 msgstr "Avval ilovani ochib sozlashni yakunlang, so'ng sovg'ani oling."
 
-#: apps/views/payments.py:571
+#: apps/views/payments.py:685
 msgid "This gift link is invalid."
 msgstr "Bu sovg'a havolasi yaroqsiz."
 
-#: apps/views/payments.py:577
+#: apps/views/payments.py:691
 msgid "This gift has already been claimed or is not available."
 msgstr "Bu sovg'a allaqachon olingan yoki mavjud emas."
 
-#: apps/views/payments.py:578
+#: apps/views/payments.py:692
 msgid "You can't claim your own gift."
 msgstr "O'z sovg'angizni ololmaysiz."
 
-#: apps/views/payments.py:582
+#: apps/views/payments.py:696
 msgid "This gift is not available."
 msgstr "Bu sovg'a mavjud emas."
 
-#: apps/views/payments.py:587
+#: apps/views/payments.py:701
 msgid "Premium activated! Enjoy your gift."
 msgstr "Premium faollashtirildi! Sovg'angizdan bahramand bo'ling."
 
@@ -2442,7 +2624,7 @@ msgid "Copy Code"
 msgstr "Kodni nusxalash"
 
 #: templates/exercises/favorites_list.html:336
-#: templates/payment/premium.html:187
+#: templates/payment/premium.html:206
 msgid "Close"
 msgstr "Yopish"
 
@@ -2640,11 +2822,11 @@ msgstr "Fitness So'rovnomasi — Telegram WebApp"
 #: templates/panel/object_detail.html:7
 #: templates/panel/premade_day_attach.html:26
 #: templates/panel/premade_day_builder.html:79
-#: templates/panel/workout_builder.html:80
+#: templates/panel/promo_report.html:36 templates/panel/workout_builder.html:80
 #: templates/payment/gift_purchase.html:172
 #: templates/payment/gift_share.html:79 templates/payment/otp.html:73
 #: templates/payment/payment_method.html:331
-#: templates/payment/tariff_select.html:182
+#: templates/payment/tariff_select.html:230
 #: templates/users/cancel_subscription.html:464 templates/users/help.html:115
 #: templates/users/manage_subscription.html:681
 msgid "Back"
@@ -2789,20 +2971,20 @@ msgstr "Barcha planlar"
 msgid "Finance"
 msgstr "Moliya"
 
-#: templates/panel/base.html:324
+#: templates/panel/base.html:328
 msgid "System"
 msgstr "Tizim"
 
-#: templates/panel/base.html:327 templates/users/profile_detail.html:448
+#: templates/panel/base.html:331 templates/users/profile_detail.html:448
 #: templates/users/settings.html:6
 msgid "Settings"
 msgstr "Sozlamalar"
 
-#: templates/panel/base.html:350
+#: templates/panel/base.html:354
 msgid "Notifications"
 msgstr "Bildirishnomalar"
 
-#: templates/panel/base.html:357
+#: templates/panel/base.html:361
 msgid "Log out"
 msgstr "Chiqish"
 
@@ -3060,8 +3242,41 @@ msgstr "Hozircha mashqlar yo'q. «Mashq qo'shish» tugmasini bosing."
 
 #: templates/panel/premade_day_builder.html:193
 #: templates/panel/workout_builder.html:214
+#: templates/payment/tariff_select.html:330
 msgid "Remove"
 msgstr "Olib tashlash"
+
+#: templates/panel/promo_report.html:30
+#: templates/payment/tariff_select.html:328
+#: templates/payment/tariff_select.html:356
+msgid "OFF"
+msgstr "CHEGIRMA"
+
+#: templates/panel/promo_report.html:31
+msgid "limit"
+msgstr "limit"
+
+#: templates/panel/promo_report.html:32
+msgid "until"
+msgstr "gacha"
+
+#: templates/panel/promo_report.html:37
+msgid "Export CSV"
+msgstr "CSV yuklab olish"
+
+#: templates/panel/promo_report.html:56
+msgid "Original"
+msgstr "Asl narx"
+
+#: templates/panel/promo_report.html:58
+#: templates/users/manage_subscription.html:785
+#: templates/users/payment_history.html:618
+msgid "Paid"
+msgstr "To'landi"
+
+#: templates/panel/promo_report.html:76
+msgid "This code has not been used yet."
+msgstr "Bu kod hali ishlatilmagan."
 
 #: templates/panel/reports.html:26
 msgid "Revenue — last 6 months"
@@ -3169,7 +3384,7 @@ msgstr "Olinmoqda…"
 #: templates/payment/gift_claim.html:98
 #: templates/payment/gift_purchase.html:273 templates/payment/otp.html:117
 #: templates/payment/payment_method.html:427
-#: templates/payment/tariff_select.html:271
+#: templates/payment/tariff_select.html:352
 msgid "Something went wrong. Please try again."
 msgstr "Nimadir xato ketdi. Qaytadan urinib ko'ring."
 
@@ -3188,25 +3403,25 @@ msgstr ""
 "uni birinchi ochgan odam Premium oladi."
 
 #: templates/payment/gift_purchase.html:201
-#: templates/payment/tariff_select.html:204
+#: templates/payment/tariff_select.html:252
 msgid "MOST POPULAR"
 msgstr "ENG POPULAR"
 
 #: templates/payment/gift_purchase.html:204
 #: templates/payment/payment_method.html:339
-#: templates/payment/tariff_select.html:207
+#: templates/payment/tariff_select.html:255
 msgid "MONTHS"
 msgstr "OY"
 
 #: templates/payment/gift_purchase.html:208
 #: templates/payment/gift_purchase.html:274
-#: templates/payment/tariff_select.html:211
-#: templates/payment/tariff_select.html:272
+#: templates/payment/tariff_select.html:259
+#: templates/payment/tariff_select.html:353
 msgid "mo"
 msgstr "oy"
 
 #: templates/payment/gift_purchase.html:213
-#: templates/payment/tariff_select.html:216
+#: templates/payment/tariff_select.html:264
 msgid "save"
 msgstr "tejang"
 
@@ -3216,18 +3431,18 @@ msgstr "Sovg'a"
 
 #: templates/payment/gift_purchase.html:229
 #: templates/payment/payment_method.html:366
-#: templates/payment/tariff_select.html:232
+#: templates/payment/tariff_select.html:280
 msgid "Card details"
 msgstr "Karta ma'lumotlari"
 
 #: templates/payment/gift_purchase.html:231
-#: templates/payment/tariff_select.html:234
+#: templates/payment/tariff_select.html:282
 msgid "We accept Humo, Uzcard, Visa and Mastercard"
 msgstr "Humo, Uzcard, Visa va Mastercard qabul qilamiz"
 
 #: templates/payment/gift_purchase.html:254
 #: templates/payment/payment_method.html:384
-#: templates/payment/tariff_select.html:257
+#: templates/payment/tariff_select.html:338
 msgid "Your payment details are protected"
 msgstr "To'lov ma'lumotlaringiz himoyalangan"
 
@@ -3242,13 +3457,13 @@ msgstr "Hozircha sovg'a qilish imkonsiz. Keyinroq qayta urinib ko'ring."
 
 #: templates/payment/gift_purchase.html:269
 #: templates/payment/payment_method.html:423
-#: templates/payment/tariff_select.html:267
+#: templates/payment/tariff_select.html:348
 msgid "Sending…"
 msgstr "Yuborilmoqda…"
 
 #: templates/payment/gift_purchase.html:271 templates/payment/otp.html:114
 #: templates/payment/payment_method.html:425
-#: templates/payment/tariff_select.html:269
+#: templates/payment/tariff_select.html:350
 #, python-format
 msgid "Too many requests. Try again in %%(min)s min."
 msgstr "So'rovlar juda ko'p. %%(min)s daqiqadan so'ng urinib ko'ring."
@@ -3362,7 +3577,7 @@ msgid "Payment method"
 msgstr "To'lov usuli"
 
 #: templates/payment/payment_method.html:338
-#: templates/payment/tariff_select.html:225
+#: templates/payment/tariff_select.html:273
 msgid "Selected plan"
 msgstr "Tanlangan tarif"
 
@@ -3376,16 +3591,24 @@ msgstr "Karta orqali to'lash"
 
 #: templates/payment/payment_method.html:389
 #: templates/payment/payment_method.html:424
-#: templates/payment/tariff_select.html:262
-#: templates/payment/tariff_select.html:268
+#: templates/payment/tariff_select.html:343
+#: templates/payment/tariff_select.html:349
 msgid "Pay"
 msgstr "To'lash"
 
-#: templates/payment/premium.html:210
+#: templates/payment/premium.html:224
+msgid "Your free week is over"
+msgstr "Bepul haftangiz tugadi"
+
+#: templates/payment/premium.html:225
+msgid "Subscribe to unlock your workouts again."
+msgstr "Mashg'ulotlarni qayta ochish uchun obuna bo'ling."
+
+#: templates/payment/premium.html:242
 msgid "Go Premium"
 msgstr "Premium'ga o'tish"
 
-#: templates/payment/premium.html:211
+#: templates/payment/premium.html:244
 msgid "Later"
 msgstr "Keyinroq"
 
@@ -3408,6 +3631,23 @@ msgstr "Boshlash"
 #: templates/payment/tariff_select.html:8
 msgid "Choose a tariff"
 msgstr "Tarifni tanlang"
+
+#: templates/payment/tariff_select.html:310
+msgid "Have a promo code?"
+msgstr "Promo kodingiz bormi?"
+
+#: templates/payment/tariff_select.html:316
+msgid "Promo code"
+msgstr "Promo kod"
+
+#: templates/payment/tariff_select.html:319
+#: templates/payment/tariff_select.html:355
+msgid "Apply"
+msgstr "Qo'llash"
+
+#: templates/payment/tariff_select.html:354
+msgid "Applying…"
+msgstr "Qo'llanmoqda…"
 
 #: templates/users/add-card.html:7
 msgid "Karta bilan to‘lov"
@@ -3524,11 +3764,6 @@ msgstr "Jami"
 msgid "Action"
 msgstr "Amal"
 
-#: templates/users/manage_subscription.html:785
-#: templates/users/payment_history.html:618
-msgid "Paid"
-msgstr "To'landi"
-
 #: templates/users/manage_subscription.html:787
 #: templates/users/payment_history.html:590
 #: templates/users/payment_history.html:619
@@ -3596,10 +3831,6 @@ msgstr[0] "%(counter)s kun"
 #: templates/users/profile_detail.html:352
 msgid "Last day today"
 msgstr "Bugun oxirgi kun"
-
-#: templates/users/profile_detail.html:356
-msgid "Inactive"
-msgstr "Faol emas"
 
 #: templates/users/profile_detail.html:365
 msgid "Your Premium gift"
