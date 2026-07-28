@@ -144,6 +144,54 @@
 		.card-fields.has-error input::placeholder { color: rgba(255, 107, 107, 0.5); }
 
 		/* ===== SECURE NOTE ===== */
+		/* ===== PROMO KOD ===== */
+		.promo { padding: 12px var(--side-space) 0; }
+		.promo-toggle {
+			display: flex; align-items: center; gap: 7px; margin: 0 auto;
+			background: none; border: none; padding: 4px 6px; cursor: pointer;
+			color: var(--text-dim); font-size: 12.5px; font-family: inherit;
+		}
+		.promo-toggle svg { width: 14px; height: 14px; flex-shrink: 0; }
+		.promo-toggle[aria-expanded="true"] { color: var(--gold); }
+		.promo-body { margin-top: 8px; }
+		.promo-input { display: flex; gap: 8px; }
+		.promo-input input {
+			flex: 1; min-width: 0; padding: 12px 14px; border-radius: 12px;
+			background: var(--card); border: 1px solid var(--border); color: var(--text);
+			font-size: 14px; font-family: inherit; letter-spacing: 1px;
+			text-transform: uppercase; outline: none;
+		}
+		.promo-input input:focus { border-color: rgba(255, 215, 0, 0.5); }
+		.promo-input input::placeholder { letter-spacing: 0; text-transform: none; }
+		.promo-apply {
+			flex-shrink: 0; padding: 0 16px; border-radius: 12px; cursor: pointer;
+			background: rgba(255, 215, 0, 0.12); border: 1px solid rgba(255, 215, 0, 0.35);
+			color: var(--gold); font-size: 13px; font-weight: 700; font-family: inherit;
+		}
+		.promo-apply:disabled { opacity: 0.4; cursor: default; }
+		.promo-applied {
+			display: flex; align-items: center; justify-content: space-between; gap: 10px;
+			margin-top: 8px; padding: 11px 13px; border-radius: 12px;
+			background: rgba(255, 215, 0, 0.08); border: 1px solid rgba(255, 215, 0, 0.3);
+		}
+		.promo-applied-text { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+		.promo-applied-text strong {
+			color: var(--gold); font-size: 13.5px; letter-spacing: 1px;
+			overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+		}
+		.promo-applied-text span { color: var(--text-dim); font-size: 12px; flex-shrink: 0; }
+		.promo-remove {
+			flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%; cursor: pointer;
+			display: flex; align-items: center; justify-content: center;
+			background: rgba(255, 255, 255, 0.06); border: 1px solid var(--border); color: var(--text-dim);
+		}
+		.promo-remove svg { width: 13px; height: 13px; }
+		/* Chegirma qo'llanganda summadagi asl narx chizib tashlanadi. */
+		.amount-was {
+			color: var(--text-dim); text-decoration: line-through;
+			font-size: 0.8em; font-weight: 500; margin-right: 7px;
+		}
+
 		.secure-note {
 			display: flex; align-items: center; justify-content: center; gap: 8px;
 			padding: 16px var(--side-space) 0; color: var(--text-dim); font-size: 12px;
@@ -252,6 +300,39 @@
 		       oninput="formatExpiry(this)">
 	</div>
 
+	{# Promo kod — karta maydonlaridan KEYIN, ataylab kichik va bosiq. #}
+	<div class="promo">
+		<button type="button" class="promo-toggle" id="promoToggle" onclick="togglePromo()"
+		        {% if applied_promo %}hidden{% endif %}>
+			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+				<path d="M20.6 13.4 12 22l-9-9V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.2"/>
+			</svg>
+			<span>{% trans "Have a promo code?" %}</span>
+		</button>
+
+		<div class="promo-body" id="promoBody" hidden>
+			<div class="promo-input">
+				<input type="text" id="promoInput" autocomplete="off" autocapitalize="characters"
+				       spellcheck="false" maxlength="32" placeholder="{% trans 'Promo code' %}"
+				       oninput="onPromoInput(this)">
+				<button type="button" class="promo-apply" id="promoApply" onclick="applyPromo()" disabled>
+					{% trans "Apply" %}
+				</button>
+			</div>
+			<div class="field-error" id="promoError"></div>
+		</div>
+
+		<div class="promo-applied" id="promoApplied" {% if not applied_promo %}hidden{% endif %}>
+			<div class="promo-applied-text">
+				<strong id="promoAppliedCode">{{ applied_promo.code|default:"" }}</strong>
+				<span id="promoAppliedPct">{% if applied_promo %}−{{ applied_promo.discount_percent }}% {% trans "OFF" %}{% endif %}</span>
+			</div>
+			<button type="button" class="promo-remove" onclick="removePromo()" aria-label="{% trans 'Remove' %}">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+			</button>
+		</div>
+	</div>
+
 	<div class="secure-note">
 		<svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
 		{% trans "Your payment details are protected" %}
@@ -270,6 +351,9 @@
 {% trans "A request is already being processed. Please wait." as t_in_progress %}
 {% trans "Something went wrong. Please try again." as t_generic %}
 {% trans "mo" as t_mo %}
+{% trans "Applying…" as t_promo_applying %}
+{% trans "Apply" as t_promo_apply %}
+{% trans "OFF" as t_promo_off %}
 <script>
 	// JS i18n (uz/ru/en) — localized at render time.
 	const T = {
@@ -279,7 +363,13 @@
 		inProgress: "{{ t_in_progress|escapejs }}",
 		generic: "{{ t_generic|escapejs }}",
 		mo: "{{ t_mo|escapejs }}",
+		promoApplying: "{{ t_promo_applying|escapejs }}",
+		promoApply: "{{ t_promo_apply|escapejs }}",
+		promoOff: "{{ t_promo_off|escapejs }}",
 	};
+
+	const PROMO_APPLY_URL = "{% url 'promo_apply' %}";
+	const PROMO_REMOVE_URL = "{% url 'promo_remove' %}";
 
 	let currency = 'UZS';
 	let payUrl = null;
@@ -312,8 +402,35 @@
 		}
 		summary.classList.remove('empty');
 		document.getElementById('summaryPlan').textContent = sel.dataset.months + ' ' + T.mo.toUpperCase();
-		document.getElementById('summaryAmount').textContent = fmtAmount(sel);
+		renderAmount(sel);
 		payUrl = sel.dataset.payUrl;
+	}
+
+	// Chegirma qo'llangan bo'lsa asl narx chizib tashlanadi, yonida yangisi.
+	// DIQQAT: bu FAQAT ko'rsatish. Haqiqiy summa serverda, zaryad paytida
+	// qayta hisoblanadi (PaymentCreateView), shuning uchun bu yerdagi qiymatni
+	// o'zgartirish to'lovga hech qanday ta'sir qilmaydi.
+	function renderAmount(sel) {
+		const el = document.getElementById('summaryAmount');
+		if (!appliedPromo) { el.textContent = fmtAmount(sel); return; }
+		const was = document.createElement('span');
+		was.className = 'amount-was';
+		was.textContent = fmtAmount(sel);
+		el.textContent = '';
+		el.appendChild(was);
+		el.appendChild(document.createTextNode(fmtDiscounted(sel)));
+	}
+
+	function fmtDiscounted(sel) {
+		const pct = appliedPromo.discount_percent;
+		if (currency === 'USD') {
+			const usd = Number(sel.dataset.usd);
+			return '$' + (usd - usd * pct / 100).toFixed(2);
+		}
+		// Serverdagi hisob bilan bir xil: butun so'mga HALF_UP yaxlitlash.
+		const uzs = Number(sel.dataset.uzs);
+		const net = uzs - Math.round(uzs * pct / 100);
+		return net.toLocaleString('en-US').replace(/,/g, ' ') + ' UZS';
 	}
 
 	function setCurrency(cur) {
@@ -423,6 +540,96 @@
 		submitting = false;
 		setLoading(false);
 	});
+
+	// ---- promo code ----
+	// `appliedPromo` faqat KO'RSATISH uchun. Haqiqiy holat serverda sessiyada
+	// turadi va to'lov paytida qaytadan tekshiriladi, shuning uchun bu
+	// o'zgaruvchini konsoldan o'zgartirish chegirma bermaydi.
+	let appliedPromo = {% if applied_promo %}{ code: "{{ applied_promo.code|escapejs }}", discount_percent: {{ applied_promo.discount_percent }} }{% else %}null{% endif %};
+	let promoBusy = false;
+
+	const promoToggleEl = document.getElementById('promoToggle');
+	const promoBodyEl = document.getElementById('promoBody');
+	const promoAppliedEl = document.getElementById('promoApplied');
+	const promoInputEl = document.getElementById('promoInput');
+	const promoApplyEl = document.getElementById('promoApply');
+	const promoErrorEl = document.getElementById('promoError');
+
+	function togglePromo() {
+		const open = promoBodyEl.hidden;
+		promoBodyEl.hidden = !open;
+		promoToggleEl.setAttribute('aria-expanded', open ? 'true' : 'false');
+		if (open) promoInputEl.focus();
+	}
+
+	function onPromoInput(el) {
+		// Serverdagi normalizatsiya bilan bir xil: bo'shliqsiz, katta harf.
+		el.value = el.value.replace(/\s+/g, '').toUpperCase();
+		promoApplyEl.disabled = !el.value || promoBusy;
+		promoErrorEl.classList.remove('show');
+	}
+
+	function showPromoError(msg) {
+		promoErrorEl.textContent = msg;
+		promoErrorEl.classList.add('show');
+	}
+
+	function setPromoBusy(on) {
+		promoBusy = on;
+		promoApplyEl.disabled = on || !promoInputEl.value;
+		promoApplyEl.textContent = on ? T.promoApplying : T.promoApply;
+	}
+
+	async function promoRequest(url, body) {
+		const data = new FormData();
+		data.append('csrfmiddlewaretoken', csrf);
+		if (body) Object.keys(body).forEach(function (k) { data.append(k, body[k]); });
+		const resp = await fetch(url, {
+			method: 'POST',
+			headers: { 'X-Requested-With': 'XMLHttpRequest' },
+			body: data,
+		});
+		let json = {};
+		try { json = await resp.json(); } catch (_) {}
+		return { resp: resp, json: json };
+	}
+
+	async function applyPromo() {
+		if (promoBusy || !promoInputEl.value) return;
+		setPromoBusy(true);
+		promoErrorEl.classList.remove('show');
+		try {
+			const out = await promoRequest(PROMO_APPLY_URL, { code: promoInputEl.value });
+			if (out.resp.ok && out.json.ok) {
+				appliedPromo = out.json;
+				document.getElementById('promoAppliedCode').textContent = out.json.code;
+				document.getElementById('promoAppliedPct').textContent =
+					'−' + out.json.discount_percent + '% ' + T.promoOff;
+				promoBodyEl.hidden = true;
+				promoToggleEl.hidden = true;
+				promoAppliedEl.hidden = false;
+				updateSummary();
+			} else {
+				// Har bir rad etish sababi uchun serverdan alohida xabar keladi.
+				showPromoError(out.json.message || T.generic);
+			}
+		} catch (_) {
+			showPromoError(T.generic);
+		}
+		setPromoBusy(false);
+	}
+
+	async function removePromo() {
+		try { await promoRequest(PROMO_REMOVE_URL, null); } catch (_) {}
+		appliedPromo = null;
+		promoInputEl.value = '';
+		promoApplyEl.disabled = true;
+		promoAppliedEl.hidden = true;
+		promoToggleEl.hidden = false;
+		promoToggleEl.setAttribute('aria-expanded', 'false');
+		promoBodyEl.hidden = true;
+		updateSummary();
+	}
 
 	// initial state (a popular plan may start selected)
 	setCurrency('UZS');

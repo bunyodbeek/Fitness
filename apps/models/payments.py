@@ -173,6 +173,16 @@ class Payment(CreatedBaseModel):
 	auto_payment_attempt = IntegerField(_("Avto to'lov urinishi"), default=0)
 	completed_at = DateTimeField(_("Bajarilgan sana"), null=True, blank=True)
 
+	# Ishlatilgan promo kod SHU QATORDA saqlanadi, sessiyada emas: Atmos natijani
+	# alohida server-server so'rovi bilan yuboradi va u yerda foydalanuvchi
+	# sessiyasi umuman yo'q. `PromoRedemption` aynan shu ma'lumotdan yaratiladi.
+	promo_code = ForeignKey('apps.PromoCode', SET_NULL, null=True, blank=True,
+	                        related_name='payments', verbose_name=_("Promo kod"))
+	# Chegirmagacha bo'lgan narx. `amount` — haqiqatda yechilgan (chegirmali)
+	# summa; hisobot va komissiya uchun ikkalasi ham kerak.
+	original_amount = DecimalField(_("Chegirmasiz summa"), max_digits=12, decimal_places=2,
+	                               null=True, blank=True)
+
 	# A gift payment buys Premium for a friend instead of extending the payer's
 	# own subscription — see PremiumGift and mark_as_completed().
 	is_gift = BooleanField(_("Sovg'a to'lovi"), default=False)
@@ -221,9 +231,25 @@ class Payment(CreatedBaseModel):
 			user=self.user,
 			defaults={'plan': self.plan},
 		)
+		# DIQQAT (kelajakdagi avto-yangilash uchun): `extend()` muddatni HAR DOIM
+		# `plan` dan qayta hisoblaydi va narxni hech qayerga yozmaydi. Avto-to'lov
+		# joriy qilinganda summa ALBATTA `subscription.plan.price_uzs` dan
+		# olinishi kerak, `Payment.amount` dan EMAS — aks holda promo chegirmasi
+		# keyingi barcha yangilanishlarga o'tib ketadi.
 		sub.extend(self.plan)
 		self.subscription = sub
 		self.save(update_fields=['status', 'completed_at', 'subscription'])
+
+		# Promo atributsiyasi — faqat to'lov o'tgandan keyin.
+		if self.promo_code_id:
+			try:
+				from apps.services.promo import record_redemption
+				record_redemption(self)
+			except Exception as exc:
+				import logging
+				logging.getLogger(__name__).exception(
+					"Promo redemption failed for payment %s: %s", self.pk, exc,
+				)
 
 		if getattr(self.user, 'telegram_id', None):
 			msg = (

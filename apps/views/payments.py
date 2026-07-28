@@ -18,6 +18,7 @@ from django.views.generic import TemplateView, View
 from apps.models import UserProfile
 from apps.models.payments import SubscriptionPlan, Payment, PremiumGift
 from apps.services import otp_guard
+from apps.services.promo import error_message as promo_error_message, validate as validate_promo
 from apps.utils.telegram_webapp import parse_init_data
 from apps.services.atmos import (
 	ApplyError, AtmosClient, AtmosError, callback_response,
@@ -40,12 +41,40 @@ PREMIUM_BENEFITS = [
 
 
 class PremiumView(LoginRequiredMixin, TemplateView):
-	"""Screen 5 — premium benefits / paywall."""
+	"""Screen 5 — premium benefits / paywall.
+
+	YUMSHOQ paywall: hafta darajasidagi qulf (``Week.is_locked_for``) shu yerga
+	yo'naltiradi, foydalanuvchi "Keyinroq" bosib orqaga qaytishi mumkin."""
 	template_name = 'payment/premium.html'
 
 	def get_context_data(self, **kwargs):
 		ctx = super().get_context_data(**kwargs)
 		ctx['benefits'] = PREMIUM_BENEFITS
+		return ctx
+
+
+class PaywallGateView(LoginRequiredMixin, TemplateView):
+	"""QATTIQ paywall: 7 kunlik bepul muddat tugagach yagona ochiq sahifa.
+
+	`PremiumView` bilan bitta shablonni bo'lishadi, farqi — ``gate`` bayrog'i
+	yopish (X) tugmasi va "Keyinroq" havolasini olib tashlaydi. Telegram
+	WebView'da yagona chiqish yo'li: to'lash yoki mini app'ni yopish.
+
+	To'lagan (yoki sinovi hali tugamagan) foydalanuvchi bu yerga kirsa, uni
+	ilovaga qaytaramiz — aks holda obunani sotib olgan odam gate sahifasida
+	qolib ketardi."""
+	template_name = 'payment/premium.html'
+
+	def dispatch(self, request, *args, **kwargs):
+		profile = getattr(request.user, 'profile', None)
+		if profile is not None and profile.has_app_access:
+			return redirect('program_list')
+		return super().dispatch(request, *args, **kwargs)
+
+	def get_context_data(self, **kwargs):
+		ctx = super().get_context_data(**kwargs)
+		ctx['benefits'] = PREMIUM_BENEFITS
+		ctx['gate'] = True
 		return ctx
 
 
@@ -83,7 +112,61 @@ class TariffSelectView(LoginRequiredMixin, TemplateView):
 				'discount_usd': max(disc_usd, 0),
 			})
 		ctx['plans'] = plan_list
+		# Sessiyada qo'llangan kod bo'lsa sahifa u bilan ochiladi — aks holda
+		# foydalanuvchi orqaga qaytib kelganda chegirma yo'qolganday ko'rinardi
+		# (server esa uni baribir qo'llagan bo'lardi).
+		promo, _error = _applied_promo(self.request, self.request.user.profile)
+		ctx['applied_promo'] = promo
 		return ctx
+
+
+# Qo'llangan promo kod SESSIYADA (server tomonida) saqlanadi — klient holatiga
+# ishonib bo'lmaydi. Baribir zaryaddan oldin qayta tekshiriladi.
+PROMO_SESSION_KEY = 'applied_promo_code'
+
+
+def _applied_promo(request, profile):
+	"""Sessiyadagi kodni QAYTA tekshiradi va yaroqli bo'lsa qaytaradi.
+
+	Yaroqsiz bo'lib qolgan bo'lsa (o'chirilgan, muddati o'tgan, limit tugagan)
+	sessiyadan olib tashlanadi — foydalanuvchi eski chegirma bilan qolib
+	ketmasin."""
+	raw = request.session.get(PROMO_SESSION_KEY)
+	if not raw:
+		return None, None
+	promo, error = validate_promo(raw, profile)
+	if error:
+		request.session.pop(PROMO_SESSION_KEY, None)
+		return None, error
+	return promo, None
+
+
+class PromoApplyView(LoginRequiredMixin, View):
+	"""To'lov sahifasidagi "Promo kod" maydoni — AJAX.
+
+	Bu yerda HECH NARSA yozilmaydi: `PromoRedemption` faqat to'lov o'tgach
+	yaratiladi, shuning uchun kod kiritib to'lovni tashlab ketish
+	`max_redemptions` o'rnini band qilmaydi."""
+
+	def post(self, request):
+		profile = request.user.profile
+		promo, error = validate_promo(request.POST.get('code', ''), profile)
+		if error:
+			request.session.pop(PROMO_SESSION_KEY, None)
+			return JsonResponse({'ok': False, 'error': error, 'message': promo_error_message(error)}, status=400)
+
+		request.session[PROMO_SESSION_KEY] = promo.code
+		return JsonResponse({
+			'ok': True,
+			'code': promo.code,
+			'discount_percent': promo.discount_percent,
+		})
+
+
+class PromoRemoveView(LoginRequiredMixin, View):
+	def post(self, request):
+		request.session.pop(PROMO_SESSION_KEY, None)
+		return JsonResponse({'ok': True})
 
 
 def _payment_method_context(plan, currency, *, error='', card_number='', expiry='', method=None):
@@ -194,16 +277,42 @@ class PaymentCreateView(LoginRequiredMixin, View):
 				'message': _("Enter a valid card number and expiry date."),
 			}, status=400)
 
+		# Promo kod ZARYADDAN OLDIN qayta tekshiriladi. "Qo'llash" bosilgan payt
+		# bilan "To'lash" bosilgan payt orasida kod o'chirilgan yoki limiti
+		# tugagan bo'lishi mumkin; qolaversa klient holatiga umuman ishonilmaydi
+		# — yakuniy summa FAQAT shu yerda hisoblanadi.
+		# Sovg'a to'loviga chegirma berilmaydi: qoida foydalanuvchining O'Z
+		# birinchi pullik obunasi haqida.
+		amount = plan.price_uzs
+		original_amount = None
+		promo = None
+		if not is_gift:
+			promo, promo_error = _applied_promo(request, profile)
+			if promo_error:
+				return JsonResponse({
+					'ok': False, 'error': 'promo_invalid',
+					'promo_error': promo_error,
+					'message': promo_error_message(promo_error),
+				}, status=400)
+			if promo is not None:
+				original_amount = amount
+				amount = promo.final_price_for(amount)
+
 		def otp_url(pid):
 			return reverse('payment_otp', args=[pid])
 
 		def recent_processing():
-			"""A fresh, still-usable transaction for this user+plan (last 60s)."""
+			"""A fresh, still-usable transaction for this user+plan (last 60s).
+
+			`promo_code` ham solishtiriladi: aks holda foydalanuvchi to'lovni
+			boshlab, keyin 60 soniya ichida promo qo'llab qayta bosganda eski,
+			CHEGIRMASIZ tranzaksiyaga qaytarilardi."""
 			cutoff = timezone.now() - timedelta(seconds=otp_guard.IDEMPOTENT_WINDOW)
 			return (
 				Payment.objects
 				.filter(
 					user=profile, plan=plan, is_gift=is_gift,
+					promo_code=promo,
 					status=Payment.PaymentStatus.PROCESSING,
 					atmos_transaction_id__isnull=False,
 					created_at__gte=cutoff,
@@ -239,7 +348,9 @@ class PaymentCreateView(LoginRequiredMixin, View):
 			payment = Payment.objects.create(
 				user=profile,
 				plan=plan,
-				amount=plan.price_uzs,
+				amount=amount,
+				original_amount=original_amount,
+				promo_code=promo,
 				currency=Payment.Currency.UZS,
 				method=method,
 				status=Payment.PaymentStatus.PENDING,
@@ -463,6 +574,9 @@ class PaymentSuccessView(LoginRequiredMixin, TemplateView):
 	def get_context_data(self, **kwargs):
 		ctx = super().get_context_data(**kwargs)
 		ctx['benefits'] = PREMIUM_BENEFITS
+		# Xarid tugadi — qo'llangan kod sessiyada qolmasin, aks holda keyingi
+		# to'lovda "allaqachon ishlatilgan" xatosi sifatida qayta chiqardi.
+		self.request.session.pop(PROMO_SESSION_KEY, None)
 		return ctx
 
 

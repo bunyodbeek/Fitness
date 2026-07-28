@@ -5,6 +5,7 @@ from django.utils.translation import gettext_lazy as _
 from apps.models import Exercise, Plan, Program, User, UserProfile, Week, Workout, WorkoutExercise
 from apps.models.handbook import HandbookCategory, HandbookItem, HandbookSubCategory
 from apps.models.payments import Subscription, SubscriptionPlan
+from apps.models.promo import PromoCode
 from apps.models.workouts import DayTemplate, HomeProgressionSetting, ProgressionSetting, WorkoutProgress
 
 
@@ -320,3 +321,22 @@ class AdminUserForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
+
+class PromoCodeForm(forms.ModelForm):
+    class Meta:
+        model = PromoCode
+        fields = [
+            "code", "discount_percent", "owner_label", "is_active",
+            "expires_at", "max_redemptions",
+        ]
+        widgets = {
+            "expires_at": forms.DateTimeInput(attrs={"type": "datetime-local"}),
+        }
+
+    def clean_code(self):
+        # Model `save()` da ham normalizatsiya bor, lekin unikallik tekshiruvi
+        # formada undan OLDIN ishlaydi: normallashtirmasak "alex20" mavjud
+        # "ALEX20" bilan to'qnashmay o'tib ketardi va bazada IntegrityError
+        # bo'lardi. Shuning uchun bu yerda ham keltiramiz.
+        return PromoCode.normalize(self.cleaned_data["code"])
