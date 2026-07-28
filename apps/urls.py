@@ -40,7 +40,7 @@ from apps.views.favorite import (
 	CustomProgramStartView,
 	CustomProgramCompleteView, CustomProgramEditView, CustomProgramEditSaveView,
 )
-from apps.views.payments import PremiumView, PaywallGateView, TariffSelectView, PaymentMethodView, PaymentCreateView, PaymentSuccessView, PaymentOtpView, PaymentOtpResendView, GiftPremiumView, GiftShareView, GiftClaimView
+from apps.views.payments import PremiumView, PaywallGateView, TariffSelectView, PaymentMethodView, PaymentCreateView, PaymentSuccessView, PaymentOtpView, PaymentOtpResendView, GiftPremiumView, GiftShareView, GiftClaimView, PromoApplyView, PromoRemoveView
 from apps.views.users import (
 	AdminAnalyticsView,
 	ChangeLanguageView,
@@ -194,6 +194,9 @@ urlpatterns = [
 	path('premium/payment/<int:payment_id>/otp/', PaymentOtpView.as_view(), name='payment_otp'),
 	path('premium/payment/<int:payment_id>/otp/resend/', PaymentOtpResendView.as_view(), name='payment_otp_resend'),
 	path('premium/success/', PaymentSuccessView.as_view(), name='payment_success'),
+	# Promo kod — faqat qo'llash/olib tashlash. Hech narsa yozmaydi.
+	path('premium/promo/apply/', PromoApplyView.as_view(), name='promo_apply'),
+	path('premium/promo/remove/', PromoRemoveView.as_view(), name='promo_remove'),
 
 	# Premium gifting (one-time gift to a friend)
 	path('users/gift/', GiftPremiumView.as_view(), name='gift_premium'),

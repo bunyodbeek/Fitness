@@ -139,6 +139,17 @@
 	<script>
 		const tg = window.Telegram?.WebApp;
 		if (tg) { tg.ready(); tg.expand(); }
+
+		// To'lov o'tdi — obuna holati o'zgardi. Keshdagi tab fragmentlari hali
+		// ham gate ortidagi (yoki premium'siz) sahifalarni saqlab turibdi,
+		// shuning uchun hammasini tashlaymiz. `window.tabCache` bu sahifada
+		// yuklanmaydi (u to'liq sahifa, tab emas), shuning uchun kalitlar
+		// to'g'ridan-to'g'ri tozalanadi — prefiks tab_router.js dagi bilan bir xil.
+		try {
+			Object.keys(sessionStorage).forEach(function (k) {
+				if (k.indexOf('tabfrag:') === 0) sessionStorage.removeItem(k);
+			});
+		} catch (e) {}
 	</script>
 </body>
 </html>
