@@ -1,4 +1,5 @@
-from datetime import date
+import math
+from datetime import date, timedelta
 
 from django.contrib.auth.models import AbstractUser
 from django.db.models import (
@@ -14,10 +15,16 @@ from django.db.models import (
 	OneToOneField,
 	TextChoices, TextField, PositiveIntegerField, Model, DateTimeField,
 )
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from apps.models.base import CreatedBaseModel
 from apps.models.managers import UserManager
+
+# Ro'yxatdan o'tgandan keyin ilova to'liq ochiq turadigan kunlar soni. Shu muddat
+# tugagach obunasi yo'q foydalanuvchi premium sahifasida qamalib qoladi
+# (apps/middleware.py: PaywallGateMiddleware).
+TRIAL_DAYS = 7
 
 
 class User(AbstractUser):
@@ -63,19 +70,74 @@ class UserProfile(CreatedBaseModel):
 	workout_days_per_week = IntegerField(_('Workout days per week'), null=True, blank=True)
 	unit_system = CharField(_('Unit system'), max_length=10, choices=UnitSystem.choices, default=UnitSystem.METRIC)
 	onboarding_completed = BooleanField(_('Onboarding completed'), default=False)
-	
+
+	# Bepul sinov davri (7 kun) SHU paytdan boshlanadi. `created_at` emas, alohida
+	# maydon — chunki `created_at` qator yaratilishining nojo'ya ta'siri, bu esa
+	# to'lov qoidasi. Bir marta yoziladi va HECH QACHON o'zgarmaydi: qayta login,
+	# Telegram initData qayta berilishi yoki anketani qayta to'ldirish uni
+	# tiklamaydi (identifikatsiya `telegram_id` orqali, `User` qatori esa
+	# `telegram_<id>` username bilan qayta yaratilmaydi). Eski foydalanuvchilar
+	# uchun migratsiya buni deploy vaqtiga qo'yadi — hamma yangidan 7 kun oladi.
+	trial_started_at = DateTimeField(_('Trial started at'), null=True, blank=True, editable=False)
+
 	class Meta:
 		verbose_name = _('User Profile')
 		verbose_name_plural = _('User Profiles')
-	
+
 	def __str__(self):
 		return f"{self.name}"
-	
+
+	def save(self, *args, **kwargs):
+		# Anchor'ni faqat BIRINCHI saqlashda yozamiz. `user.date_joined` dan
+		# olamiz — profil qandaydir sabab o'chib qayta yaratilsa ham (masalan
+		# ProfileView'dagi get_or_create) sinov muddati qaytadan boshlanmaydi.
+		if self.trial_started_at is None:
+			joined = getattr(getattr(self, 'user', None), 'date_joined', None)
+			self.trial_started_at = joined or timezone.now()
+			update_fields = kwargs.get('update_fields')
+			if update_fields is not None:
+				kwargs['update_fields'] = list(update_fields) + ['trial_started_at']
+		super().save(*args, **kwargs)
+
 	@property
 	def is_premium(self) -> bool:
 		subscription = getattr(self, "subscription", None)
 		return bool(subscription and subscription.is_valid)
-	
+
+	@property
+	def trial_ends_at(self):
+		"""Bepul sinov qachon tugaydi. Anchor yo'q bo'lsa None."""
+		if self.trial_started_at is None:
+			return None
+		return self.trial_started_at + timedelta(days=TRIAL_DAYS)
+
+	@property
+	def is_in_trial(self) -> bool:
+		"""Hali bepul 7 kun ichidami."""
+		ends = self.trial_ends_at
+		return bool(ends and timezone.now() < ends)
+
+	@property
+	def trial_days_left(self) -> int:
+		"""Sinovgacha qolgan to'liq kunlar, yuqoriga yaxlitlangan (0.5 kun → 1)."""
+		ends = self.trial_ends_at
+		if not ends:
+			return 0
+		seconds = (ends - timezone.now()).total_seconds()
+		if seconds <= 0:
+			return 0
+		return math.ceil(seconds / 86400)
+
+	@property
+	def has_app_access(self) -> bool:
+		"""Ilovadan foydalana oladimi — paywall gate'ning YAGONA manbasi.
+
+		Premium (yoki sovg'a qilingan) obuna → doim ochiq. Aks holda faqat
+		sinov muddati ichida. Obunasi tugaganlar sinovga QAYTMAYDI: ular uchun
+		`is_in_trial` allaqachon False (anchor ro'yxatdan o'tish paytida qotgan),
+		shuning uchun yangi va qaytgan mijoz uchun alohida qoida kerak emas."""
+		return self.is_premium or self.is_in_trial
+
 	@property
 	def age(self):
 		if self.birth_date:
