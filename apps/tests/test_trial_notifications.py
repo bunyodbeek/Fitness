@@ -178,6 +178,34 @@ class RegistrationMessageTests(TestCase):
 
     @patch("apps.views.users.bot_send_message", return_value=True)
     @patch("apps.views.users.verify_init_data")
+    def test_message_shows_no_internal_id_and_no_separators(self, mock_verify, mock_send):
+        self._register("uz", 555004, mock_verify)
+        body = mock_send.call_args.args[1]
+        self.assertNotIn("ID", body)
+        self.assertNotIn("━", body)
+
+    @patch("apps.views.users.bot_send_message", return_value=True)
+    @patch("apps.views.users.verify_init_data")
+    def test_date_is_seven_days_out_even_for_an_older_user_row(self, mock_verify, mock_send):
+        """Anketani tashlab ketib qaytgan odam ham to'liq 7 kun oladi.
+
+        Ilgari anchor `User.date_joined` dan olinardi va bunday foydalanuvchi
+        o'tib ketgan sanani ko'rardi (masalan bugun ro'yxatdan o'tib "24.06
+        gacha" degan xabar)."""
+        User.objects.create_user(username="telegram_555005", password="x")
+        User.objects.filter(username="telegram_555005").update(
+            date_joined=timezone.now() - timedelta(days=42),
+        )
+
+        profile = self._register("uz", 555005, mock_verify)
+        body = mock_send.call_args.args[1]
+
+        expected = (timezone.localtime() + timedelta(days=TRIAL_DAYS)).strftime("%d.%m.%Y")
+        self.assertIn(expected, body)
+        self.assertTrue(profile.is_in_trial)
+
+    @patch("apps.views.users.bot_send_message", return_value=True)
+    @patch("apps.views.users.verify_init_data")
     def test_registration_stores_the_language_and_uses_it(self, mock_verify, mock_send):
         """Anketa qaysi tilda to'ldirilgan bo'lsa, xabar ham o'sha tilda."""
         cases = {

@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-29 18:36+0500\n"
+"POT-Creation-Date: 2026-07-29 18:57+0500\n"
 "PO-Revision-Date: 2026-05-22 12:00+0500\n"
 "Last-Translator: Claude AI\n"
 "Language-Team: Uzbek\n"
@@ -616,7 +616,7 @@ msgid "Muvaffaqiyatsiz"
 msgstr "Muvaffaqiyatsiz"
 
 #: apps/models/payments.py:167 apps/models/payments.py:303
-#: apps/models/users.py:221 apps/panel/views/payments.py:24
+#: apps/models/users.py:230 apps/panel/views/payments.py:24
 #: apps/panel/views/payments.py:58 apps/panel/views/promo.py:35
 #: apps/panel/views/subscriptions.py:15 apps/panel/views/tracking.py:15
 #: apps/panel/views/users.py:23 templates/panel/dashboard.html:118
@@ -727,6 +727,7 @@ msgid "Premium sovg'alar"
 msgstr "Premium sovg'alar"
 
 #: apps/models/payments.py:351
+#, python-format
 msgid ""
 "🎁 <b>Your Premium gift is ready!</b>\n"
 "Send this link to a friend — the first person to open it gets %(plan)s "
@@ -749,6 +750,7 @@ msgstr "Kodda faqat lotin harflari A-Z va raqamlar 0-9 bo'lishi mumkin."
 #: apps/models/promo.py:39
 msgid "Latin letters and digits only. Case does not matter when entering."
 msgstr "Faqat lotin harflari va raqamlar. Kiritishda katta-kichik harf farq qilmaydi."
+"Faqat lotin harflari va raqamlar. Kiritishda katta-kichik harf farq qilmaydi."
 "Faqat lotin harflari va raqamlar. Kiritishda katta-kichik harf farq qilmaydi."
 
 #: apps/models/promo.py:42
@@ -896,7 +898,7 @@ msgid "Birth date"
 msgstr "Tug'ilgan sana"
 
 #: apps/models/users.py:71 apps/panel/views/programs.py:506
-#: apps/views/users.py:717 templates/panel/premade_day_builder.html:176
+#: apps/views/users.py:712 templates/panel/premade_day_builder.html:176
 #: templates/panel/workout_builder.html:197
 msgid "Weight"
 msgstr "Og'irlik"
@@ -945,59 +947,59 @@ msgstr "Foydalanuvchi profili"
 msgid "User Profiles"
 msgstr "Foydalanuvchi profillari"
 
-#: apps/models/users.py:183
+#: apps/models/users.py:192
 msgid "I want a healthy lifestyle"
 msgstr "Sog'lom turmush tarzini xohlayman"
 
-#: apps/models/users.py:184
+#: apps/models/users.py:193
 msgid "Improve my physique"
 msgstr "Jismoniy ko'rinishimni yaxshilash"
 
-#: apps/models/users.py:185
+#: apps/models/users.py:194
 msgid "Get stronger every day"
 msgstr "Har kuni kuchliroq bo'lish"
 
-#: apps/models/users.py:186
+#: apps/models/users.py:195
 msgid "I like a good challenge"
 msgstr "Qiyinchiliklarni yoqtiraman"
 
-#: apps/models/users.py:189
+#: apps/models/users.py:198
 msgid "Motivation"
 msgstr "Motivatsiya"
 
-#: apps/models/users.py:193
+#: apps/models/users.py:202
 msgid "User Motivation"
 msgstr "Foydalanuvchi motivatsiyasi"
 
-#: apps/models/users.py:194
+#: apps/models/users.py:203
 msgid "User Motivations"
 msgstr "Foydalanuvchi motivatsiyalari"
 
-#: apps/models/users.py:203
+#: apps/models/users.py:212
 msgid "Is active"
 msgstr "Faol"
 
-#: apps/models/users.py:204
+#: apps/models/users.py:213
 msgid "Assigned once"
 msgstr "Bir marta tayinlangan"
 
-#: apps/models/users.py:207
+#: apps/models/users.py:216
 msgid "User Program"
 msgstr "Foydalanuvchi mashg'uloti"
 
-#: apps/models/users.py:208
+#: apps/models/users.py:217
 msgid "User Programs"
 msgstr "Foydalanuvchi mashg'ulotlari"
 
-#: apps/models/users.py:216
+#: apps/models/users.py:225
 msgid "Not started"
 msgstr "Boshlanmagan"
 
-#: apps/models/users.py:217
+#: apps/models/users.py:226
 msgid "Unfinished"
 msgstr "Tugallanmagan"
 
-#: apps/models/users.py:218 apps/models/workouts.py:566
+#: apps/models/users.py:227 apps/models/workouts.py:566
 #: apps/panel/views/payments.py:61
 #: templates/workouts/home_workout_complete.html:277
 #: templates/workouts/home_workout_detail.html:470
@@ -1006,33 +1008,33 @@ msgstr "Tugallanmagan"
 msgid "Completed"
 msgstr "Tugatildi"
 
-#: apps/models/users.py:222 apps/panel/views/programs.py:148
+#: apps/models/users.py:231 apps/panel/views/programs.py:148
 #: apps/panel/views/programs.py:506 apps/panel/views/settings.py:21
 msgid "Order"
 msgstr "Tartib"
 
-#: apps/models/users.py:223 apps/panel/views/handbook.py:27
+#: apps/models/users.py:232 apps/panel/views/handbook.py:27
 #: apps/panel/views/handbook.py:95 apps/panel/views/handbook.py:109
 #: apps/panel/views/handbook.py:183 apps/panel/views/programs.py:405
 msgid "Title"
 msgstr "Sarlavha"
 
-#: apps/models/users.py:224
+#: apps/models/users.py:233
 msgid "Body part"
 msgstr "Tana qismi"
 
-#: apps/models/users.py:225
+#: apps/models/users.py:234
 msgid "Completed at"
 msgstr "Tugatilgan vaqt"
 
-#: apps/models/users.py:238 apps/panel/views/programs.py:506
+#: apps/models/users.py:247 apps/panel/views/programs.py:506
 #: templates/exercises/custom_program_create.html:286
 #: templates/panel/premade_day_builder.html:174
 #: templates/panel/workout_builder.html:195
 msgid "Sets"
 msgstr "Setlar"
 
-#: apps/models/users.py:239 apps/panel/views/programs.py:506
+#: apps/models/users.py:248 apps/panel/views/programs.py:506
 #: templates/exercises/custom_program_create.html:287
 #: templates/panel/premade_day_builder.html:175
 #: templates/panel/workout_builder.html:196
@@ -2321,15 +2323,10 @@ msgid "Program successfully imported!"
 msgstr "Dastur muvaffaqiyatli import qilindi!"
 
 #: apps/views/users.py:280
-#, python-format
 msgid ""
 "🎉 <b>Registration completed successfully!</b> 🎉\n"
 "\n"
-"Your details have been saved:\n"
-"━━━━━━━━━━━━━━━━━━━\n"
-"👤 User: %(name)s\n"
-"🆔 ID: %(user_id)s\n"
-"━━━━━━━━━━━━━━━━━━━\n"
+"👤 %(name)s, welcome!\n"
 "\n"
 "🎁 <b>YOUR %(days)s-DAY FREE TRIAL HAS STARTED!</b>\n"
 "Everything is unlocked during this period:\n"
@@ -2343,27 +2340,27 @@ msgid ""
 "app.\n"
 "\n"
 "🔥 <i>Start today — make tomorrow stronger!</i> 🏆"
-msgstr "🎉 <b>Ro‘yxatdan o‘tish muvaffaqiyatli yakunlandi!</b> 🎉\n\nSizning ma’lumotlaringiz saqlandi:\n━━━━━━━━━━━━━━━━━━━\n👤 Foydalanuvchi: %(name)s\n🆔 ID: %(user_id)s\n━━━━━━━━━━━━━━━━━━━\n\n🎁 <b>%(days)s KUNLIK BEPUL SINOV BOSHLANDI!</b>\nShu davrda hamma narsa ochiq:\n• 🏋️‍♂️ Shaxsiy mashg‘ulot dasturlari\n• 📅 Kunlik darslar rejalari\n• 🍎 Sog‘lom ovqatlanish bo‘yicha maslahatlar\n• 📊 Progress kuzatuvi va statistika\n\n📅 Bepul muddat <b>%(ends)s</b> gacha.\n⚠️ Shundan so‘ng ilovadan foydalanish uchun <b>Premium obuna</b> kerak bo‘ladi.\n\n🔥 <i>Bugun boshlang — ertangi kuningizni kuchliroq qiling!</i> 🏆"
+msgstr "🎉 <b>Ro‘yxatdan o‘tish muvaffaqiyatli yakunlandi!</b> 🎉\n\n👤 %(name)s, xush kelibsiz!\n\n🎁 <b>%(days)s KUNLIK BEPUL SINOV BOSHLANDI!</b>\nShu davrda hamma narsa ochiq:\n• 🏋️‍♂️ Shaxsiy mashg‘ulot dasturlari\n• 📅 Kunlik darslar rejalari\n• 🍎 Sog‘lom ovqatlanish bo‘yicha maslahatlar\n• 📊 Progress kuzatuvi va statistika\n\n📅 Bepul muddat <b>%(ends)s</b> gacha.\n⚠️ Shundan so‘ng ilovadan foydalanish uchun <b>Premium obuna</b> kerak bo‘ladi.\n\n🔥 <i>Bugun boshlang — ertangi kuningizni kuchliroq qiling!</i> 🏆"
 
-#: apps/views/users.py:503
+#: apps/views/users.py:498
 msgid "Please type a message."
 msgstr "Iltimos, xabar yozing."
 
-#: apps/views/users.py:889
+#: apps/views/users.py:884
 msgid "Language saved successfully!"
 msgstr "Til muvaffaqiyatli saqlandi!"
 
-#: apps/views/users.py:915
+#: apps/views/users.py:910
 msgid "Selected language doesn't exist."
 msgstr "Tanlangan til mavjud emas."
 
-#: apps/views/users.py:1054
+#: apps/views/users.py:1049
 #, python-format
 msgid ""
 "Your subscription has been canceled. Premium stays active until %(date)s."
 msgstr "Obunangiz bekor qilindi. Premium %(date)s gacha faol qoladi."
 
-#: apps/views/users.py:1057
+#: apps/views/users.py:1052
 msgid "Your subscription has been canceled."
 msgstr "Obunangiz bekor qilindi."
 
