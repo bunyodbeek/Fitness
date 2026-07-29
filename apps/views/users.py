@@ -278,11 +278,7 @@ class QuestionnaireSubmitAPIView(APIView):
             with user_locale(profile):
                 registration_message = gettext(
                     "🎉 <b>Registration completed successfully!</b> 🎉\n\n"
-                    "Your details have been saved:\n"
-                    "━━━━━━━━━━━━━━━━━━━\n"
-                    "👤 User: %(name)s\n"
-                    "🆔 ID: %(user_id)s\n"
-                    "━━━━━━━━━━━━━━━━━━━\n\n"
+                    "👤 %(name)s, welcome!\n\n"
                     "🎁 <b>YOUR %(days)s-DAY FREE TRIAL HAS STARTED!</b>\n"
                     "Everything is unlocked during this period:\n"
                     "• 🏋️‍♂️ Personal workout programs\n"
@@ -295,7 +291,6 @@ class QuestionnaireSubmitAPIView(APIView):
                     "🔥 <i>Start today — make tomorrow stronger!</i> 🏆"
                 ) % {
                     'name': profile.name,
-                    'user_id': user.id,
                     'days': TRIAL_DAYS,
                     'ends': profile.trial_ends_at.strftime('%d.%m.%Y'),
                 }

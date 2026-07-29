@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-29 18:36+0500\n"
+"POT-Creation-Date: 2026-07-29 18:57+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -616,7 +616,7 @@ msgid "Muvaffaqiyatsiz"
 msgstr ""
 
 #: apps/models/payments.py:167 apps/models/payments.py:303
-#: apps/models/users.py:221 apps/panel/views/payments.py:24
+#: apps/models/users.py:230 apps/panel/views/payments.py:24
 #: apps/panel/views/payments.py:58 apps/panel/views/promo.py:35
 #: apps/panel/views/subscriptions.py:15 apps/panel/views/tracking.py:15
 #: apps/panel/views/users.py:23 templates/panel/dashboard.html:118
@@ -896,7 +896,7 @@ msgid "Birth date"
 msgstr ""
 
 #: apps/models/users.py:71 apps/panel/views/programs.py:506
-#: apps/views/users.py:717 templates/panel/premade_day_builder.html:176
+#: apps/views/users.py:712 templates/panel/premade_day_builder.html:176
 #: templates/panel/workout_builder.html:197
 msgid "Weight"
 msgstr ""
@@ -945,63 +945,63 @@ msgstr ""
 msgid "User Profiles"
 msgstr ""
 
-#: apps/models/users.py:183
+#: apps/models/users.py:192
 msgid "I want a healthy lifestyle"
 msgstr ""
 
-#: apps/models/users.py:184
+#: apps/models/users.py:193
 msgid "Improve my physique"
 msgstr ""
 
-#: apps/models/users.py:185
+#: apps/models/users.py:194
 msgid "Get stronger every day"
 msgstr ""
 
-#: apps/models/users.py:186
+#: apps/models/users.py:195
 msgid "I like a good challenge"
 msgstr ""
 
-#: apps/models/users.py:189
+#: apps/models/users.py:198
 msgid "Motivation"
 msgstr ""
 
-#: apps/models/users.py:193
+#: apps/models/users.py:202
 msgid "User Motivation"
 msgstr ""
 
-#: apps/models/users.py:194
+#: apps/models/users.py:203
 msgid "User Motivations"
 msgstr ""
 
-#: apps/models/users.py:203
+#: apps/models/users.py:212
 msgid "Is active"
 msgstr ""
 
-#: apps/models/users.py:204
+#: apps/models/users.py:213
 msgid "Assigned once"
 msgstr ""
 
-#: apps/models/users.py:207
+#: apps/models/users.py:216
 #, fuzzy
 #| msgid "4-Week Program"
 msgid "User Program"
 msgstr "4-Week Program"
 
-#: apps/models/users.py:208
+#: apps/models/users.py:217
 #, fuzzy
 #| msgid "4-Week Program"
 msgid "User Programs"
 msgstr "4-Week Program"
 
-#: apps/models/users.py:216
+#: apps/models/users.py:225
 msgid "Not started"
 msgstr ""
 
-#: apps/models/users.py:217
+#: apps/models/users.py:226
 msgid "Unfinished"
 msgstr ""
 
-#: apps/models/users.py:218 apps/models/workouts.py:566
+#: apps/models/users.py:227 apps/models/workouts.py:566
 #: apps/panel/views/payments.py:61
 #: templates/workouts/home_workout_complete.html:277
 #: templates/workouts/home_workout_detail.html:470
@@ -1010,33 +1010,33 @@ msgstr ""
 msgid "Completed"
 msgstr ""
 
-#: apps/models/users.py:222 apps/panel/views/programs.py:148
+#: apps/models/users.py:231 apps/panel/views/programs.py:148
 #: apps/panel/views/programs.py:506 apps/panel/views/settings.py:21
 msgid "Order"
 msgstr ""
 
-#: apps/models/users.py:223 apps/panel/views/handbook.py:27
+#: apps/models/users.py:232 apps/panel/views/handbook.py:27
 #: apps/panel/views/handbook.py:95 apps/panel/views/handbook.py:109
 #: apps/panel/views/handbook.py:183 apps/panel/views/programs.py:405
 msgid "Title"
 msgstr ""
 
-#: apps/models/users.py:224
+#: apps/models/users.py:233
 msgid "Body part"
 msgstr ""
 
-#: apps/models/users.py:225
+#: apps/models/users.py:234
 msgid "Completed at"
 msgstr ""
 
-#: apps/models/users.py:238 apps/panel/views/programs.py:506
+#: apps/models/users.py:247 apps/panel/views/programs.py:506
 #: templates/exercises/custom_program_create.html:286
 #: templates/panel/premade_day_builder.html:174
 #: templates/panel/workout_builder.html:195
 msgid "Sets"
 msgstr ""
 
-#: apps/models/users.py:239 apps/panel/views/programs.py:506
+#: apps/models/users.py:248 apps/panel/views/programs.py:506
 #: templates/exercises/custom_program_create.html:287
 #: templates/panel/premade_day_builder.html:175
 #: templates/panel/workout_builder.html:196
@@ -2378,15 +2378,10 @@ msgid "Program successfully imported!"
 msgstr ""
 
 #: apps/views/users.py:280
-#, python-format
 msgid ""
 "🎉 <b>Registration completed successfully!</b> 🎉\n"
 "\n"
-"Your details have been saved:\n"
-"━━━━━━━━━━━━━━━━━━━\n"
-"👤 User: %(name)s\n"
-"🆔 ID: %(user_id)s\n"
-"━━━━━━━━━━━━━━━━━━━\n"
+"👤 %(name)s, welcome!\n"
 "\n"
 "🎁 <b>YOUR %(days)s-DAY FREE TRIAL HAS STARTED!</b>\n"
 "Everything is unlocked during this period:\n"
@@ -2400,27 +2395,27 @@ msgid ""
 "app.\n"
 "\n"
 "🔥 <i>Start today — make tomorrow stronger!</i> 🏆"
-msgstr "🎉 <b>Registration completed successfully!</b> 🎉\n\nYour details have been saved:\n━━━━━━━━━━━━━━━━━━━\n👤 User: %(name)s\n🆔 ID: %(user_id)s\n━━━━━━━━━━━━━━━━━━━\n\n🎁 <b>YOUR %(days)s-DAY FREE TRIAL HAS STARTED!</b>\nEverything is unlocked during this period:\n• 🏋️‍♂️ Personal workout programs\n• 📅 Daily training plans\n• 🍎 Healthy nutrition guidance\n• 📊 Progress tracking and statistics\n\n📅 Free until <b>%(ends)s</b>.\n⚠️ After that you will need a <b>Premium subscription</b> to keep using the app.\n\n🔥 <i>Start today — make tomorrow stronger!</i> 🏆"
+msgstr "🎉 <b>Registration completed successfully!</b> 🎉\n\n👤 %(name)s, welcome!\n\n🎁 <b>YOUR %(days)s-DAY FREE TRIAL HAS STARTED!</b>\nEverything is unlocked during this period:\n• 🏋️‍♂️ Personal workout programs\n• 📅 Daily training plans\n• 🍎 Healthy nutrition guidance\n• 📊 Progress tracking and statistics\n\n📅 Free until <b>%(ends)s</b>.\n⚠️ After that you will need a <b>Premium subscription</b> to keep using the app.\n\n🔥 <i>Start today — make tomorrow stronger!</i> 🏆"
 
-#: apps/views/users.py:503
+#: apps/views/users.py:498
 msgid "Please type a message."
 msgstr ""
 
-#: apps/views/users.py:889
+#: apps/views/users.py:884
 msgid "Language saved successfully!"
 msgstr ""
 
-#: apps/views/users.py:915
+#: apps/views/users.py:910
 msgid "Selected language doesn't exist."
 msgstr ""
 
-#: apps/views/users.py:1054
+#: apps/views/users.py:1049
 #, python-format
 msgid ""
 "Your subscription has been canceled. Premium stays active until %(date)s."
 msgstr ""
 
-#: apps/views/users.py:1057
+#: apps/views/users.py:1052
 msgid "Your subscription has been canceled."
 msgstr ""
 

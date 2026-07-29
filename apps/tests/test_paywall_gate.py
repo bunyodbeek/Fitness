@@ -19,6 +19,7 @@ from django.utils import timezone
 from apps.models import (
 	Subscription, SubscriptionPlan, User, UserProfile,
 )
+from apps.models.users import TRIAL_DAYS
 
 
 class PaywallGateTests(TestCase):
@@ -189,13 +190,32 @@ class TrialAnchorTests(TestCase):
 		profile.refresh_from_db()
 		self.assertEqual(profile.trial_started_at, first)
 
-	def test_anchor_comes_from_date_joined(self):
-		"""Profil o'chib qayta yaratilsa ham sinov qaytadan boshlanmaydi."""
-		joined = timezone.now() - timedelta(days=30)
-		user = User.objects.create_user(username="rejoin", password="x")
-		User.objects.filter(pk=user.pk).update(date_joined=joined)
+	def test_anchor_ignores_an_older_user_row(self):
+		"""Sinov RO'YXATDAN O'TGAN paytdan boshlanadi, `User` qatori qachon
+		yaratilganidan emas.
+
+		`get_or_update_user` `User` ni `telegram_<id>` username bo'yicha
+		`get_or_create` qiladi, ya'ni anketani tugatmay ketgan odam qaytib
+		kelganda `date_joined` haftalar oldingi sana bo'ladi. Anchor o'shandan
+		olinsa, foydalanuvchi ro'yxatdan o'tgan zahoti sinovi tugagan holda
+		qolardi — aynan shu xato ishlab chiqarishda ko'rilgan."""
+		user = User.objects.create_user(username="stale", password="x")
+		User.objects.filter(pk=user.pk).update(
+			date_joined=timezone.now() - timedelta(days=45),
+		)
 		user.refresh_from_db()
 
 		profile = UserProfile.objects.create(user=user, name="R")
-		self.assertEqual(profile.trial_started_at, joined)
-		self.assertFalse(profile.is_in_trial)
+
+		self.assertTrue(profile.is_in_trial)
+		self.assertEqual(profile.trial_days_left, TRIAL_DAYS)
+		# Anchor — HOZIR, `date_joined` emas. (`created_at` bilan mikrosekundlik
+		# farq bo'ladi: u `auto_now_add` orqali bir lahza keyin yoziladi.)
+		self.assertLess(abs(profile.trial_started_at - timezone.now()), timedelta(minutes=1))
+
+	def test_trial_ends_exactly_seven_days_after_registration(self):
+		profile = UserProfile.objects.create(
+			user=User.objects.create_user(username="fresh", password="x"), name="F",
+		)
+		delta = profile.trial_ends_at - profile.trial_started_at
+		self.assertEqual(delta, timedelta(days=TRIAL_DAYS))

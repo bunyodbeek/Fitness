@@ -112,12 +112,21 @@ class UserProfile(CreatedBaseModel):
 		return f"{self.name}"
 
 	def save(self, *args, **kwargs):
-		# Anchor'ni faqat BIRINCHI saqlashda yozamiz. `user.date_joined` dan
-		# olamiz — profil qandaydir sabab o'chib qayta yaratilsa ham (masalan
-		# ProfileView'dagi get_or_create) sinov muddati qaytadan boshlanmaydi.
+		# Anchor faqat BIRINCHI saqlashda yoziladi va keyin hech qachon
+		# o'zgarmaydi.
+		#
+		# Ilgari bu yerda `user.date_joined` ishlatilardi — g'oya profil o'chib
+		# qayta yaratilsa sinov qaytadan boshlanmasin edi. Lekin `User` qatori
+		# profildan ANCHA oldin yaratilgan bo'lishi mumkin: `get_or_update_user`
+		# uni `telegram_<id>` username bo'yicha `get_or_create` qiladi, ya'ni
+		# anketani tugatmay tashlab ketgan odam qaytib kelganda `date_joined`
+		# haftalar oldingi sana bo'ladi. Natijada sinov O'TMISHDA boshlanib,
+		# ro'yxatdan o'tgan zahoti tugagan holda ko'rinardi.
+		#
+		# Sinov ro'yxatdan o'tish PAYTIDAN boshlanadi — profil aynan shunda
+		# yaratiladi.
 		if self.trial_started_at is None:
-			joined = getattr(getattr(self, 'user', None), 'date_joined', None)
-			self.trial_started_at = joined or timezone.now()
+			self.trial_started_at = timezone.now()
 			update_fields = kwargs.get('update_fields')
 			if update_fields is not None:
 				kwargs['update_fields'] = list(update_fields) + ['trial_started_at']
