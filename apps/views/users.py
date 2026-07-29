@@ -16,7 +16,7 @@ from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.utils.formats import date_format
-from django.utils.translation import activate, get_language
+from django.utils.translation import activate, get_language, gettext
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView, UpdateView, View
@@ -30,6 +30,7 @@ import logging
 from apps.forms import UserProfileForm
 from apps.models import User, UserMotivation, UserProfile
 from apps.models.users import TRIAL_DAYS
+from apps.utils.user_language import normalize as normalize_language, remember_language, user_locale
 from apps.models.favorites import CustomProgramProgress
 from apps.models.payments import Subscription, Payment, SubscriptionPlan
 from apps.models.workouts import WorkoutProgress, WorkoutType
@@ -100,6 +101,11 @@ class LanguageSelectionAPIView(APIView):
         request.session.modified = True
         activate(language)
 
+        # Bot xabarlari uchun tanlovni profilda ham saqlaymiz — cron va
+        # webhook'da sessiya mavjud emas.
+        if request.user.is_authenticated:
+            remember_language(getattr(request.user, 'profile', None), language)
+
         response = Response({'success': True, 'language': language})
         response.set_cookie(settings.LANGUAGE_COOKIE_NAME, language)
         return response
@@ -131,6 +137,12 @@ class QuestionnaireSubmitAPIView(APIView):
                 'name': data.get('first_name', 'User')
             }
         )
+
+        # Anketa to'ldirilayotgan paytdagi aktiv til — foydalanuvchi uni botda
+        # yoki ilovada o'zi tanlagan. Bot xabarlari shu tilda ketadi.
+        active_language = normalize_language(get_language())
+        if active_language:
+            profile.language = active_language
 
         profile.telegram_id = data.get('telegram_id')
         profile.telegram_username = data.get('username', '')
@@ -263,27 +275,31 @@ class QuestionnaireSubmitAPIView(APIView):
             # Bot `parse_mode="HTML"` bilan ishlaydi (apps/bot/bot.py), shuning
             # uchun bu yerda Markdown `**...**` emas, `<b>` ishlatiladi — ilgari
             # yulduzchalar xabarda o'zi ko'rinib turardi.
-            trial_ends = profile.trial_ends_at
-            bot_send_message(
-                telegram_id,
-                "🎉 <b>Ro‘yxatdan o‘tish muvaffaqiyatli yakunlandi!</b> 🎉\n\n"
-                "Sizning ma’lumotlaringiz saqlandi:\n"
-                "━━━━━━━━━━━━━━━━━━━\n"
-                f"👤 Foydalanuvchi: {profile.name}\n"
-                f"🆔 ID: {user.id}\n"
-                "━━━━━━━━━━━━━━━━━━━\n\n"
-                f"🎁 <b>{TRIAL_DAYS} KUN BEPUL SINOV BOSHLANDI!</b>\n"
-                "Shu davrda ilova to‘liq ochiq — hamma narsadan cheklovsiz "
-                "foydalanishingiz mumkin:\n"
-                "• 🏋️‍♂️ Shaxsiy mashg‘ulotlar\n"
-                "• 📅 Kunlik darslar rejalari\n"
-                "• 🍎 Sog‘lom ovqatlanish bo‘yicha maslahatlar\n"
-                "• 📊 Progress kuzatuv statistikasi\n\n"
-                f"📅 Bepul muddat <b>{trial_ends.strftime('%d.%m.%Y')}</b> gacha.\n"
-                "⚠️ Shundan so‘ng ilovadan foydalanish uchun <b>Premium obuna</b> "
-                "kerak bo‘ladi.\n\n"
-                "🔥 <i>Bugun boshlang — ertangi kuningizni kuchliroq qiling!</i> 🏆"
-            )
+            with user_locale(profile):
+                registration_message = gettext(
+                    "🎉 <b>Registration completed successfully!</b> 🎉\n\n"
+                    "Your details have been saved:\n"
+                    "━━━━━━━━━━━━━━━━━━━\n"
+                    "👤 User: %(name)s\n"
+                    "🆔 ID: %(user_id)s\n"
+                    "━━━━━━━━━━━━━━━━━━━\n\n"
+                    "🎁 <b>YOUR %(days)s-DAY FREE TRIAL HAS STARTED!</b>\n"
+                    "Everything is unlocked during this period:\n"
+                    "• 🏋️‍♂️ Personal workout programs\n"
+                    "• 📅 Daily training plans\n"
+                    "• 🍎 Healthy nutrition guidance\n"
+                    "• 📊 Progress tracking and statistics\n\n"
+                    "📅 Free until <b>%(ends)s</b>.\n"
+                    "⚠️ After that you will need a <b>Premium subscription</b> "
+                    "to keep using the app.\n\n"
+                    "🔥 <i>Start today — make tomorrow stronger!</i> 🏆"
+                ) % {
+                    'name': profile.name,
+                    'user_id': user.id,
+                    'days': TRIAL_DAYS,
+                    'ends': profile.trial_ends_at.strftime('%d.%m.%Y'),
+                }
+            bot_send_message(telegram_id, registration_message)
 
             return Response({
                 'success': True,
@@ -866,6 +882,9 @@ class ChangeLanguageView(LoginRequiredMixin, View):
             request.session['django_language'] = new_language_code
 
             activate(new_language_code)
+
+            # Bot xabarlari uchun (cron/webhook'da sessiya yo'q).
+            remember_language(getattr(request.user, 'profile', None), new_language_code)
 
             messages.success(request, _("Language saved successfully!"))
 

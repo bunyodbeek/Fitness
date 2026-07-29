@@ -252,11 +252,18 @@ class Payment(CreatedBaseModel):
 				)
 
 		if getattr(self.user, 'telegram_id', None):
-			msg = (
-				f"✅ <b>To'lov qabul qilindi!</b>\n"
-				f"Summa: {self.amount:,.0f} {self.currency}\n"
-				f"Obuna muddati: {sub.end_date.strftime('%d.%m.%Y')} gacha."
-			)
+			from django.utils.translation import gettext
+			from apps.utils.user_language import user_locale
+			with user_locale(self.user):
+				msg = gettext(
+					"✅ <b>Payment received!</b>\n"
+					"Amount: %(amount)s %(currency)s\n"
+					"Subscription active until %(date)s."
+				) % {
+					'amount': f"{self.amount:,.0f}",
+					'currency': self.currency,
+					'date': sub.end_date.strftime('%d.%m.%Y'),
+				}
 			try:
 				from apps.management.commands.bot_notisfication import send_notification
 				send_notification(self.user.telegram_id, msg)
@@ -336,14 +343,16 @@ class PremiumGift(CreatedBaseModel):
 		telegram_id = getattr(self.sender, 'telegram_id', None)
 		if not telegram_id:
 			return
-		link = self.share_link
-		plan_name = self.plan.get_period_display() if self.plan else _("Premium")
-		msg = (
-			"🎁 <b>Premium sovg'angiz tayyor!</b>\n"
-			"Quyidagi havolani do'stingizga yuboring — uni birinchi ochgan inson "
-			f"{plan_name} Premium oladi.\n\n"
-			f"{link}"
-		)
+		from django.utils.translation import gettext
+		from apps.utils.user_language import user_locale
+		with user_locale(self.sender):
+			plan_name = self.plan.get_period_display() if self.plan else gettext("Premium")
+			msg = gettext(
+				"🎁 <b>Your Premium gift is ready!</b>\n"
+				"Send this link to a friend — the first person to open it gets "
+				"%(plan)s Premium.\n\n"
+				"%(link)s"
+			) % {'plan': plan_name, 'link': self.share_link}
 		try:
 			from apps.management.commands.bot_notisfication import send_notification
 			send_notification(telegram_id, msg)
@@ -375,14 +384,17 @@ class PremiumGift(CreatedBaseModel):
 		self.save(update_fields=['recipient', 'status', 'claimed_at'])
 
 		if getattr(recipient, 'telegram_id', None):
-			plan_name = plan.get_period_display() if plan else _("Premium")
+			from django.utils.translation import gettext
+			from apps.utils.user_language import user_locale
+			with user_locale(recipient):
+				plan_name = plan.get_period_display() if plan else gettext("Premium")
+				claim_msg = gettext(
+					"🎉 <b>Premium activated!</b>\n"
+					"You have been gifted %(plan)s Premium. Active until %(date)s."
+				) % {'plan': plan_name, 'date': sub.end_date.strftime('%d.%m.%Y')}
 			try:
 				from apps.management.commands.bot_notisfication import send_notification
-				send_notification(
-					recipient.telegram_id,
-					"🎉 <b>Premium faollashtirildi!</b>\n"
-					f"Sizga {plan_name} Premium sovg'a qilindi. Obuna {sub.end_date.strftime('%d.%m.%Y')} gacha.",
-				)
+				send_notification(recipient.telegram_id, claim_msg)
 			except Exception as exc:
 				import logging
 				logging.getLogger(__name__).warning("Gift claim notification failed: %s", exc)

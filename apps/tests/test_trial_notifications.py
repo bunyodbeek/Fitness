@@ -74,6 +74,28 @@ class TrialReminderTests(TestCase):
         self.assertIn("3 kun", body)
         self.assertNotIn("oxirgi kuni", body)
 
+    # ── til ────────────────────────────────────────────────────────────────
+    def test_reminder_uses_the_language_saved_on_the_profile(self):
+        expected = {
+            "uz": "Bepul sinov muddatingiz",
+            "ru": "Бесплатный период",
+            "en": "Your free trial ends",
+        }
+        for code, needle in expected.items():
+            with self.subTest(language=code):
+                UserProfile.objects.all().delete()
+                profile = self._profile(days_left=3, name=f"lang{code}")
+                UserProfile.objects.filter(pk=profile.pk).update(language=code)
+
+                body = _sent_messages(self._run())[0]
+
+                self.assertIn(needle, body)
+
+    def test_default_language_keeps_the_old_uzbek_behaviour(self):
+        profile = self._profile(days_left=3, name="default")
+        self.assertEqual(profile.language, "uz")
+        self.assertIn("Bepul sinov", _sent_messages(self._run())[0])
+
     def test_message_carries_the_end_date(self):
         profile = self._profile(days_left=3, name="date")
         body = _sent_messages(self._run())[0]
@@ -126,16 +148,13 @@ class TrialReminderTests(TestCase):
 
 class RegistrationMessageTests(TestCase):
 
-    @patch("apps.views.users.bot_send_message", return_value=True)
-    @patch("apps.views.users.verify_init_data")
-    def test_registration_message_announces_the_trial(self, mock_verify, mock_send):
+    def _register(self, lang, telegram_id, mock_verify):
         mock_verify.return_value = ({
-            "telegram_id": 555001, "first_name": "Aziz", "last_name": "",
+            "telegram_id": telegram_id, "first_name": "Aziz", "last_name": "",
             "username": "aziz", "photo_url": "",
         }, None)
-
         response = self.client.post(
-            "/en/api/questionnaire/submit/",
+            f"/{lang}/api/questionnaire/submit/",
             data={
                 "init_data": "signed", "gender": "male", "experience": "beginner",
                 "goal": "build_body", "days": 3, "weight": 70, "motivation": [],
@@ -143,12 +162,30 @@ class RegistrationMessageTests(TestCase):
             content_type="application/json",
         )
         self.assertEqual(response.status_code, 200)
+        return UserProfile.objects.get(telegram_id=telegram_id)
 
+    @patch("apps.views.users.bot_send_message", return_value=True)
+    @patch("apps.views.users.verify_init_data")
+    def test_registration_message_announces_the_trial(self, mock_verify, mock_send):
+        profile = self._register("uz", 555001, mock_verify)
         body = mock_send.call_args.args[1]
-        profile = UserProfile.objects.get(telegram_id=555001)
 
-        self.assertIn(f"{TRIAL_DAYS} KUN BEPUL SINOV", body)
+        self.assertIn(f"{TRIAL_DAYS} KUNLIK BEPUL SINOV", body)
         self.assertIn(profile.trial_ends_at.strftime("%d.%m.%Y"), body)
         self.assertIn("Premium obuna", body)
         # Bot HTML rejimida — Markdown yulduzchalari xabarda ko'rinib qolmasin.
         self.assertNotIn("**", body)
+
+    @patch("apps.views.users.bot_send_message", return_value=True)
+    @patch("apps.views.users.verify_init_data")
+    def test_registration_stores_the_language_and_uses_it(self, mock_verify, mock_send):
+        """Anketa qaysi tilda to'ldirilgan bo'lsa, xabar ham o'sha tilda."""
+        cases = {
+            "ru": (555002, "БЕСПЛАТНЫЙ ПЕРИОД"),
+            "en": (555003, "FREE TRIAL HAS STARTED"),
+        }
+        for lang, (telegram_id, needle) in cases.items():
+            with self.subTest(language=lang):
+                profile = self._register(lang, telegram_id, mock_verify)
+                self.assertEqual(profile.language, lang)
+                self.assertIn(needle, mock_send.call_args.args[1])

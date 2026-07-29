@@ -14,9 +14,9 @@ Nima qiladi:
 Eslatma: hozircha avtomatik pul yechish (Atmos card-binding) qo'llab-quvvatlanmaydi,
 shuning uchun xabarlar foydalanuvchini obunani qo'lda uzaytirishga chaqiradi.
 
-Xabarlar o'zbek tilida — bot xabarlari loyihada hammasi shunday. Har bir
-foydalanuvchi tilida yuborish uchun tilni profilda saqlash kerak bo'ladi
-(hozir u faqat cookie/sessiyada, cron'da esa so'rov konteksti yo'q).
+Har bir xabar foydalanuvchi tilida ketadi (`UserProfile.language`). Cron'da
+so'rov konteksti yo'q, shuning uchun til `user_locale()` bilan qo'lda
+o'rnatiladi — `gettext` aynan o'sha blok ichida chaqirilishi shart.
 """
 
 from datetime import timedelta
@@ -24,10 +24,12 @@ from datetime import timedelta
 from django.core.management.base import BaseCommand
 from django.db.models import Q
 from django.utils import timezone
+from django.utils.translation import gettext
 
 from apps.management.commands.bot_notisfication import send_notification
 from apps.models.payments import Subscription
 from apps.models.users import TRIAL_DAYS, UserProfile
+from apps.utils.user_language import user_locale
 
 # Tugashidan necha kun oldin eslatma yuborish kerakligi.
 REMINDER_DAYS = (3, 1)
@@ -77,7 +79,11 @@ class Command(BaseCommand):
                 telegram_id = getattr(profile, "telegram_id", None)
                 if not telegram_id:
                     continue
-                if send_notification(telegram_id, self._trial_message(profile, days_left)):
+                # Matn foydalanuvchi tilida yig'iladi — `gettext` aynan shu blok
+                # ichida chaqirilishi kerak.
+                with user_locale(profile):
+                    message = self._trial_message(profile, days_left)
+                if send_notification(telegram_id, message):
                     sent += 1
                 # Yuborilmagan bo'lsa ham belgilaymiz: foydalanuvchi botni
                 # bloklagan bo'lishi mumkin va har kuni qayta urinish befoyda.
@@ -87,25 +93,22 @@ class Command(BaseCommand):
 
     @staticmethod
     def _trial_message(profile, days_left) -> str:
-        ends_at = profile.trial_ends_at
         if days_left == 1:
-            head = (
-                "⏳ <b>Bugun — bepul sinovingizning oxirgi kuni!</b>\n\n"
-                "Ertadan boshlab mashg‘ulotlar, ma’lumotnoma va barcha "
-                "bo‘limlar yopiladi."
+            head = gettext(
+                "⏳ <b>Today is the last day of your free trial!</b>\n\n"
+                "From tomorrow your workouts, the handbook and every other "
+                "section will be locked."
             )
         else:
-            head = (
-                "🔔 <b>Eslatma</b>\n\n"
-                f"Bepul sinov muddatingiz tugashiga <b>{days_left} kun</b> qoldi."
-            )
-        return (
-            f"{head}\n"
-            f"📅 Tugash sanasi: <b>{ends_at.strftime('%d.%m.%Y')}</b>\n\n"
-            "Mashg‘ulotlaringizni to‘xtatmaslik uchun Premium obunani "
-            "rasmiylashtiring 👇\n"
+            head = gettext(
+                "🔔 <b>Reminder</b>\n\n"
+                "Your free trial ends in <b>%(days)s days</b>."
+            ) % {'days': days_left}
+        return head + gettext(
+            "\n📅 End date: <b>%(date)s</b>\n\n"
+            "Get Premium so your training does not stop 👇\n"
             "/start"
-        )
+        ) % {'date': profile.trial_ends_at.strftime('%d.%m.%Y')}
 
     def _send_expiry_reminders(self, now) -> int:
         sent = 0
@@ -120,13 +123,17 @@ class Command(BaseCommand):
                 telegram_id = getattr(sub.user, "telegram_id", None)
                 if not telegram_id:
                     continue
-                message = (
-                    "🔔 <b>Eslatma</b>\n\n"
-                    f"Premium obunangiz tugashiga <b>{days_left} kun</b> qoldi.\n"
-                    f"📅 Tugash sanasi: <b>{sub.end_date.strftime('%d.%m.%Y')}</b>\n\n"
-                    "Premium funksiyalardan uzluksiz foydalanish uchun obunani uzaytiring 👇\n"
-                    "/start"
-                )
+                with user_locale(sub.user):
+                    message = gettext(
+                        "🔔 <b>Reminder</b>\n\n"
+                        "Your Premium subscription ends in <b>%(days)s days</b>.\n"
+                        "📅 End date: <b>%(date)s</b>\n\n"
+                        "Renew it to keep Premium without interruption 👇\n"
+                        "/start"
+                    ) % {
+                        'days': days_left,
+                        'date': sub.end_date.strftime('%d.%m.%Y'),
+                    }
                 if send_notification(telegram_id, message):
                     sent += 1
         return sent
@@ -146,11 +153,12 @@ class Command(BaseCommand):
             telegram_id = getattr(sub.user, "telegram_id", None)
             if not telegram_id:
                 continue
-            message = (
-                "⏰ <b>Premium obuna muddati tugadi</b>\n\n"
-                "Premium funksiyalar yopildi.\n\n"
-                "Qayta obuna bo'lish uchun 👇\n"
-                "/start"
-            )
+            with user_locale(sub.user):
+                message = gettext(
+                    "⏰ <b>Your Premium subscription has ended</b>\n\n"
+                    "Premium features are now locked.\n\n"
+                    "To subscribe again 👇\n"
+                    "/start"
+                )
             send_notification(telegram_id, message)
         return count

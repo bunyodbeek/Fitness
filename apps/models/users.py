@@ -56,7 +56,12 @@ class UserProfile(CreatedBaseModel):
 		LOSE_WEIGHT = 'lose_weight', _('Lose weight')
 		GAIN_MUSCLE = 'gain_muscle', _('Gain muscle')
 		GET_SHAPE = 'get_shape', _('Get in shape')
-	
+
+	class Language(TextChoices):
+		UZ = 'uz', "O‘zbekcha"
+		RU = 'ru', "Русский"
+		EN = 'en', "English"
+
 	user = OneToOneField('apps.User', CASCADE, related_name='profile')
 	telegram_id = BigIntegerField(unique=True, null=True, blank=True)
 	name = CharField(_('Name'), max_length=100, default='User')
@@ -70,6 +75,16 @@ class UserProfile(CreatedBaseModel):
 	workout_days_per_week = IntegerField(_('Workout days per week'), null=True, blank=True)
 	unit_system = CharField(_('Unit system'), max_length=10, choices=UnitSystem.choices, default=UnitSystem.METRIC)
 	onboarding_completed = BooleanField(_('Onboarding completed'), default=False)
+
+	# Foydalanuvchi tanlagan til — BOT xabarlari uchun. Ilovaning o'zi tilni
+	# cookie/sessiyadan oladi, lekin bot xabarlari cron'dan yoki webhook'dan
+	# ketadi va u yerda so'rov konteksti umuman yo'q. Shuning uchun tanlov shu
+	# yerda ham saqlanadi. Standart qiymat `uz`: bu maydon paydo bo'lgunga qadar
+	# BARCHA bot xabarlari o'zbekcha edi, ya'ni eski foydalanuvchilar uchun hech
+	# narsa o'zgarmaydi.
+	language = CharField(
+		_('Language'), max_length=5, choices=Language.choices, default=Language.UZ,
+	)
 
 	# Bepul sinov davri (7 kun) SHU paytdan boshlanadi. `created_at` emas, alohida
 	# maydon — chunki `created_at` qator yaratilishining nojo'ya ta'siri, bu esa
