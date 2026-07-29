@@ -29,6 +29,7 @@ import logging
 
 from apps.forms import UserProfileForm
 from apps.models import User, UserMotivation, UserProfile
+from apps.models.users import TRIAL_DAYS
 from apps.models.favorites import CustomProgramProgress
 from apps.models.payments import Subscription, Payment, SubscriptionPlan
 from apps.models.workouts import WorkoutProgress, WorkoutType
@@ -259,21 +260,29 @@ class QuestionnaireSubmitAPIView(APIView):
             self.save_motivations(profile, data.get('motivation', []))
 
             login(request, user)
+            # Bot `parse_mode="HTML"` bilan ishlaydi (apps/bot/bot.py), shuning
+            # uchun bu yerda Markdown `**...**` emas, `<b>` ishlatiladi — ilgari
+            # yulduzchalar xabarda o'zi ko'rinib turardi.
+            trial_ends = profile.trial_ends_at
             bot_send_message(
                 telegram_id,
-                "🎉 **Ro‘yxatdan o‘tish muvaffaqiyatli yakunlandi!** 🎉\n\n"
+                "🎉 <b>Ro‘yxatdan o‘tish muvaffaqiyatli yakunlandi!</b> 🎉\n\n"
                 "Sizning ma’lumotlaringiz saqlandi:\n"
                 "━━━━━━━━━━━━━━━━━━━\n"
-                f"👤 Foydalanuvchi: {self.request.user.profile.name}\n"
-                f"🆔 ID: {self.request.user.id}\n"
+                f"👤 Foydalanuvchi: {profile.name}\n"
+                f"🆔 ID: {user.id}\n"
                 "━━━━━━━━━━━━━━━━━━━\n\n"
-                "💪 **Endi siz bizning Fitness Platformamizning to‘liq a’zosiz!**\n"
-                "Sizga quyidagilar ochildi:\n"
+                f"🎁 <b>{TRIAL_DAYS} KUN BEPUL SINOV BOSHLANDI!</b>\n"
+                "Shu davrda ilova to‘liq ochiq — hamma narsadan cheklovsiz "
+                "foydalanishingiz mumkin:\n"
                 "• 🏋️‍♂️ Shaxsiy mashg‘ulotlar\n"
                 "• 📅 Kunlik darslar rejalari\n"
                 "• 🍎 Sog‘lom ovqatlanish bo‘yicha maslahatlar\n"
                 "• 📊 Progress kuzatuv statistikasi\n\n"
-                "🔥 *Bugun boshlang — ertangi kuningizni kuchliroq qiling!* 🏆"
+                f"📅 Bepul muddat <b>{trial_ends.strftime('%d.%m.%Y')}</b> gacha.\n"
+                "⚠️ Shundan so‘ng ilovadan foydalanish uchun <b>Premium obuna</b> "
+                "kerak bo‘ladi.\n\n"
+                "🔥 <i>Bugun boshlang — ertangi kuningizni kuchliroq qiling!</i> 🏆"
             )
 
             return Response({

@@ -80,6 +80,15 @@ class UserProfile(CreatedBaseModel):
 	# uchun migratsiya buni deploy vaqtiga qo'yadi — hamma yangidan 7 kun oladi.
 	trial_started_at = DateTimeField(_('Trial started at'), null=True, blank=True, editable=False)
 
+	# Sinov tugashi haqida oxirgi yuborilgan eslatma (necha kun qolganda).
+	# Cron kuniga bir marta ishlashi KAFOLATLANMAGAN — qayta ishga tushirish,
+	# ikki marta rejalashtirish yoki qo'lda chaqirish bo'lishi mumkin. Bu maydon
+	# bir xil eslatma ikki marta bormasligini ta'minlaydi: 3 → 2 → 1 tartibida
+	# faqat KAMAYIB borgan qiymat yuboriladi.
+	trial_reminder_sent_day = PositiveIntegerField(
+		_('Last trial reminder (days left)'), null=True, blank=True, editable=False,
+	)
+
 	class Meta:
 		verbose_name = _('User Profile')
 		verbose_name_plural = _('User Profiles')
