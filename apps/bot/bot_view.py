@@ -301,6 +301,18 @@ def handle_language_selection(call):
 		lang_code = "en"
 	
 	bot.answer_callback_query(call.id)
+
+	# Tanlovni profilga yozamiz — keyingi bot xabarlari (sinov eslatmalari,
+	# to'lov tasdig'i) shu tilda ketadi. Profil hali bo'lmasligi mumkin: bu
+	# odatda ro'yxatdan o'tishdan OLDINGI qadam, o'shanda anketa yakunlanganda
+	# aktiv tildan yoziladi.
+	try:
+		from apps.models import UserProfile
+		from apps.utils.user_language import remember_language
+		remember_language(UserProfile.objects.filter(telegram_id=user.id).first(), lang_code)
+	except Exception:
+		logger.warning("Til profilga yozilmadi (telegram_id=%s)", user.id, exc_info=True)
+
 	# Til tanlandi — intro video ostidagi tugmalarni olib tashlaymiz, video esa
 	# chatda qoladi.
 	try:
