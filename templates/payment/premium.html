@@ -199,8 +199,8 @@
 	</style>
 </head>
 <body>
-	{# Gate rejimida yopish tugmasi YO'Q — bu qasddan. Bepul muddat tugagach
-	   ilovaga qaytish yo'li faqat to'lov orqali (yoki mini app'ni yopish). #}
+	{% comment %}Gate rejimida yopish tugmasi YO'Q — bu qasddan. Bepul muddat tugagach
+	   ilovaga qaytish yo'li faqat to'lov orqali (yoki mini app'ni yopish).{% endcomment %}
 	{% if not gate %}
 	<!-- CLOSE (X) -->
 	<button class="close-btn" onclick="goBack()" aria-label="{% trans 'Close' %}">
