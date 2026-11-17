@@ -33,7 +33,17 @@ def env_bool(name, default=False):
 # Production-safe default: DEBUG is OFF unless DEBUG=true (1/yes/on) is set in the env.
 DEBUG = env_bool('DEBUG', default=False)
 
-ALLOWED_HOSTS = ['*']
+PRODUCTION_HOSTS = ['shredzville.com', 'www.shredzville.com']
+
+# Only the production domains in prod. With an explicit list Django no longer
+# auto-allows localhost, so add it back for local development (DEBUG=true).
+ALLOWED_HOSTS = PRODUCTION_HOSTS + (['localhost', '127.0.0.1'] if DEBUG else [])
+
+# Nginx terminates TLS and proxies to gunicorn over plain HTTP; it sets
+# X-Forwarded-Proto so request.is_secure() is True and CSRF/secure cookies work.
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+CSRF_TRUSTED_ORIGINS = [f'https://{host}' for host in PRODUCTION_HOSTS]
 
 INSTALLED_APPS = [
 	# NOTE: Django's default admin (and jazzmin/nested_admin) are intentionally
@@ -269,16 +279,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # REST Framework
-
-# CSRF_TRUSTED_ORIGINS = [
-#
-# 	'https://*.ngrok-free.app',
-#
-# 	'https://*.ngrok-free.dev',
-#
-# 	'https://educated-luana-shroudlike.ngrok-free.dev',
-#
-# ]
 
 # CORS Settings
 
