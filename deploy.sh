@@ -1,8 +1,12 @@
 #!/bin/bash
-set -e
+# Butun skript { ... } ichida: bash uni avval to'liq o'qib oladi. `git pull` shu
+# faylning o'zini yangilasa ham, ishlab turgan nusxa yarmidan buzilib qolmaydi.
+{
+set -euo pipefail
 
 cd /var/www/fitness
-git pull origin main
+# --ff-only: serverda qo'lda qilingan o'zgarish bo'lsa, ustidan yozmasdan to'xtaydi.
+git pull --ff-only origin main
 
 # Virtual muhit papkasi serverda `venv`, lokalda `.venv` deb nomlangan. Ilgari bu
 # yerda qat'iy `.venv` yozilgan edi — serverda bunday papka yo'q, `source` xato
@@ -23,7 +27,7 @@ fi
 echo "Using virtualenv: $VENV"
 source "$VENV/bin/activate"
 
-pip install -r req.txt
+pip install -q -r req.txt
 
 python manage.py migrate --noinput
 # REDIS_URL o'rnatilmagan bo'lsa, cache DatabaseCache'ga tushadi va u jadval talab
@@ -35,4 +39,9 @@ python manage.py createcachetable
 python manage.py compilemessages --ignore=venv --ignore=.venv
 python manage.py collectstatic --noinput
 
-systemctl restart gunicorn
+# deploy foydalanuvchisiga faqat shu buyruq parolsiz ruxsat etilgan
+# (/etc/sudoers.d/91-deploy-gunicorn).
+sudo -n systemctl restart gunicorn
+echo "Deploy OK: $(git log --oneline -1)"
+exit
+}

@@ -1,30 +1,43 @@
-name: Deploy Fitness App
+name: Deploy to production
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [main]
+  workflow_dispatch:
+
+# Never run two deploys at once; a newer push waits for the running one.
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    
+    timeout-minutes: 15
     steps:
-      - name: 🚀 Deploy to Serverr
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.SSH_KEY }}
-          port: 22
-          script: |
-            cd /var/www/fitness
-            git fetch --all
-            git reset --hard origin/main
-            source venv/bin/activate
-            # Fayl nomingiz requirements.txt bo'lsa shuni yozing
-            pip install -r req.txt 
-            python manage.py migrate
-            python manage.py collectstatic --noinput
-            sudo systemctl restart gunicorn
-            sudo systemctl restart nginx
-            echo "✅ Hammasi muvaffaqiyatli yakunlandi!"
+      - name: Set up SSH
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+
+      # The server pins this key to deploy.sh in authorized_keys (command="..."),
+      # so the key can run nothing else.
+      - name: Run deploy.sh on the server
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+        run: |
+          ssh -i ~/.ssh/deploy_key \
+              -o IdentitiesOnly=yes \
+              -o StrictHostKeyChecking=yes \
+              -o ConnectTimeout=20 \
+              "$DEPLOY_USER@$DEPLOY_HOST"
+
+      - name: Clean up
+        if: always()
+        run: rm -f ~/.ssh/deploy_key
